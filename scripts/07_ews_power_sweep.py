@@ -191,16 +191,32 @@ def main() -> int:
                "drift_variance_rate", "drift_ar1_rate", "noise_ar1_rate"]]
     print(show.to_string(index=False))
 
-    # Best configuration: highest AR(1) power among cells that keep every
-    # negative-control false-positive rate at or below alpha.
-    ok = df[(df["drift_variance_rate"] <= args.alpha)
-            & (df["drift_ar1_rate"] <= args.alpha)
-            & (df["noise_ar1_rate"] <= args.alpha)]
+    # ---- resolution caveat ------------------------------------------------
+    # With N seeds, the smallest non-zero rate observable is 1/N. If 1/N is
+    # larger than alpha, a single chance false positive already "exceeds" alpha
+    # and the comparison is meaningless. Say so rather than reporting a
+    # spurious failure.
+    resolution = 1.0 / args.seeds
     print("\n" + "-" * 74)
+    print(f"Resolution: with {args.seeds} seeds the smallest non-zero rate "
+          f"measurable is {resolution:.3f}.")
+    if resolution > args.alpha:
+        print(f"  That is coarser than alpha={args.alpha}, so a false-positive "
+              f"rate of {resolution:.3f}\n  (one chance hit in {args.seeds} runs) "
+              f"cannot be distinguished from the nominal rate.\n"
+              f"  Judge false positives against this floor, not against alpha, "
+              f"or re-run with\n  more seeds (--seeds {int(np.ceil(2/args.alpha))}+).")
+    # Highest AR(1) power among cells whose false-positive rates are at or below
+    # the larger of alpha and the resolution floor.
+    fp_ceiling = max(args.alpha, resolution)
+    ok = df[(df["drift_variance_rate"] <= fp_ceiling)
+            & (df["drift_ar1_rate"] <= fp_ceiling)
+            & (df["noise_ar1_rate"] <= fp_ceiling)]
+    print("-" * 74)
     if len(ok):
         best = ok.loc[ok["saddle_ar1_rate"].idxmax()]
         print("Best configuration keeping ALL false-positive rates <= "
-              f"{args.alpha}:")
+              f"{fp_ceiling:.3f}:")
         print(f"  window={int(best['window'])}  sigma={best['smooth_sigma']}")
         print(f"  power: AR(1) {best['saddle_ar1_rate']:.2f}, "
               f"variance {best['saddle_variance_rate']:.2f}")
@@ -210,16 +226,18 @@ def main() -> int:
             print("  the detector than about the system.")
     else:
         print("No configuration kept every false-positive rate at or below "
-              f"{args.alpha}.")
+              f"{fp_ceiling:.3f}.")
 
     fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
     heat(axes[0], df, "saddle_ar1_rate", args.windows, args.sigmas,
          "POWER — AR(1) on the saddle-node\n(higher is better; want ≥ 0.80)")
     heat(axes[1], df, "saddle_variance_rate", args.windows, args.sigmas,
          "POWER — variance on the saddle-node\n(higher is better)")
+    floor = 1.0 / args.seeds
     heat(axes[2], df, "drift_ar1_rate", args.windows, args.sigmas,
          f"FALSE POSITIVES — AR(1) on monotonic drift\n(lower is better; "
-         f"want ≤ {args.alpha})", vmax=0.5)
+         f"alpha={args.alpha}, but {args.seeds} seeds resolve no finer "
+         f"than {floor:.2f})", vmax=0.5)
     fig.suptitle("Detector behaviour across analysis choices — a usable setting "
                  "needs HIGH power (left) and LOW false positives (right)",
                  fontsize=11.5, color=INK, x=0.01, ha="left", y=1.04)
