@@ -13,7 +13,7 @@
 # Raw downloaded data — never committed, never edited.
 data/raw/*
 !data/raw/.gitkeep
-!data/raw/README.md
+!data/raw/_FOLDER_NOTES.md
 
 # Processed/derived data — regenerable from raw data by our scripts.
 data/processed/*

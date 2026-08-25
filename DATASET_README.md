@@ -36,8 +36,8 @@ A claim with no label is a statement about *this repository*, not about the data
 | Dryad publication date | 25 October 2024 | [LIT] |
 | Analysis code | https://github.com/ewinapun/MINDFUL | [CODE] |
 | Code language | MATLAB (written on R2022b) | [CODE] |
-| Dryad version number | [UNVERIFIED] — recorded automatically by our download script |
-| Total size | [UNVERIFIED] |
+| **Dryad version number** | **6** (API version record `324345`) | [CODE] verified via API |
+| Total size | 392.9 MB — `MINDFUL_Data.zip` 411,951,588 bytes + `README.md` 3.3 KB | [CODE] verified via API |
 | Licence | [UNVERIFIED] — Dryad deposits are normally CC0, **confirm before publishing** |
 
 ### Associated publication
@@ -309,112 +309,101 @@ That is a real and reportable limitation, not a flaw to hide.
 
 ---
 
-## 7. Current blocker: network access
+## 7. Getting the data: network access and Dryad's anti-bot challenge
 
-`scripts/01_download_dataset.py` is written, tested, and works — but **cannot reach
-Dryad from this cloud environment.** The failure is reproducible:
+### 7.1 Network access — RESOLVED
 
-```
-$ python3 scripts/01_download_dataset.py --list-only
-[1/4] Looking up dataset record
-      https://datadryad.org/api/v2/datasets/doi%3A10.5061%2Fdryad.n2z34tn5s
-    attempt 1/4 failed (ProxyError); retrying in 2s ...
-    ...
-ERROR: Gave up fetching ... ProxyError('Unable to connect to proxy',
-       OSError('Tunnel connection failed: 403 Forbidden'))
-```
+The environment originally used the **Trusted** network access level, whose
+allowlist covers package registries, GitHub and cloud SDKs but not Dryad. It was
+changed to **Custom** with these domains allowed:
 
-The environment's egress proxy reports:
-
-```json
-{"kind": "connect_rejected",
- "detail": "gateway answered 403 to CONNECT (policy denial or upstream failure)",
- "host": "datadryad.org:443"}
+```text
+datadryad.org
+*.datadryad.org
+doi.org
+*.amazonaws.com
 ```
 
-**In plain language:** this container may only contact an approved list of websites.
-`datadryad.org` is not on it. Hosts tested:
+with *"Also include default list of common package managers"* enabled (without it
+PyPI is lost and nothing installs). Set this at [claude.ai/code](https://claude.ai/code)
+via the **cloud icon above the message box** → **Add cloud environment** / gear icon
+→ **Network access: Custom**. The four levels are None / Trusted / Full / Custom.
 
-| Host | Reachable? |
+Dryad's **metadata** API is now reachable, which confirmed the deposit:
+
+| Field | Value |
 |---|---|
-| `github.com`, `raw.githubusercontent.com` | ✅ yes |
-| `*.amazonaws.com` (S3) | ✅ yes |
-| `pypi.org` (Python packages) | ✅ yes |
-| `datadryad.org` | ❌ **blocked** |
-| `doi.org`, `api.datacite.org`, `api.crossref.org` | ❌ blocked |
-| `nature.com`, `ncbi.nlm.nih.gov`, `zenodo.org` | ❌ blocked |
+| Title | *Data from: Measuring instability in chronic human intracortical neural recordings towards stable, long-term brain-computer interfaces* |
+| Authors | Tsam Kiu Pun, Mona Khoshnevis, Thomas Hosman, Guy Wilson, Anastasia Kapitonava, Foram Kamdar, Jaimie Henderson, John Simeral, Carlos Vargas-Irwin, Matthew Harrison, Leigh Hochberg |
+| **Dryad version** | **6** (API version record `324345`) |
+| Files | `MINDFUL_Data.zip` (411,951,588 bytes ≈ 392.9 MB) and `README.md` (3.3 KB) |
+| Checksum type | **SHA-256** (`6d12b5db…` for the zip) |
 
-This is a **settings** problem, not a code problem, and the fix is not something a
-script can do — routing around an organisational network policy would be improper
-even if it were possible. See the repository's issue notes / ask your session owner
-to widen the environment's network policy. Documentation:
-https://code.claude.com/docs/en/claude-code-on-the-web
+### 7.2 Anti-bot challenge — OPEN
 
-### How to fix it (decided: recreate the environment)
+Dryad protects its **file-download** route with an anti-bot challenge (Anubis).
+Any script requesting the file receives a 4.3 KB HTML page titled "Validating…"
+instead of the data. This was verified thoroughly:
 
-The environment is currently on the **Trusted** network access level, which allows
-only an Anthropic-maintained allowlist (package registries, GitHub, cloud SDKs).
-Dryad is not on that list. There are four levels:
-
-| Level | Outbound connections |
+| Route | Result |
 |---|---|
-| **None** | nothing |
-| **Trusted** | allowlisted domains only — *this is what we have* |
-| **Full** | any domain |
-| **Custom** | your own allowlist, optionally plus the defaults |
+| `/api/v2/files/<id>/download` | `401 {"error":"Unauthorized, must have current bearer token"}` |
+| `/downloads/file_stream/<id>` with `curl`/`python-requests` User-Agent | `403 Forbidden` |
+| `/downloads/file_stream/<id>` with a `Mozilla/5.0 (compatible; …)` User-Agent | `200` — but the body is the challenge page, for every `Accept` header, and repeat requests with cookies do not pass |
 
-**Steps — do this at [claude.ai/code](https://claude.ai/code):**
+The challenge requires executing JavaScript proof-of-work, so a plain HTTP client
+cannot pass it. **We do not attempt to defeat it** — Dryad provides a supported
+route for programs, so there is no legitimate reason to circumvent one.
 
-1. In the row **above the message box**, click the **cloud icon** showing the current
-   environment's name. (There is no settings page or direct URL for this selector.)
-2. Choose **Add cloud environment** — or hover an existing environment and click the
-   **gear icon** to edit it.
-3. Set **Network access** to **Custom**, and in **Allowed domains** enter one domain
-   per line:
+### 7.3 The supported programmatic route: a Dryad API account
 
-   ```text
-   datadryad.org
-   *.datadryad.org
-   doi.org
-   *.amazonaws.com
-   ```
+Dryad's own error message names the answer: *"must have current bearer token."*
 
-   Then **tick "Also include default list of common package managers"** — without it
-   you lose PyPI and GitHub, and nothing will install.
-
-   > `*.amazonaws.com` is included because Dryad serves large file downloads from
-   > Amazon S3 storage, so a download can be redirected there. `doi.org` lets the DOI
-   > resolve. Selecting **Full** instead of **Custom** also works and is simpler, but
-   > **Custom** is the tighter, better-practice choice.
-
-4. *(Optional but recommended)* In the same dialog, set the **Setup script** to:
+1. Sign in at <https://datadryad.org> with an **ORCID iD**
+   (free at <https://orcid.org> — and a researcher identifier worth having).
+2. Open **My account** → create an **API account**. Dryad issues a
+   `client_id` and a `client_secret`.
+3. Provide them as environment variables — **never commit them**:
 
    ```bash
-   pip install -r requirements.txt
-   ```
-
-   This runs automatically before Claude starts, so every future session already has
-   pandas, numpy, scipy, h5py and matplotlib installed.
-
-5. Start a **new session** on this repository (branch
-   `claude/isef-research-pipeline-9zt4uq`) using that environment, and run:
-
-   ```bash
-   pip install -r requirements.txt
-   python3 scripts/01_download_dataset.py --list-only
+   export DRYAD_CLIENT_ID='...'
+   export DRYAD_CLIENT_SECRET='...'
    python3 scripts/01_download_dataset.py
-   python3 scripts/02_inspect_dataset.py --extract
    ```
 
-**Alternatives if the above is inconvenient:**
+The script exchanges them for a short-lived access token via OAuth
+(`POST https://datadryad.org/oauth/token`, `grant_type=client_credentials`),
+then downloads through the authenticated API route, which is not behind the
+challenge. Tokens last about 10 hours. The script reads the credentials **only**
+from the environment and never writes them to any file, including the manifest.
 
-- Run `scripts/01_download_dataset.py` on your own laptop (produces the correct
-  manifest with checksums), then copy `data/raw/` across.
-- Download manually from the Dryad landing page into `data/raw/`. The inspection
-  script still works, but provenance is weaker — record the version number and
-  download date by hand.
+> **What "OAuth client credentials" means:** it is how a *program* authenticates,
+> as opposed to a person typing a password. You trade a long-lived id+secret for
+> a short-lived token, so if the token leaks it expires quickly. It is the
+> standard pattern for machine-to-machine API access.
 
----
+### 7.4 Alternative: download manually
+
+Open <https://datadryad.org/dataset/doi:10.5061/dryad.n2z34tn5s> in a browser
+(which passes the challenge normally), download `MINDFUL_Data.zip`, and place it
+in `data/raw/`. Everything downstream works unchanged. Provenance is weaker —
+no automatic manifest — so record the version number (**6**) and the download
+date by hand. The SHA-256 above can still be checked with `sha256sum`.
+
+### 7.5 Two safeguards added after real failures
+
+Both of these were written in response to problems that actually occurred:
+
+- **The script refuses to accept an HTML page as data.** It inspects the first
+  bytes of every download; if they begin `<!doctype html`, it deletes the file
+  and explains that the challenge was hit. Without this, a 4.3 KB web page would
+  have been sitting in `data/raw/` named `MINDFUL_Data.zip`.
+- **The script refuses to overwrite files it did not download.** The Dryad
+  deposit contains a file named `README.md`, and this folder originally had its
+  own `README.md` — downloading would have silently destroyed it. The folder's
+  notes were renamed to `_FOLDER_NOTES.md`, and the script now checks each
+  destination against the previous manifest and aborts rather than clobbering
+  anything unrecognised.
 
 ## 8. Open questions to resolve once the data are in hand
 
@@ -487,7 +476,7 @@ Ordered by how much they matter to the research question.
 | matplotlib | 3.11.1 |
 | h5py | 3.16.0 |
 | MINDFUL reference code | `github.com/ewinapun/MINDFUL` @ `1809e132549f3c4b03327e3a14c748927d765e6e` |
-| Dataset downloaded? | **No** — blocked, see §7 |
+| Dataset downloaded? | **Not yet** — metadata confirmed; file download needs a Dryad API account, see §7 |
 
 ---
 
