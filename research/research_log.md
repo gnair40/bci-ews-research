@@ -105,3 +105,45 @@ writing it from assumptions would defeat its purpose.
 
 Resolve the network access blocker, run the download, then produce the exploration
 report against real data.
+
+## 2026-08-25 (later) — Python loader and exploration pipeline
+
+Network access to Dryad still blocked; confirmed that an environment network-policy
+change only takes effect in a NEW session, since environment settings are copied
+once at container startup. Continued with work that does not require the data.
+
+### Added
+
+- `scripts/03_load_dataset.py` — Python translation of the authors' MATLAB loader.
+  Walks participant/day_<N>/block_<M>, returns tidy trial-level and block-level
+  tables plus neural matrices. Applies no preprocessing; flags excluded trials
+  rather than dropping them; converts MATLAB 1-based indices to Python 0-based
+  while keeping both forms auditable.
+- `scripts/04_explore_dataset.py` — descriptive statistics, five figures, and
+  generation of `reports/DATASET_EXPLORATION.md`.
+
+### Design principle followed
+
+The exploration report separates **Computed** sections (calculated from data,
+factual) from **Requires your judgement** sections (scientific decisions, left
+blank). The script produces evidence; it does not decide what performance means,
+what deterioration means, or whether a hypothesis is testable.
+
+### Validation
+
+Both scripts were tested against synthetic .mat files, including a deliberately
+corrupted tree. All five loader consistency checks fired on broken input and none
+fired on correct input. Three bugs were found and fixed in the exploration script:
+a dynamic import that broke @dataclass, a crash on output paths outside the repo,
+and a pandas 3 deprecation.
+
+### Skills practised
+
+Reading someone else's code to learn a data format; testing code against data whose
+answers are already known; distinguishing computation from interpretation; checking
+that .gitignore actually prevents generated files being committed.
+
+### Next step
+
+Obtain the data (new session with Custom network access), then run scripts 01-04
+and complete sections 6, 9 and 10 of the exploration report.
