@@ -276,6 +276,28 @@ def ar1_surrogate(x: np.ndarray, rng) -> np.ndarray:
     return s
 
 
+def surrogate_null_taus(x: np.ndarray, window: int, step: int,
+                        smooth_sigma: float, n_surr: int, rng) -> dict:
+    """
+    Build the null distribution of Kendall's tau for BOTH indicators at once.
+
+    Each surrogate is de-trended and windowed exactly like the real series, then
+    both variance and lag-1 autocorrelation trends are read off it. Computing
+    both from the same surrogate set rather than generating the surrogates twice
+    halves the work, which matters for the parameter sweep in scripts/07.
+    """
+    surr = ar1_surrogates(x, n_surr, rng)
+    # De-trend every surrogate in one call (axis=1 = along time).
+    surr_d = surr - gaussian_filter1d(surr, sigma=smooth_sigma, axis=1,
+                                      mode="nearest")
+    out = {"variance": np.empty(n_surr), "ar1": np.empty(n_surr)}
+    for i in range(n_surr):
+        ind = rolling_indicators(surr_d[i], window, step)
+        out["variance"][i] = kendall_trend(ind["variance"])
+        out["ar1"][i] = kendall_trend(ind["ar1"])
+    return out
+
+
 def surrogate_test(x: np.ndarray, observed_tau: float, window: int, step: int,
                    smooth_sigma: float, indicator: str, n_surr: int,
                    rng) -> dict:
@@ -288,15 +310,8 @@ def surrogate_test(x: np.ndarray, observed_tau: float, window: int, step: int,
     test for tau > 0 would miss real signals and is a weaker hypothesis. We ask
     instead whether |tau| is more extreme than chance.
     """
-    surr = ar1_surrogates(x, n_surr, rng)
-    # De-trend every surrogate in one call (axis=1 = along time).
-    surr_d = surr - gaussian_filter1d(surr, sigma=smooth_sigma, axis=1,
-                                      mode="nearest")
-    taus = np.empty(n_surr)
-    for i in range(n_surr):
-        ind = rolling_indicators(surr_d[i], window, step)
-        taus[i] = kendall_trend(ind[indicator])
-    finite = taus[np.isfinite(taus)]
+    nulls = surrogate_null_taus(x, window, step, smooth_sigma, n_surr, rng)
+    finite = nulls[indicator][np.isfinite(nulls[indicator])]
     p_two = float(np.mean(np.abs(finite) >= abs(observed_tau))) if len(finite) else np.nan
     return {"tau": observed_tau, "p_two_sided": p_two,
             "surrogate_tau_mean": float(np.mean(finite)) if len(finite) else np.nan,

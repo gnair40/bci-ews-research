@@ -313,3 +313,64 @@ resolve to exactly those days; 384 vs 192 features; 20 ms bins. T11's
 Two definitions still to make: what defines performance, and what counts as
 deterioration. Framing (C) now has documented mechanistic support and is worth
 serious consideration.
+
+## 2026-08-25 (night) — Phase 2 begins: EWS detector validation
+
+### Built the positive/negative control pair
+
+`scripts/06_ews_controls.py` simulates three systems whose nature is known by
+construction:
+
+1. Saddle-node bifurcation — CSD present. Detector MUST fire. (positive control)
+2. Monotonic decline + noise — no bifurcation, constant recovery rate. MUST stay
+   silent. (negative control)
+3. Rising noise, constant recovery rate — variance rises but the system does not
+   slow, so lag-1 autocorrelation must NOT rise. (negative control)
+
+Detector: Gaussian de-trending, rolling variance and lag-1 autocorrelation,
+Kendall's tau for trend, tested TWO-SIDED against AR(1)-matched surrogates.
+Two-sided deliberately, because a compressed basin can produce falling
+indicators before a transition (Titus et al. 2019).
+
+### The key result: one seed is not a validation
+
+A single run on seed 0 passed all six checks. Repeating across ten seeds passed
+only 4/10 — and every failure was a MISS on the positive control. The negative
+controls never once produced a false alarm.
+
+So the detector is UNDERPOWERED, not over-eager. It fails to detect real critical
+slowing down roughly 60% of the time at the default settings. This is precisely
+what the control pair exists to reveal, and it would have been invisible from a
+single run.
+
+### Diagnosed the cause
+
+Two contributing factors, both quantified:
+
+1. De-trending can delete the signal. Near the transition the simulated system's
+   correlation time is ~357 steps. A Gaussian de-trending filter with sigma=100
+   removes fluctuations slower than ~100 steps — i.e. exactly the slow
+   fluctuations that carry the CSD signal. Power at sigma=100 was 0.17.
+   Rule: the de-trending scale must exceed the system's correlation time.
+2. The effect is small in per-step terms: the AR(1) coefficient moves only from
+   0.9802 to 0.9972 across the whole approach to the bifurcation.
+
+### Consequence for the project
+
+An underpowered detector makes a NEGATIVE result uninformative — the absence of a
+warning would say more about the detector than about the neural data. This is the
+same concern van der Bolt et al. (2021) raise about record length. Power must
+therefore be established BEFORE any claim is made about the real data.
+
+`scripts/07_ews_power_sweep.py` measures detection rate on the positive control
+(power) and on the negative controls (false-positive rate) across a grid of
+window lengths and de-trending strengths, reporting the surface rather than
+picking a setting silently — as the literature review requires.
+
+### Performance note
+
+The detector's hot paths were vectorised (sliding_window_view for the rolling
+statistics; a batched lfilter recursion for surrogate generation), and the
+surrogate set is now shared between the two indicators. Kendall's tau values are
+unchanged; only p-values shift in the third decimal because the random draws
+differ.

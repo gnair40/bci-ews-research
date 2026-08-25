@@ -105,12 +105,16 @@ def run_grid(ews, windows, sigmas, seeds, n_surr, n, step, alpha) -> pd.DataFram
                     ind = ews.rolling_indicators(xd, window, step)
                     if len(ind["index"]) < 8:
                         continue
+                    # One surrogate set serves both indicators.
+                    nulls = ews.surrogate_null_taus(xd, window, step, sigma,
+                                                    n_surr, rng)
                     for iname in ("variance", "ar1"):
                         tau = ews.kendall_trend(ind[iname])
-                        st = ews.surrogate_test(xd, tau, window, step, sigma,
-                                                iname, n_surr, rng)
-                        p = st["p_two_sided"]
-                        if np.isfinite(p) and p < alpha:
+                        null = nulls[iname][np.isfinite(nulls[iname])]
+                        if not len(null) or not np.isfinite(tau):
+                            continue
+                        p = float(np.mean(np.abs(null) >= abs(tau)))
+                        if p < alpha:
                             fired[(mname, iname)] += 1
             row = {"window": window, "smooth_sigma": sigma,
                    "n_windows": len(ind["index"]), "seeds": seeds}
