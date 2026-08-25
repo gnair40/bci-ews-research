@@ -441,3 +441,73 @@ or accumulated drift will keep climbing. No simulation can provide that test.
 Which performance variable is the declared primary, and where exactly the change
 point sits. The latter must be located by a method rather than by eye, and fixed
 before the indicator is computed.
+
+## 2026-08-25 (very late) — Defining deterioration, before any EWS analysis
+
+### Rule followed
+
+Everything in this entry uses BEHAVIOURAL performance only. No neural feature was
+read for this purpose and no early-warning indicator has been computed on the real
+data. Nothing was chosen because it improves an EWS result - that result does not
+exist yet.
+
+### Procedure specified before running it
+
+Apply every candidate deterioration definition to both participants, at block and
+session level, on both angle error and success rate, and judge them by whether
+independent methods AGREE. Agreement is the defence against arbitrariness: if
+independent procedures converge, the boundary is a property of the data rather
+than a researcher's choice. `scripts/11_define_deterioration.py`.
+
+### Result
+
+At T11 SESSION level, three independent data-driven methods (least-squares,
+CUSUM, rank scan) agree on trial day 758 for BOTH performance variables - four
+convergences on one boundary. Permutation test: p = 0.0018 (angle error),
+p = 0.0014 (success). Block level is noisier, giving two distinct locations.
+
+T5: all methods agree on day 2133 but the change is only marginal
+(p = 0.046 to 0.071).
+
+### Two structural facts the series revealed
+
+1. T11's "before" period is NOT a flat healthy baseline. Performance wobbles from
+   about day 689, spikes badly at day 727 (56.5% correct), returns COMPLETELY to
+   baseline at day 751 (100% correct), and only then collapses at day 758. This
+   is why the baseline+persistence rule fires early (day 689 to 715) - it detects
+   onset of instability, which is a different event from the transition.
+
+   Flagged and deliberately NOT acted on: alternating between good and bad states
+   before a permanent shift is called flickering and is itself a recognised
+   early-warning phenomenon. If it is ever used it must be preregistered in
+   advance, not adopted after noticing it works here.
+
+2. T5 is not a single change point. BIC comparison (block level, angle error):
+   no change 134.27, one change 131.52, two changes 124.74. The best-supported
+   description is down at day 2133 and back up at day 2149 - a reversible
+   excursion, not a transition. That is why its single change point is only
+   marginally significant.
+
+### T11 primary / T5 secondary - justified on the merits
+
+Not because it works better, but because T5 fails the primary role on four
+independent criteria: its change point is not statistically established; it has 3
+pre-transition sessions (at n=3 no test can reach alpha=0.05) against T11's 11;
+9 pre-transition blocks against T11's 21; and a single-transition model does not
+describe it.
+
+Addition to the original proposal: T11 ALSO contains a reversible excursion
+(day 727 degrades to 56.5%, day 751 returns to 100%), so the reversibility test
+can be run within the primary participant as well as on T5.
+
+### Recorded
+
+`research/deterioration_definition.md` - full comparison of six methods against
+every criterion requested, the hindsight-bias treatment, and a proposed
+preregistration. Status: PROPOSED, not frozen, awaiting approval.
+
+### Deliberately not done
+
+No definition has been adopted and nothing has been frozen. That is the
+researcher's decision, and freezing must be a deliberate act with a recorded
+commit, not a side effect of analysis.
