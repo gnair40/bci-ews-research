@@ -258,3 +258,58 @@ the modest R2 (0.29/0.41) is expected by construction, not a finding.
 
 Testing a claim from a paper against the data itself instead of accepting it,
 and stating precisely how much weight the test can bear.
+
+## 2026-08-25 (late, cont.) — Fixed-decoder question ANSWERED from the Methods
+
+Network allowlist extended to PMC/Nature/bioRxiv. Note: the WebFetch tool is
+still blocked for those hosts because it runs on separate infrastructure with its
+own policy, but curl from inside the container works, so the article was fetched
+and parsed directly.
+
+### Answer: decoder WEIGHTS are fixed — confirmed verbatim
+
+- T11: LSTM trained on 18 sessions, trial days 576-646. The deposit starts at day
+  658, i.e. after training. Never retrained.
+- T5: trained open-loop on day 2121, updated once from the first closed-loop
+  block, then "fixed for later closed-loop blocks and future sessions". Smoothing
+  and gain also fixed after session 1. The calibration blocks were deliberately
+  excluded from the deposit, which explains why day 2121 has only 2 blocks.
+
+### The nuance that matters more than the answer
+
+The system is NOT fully frozen. Three adaptive elements exist, not one:
+  1. decoder weights - FIXED
+  2. feature normalisation - ADAPTIVE, continuously
+       T11: per-channel z-score, mean/variance updated on a 3-min rolling window
+       T5: bias correction on the decoded output, adaptation rate 0.3; the
+           decoder's INTERCEPT term is updated online
+  3. the human user - ADAPTIVE (motor learning)
+
+The authors state the consequence: "adaptive mean corrections ... were applied to
+the neural features during online cursor control to combat this type of model
+drift. Therefore, performance drops observed in this dataset were largely due to
+other types of model drift."
+
+Risk: a rolling z-score actively removes slow mean drift - exactly the kind of
+slow change an early-warning indicator might look for. This must be stated
+explicitly in any write-up.
+
+Opportunity: the literature review's framing (C) - a degrading plant plus a
+saturating compensator - was labelled [Speculation] with no supporting paper. The
+Methods describe that architecture explicitly. The compensator is real,
+documented and parameterised (3-min window for T11; adaptation rate 0.3 for T5).
+
+### Independent validation of our exploration
+
+Everything we computed before reading the paper matches it: 15 sessions / 142
+days for T11; the early/late split at day 751 vs 758; T5's split across
+2128/2133; recovery events at day 751 (T11) and day 2149 (T5) - the paper says
+"93 days after the initial session for T11 and 28 days after ... for T5", which
+resolve to exactly those days; 384 vs 192 features; 20 ms bins. T11's
+"center-out-and-back" task is what task.mat calls circleOfCircles.
+
+### Next step
+
+Two definitions still to make: what defines performance, and what counts as
+deterioration. Framing (C) now has documented mechanistic support and is worth
+serious consideration.

@@ -511,10 +511,109 @@ early-warning detector needs did not happen here. And T5's decoder-independent
 recovery means the coupled human–decoder system can return from a degraded
 state — which is directly relevant to framing (C) in the review.
 
+### 8.3 Is the decoder fixed? — ANSWERED from the paper's Methods
+
+Source: Pun et al. 2024, *Communications Biology*, Methods
+([PMC11494208](https://pmc.ncbi.nlm.nih.gov/articles/PMC11494208/)). Quotations verbatim.
+
+**Decoder weights: fixed. Confirmed.**
+
+- **T11** — *"The LSTM decoder was trained and validated on closed-loop
+  point-and-click cursor tasks from the 18 most recent sessions of T11, spanning
+  70 days from trial day 576 to 646."* The deposit begins at trial day 658, i.e.
+  **after** training ended. *"Neural features were decoded into cursor velocities
+  by a real-time LSTM decoder."*
+- **T5** — *"An initial decoder was trained based on T5's neural activity while he
+  engaged in an open-loop block on day 0 (trial day 2121). This decoder was then
+  used to drive closed-loop control in a subsequent block. The final decoder
+  parameters were then updated based on the first closed-loop block, **and they
+  were fixed for later closed-loop blocks and future sessions**."* Also
+  *"Smoothing and gain were manually adjusted during the first session and fixed
+  on subsequent days"*, and *"Training blocks for calibrating the decoder on trial
+  day 2121 were not included in this study"* — so the calibration blocks are
+  **absent from the deposit**, which is why T5's day 2121 has only 2 blocks.
+
+The Results section is headed *"Fixed decoders result in initially stable and
+then unstable performance across months."*
+
+### ⚠️ 8.4 But the loop is NOT fully frozen — and this changes the project
+
+The abstract says "fixed decoders". The Methods say something more precise:
+
+> *"To accommodate for session-to-session variability in recordings, we applied
+> **per-channel z-scoring at every time bin for T11** and a **bias correction for
+> T5**. For T11, mean and variance were initialized from the previous block and
+> **adaptively updated using a 3-min rolling window**. … For T5, a bias correction
+> was applied to mitigate mean shifts in the decoded output by subtracting a
+> running estimate of the decoder bias from the velocity outputs (**with an
+> adaptation rate of 0.3**). … **The intercept term in the decoder is then updated**
+> to the negative resulting bias vector."*
+
+So there are **three** adaptive elements in this loop, not one:
+
+| Element | Fixed or adaptive? |
+|---|---|
+| Decoder weights | **Fixed** |
+| Feature normalisation (T11: rolling z-score; T5: bias correction) | **Adaptive, continuously** |
+| The human user | **Adaptive** (motor learning) |
+
+**For T5 the decoder's intercept term is literally updated online.** The weights
+are frozen; the offset is not.
+
+And the authors state the consequence outright:
+
+> *"It should be noted that our method did not track mean firing rate shifts which
+> are known to correlate with declines in decoder performance. In our datasets,
+> adaptive mean corrections such as z-scoring or bias correction were applied to
+> the neural features during online cursor control to combat this type of model
+> drift. **Therefore, performance drops observed in this dataset were largely due
+> to other types of model drift.**"*
+
+**Two consequences for this project, and they cut in opposite directions:**
+
+1. **A risk.** "Fixed decoder" is not "frozen system". A rolling 3-minute z-score
+   actively removes slow mean drift from the neural features — which is
+   *precisely* the kind of slow change an early-warning indicator might look for.
+   Any claim about detecting drift must account for the fact that one class of
+   drift has already been subtracted out before the data were recorded. This
+   should be stated explicitly in the write-up rather than discovered by a judge.
+2. **An opportunity, and arguably the more interesting one.** The literature
+   review's framing (C) — *"a monotonically degrading plant plus a saturating
+   compensator"* — was labelled **[Speculation]**, with no paper stating it. The
+   Methods describe **exactly that architecture**: an adaptive normalisation layer
+   whose job is to absorb drift, running continuously, on top of a fixed decoder.
+   Performance holds flat while the compensator absorbs drift; when the drift
+   exceeds what a mean correction can absorb, performance falls. **The compensator
+   in framing (C) is not hypothetical — it is a documented, parameterised
+   component of this system** (T11: 3-minute rolling window; T5: adaptation rate
+   0.3).
+
+### 8.5 The paper's own numbers match our independent exploration
+
+Reassuring cross-check — we computed these before reading the paper:
+
+| Quantity | Paper | Our exploration |
+|---|---|---|
+| T11 sessions / span | 15 sessions, 142 days | 15 sessions, days 658–800 = 142 days ✓ |
+| T11 early vs late AE | days 658–751: 26.8° ± 22.6°; days 758–800: 88.4° ± 46.1° | step change located between day 751 and 758 ✓ |
+| T5 early vs late AE | days 2121–2128: 39.6° ± 23.9°; days 2133–2149: 58.8° ± 31.7° | rise across the same boundary ✓ |
+| Recovery events | *"Brief recovery … 93 days after the initial session for T11 and 28 days after … for T5"* → **day 751** and **day 2149** | both identified independently ✓ |
+| Features | T11 threshold-crossing rate **and** spike power; T5 spike rate only; 20 ms non-overlapping bins | 384 vs 192 features, 20 ms ✓ |
+| T11 task | "center-out-and-back" | `circleOfCircles` in `task.mat` — same task, different name |
+
+The authors also note *"fixed decoders may not necessarily result in a steady
+decline in cursor control over time"* — consistent with our finding (§8.2) that
+T5's day-2149 recovery involved no change in the decoder map.
+
+**Additional context from the paper:** 154 of 384 features (T11) and 85 of 192
+(T5) had significant directional tuning in at least half of sessions. Variance
+accounted for by the top two direction-dependent components: T11 50.0% on day 0;
+T5 42.2% on day 0, dropping to 2.9% and recovering to 11.3% on the last session.
+
 ### ⚠️ Still open — and these constrain the project
 
-1. **Is the decoder genuinely fixed across all sessions?** — *evidence gathered,
-   see §8.2. Consistent with fixed; the paper's Methods should still be read.*
+1. ~~Is the decoder genuinely fixed?~~ — **ANSWERED from the paper's Methods.
+   See §8.3. Weights fixed, but an adaptive normalisation layer remains.**
 2. **Is 15 sessions enough?** This is the hard one. T11 has **15 session-level
    observations**, T5 has **6**. Any session-level rolling-window statistic
    (variance, lag-1 autocorrelation, Kendall's τ) computed on 15 points is
