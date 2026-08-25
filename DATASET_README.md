@@ -77,7 +77,8 @@ bci-ews-research/
 ├── scripts/
 │   ├── 01_download_dataset.py ← fetches from Dryad + verifies checksums
 │   ├── 02_inspect_dataset.py  ← inventories whatever is in data/raw/
-│   └── 03_load_dataset.py     ← nested .mat files → tidy pandas tables
+│   ├── 03_load_dataset.py     ← nested .mat files → tidy pandas tables
+│   └── 04_explore_dataset.py  ← descriptive stats + figures → exploration report
 ├── data/
 │   ├── raw/                   ← untouched download. READ-ONLY. Git-ignored.
 │   └── processed/             ← anything we compute. Regenerable. Git-ignored.
@@ -106,7 +107,13 @@ python3 scripts/01_download_dataset.py --list-only   # preview, downloads nothin
 python3 scripts/01_download_dataset.py               # actually download
 python3 scripts/02_inspect_dataset.py --extract      # inventory what arrived
 python3 scripts/03_load_dataset.py --save            # build tidy tables
+python3 scripts/04_explore_dataset.py                # explore + write the report
 ```
+
+The last step writes `reports/DATASET_EXPLORATION.md` and five figures into
+`reports/figures/`. Its **Computed** sections are filled in automatically from
+the data; its **Requires your judgement** sections are deliberately left blank,
+because those are scientific decisions rather than calculations.
 
 The download script writes **`data/raw/download_manifest.json`**, recording the DOI,
 the Dryad *version number*, every filename, its size, its MD5 checksum, and the UTC
