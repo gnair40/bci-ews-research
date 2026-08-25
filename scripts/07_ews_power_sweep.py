@@ -154,6 +154,48 @@ def heat(ax, df, value, windows, sigmas, title, vmax=1.0):
     return im
 
 
+def length_scaling(ews, lengths, seeds, n_surr, alpha) -> pd.DataFrame:
+    """
+    Measure how detection power scales with the LENGTH of the record.
+
+    This separates two very different explanations for low power:
+
+      * the detector is broken -- power would stay flat however much data it is
+        given;
+      * detection is genuinely hard at short record lengths -- power rises as
+        the record lengthens.
+
+    The distinction matters enormously for interpreting a negative result on
+    real data. It is also a direct, empirical restatement of van der Bolt, van
+    Nes & Scheffer (2021), "No warning for slow transitions": the record must be
+    long enough relative to the system's response rate for any warning to be
+    resolvable, no matter how good the method is.
+
+    Window and de-trending scale are held proportional to record length so that
+    the comparison is about duration, not about window choice.
+    """
+    rows = []
+    for n in lengths:
+        window, sigma, step = n // 10, n / 4.0, max(10, n // 160)
+        hits = 0
+        for s in range(seeds):
+            rng = np.random.default_rng(500 + s)
+            x, _ = ews.simulate_saddle_node(n=n, rng=rng)
+            xd = ews.detrend(x, sigma)
+            ind = ews.rolling_indicators(xd, window, step)
+            tau = ews.kendall_trend(ind["ar1"])
+            nulls = ews.surrogate_null_taus(xd, window, step, sigma, n_surr, rng)
+            null = nulls["ar1"][np.isfinite(nulls["ar1"])]
+            if len(null) and np.isfinite(tau) \
+               and float(np.mean(np.abs(null) >= abs(tau))) < alpha:
+                hits += 1
+        rows.append({"n_steps": n, "window": window, "smooth_sigma": sigma,
+                     "power_ar1": hits / seeds})
+        print(f"  n={n:>7}  window={window:>6}  sigma={sigma:>8.0f}  "
+              f"power(AR1)={hits/seeds:.2f}", flush=True)
+    return pd.DataFrame(rows)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -166,9 +208,29 @@ def main() -> int:
                     default=[400, 800, 1600, 3000])
     ap.add_argument("--sigmas", type=float, nargs="+",
                     default=[100.0, 400.0, 1000.0])
+    ap.add_argument("--length-scaling", action="store_true",
+                    help="instead of the grid, measure how power scales with "
+                         "record length (tests whether low power is a detector "
+                         "fault or a data-length limit)")
+    ap.add_argument("--lengths", type=int, nargs="+",
+                    default=[4000, 8000, 20000, 40000])
     args = ap.parse_args()
 
     ews = load_ews()
+
+    if args.length_scaling:
+        print("=" * 74)
+        print("EWS DETECTOR — DOES POWER SCALE WITH RECORD LENGTH?")
+        print("=" * 74)
+        print("Flat power => the detector is at fault.")
+        print("Rising power => detection is limited by how much data there is.\n")
+        df = length_scaling(ews, args.lengths, args.seeds, args.n_surrogates,
+                            args.alpha)
+        PROCESSED.mkdir(parents=True, exist_ok=True)
+        df.to_csv(PROCESSED / "ews_length_scaling.csv", index=False)
+        print(f"\nWrote {(PROCESSED / 'ews_length_scaling.csv').relative_to(REPO_ROOT)}")
+        return 0
+
     print("=" * 74)
     print("EWS DETECTOR — POWER AND FALSE-POSITIVE SWEEP")
     print("=" * 74)
