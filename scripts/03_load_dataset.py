@@ -88,24 +88,46 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_ROOT = REPO_ROOT / "data" / "raw"
 PROCESSED_DIR = REPO_ROOT / "data" / "processed"
 
-# Names the neural feature matrix might go by, in the order the authors' loader
-# checks them. Confirmed from ConcatSavedSessionsData.m.
-NEURAL_NAMES = ("data", "feats", "nctx")
+# ---------------------------------------------------------------------------
+# FIELD LAYOUT -- confirmed against the deposit's own README.md and against the
+# files themselves. Note this CORRECTS an earlier guess: startStops,
+# excludeTrials and moveDirVect live in task.mat, NOT data.mat.
+# ---------------------------------------------------------------------------
 
-# Per-trial behavioural measures expected in info.mat. Confirmed to be
-# referenced by the authors' figure scripts.
+# data.mat -- neural features and kinematics, one row per 20 ms bin.
+#   nctx       [nStep x nChan] threshold crossings (non-causal, RMS < -3.5)
+#   spikePower [nStep x nChan] spike band power (250-5000 Hz)  -- T11 only
+#   labels     [nStep x 2]     inferred cursor-to-target vector [x, y]
+#   cursorVel  [nStep x 2]     decoded velocity out of the decoder [x, y]
+NEURAL_PRIMARY = "nctx"
+NEURAL_SECONDARY = "spikePower"
+KINEMATIC_NAMES = ("labels", "cursorVel")
+
+# task.mat -- per-trial task structure and block metadata.
+TASK_TRIAL_FIELDS = ("excludeTrials", "useClick", "moveDirVect")
+TASK_SCALAR_FIELDS = ("name", "nPointsPerBlock")
+
+# info.mat -- performance. Per-trial measures:
 TRIAL_METRICS = (
-    "angleErrorPerTrial",
-    "trialSuccess",
-    "timeToTarget",
-    "pathEfficiency",
-    "orthChanges",
+    "angleErrorPerTrial",   # MEDIAN angular error for the trial, degrees
+    "trialSuccess",         # bool: target acquired
+    "timeToTarget",         # seconds
+    "pathEfficiency",       # 0-1, higher is more direct
+    "orthChanges",          # count of orthogonal direction changes
 )
+# info.mat -- per-bin measures (same length as the neural matrix):
+STEP_METRICS = ("angleError", "targetPos", "cursorPos", "magEst", "avgOutliers")
+# info.mat -- per-block scalars:
+BLOCK_METRICS = ("percentCorrect",)
 
 # Folder-name patterns. 'day_37' -> 37 ; 'block_2' -> 2
 DAY_RE = re.compile(r"^day[_-]?(\d+)$", re.IGNORECASE)
 BLOCK_RE = re.compile(r"^block[_-]?(\d+)$", re.IGNORECASE)
-PARTICIPANT_RE = re.compile(r"^T\d+$", re.IGNORECASE)
+# Participant folders are 'T5' and 'T11'. The deposit also has a folder named
+# 'T11(additional)' holding two extra reference tasks (personal use, random
+# targets) for the SAME participant, so the pattern allows an optional suffix
+# and the suffix is recorded separately rather than being lost.
+PARTICIPANT_RE = re.compile(r"^(T\d+)(\(.*\))?$", re.IGNORECASE)
 
 
 # ---------------------------------------------------------------------------
@@ -190,7 +212,7 @@ def _as_1d(value) -> np.ndarray:
 
 def load_block(block_dir: Path, participant: str, trial_day: int,
                block_num: int, index_base: int,
-               problems: list[str]) -> tuple[dict, pd.DataFrame, np.ndarray | None, dict]:
+               problems: list[str], cohort: str = "main") -> tuple[dict, pd.DataFrame, np.ndarray | None, dict]:
     """
     Read one block_<M> folder into (block_row, trial_rows, neural_matrix, kinematics).
 
@@ -198,34 +220,36 @@ def load_block(block_dir: Path, participant: str, trial_day: int,
     `problems` instead of raising. A load that half-fails silently is far more
     dangerous than one that tells you exactly what looked wrong.
     """
-    block_id = f"{participant}/day_{trial_day}/block_{block_num}"
+    suffix = "" if cohort == "main" else f"[{cohort}]"
+    block_id = f"{participant}{suffix}/day_{trial_day}/block_{block_num}"
 
     data = read_mat(block_dir / "data.mat")
     info = read_mat(block_dir / "info.mat")
     task = read_mat(block_dir / "task.mat")
 
     # ---- neural features -------------------------------------------------
+    # nctx is always present. spikePower exists for T11 but NOT for T5, so the
+    # two participants have different feature counts (192 vs 384). That is a
+    # property of the dataset, not an error -- but any analysis pooling them
+    # must handle it, so it is recorded rather than smoothed over.
     neural = None
     neural_source = None
-    for name in NEURAL_NAMES:
-        if name in data:
-            neural = np.asarray(data[name], dtype=np.float64)
-            neural_source = name
-            break
-    # The authors' loader concatenates spike power onto nctx when both exist.
-    if neural_source == "nctx" and "spikePower" in data:
-        sp = np.asarray(data["spikePower"], dtype=np.float64)
-        if sp.ndim == 2 and neural.ndim == 2 and sp.shape[0] == neural.shape[0]:
-            neural = np.hstack([neural, sp])
-            neural_source = "nctx+spikePower"
-        else:
-            problems.append(
-                f"{block_id}: spikePower shape {sp.shape} does not match "
-                f"nctx shape {neural.shape}; not concatenated"
-            )
+    if NEURAL_PRIMARY in data:
+        neural = np.asarray(data[NEURAL_PRIMARY], dtype=np.float64)
+        neural_source = NEURAL_PRIMARY
+        if NEURAL_SECONDARY in data:
+            sp = np.asarray(data[NEURAL_SECONDARY], dtype=np.float64)
+            if sp.ndim == 2 and neural.ndim == 2 and sp.shape[0] == neural.shape[0]:
+                neural = np.hstack([neural, sp])
+                neural_source = f"{NEURAL_PRIMARY}+{NEURAL_SECONDARY}"
+            else:
+                problems.append(
+                    f"{block_id}: {NEURAL_SECONDARY} shape {sp.shape} does not "
+                    f"match {NEURAL_PRIMARY} shape {neural.shape}; not concatenated"
+                )
     if neural is None:
-        problems.append(f"{block_id}: no neural matrix found "
-                        f"(looked for {NEURAL_NAMES}); keys present: {sorted(data)}")
+        problems.append(f"{block_id}: no '{NEURAL_PRIMARY}' in data.mat; "
+                        f"keys present: {sorted(data)}")
     elif neural.ndim != 2:
         problems.append(f"{block_id}: neural array is {neural.ndim}-D, expected 2-D")
 
@@ -233,9 +257,9 @@ def load_block(block_dir: Path, participant: str, trial_day: int,
     n_feats = int(neural.shape[1]) if neural is not None and neural.ndim == 2 else 0
 
     # ---- trial boundaries ------------------------------------------------
-    start_stop = data.get("startStops")
+    start_stop = task.get("startStops")
     if start_stop is None:
-        problems.append(f"{block_id}: no 'startStops'; cannot define trials")
+        problems.append(f"{block_id}: no 'startStops' in task.mat; cannot define trials")
         starts_m = stops_m = np.array([], dtype=int)
     else:
         ss = np.atleast_2d(np.asarray(start_stop))
@@ -283,15 +307,20 @@ def load_block(block_dir: Path, participant: str, trial_day: int,
             continue
         trial_cols[key] = vals
 
-    excluded = data.get("excludeTrials")
-    if excluded is not None:
-        ex = _as_1d(excluded).astype(bool)
-        if n_trials and len(ex) == n_trials:
-            trial_cols["excludeTrials"] = ex
+    # excludeTrials and useClick are per-trial and live in task.mat.
+    for key in ("excludeTrials", "useClick"):
+        raw = task.get(key)
+        if raw is None:
+            continue
+        vals = _as_1d(raw)
+        if n_trials and len(vals) == n_trials:
+            trial_cols[key] = vals.astype(bool)
+        elif n_trials and vals.size == 1:
+            # useClick is sometimes a single block-wide flag rather than per trial.
+            trial_cols[key] = np.repeat(bool(vals[0]), n_trials)
         elif n_trials:
             problems.append(
-                f"{block_id}: 'excludeTrials' has {len(ex)} values but "
-                f"{n_trials} trials"
+                f"{block_id}: '{key}' has {len(vals)} values but {n_trials} trials"
             )
 
     # ---- build the trial table for this block ----------------------------
@@ -302,9 +331,11 @@ def load_block(block_dir: Path, participant: str, trial_day: int,
         "pathEfficiency": "path_efficiency",
         "orthChanges": "orth_changes",
         "excludeTrials": "excluded",
+        "useClick": "used_click",
     }
     trials = pd.DataFrame({
         "participant": participant,
+        "cohort": cohort,
         "trial_day": trial_day,
         "block": block_num,
         "block_id": block_id,
@@ -328,24 +359,44 @@ def load_block(block_dir: Path, participant: str, trial_day: int,
         task_name = task_name.item() if task_name.size == 1 else str(task_name)
     task_name = str(task_name) if task_name is not None else None
 
+    pct_correct = info.get("percentCorrect")
+    if pct_correct is not None:
+        pct_correct = float(np.asarray(pct_correct))
+
+    n_points = task.get("nPointsPerBlock")
+    n_points = int(np.asarray(n_points)) if n_points is not None else None
+    if n_points is not None and n_bins and n_points != n_bins:
+        problems.append(
+            f"{block_id}: nPointsPerBlock ({n_points}) disagrees with the "
+            f"{n_bins} rows in the neural matrix"
+        )
+
     block_row = {
         "participant": participant,
+        "cohort": cohort,
         "trial_day": trial_day,
         "block": block_num,
         "block_id": block_id,
         "task_name": task_name,
+        "task_group": (task_name or "").strip().lower() or None,
         "n_bins": n_bins,
         "n_features": n_feats,
         "n_trials": n_trials,
         "neural_variable": neural_source,
         "duration_s_at_20ms": round(n_bins * 0.02, 2) if n_bins else 0.0,
-        "has_cursor_vel": "cursorVel" in data,
+        "percent_correct": pct_correct,
+        "has_spike_power": NEURAL_SECONDARY in data,
         "has_labels": "labels" in data,
+        "has_cursor_vel": "cursorVel" in data,
         "path": str(block_dir),
     }
 
-    kin = {k: np.asarray(data[k]) for k in ("cursorVel", "labels", "moveDirVect")
-           if k in data}
+    kin = {k: np.asarray(data[k]) for k in KINEMATIC_NAMES if k in data}
+    for k in STEP_METRICS:
+        if k in info:
+            kin[k] = np.asarray(info[k])
+    if "moveDirVect" in task:
+        kin["moveDirVect"] = np.asarray(task["moveDirVect"])
 
     return block_row, trials, neural, kin
 
@@ -354,9 +405,10 @@ def load_block(block_dir: Path, participant: str, trial_day: int,
 # WALKING THE TREE
 # ---------------------------------------------------------------------------
 
-def find_block_dirs(root: Path) -> list[tuple[Path, str, int, int]]:
+def find_block_dirs(root: Path) -> list[tuple[Path, str, int, int, str]]:
     """
-    Find every block folder, returning (path, participant, trial_day, block).
+    Find every block folder, returning
+    (path, participant, trial_day, block, cohort).
 
     Rather than assuming an exact depth, this searches for any folder matching
     'block_<N>' whose parent matches 'day_<N>'. That tolerates the deposit being
@@ -373,15 +425,22 @@ def find_block_dirs(root: Path) -> list[tuple[Path, str, int, int]]:
         dm = DAY_RE.match(day_dir.name)
         if not dm:
             continue
-        # Participant = nearest ancestor that looks like T5 / T11.
-        participant = "unknown"
+        # Participant = nearest ancestor that looks like T5 / T11 / T11(additional).
+        participant, cohort = "unknown", "main"
         for anc in day_dir.parents:
-            if PARTICIPANT_RE.match(anc.name):
-                participant = anc.name.upper()
+            m = PARTICIPANT_RE.match(anc.name)
+            if m:
+                participant = m.group(1).upper()
+                if m.group(2):
+                    # e.g. 'T11(additional)' -> cohort named by the task folder
+                    # that sits between the participant folder and the day.
+                    rel_parts = block_dir.relative_to(anc).parts
+                    cohort = rel_parts[0] if len(rel_parts) > 2 else "additional"
                 break
             if anc == root:
                 break
-        found.append((block_dir, participant, int(dm.group(1)), int(bm.group(1))))
+        found.append((block_dir, participant, int(dm.group(1)),
+                      int(bm.group(1)), cohort))
     return found
 
 
@@ -409,10 +468,11 @@ def load_dataset(root: Path = DEFAULT_ROOT, participant: str | None = None,
     neural: dict[str, np.ndarray] = {}
     kinematics: dict[str, dict] = {}
 
-    for i, (bdir, part, day, blk) in enumerate(block_dirs, start=1):
+    for i, (bdir, part, day, blk, cohort) in enumerate(block_dirs, start=1):
         if verbose and (i == 1 or i % 25 == 0 or i == len(block_dirs)):
             print(f"  [{i}/{len(block_dirs)}] {part} day_{day} block_{blk}")
-        row, trials, nd, kin = load_block(bdir, part, day, blk, index_base, problems)
+        row, trials, nd, kin = load_block(bdir, part, day, blk, index_base,
+                                          problems, cohort)
         block_rows.append(row)
         if len(trials):
             trial_frames.append(trials)
@@ -422,15 +482,18 @@ def load_dataset(root: Path = DEFAULT_ROOT, participant: str | None = None,
             kinematics[row["block_id"]] = kin
 
     blocks = pd.DataFrame(block_rows).sort_values(
-        ["participant", "trial_day", "block"]).reset_index(drop=True)
+        ["participant", "cohort", "trial_day", "block"]).reset_index(drop=True)
 
     if trial_frames:
         trials = pd.concat(trial_frames, ignore_index=True)
         trials = trials.sort_values(
-            ["participant", "trial_day", "block", "trial_in_block"]).reset_index(drop=True)
+            ["participant", "cohort", "trial_day", "block",
+             "trial_in_block"]).reset_index(drop=True)
         # A stable, unique identifier for every trial in the dataset.
         trials.insert(0, "trial_uid",
-                      trials["participant"] + "_d" + trials["trial_day"].astype(str)
+                      trials["participant"]
+                      + trials["cohort"].map(lambda c: "" if c == "main" else f"-{c}")
+                      + "_d" + trials["trial_day"].astype(str)
                       + "_b" + trials["block"].astype(str)
                       + "_t" + trials["trial_in_block"].astype(str))
     else:
@@ -456,16 +519,14 @@ def load_dataset(root: Path = DEFAULT_ROOT, participant: str | None = None,
                 f"1-based (MATLAB) data look like, but --index-base 0 was used. "
                 f"If these are MATLAB indices, every trial is off by one bin."
             )
-        elif min_raw > 1:
-            problems.append(
-                f"index base: the smallest raw start index is {min_raw}, so neither "
-                f"0- nor 1-based indexing is confirmed by the data. Verify against "
-                f"the dataset documentation before trusting neural/behaviour alignment."
-            )
+        # A minimum above 1 is entirely normal -- trials need not begin on the
+        # first bin of a block -- so it is not reported as a problem. The
+        # decisive test lives in load_dataset(): whether any trial's stop index
+        # equals nPointsPerBlock (1-based) or nPointsPerBlock - 1 (0-based).
 
     # Cross-block sanity checks.
     feat_counts = blocks.loc[blocks["n_features"] > 0]\
-                        .groupby("participant")["n_features"].nunique()
+                        .groupby("participant")["n_features"].nunique()  # noqa: E501
     for part, n in feat_counts.items():
         if n > 1:
             seen = sorted(int(v) for v in blocks.loc[

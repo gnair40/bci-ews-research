@@ -147,3 +147,85 @@ that .gitignore actually prevents generated files being committed.
 
 Obtain the data (new session with Custom network access), then run scripts 01-04
 and complete sections 6, 9 and 10 of the exploration report.
+
+## 2026-08-25 (evening) — Dataset downloaded, verified, and explored
+
+### Obtained the data
+
+Network policy changed to Custom, which made Dryad's metadata API reachable.
+The file-download route turned out to be behind an anti-bot challenge (Anubis)
+that returns a "Validating..." web page instead of the file. Rather than trying
+to defeat it, used Dryad's documented route for programs: a free API account
+(ORCID login → My account → API account) issuing OAuth client credentials,
+exchanged for a bearer token. API account deleted immediately after use.
+
+Downloaded Dryad **version 6**: `MINDFUL_Data.zip` (392.9 MB) + `README.md`.
+Both SHA-256 verified against Dryad's published checksums.
+
+### Four wrong assumptions in the download script, found by real failures
+
+1. Link relation is `stash:download`, not `stash:file-download`.
+2. Checksums are SHA-256, not MD5 — verification had been silently degrading.
+3. `/api/v2/files/<id>/download` needs auth; the public route is different.
+4. Dryad's firewall rejects generic automated User-Agents.
+
+### Two near-miss data-safety incidents, now guarded against
+
+- A 4.3 KB challenge web page was briefly sitting in `data/raw/` named
+  `MINDFUL_Data.zip`. The script now rejects any download starting with an HTML
+  doctype, deletes it, and explains why.
+- The Dryad deposit contains its own `README.md`, which would have silently
+  overwritten this repository's `data/raw/README.md`. Those notes were renamed
+  to `_FOLDER_NOTES.md`, and the script now refuses to overwrite any file not
+  recorded in a previous manifest.
+
+### The documentation corrected an inference I had made
+
+The authors' README showed that `startStops`, `excludeTrials` and `moveDirVect`
+live in **task.mat**, not data.mat. My loader had inferred otherwise from the
+authors' MATLAB code, which reads all three files into one workspace and so
+cannot reveal which file each variable came from. Fixed. This is exactly the
+"do not assume meaning from names" problem, applied to file locations.
+
+### What the dataset actually contains
+
+| | Sessions | Blocks | Trials | Bins | Features | Span |
+|---|---|---|---|---|---|---|
+| T11 (main) | 15 | 29 | 1,839 | 440,045 | 384 | days 658–800 = **142 days** |
+| T5 (main)  | 6  | 21 | 1,200 | 251,974 | 192 | days 2121–2149 = **28 days** |
+
+Plus T11 personal_use (2 blocks) and random_targets (2 blocks).
+Total 3,301 trials, 782,708 bins, 4.35 hours.
+
+### Correction to the literature review
+
+The review implies T5 spans 142 days and T11 28 days. **It is reversed.**
+T11 is the longitudinal participant. Plans that treated T5 as the long record
+need revising.
+
+### Key findings
+
+- **Performance does decline**, on two independent measures that agree.
+  T11: flat ~20–30° angle error and 90–100% correct through day 715, then a
+  step change at day 758 to ~120° and ~25% correct, sustained through day 800.
+  T5: smooth rise to ~76° peaking day 2135 (98%→37% correct), then **recovery**
+  to ~39° and 93% by day 2149.
+- **Task type is not a confound** — each participant used one task throughout.
+- **Session spacing is uneven** (T11 gaps 3–24 days; T5 gaps 2–14 days), which
+  constrains time-series methods that assume even spacing.
+- **Indexing is 1-based**, confirmed empirically across all 54 blocks.
+- **T5 has no spikePower** — 192 features vs T11's 384.
+- **A defect in the published dataset**: T11/day_689/Block_14 has 76 values for
+  three per-trial metrics but only 75 trials.
+
+### The constraint that now defines the project
+
+Session-level analysis gives **15 points for T11 and 6 for T5**. Any rolling
+window statistic on 15 points is fragile, and van der Bolt et al. (2021) speaks
+directly to this. Bin-level data is abundant (440,045 bins for T11). **Choosing
+the analysis level is now the central design decision.**
+
+### Next step
+
+Decide operational definitions of "performance" and "deterioration", and settle
+the analysis level. Then design the analysis.

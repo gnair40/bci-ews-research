@@ -127,187 +127,199 @@ rather than letting you analyse a damaged file.
 
 ---
 
-## 4. Expected file structure
+## 4. File structure — CONFIRMED
 
-**[CODE]** — reconstructed from `utils/ConcatSavedSessionsData.m`, which is the
-function the authors use to load these files. It walks the tree literally, so the
-layout below is what the code *requires* the deposit to look like:
+**[VERIFIED]** — the deposit has been downloaded, checksum-verified and opened.
+Everything below is now observed fact, not inference.
+
+The download is a single archive, `MINDFUL_Data.zip`, which unpacks with a
+**doubled top folder**:
 
 ```
-<dataset root>/
-├── T5/
-│   ├── day_<N>/                  ← one folder per recording session
-│   │   ├── block_<M>/            ← one folder per block within that session
-│   │   │   ├── data.mat          ← neural features + kinematics
-│   │   │   ├── info.mat          ← behavioural performance metrics
-│   │   │   └── task.mat          ← which task was run
-│   │   └── block_<M+1>/ ...
-│   └── day_<N+1>/ ...
-├── T11/
-│   └── (same structure)
-└── T11(additional)/
-    ├── random_targets/           ← ~10 min, random-target task
-    └── personal_use/             ← ~16 min, free web browsing
+data/raw/
+├── MINDFUL_Data.zip            ← the download (392.9 MB, SHA-256 verified)
+├── README.md                   ← Dryad's README, by the dataset authors
+├── download_manifest.json      ← our provenance record
+├── _FOLDER_NOTES.md            ← our notes (renamed to avoid collision)
+└── extracted/
+    └── MINDFUL_Data/
+        └── MINDFUL_Data/       ← note: nested twice
+            ├── readme.md
+            ├── T5/    day_2121 … day_2149     (6 sessions, 21 blocks)
+            ├── T11/   day_658  … day_800      (15 sessions, 29 blocks)
+            └── T11(additional)/
+                ├── personal_use/day_658/      (2 blocks)
+                └── random_targets/day_665/    (2 blocks)
 ```
 
-Evidence for each part:
+Block folders are named **`Block_01`, `Block_05`, `Block_19`…** — capital `B`,
+zero-padded, and **not contiguous**: block numbers are the original session
+block indices, so gaps are expected (T11 day 672 has `Block_19` and `Block_20`).
+Only selected blocks from each session were deposited.
 
-- Session folders are named `day_<number>`: the loader does
-  `if strcmp(usedSessionList{i}(1:4),'day_')` then `str2double(...(5:end))` to get
-  `info.trialDay`. So the number after `day_` is a **trial day** (days since array
-  implantation), not a sequential session index. [CODE]
-- Block folders start with `block`: the loader does `str2double(block_folder(7:end))`,
-  i.e. it reads the number from character 7 onward of e.g. `block_3`. [CODE]
-- The three `.mat` filenames are hard-coded: `'task.mat'`, `'info.mat'`, `'data.mat'`. [CODE]
-- The two extra T11 folders appear in `examples/fig6_various_reference_tasks.m` as
-  `T11(additional)/random_targets` and `T11(additional)/personal_use`. [CODE]
-  Our literature review reports these as ~10 min (day 665) and ~16 min (day 658). [LIT]
+Each block folder contains exactly three files: `data.mat`, `task.mat`, `info.mat`.
+All are **pre-v7.3 MATLAB format**, readable with `scipy.io.loadmat`.
 
-> **[UNVERIFIED]** The authors' script sets `dirpath = 'Y:\TransferSpace\MINDFUL(2024)'`
-> — a path on their own lab machine. The Dryad deposit may be packaged as one or
-> more `.zip` archives that unpack into this layout, rather than as loose folders.
-> `02_inspect_dataset.py --extract` handles either case.
+### Actual size of the dataset
+
+| Participant | Cohort | Sessions | Blocks | Trials | Bins (20 ms) | Features | Trial days | Span |
+|---|---|---|---|---|---|---|---|---|
+| **T11** | main | 15 | 29 | 1,839 | 440,045 | 384 | 658 – 800 | **142 days** |
+| T11 | personal_use | 1 | 2 | 80 | 60,269 | 384 | 658 | — |
+| T11 | random_targets | 1 | 2 | 182 | 30,420 | 384 | 665 | — |
+| **T5** | main | 6 | 21 | 1,200 | 251,974 | 192 | 2121 – 2149 | **28 days** |
+
+> ### ⚠️ Correction to the literature review
+>
+> The literature review states the two participants span *"142 days and 28 days
+> respectively"* in an order that reads as T5 = 142, T11 = 28. **It is the other
+> way round.** T11 is the longitudinal participant (15 sessions over 142 days);
+> T5 has 6 sessions over 28 days. Any plan that treated T5 as the long record
+> needs revising — **T11 is the primary participant for a longitudinal analysis.**
+
+### Session spacing — uneven
+
+| Participant | Trial days | Gaps (days) | Min | Median | Max | Evenly spaced? |
+|---|---|---|---|---|---|---|
+| T11 | 658, 665, 672, 675, 689, 692, 702, 709, 715, 727, 751, 758, 770, 783, 800 | 7, 7, 3, 14, 3, 10, 7, 6, 12, 24, 7, 12, 13, 17 | 3 | 8.5 | 24 | **No** |
+| T5 | 2121, 2126, 2128, 2133, 2135, 2149 | 5, 2, 5, 2, 14 | 2 | 5 | 14 | **No** |
+
+**This matters.** Most time-series methods — including the autocorrelation and
+variance indicators central to this project — assume evenly spaced samples. At
+session level the spacing is not even, so any session-level windowed analysis
+must justify how it handles that. Within a block, bins *are* evenly spaced at
+20 ms, so bin-level analysis does not have this problem.
 
 ---
 
-## 5. Variable dictionary
+## 5. Variable dictionary — CONFIRMED
 
-**⚠️ Read this warning first.** The names below are confirmed to exist [CODE], but a
-variable's *meaning* is not established by its name. The "interpretation" column is
-my reading of how each variable is *used* in the authors' code — it is [UNVERIFIED]
-until checked against the paper's Methods and the deposit's own README.
+**[VERIFIED]** against the deposit's own `README.md` and against the files.
 
-### 5.1 `data.mat` — neural and kinematic time series
+> ### ⚠️ Correction to an earlier inference
+>
+> An earlier draft of this document placed `startStops`, `excludeTrials` and
+> `moveDirVect` in `data.mat`, inferred from the authors' MATLAB loader. **They
+> are in `task.mat`.** The loader reads all three `.mat` files into one
+> workspace, so the code alone could not reveal which file each came from. This
+> is a concrete example of why the dataset's own documentation must be checked
+> rather than inferred from code — the guess was wrong and would have broken the
+> loader.
 
-| Variable | Used as | Interpretation (**needs confirming**) |
+Definitions used below, from the authors' README:
+`nStep` = number of 20 ms bins · `nChan` = channels across both arrays ·
+`nTrial` = trials, where **a trial spans target cue to target acquisition**.
+
+### 5.1 `data.mat` — neural features and kinematics (per 20 ms bin)
+
+| Variable | Shape | What it is (authors' words) |
 |---|---|---|
-| `data` / `feats` / `nctx` | neural feature matrix | Neural features, one row per time bin. The loader accepts three alternative names and, if `nctx` **and** `spikePower` both exist, concatenates them: `data = [nctx spikePower]`. [CODE] That strongly implies two feature families — plausibly threshold-crossing rates and spike-band power — but this is interpretation. |
-| `spikePower` | concatenated onto `nctx` | A second neural feature family. [CODE] |
-| `labels` | `theta = atan2(labels(:,2), labels(:,1))` in `supp_analysis.m` [CODE] | A 2-D vector per time bin whose angle is meaningful — most likely **intended movement direction** (the decoder's training target). Two columns = x, y. |
-| `cursorVel` | `Xhat = extra.cursorVel` [CODE] | **Decoded cursor velocity** — the decoder's *output*. The variable is called `Xhat`, and in statistics a "hat" denotes an estimate. Two columns = x, y velocity. |
-| `startStops` | `events.trialStartStop` | Trial boundaries as **row indices into the time-bin series**: column 1 = first bin of the trial, column 2 = last bin. This is the link between trial-level and bin-level data. [CODE] |
-| `excludeTrials` | logical mask | Trials the authors flag for exclusion (outliers). `params.excludeNonTrials = 1` is set in most figure scripts, so **the published analyses exclude these**. [CODE] |
-| `moveDirVect` | per-trial | A movement-direction vector per trial. [UNVERIFIED] |
-| `gestGoalState` | per-trial | Goal state; possibly gesture-related. [UNVERIFIED] |
+| `nctx` | [nStep × nChan] | Raw concatenated neural features — **non-causal threshold crossings (RMS < −3.5)** |
+| `spikePower` | [nStep × nChan] | Raw concatenated neural features — **spike band power (250–5000 Hz)** |
+| `labels` | [nStep × 2] | **Inferred** 2-D cursor-to-target vector [x, y] |
+| `cursorVel` | [nStep × 2] | **Decoded** 2-D velocity vector output from the decoder [x, y] |
 
-### 5.2 `info.mat` — behavioural performance (loaded into the `extra` struct)
+**Feature counts differ between participants:**
 
-**This file is the behavioural half of the project.** Everything in it is a
-performance measure.
+| | `nctx` | `spikePower` | Total features | dtype of `nctx` |
+|---|---|---|---|---|
+| **T5** | 192 | **absent** | **192** | `uint64` (raw counts) |
+| **T11** | 192 | 192 | **384** | `float32` |
 
-| Variable | Interpretation (**needs confirming**) | Confidence |
+This is a real property of the deposit, not an error. Any analysis pooling the
+two participants must handle it. `labels` is also absent from the two
+`personal_use` blocks (free web browsing has no target, so no cursor-to-target
+vector exists).
+
+> **`labels` vs `cursorVel` — the distinction that matters most.** `labels` is
+> where the cursor *should* go (inferred intent); `cursorVel` is where the
+> decoder actually *drove* it. The angle between them is the angle error. One is
+> intent, the other is output — do not conflate them.
+
+### 5.2 `task.mat` — task structure (per trial and per block)
+
+| Variable | Shape | What it is |
 |---|---|---|
-| `angleErrorPerTrial` | **Angle error, one value per trial, in degrees.** The angle between the direction the cursor was driven and the direction of the target. Range 0–180°: 0° = moving straight at the target, 180° = straight away. **Lower is better.** | [CODE] name + [CODE] usage: `fig1` bins it over `0:4:180` and axis-labels it `0°/90°/180°`. |
-| `angleError` | Same quantity **per time bin** rather than per trial. Used as `k.extra.angleError` against bin-indexed data throughout. | [CODE] |
-| `trialSuccess` | Logical: did the trial reach its target? Used as `extra.angleErrorPerTrial(extra.trialSuccess)`. | [CODE] |
-| `timeToTarget` | Time taken to acquire the target. Lower is better. | [CODE] listed in `fig_supp_performance_comparison.m` |
-| `pathEfficiency` | How direct the cursor path was vs. a straight line. Higher is better. | [CODE] same source |
-| `orthChanges` | Count of orthogonal direction changes — a measure of jitter/instability in the movement. | [CODE] same source |
+| `name` | str | Task name — observed values: `'Fitts'`, `'fitts'`, `'circleOfCircles'`, `'Personal use'` (note the inconsistent capitalisation) |
+| `nPointsPerBlock` | 1×1 | Number of 20 ms bins in this block |
+| `startStops` | [nTrial × 2] | Trial **[start, stop] time indices**, chronological |
+| `excludeTrials` | [nTrial × 1] | Bool — **True if the trial is excluded because mean noise exceeded 5% during the trial** |
+| `useClick` | [nTrial × 1] | Bool — True if a click was used to select the target |
+| `moveDirVect` | [nTrial × 2] | Movement direction vector [x, y] |
 
-> **Why `angleError` matters most.** The headline result of the paper regresses a
-> neural-instability measure (KL divergence) against angle error, reporting Pearson
-> r = 0.93 (T5) and 0.72 (T11). [LIT] Angle error is therefore the paper's primary
-> behavioural performance variable, and the natural quantity for our project to treat
-> as "performance" too. But see §8 — whether it is the right variable for an
-> *early-warning* analysis is a scientific decision that is yours to make, not mine.
+**Indexing is 1-based (MATLAB), confirmed empirically.** Across all 54 blocks:
+5 have `max(stop) == nPointsPerBlock`, **none** have `max(stop) == nPointsPerBlock − 1`,
+none overrun, and the smallest start index anywhere is **88** — never 0.
+`nPointsPerBlock` equals the row count of `nctx` in every block.
 
-### 5.3 `task.mat`
+### 5.3 `info.mat` — performance measures
 
-| Variable | Interpretation | Confidence |
+**Per trial:**
+
+| Variable | What it is | Observed range |
 |---|---|---|
-| `name` | Task/"game type" identifier, compared as `strcmp(p.useGameTypes, name)`. | [CODE] |
+| `angleErrorPerTrial` | **Median** angular error for the trial, degrees. *(Note: median, not mean — an earlier draft omitted this.)* | 5.0 – 171.3 |
+| `trialSuccess` | Bool — target acquired | 0/1 |
+| `timeToTarget` | Time to target, **seconds** | 0.56 – 10.1 |
+| `pathEfficiency` | Path directness per trial, higher is better | 0.04 – 0.93 |
+| `orthChanges` | Count of orthogonal direction changes | 0 – 16 |
 
-Task names referenced in `fig6_various_reference_tasks.m`: `'center out'`, `'fitts'`,
-`'personal use'`, `'mixed tasks'`. [CODE]
+**Per bin:**
 
-### 5.4 Derived/session-level fields (built by the loader, not stored on disk)
+| Variable | What it is |
+|---|---|
+| `angleError` | **Instantaneous** angular error, degrees |
+| `targetPos` | Target position [x, y] |
+| `cursorPos` | Cursor position [x, y] |
+| `magEst` | Adjusted decoded cursor-to-target magnitude |
+| `avgOutliers` | Max average outlier across channels per bin |
+| `prctOutliers` | Percent of ns5 outliers per channel per bin (sparse; not in every block) |
 
-These are **computed** by `ConcatSavedSessionsData.m`, so you will not find them as
-files — but you will need equivalents in Python: `sessionStartStop`,
-`blockStartStop`, `trialStartStop`, `trialsPerBlock`, `trialsPerSession`,
-`pointsPerSession`, `sessionNumberPerTrial`, `sessionNumberPerBlock`, `trialDay`. [CODE]
-
-### 5.5 Loading these variables in Python (`scripts/03_load_dataset.py`)
-
-The authors' loader is MATLAB. `scripts/03_load_dataset.py` is a Python
-translation that walks the same tree and returns two tidy tables:
-
-| Table | One row per | Key columns |
-|---|---|---|
-| `trials` | trial | `trial_uid`, `participant`, `trial_day`, `block`, `start_bin`, `stop_bin`, `angle_error_deg`, `success`, `time_to_target`, `path_efficiency`, `orth_changes`, `excluded` |
-| `blocks` | block | `block_id`, `task_name`, `n_bins`, `n_features`, `n_trials`, `duration_s_at_20ms` |
-
-Neural matrices are returned separately in a dictionary keyed by `block_id`,
-because they are large and are not one-row-per-trial.
-
-**Three design decisions worth understanding, because they are the kind of thing
-a judge may ask about:**
-
-1. **No preprocessing.** The loader does not z-score, smooth, detrend, or align
-   anything. The authors' MATLAB loader applies a rolling z-score by default;
-   this one deliberately does not, so the raw values are visible first.
-   Preprocessing is a scientific decision, and it belongs in a later, separately
-   documented step.
-
-2. **Excluded trials are flagged, never dropped.** The `excluded` column carries
-   `excludeTrials`. Dropping rows during loading would hide the choice; keeping
-   them means the decision is explicit and reversible. Note that the published
-   analyses *do* exclude them (`params.excludeNonTrials = 1`), so any comparison
-   against the paper must make the same choice.
-
-3. **MATLAB is 1-indexed; Python is 0-indexed.** `startStops` holds MATLAB
-   indices, where the first element of an array is number 1. Python calls that
-   element number 0. If this is handled wrongly every trial shifts by one 20 ms
-   bin — a small, silent error that would corrupt any neural/behavioural
-   alignment. The loader converts to Python convention but **keeps both**
-   (`start_bin_matlab` alongside `start_bin`) so the conversion can be audited,
-   and it reports the evidence: if the smallest raw start index in the dataset
-   is 1, that is consistent with 1-based; if it is 0, the assumption is wrong and
-   the loader says so. Override with `--index-base 0` if needed. **[UNVERIFIED]** —
-   confirm against the dataset's own documentation.
-
-**Built-in consistency checks.** Rather than failing silently, the loader
-collects problems and prints them. It currently detects: a behavioural metric
-whose length does not match the trial count; a trial whose end runs past the end
-of the neural matrix; a missing neural matrix; a feature count that varies
-between blocks; and a mismatched index base. These were verified by running the
-loader against deliberately corrupted synthetic files — all checks fired, and
-none fired on correct data.
-
+**Per block:** `percentCorrect` — success rate for the block, as a percentage.
 
 ---
 
-## 6. Unit of observation
-
-**This is the single most important structural fact about the dataset**, because it
-determines what any statistical test is actually testing.
-
-The data are **nested**, at four levels: [CODE]
+## 6. Unit of observation — CONFIRMED
 
 ```
-participant  (T5, T11)
-   └── session / trial day        folder  day_<N>
-         └── block                folder  block_<M>
-               └── trial          rows of startStops
-                     └── time bin rows of the data matrix
+participant (2)
+  └── session / trial day (21 across both)
+        └── block (54)
+              └── trial (3,301)
+                    └── 20 ms bin (782,708)
 ```
 
-- **The finest unit is the time bin.** One row of `data` = one bin.
-- **Bin width = 20 ms (50 Hz).** [CODE] — `MINDFUL.m` line 1213 converts step counts
-  to seconds by multiplying by `0.02`, and `BGzscoreNew.m` sets `winFs = 50` Hz.
-  This is a solid inference from two independent places in the code, but confirm it
-  against the paper's Methods.
-- **Trials index into bins** via `startStops`.
-- Behavioural metrics in `info.mat` are **per trial**; neural data are **per bin**.
-  Any analysis linking them must decide how to align the two, and that decision is
-  itself a scientific choice.
+- Behavioural performance: **per trial** (and `percentCorrect` per block).
+- Neural features and `angleError`: **per 20 ms bin**.
+- `startStops` maps trials onto bins (1-based, inclusive).
+- **Total recording: 4.35 hours** across both participants.
 
-**Why nesting matters:** observations within a participant are not independent of one
-another. With **n = 2 participants** [LIT], you cannot make population-level claims.
-Any result is a within-participant result, replicated (or not) in a second person.
-That is a real and reportable limitation, not a flaw to hide.
+Trials per block range from 24 to 106 (median ≈ 49 for T5, ≈ 69 for T11).
 
----
+**Consequence:** observations are nested and not independent. With **n = 2
+participants**, no population-level claim is available; any finding is a
+within-participant result that either replicates in the second person or does not.
+
+### Data quality — measured, not assumed
+
+| Column | Missing |
+|---|---|
+| `path_efficiency` | 14.33% |
+| `success`, `orth_changes` | 4.70% |
+| `angle_error_deg`, `time_to_target`, `excluded` | 2.42% |
+
+Most of the 2.42% is the 80 `personal_use` trials, which have no target and so
+no performance metrics at all. Excluded trials: **37 of 2,021 for T11 (1.83%)**,
+**0 of 1,200 for T5**.
+
+> ### ⚠️ A defect in the published dataset
+>
+> In `T11/day_689/Block_14`, `trialSuccess`, `pathEfficiency` and `orthChanges`
+> each contain **76 values, but `startStops` defines only 75 trials**.
+> `angleErrorPerTrial` has the correct 75. The loader flags this and leaves
+> those three columns empty for that block rather than guessing an alignment.
+> This is an inconsistency in the deposit itself, not in our code, and it should
+> be mentioned in any write-up. Consider contacting the authors.
 
 ## 7. Getting the data: network access and Dryad's anti-bot challenge
 
@@ -405,43 +417,65 @@ Both of these were written in response to problems that actually occurred:
   destination against the previous manifest and aborts rather than clobbering
   anything unrecognised.
 
-## 8. Open questions to resolve once the data are in hand
+## 8. Open questions — status after opening the data
 
-Ordered by how much they matter to the research question.
+### ✅ Answered
 
-### Structural
-1. Confirm the actual top-level layout (loose folders vs. zip archives).
-2. **How many sessions, blocks, and trials per participant?** The literature review
-   flags actual trial counts as unverified — and this number decides whether a
-   rolling-window analysis is possible at all.
-3. Confirm bin width is 20 ms from the paper's Methods, not just from the code.
-4. How many neural feature columns, and what are they? Confirm the
-   threshold-crossing / spike-band-power interpretation of `nctx` + `spikePower`.
-5. Are `day_<N>` numbers really days-since-implant? If so, what are the **gaps**
-   between consecutive sessions? Irregular sampling is a serious problem for
-   time-series methods that assume even spacing.
+| Question | Answer |
+|---|---|
+| Layout: loose folders or archives? | One `.zip`, unpacking to a doubly-nested `MINDFUL_Data/MINDFUL_Data/` |
+| How many sessions, blocks, trials? | 21 sessions, 54 blocks, 3,301 trials, 782,708 bins, 4.35 hours |
+| Bin width 20 ms? | **Yes** — authors' README: "nStep: number of 20 ms steps (bins)" |
+| What are the neural features? | `nctx` = threshold crossings (RMS < −3.5); `spikePower` = spike band power 250–5000 Hz. The earlier guess was right. |
+| How many channels? | 192 per feature type. T5 has `nctx` only (192); T11 has both (384) |
+| Are `day_<N>` days since implant? | Consistent with it — T5 ≈ day 2121–2149, T11 ≈ 658–800, i.e. years and months post-implant |
+| Gaps between sessions? | **Uneven.** T11: 3–24 days (median 8.5). T5: 2–14 days (median 5) |
+| What criterion produced `excludeTrials`? | **Mean noise exceeding 5% during the trial** |
+| `angleError` units and convention? | Degrees, 0–180, lower is better. `angleErrorPerTrial` is the **median** over the trial |
+| What is `labels`? | The *inferred* cursor-to-target vector — intent, not decoder output |
+| Is `cursorVel` raw decoder output? | Yes — "Decoded 2-D velocity vector output from the decoder" |
+| Is the index base 1 or 0? | **1-based**, confirmed empirically across all 54 blocks |
+| Does performance actually decline? | **Yes, substantially** — see §8.1 |
+| Is task type a confound? | **No.** Each participant used one task throughout (T11 `circleOfCircles`, T5 `Fitts`) |
 
-### Semantic
-6. Confirm `angleError` units (degrees) and sign convention from the Methods.
-7. What exactly does `excludeTrials` exclude, and on what criterion? Our analysis
-   must make the same choice as the paper's, or explicitly justify differing.
-8. What is `labels` — intended direction, or something else?
-9. Is `cursorVel` the decoder's raw output or post-processed (smoothed, gain-scaled)?
+### 8.1 Performance does decline — and the two participants differ in kind
 
-### Directly relevant to the early-warning question
-10. **Is the decoder genuinely fixed across all sessions?** The literature review
-    calls this "the single most important feature". Verify it in the Methods, and
-    check whether any session was a calibration session
-    (`p.oneCalBlock` in the loader hints that first-block-per-session calibration
-    data may exist [CODE]).
-11. **Does performance actually decline?** If angle error never meaningfully worsens,
-    there is no "deterioration" to anticipate and the project needs rethinking. This
-    is the first thing to plot.
-12. Are there enough sessions to resolve a recovery rate? (van der Bolt et al. 2021,
-    "No warning for slow transitions" — flagged in the literature review as the paper
-    most likely to sink the project.)
+Two independent measures agree, which is a useful cross-check:
 
----
+**T11** (median angle error per session, and block `percentCorrect`):
+roughly flat at 20–30° and 90–100% correct through day 715; a spike at day 727;
+back to baseline at day 751; then a **step change** at day 758 to ~120° and
+~25% correct, staying degraded through day 800.
+
+**T5**: a smoother rise from ~30° to ~76° peaking at day 2135 (percentCorrect
+falling 98% → 37%), then **recovery** to ~39° and 93% by day 2149.
+
+> **These are different phenomena.** T11 looks like a sustained transition to a
+> degraded state; T5 looks like a transient excursion that recovered. Whether
+> either qualifies as a "critical transition" is a scientific question, not
+> something the data answer on their own — but the *shapes* differ, and any
+> hypothesis should account for both rather than only the convenient one.
+
+### ⚠️ Still open — and these constrain the project
+
+1. **Is the decoder genuinely fixed across all sessions?** Still the single most
+   important unverified claim. Nothing in the deposit's files states it; it must
+   come from the paper's Methods. If any session was recalibrated, the drift
+   structure changes meaning.
+2. **Is 15 sessions enough?** This is the hard one. T11 has **15 session-level
+   observations**, T5 has **6**. Any session-level rolling-window statistic
+   (variance, lag-1 autocorrelation, Kendall's τ) computed on 15 points is
+   fragile, and van der Bolt et al. (2021) is directly about this. Bin-level
+   data is plentiful (440,045 bins for T11) — so **the choice of analysis level
+   is now the central design decision**, not a detail.
+3. **What is the pre-transition window?** For T11 the change is between day 751
+   and 758 — one 7-day gap, with 11 sessions before it. Whether 11 points can
+   support an early-warning claim is exactly the question to answer honestly.
+4. What are the units/scaling of `cursorVel` (range ≈ ±0.03 for T5, ±0.006 for
+   T11 — very different, suggesting per-participant scaling)?
+5. Should `personal_use` and `random_targets` blocks be used as the
+   out-of-distribution robustness check the literature review mentions?
+6. Licence terms of the deposit — check before publishing.
 
 ## 9. Glossary
 
@@ -476,7 +510,10 @@ Ordered by how much they matter to the research question.
 | matplotlib | 3.11.1 |
 | h5py | 3.16.0 |
 | MINDFUL reference code | `github.com/ewinapun/MINDFUL` @ `1809e132549f3c4b03327e3a14c748927d765e6e` |
-| Dataset downloaded? | **Not yet** — metadata confirmed; file download needs a Dryad API account, see §7 |
+| Dataset downloaded? | **Yes** — 2026-08-25, Dryad version 6 |
+| Zip SHA-256 | `6d12b5dbcf9cac654ff1d0679e9753bf042b56cd5b8852eb31236b3cdecf7332` (verified) |
+| README SHA-256 | `00fc1f8d6852058f…` (verified) |
+| Download route | Dryad API account, OAuth client-credentials bearer token |
 
 ---
 

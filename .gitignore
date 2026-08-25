@@ -14,6 +14,10 @@
 data/raw/*
 !data/raw/.gitkeep
 !data/raw/_FOLDER_NOTES.md
+# The manifest is small, and it is the provenance record proving WHICH version
+# of the dataset was analysed and that it arrived intact. Keep it in Git even
+# though the data themselves are excluded.
+!data/raw/download_manifest.json
 
 # Processed/derived data — regenerable from raw data by our scripts.
 data/processed/*
