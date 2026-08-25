@@ -1,0 +1,18 @@
+# Python libraries this project needs.
+#
+# Install everything with:      pip install -r requirements.txt
+#
+# Why a file instead of typing the names each time: this pins the toolchain so
+# that you, a collaborator, and a judge reproducing your work all run the same
+# software. "Version drift" -- where a result changes because a library quietly
+# updated -- is a real and common source of irreproducible research.
+#
+# The >= means "this version or newer". Versions listed are the ones the project
+# has actually been run with (see DATASET_README.md section 10).
+
+requests>=2.31      # downloading the dataset from Dryad's API over HTTPS
+numpy>=1.26         # fast numerical arrays; the foundation everything else uses
+pandas>=2.0         # tables with named columns (like a spreadsheet, in code)
+scipy>=1.11         # scientific computing; here specifically for reading .mat files
+h5py>=3.10          # reads MATLAB v7.3 files, which are secretly HDF5 files
+matplotlib>=3.8     # plotting

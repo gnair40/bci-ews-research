@@ -99,7 +99,7 @@ reproduce the exact bytes on any machine — that is what reproducibility requir
 ## 3. How to download it (reproducibly)
 
 ```bash
-pip install requests numpy pandas scipy h5py matplotlib
+pip install -r requirements.txt
 
 python3 scripts/01_download_dataset.py --list-only   # preview, downloads nothing
 python3 scripts/01_download_dataset.py               # actually download
@@ -293,14 +293,69 @@ even if it were possible. See the repository's issue notes / ask your session ow
 to widen the environment's network policy. Documentation:
 https://code.claude.com/docs/en/claude-code-on-the-web
 
-**Resolution options:**
-1. Recreate the Claude Code environment with a more permissive network policy that
-   allows `datadryad.org` (preferred — keeps everything reproducible).
-2. Download the deposit manually from the Dryad landing page and place the files in
-   `data/raw/`. `02_inspect_dataset.py` will work unchanged. Provenance is weaker
-   (no automatic manifest), so record the version number and download date by hand.
-3. Run `scripts/01_download_dataset.py` on a normal laptop, which will produce the
-   manifest correctly, then move the folder across.
+### How to fix it (decided: recreate the environment)
+
+The environment is currently on the **Trusted** network access level, which allows
+only an Anthropic-maintained allowlist (package registries, GitHub, cloud SDKs).
+Dryad is not on that list. There are four levels:
+
+| Level | Outbound connections |
+|---|---|
+| **None** | nothing |
+| **Trusted** | allowlisted domains only — *this is what we have* |
+| **Full** | any domain |
+| **Custom** | your own allowlist, optionally plus the defaults |
+
+**Steps — do this at [claude.ai/code](https://claude.ai/code):**
+
+1. In the row **above the message box**, click the **cloud icon** showing the current
+   environment's name. (There is no settings page or direct URL for this selector.)
+2. Choose **Add cloud environment** — or hover an existing environment and click the
+   **gear icon** to edit it.
+3. Set **Network access** to **Custom**, and in **Allowed domains** enter one domain
+   per line:
+
+   ```text
+   datadryad.org
+   *.datadryad.org
+   doi.org
+   *.amazonaws.com
+   ```
+
+   Then **tick "Also include default list of common package managers"** — without it
+   you lose PyPI and GitHub, and nothing will install.
+
+   > `*.amazonaws.com` is included because Dryad serves large file downloads from
+   > Amazon S3 storage, so a download can be redirected there. `doi.org` lets the DOI
+   > resolve. Selecting **Full** instead of **Custom** also works and is simpler, but
+   > **Custom** is the tighter, better-practice choice.
+
+4. *(Optional but recommended)* In the same dialog, set the **Setup script** to:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   This runs automatically before Claude starts, so every future session already has
+   pandas, numpy, scipy, h5py and matplotlib installed.
+
+5. Start a **new session** on this repository (branch
+   `claude/isef-research-pipeline-9zt4uq`) using that environment, and run:
+
+   ```bash
+   pip install -r requirements.txt
+   python3 scripts/01_download_dataset.py --list-only
+   python3 scripts/01_download_dataset.py
+   python3 scripts/02_inspect_dataset.py --extract
+   ```
+
+**Alternatives if the above is inconvenient:**
+
+- Run `scripts/01_download_dataset.py` on your own laptop (produces the correct
+  manifest with checksums), then copy `data/raw/` across.
+- Download manually from the Dryad landing page into `data/raw/`. The inspection
+  script still works, but provenance is weaker — record the version number and
+  download date by hand.
 
 ---
 
