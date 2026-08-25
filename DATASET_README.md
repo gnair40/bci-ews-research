@@ -158,6 +158,9 @@ block indices, so gaps are expected (T11 day 672 has `Block_19` and `Block_20`).
 Only selected blocks from each session were deposited.
 
 Each block folder contains exactly three files: `data.mat`, `task.mat`, `info.mat`.
+The archive also carries **17 stray `.DS_Store` files** (macOS folder metadata,
+harmless clutter). Any code walking this tree must filter for real block folders
+rather than assuming every directory entry is one.
 All are **pre-v7.3 MATLAB format**, readable with `scipy.io.loadmat`.
 
 ### Actual size of the dataset
@@ -456,12 +459,62 @@ falling 98% → 37%), then **recovery** to ~39° and 93% by day 2149.
 > something the data answer on their own — but the *shapes* differ, and any
 > hypothesis should account for both rather than only the convenient one.
 
+### 8.2 Is the decoder fixed? Evidence from the data
+
+The paper's abstract states the participants "used **fixed decoders** to control
+a computer cursor". That is an assertion in an abstract. `scripts/05_check_decoder_stability.py`
+tests it against the data.
+
+**The logic.** `cursorVel` is the decoder's own output; `nctx` (+ `spikePower`)
+are its inputs. If the decoder is a fixed function, the input→output mapping is
+the same function in every session. Fitting a linear map per block and comparing
+across time distinguishes two cases:
+
+- **Recalibration** replaces the decoder's weights → the estimated map changes
+  **discontinuously**, jumping back toward similarity 1.0 with a fresh mapping,
+  and performance recovers.
+- **A fixed decoder with drifting neural signal** → similarity declines
+  **smoothly**, because channels fall silent and contribute less while the
+  underlying function is unchanged.
+
+**Result: a smooth decline, no jumps.**
+
+| | Largest single-session *increase* in similarity |
+|---|---|
+| T11 | **+0.089** (day 692) |
+| T5 | **+0.023** (day 2135) |
+
+Cosine similarity to the first session falls monotonically-ish from 1.00 to 0.44
+(T11, over 142 days) and 1.00 to 0.62 (T5, over 28 days). Nothing resembling a
+recalibration event appears in either participant.
+
+**The most telling detail.** T5's performance *recovers* at day 2149 — from 37%
+to 93% correct. If that recovery had come from recalibrating the decoder, the
+estimated map would have changed. It did not: cosine similarity is **0.621 at
+day 2149 versus 0.620 at day 2135** — unchanged to three decimal places. So
+**T5's recovery happened without any change to the decoder.** Whatever restored
+performance was in the neural signal or the user, not in the algorithm.
+
+> **How much weight this evidence carries.** It is a diagnostic, not a proof.
+> T11's decoder is an LSTM (per the companion paper, Hosman & Pun, *"Months-long
+> High-performance Fixed LSTM Decoder for Cursor Control"*), so it has internal
+> memory and a memoryless linear fit only approximates it — which is why R² is
+> modest (0.29 T11, 0.41 T5) **by construction**. A low R² here is expected and
+> means nothing on its own. A recalibration that happened to produce a very
+> similar mapping would also be hard to detect this way. **Absence of a
+> discontinuity is consistent with a fixed decoder; it is not the authors saying
+> so in their Methods.** Read the Methods when you can reach the paper.
+
+**Why this matters to the project.** If it holds, the literature review's central
+premise survives: the recalibration that would erase the statistical residue an
+early-warning detector needs did not happen here. And T5's decoder-independent
+recovery means the coupled human–decoder system can return from a degraded
+state — which is directly relevant to framing (C) in the review.
+
 ### ⚠️ Still open — and these constrain the project
 
-1. **Is the decoder genuinely fixed across all sessions?** Still the single most
-   important unverified claim. Nothing in the deposit's files states it; it must
-   come from the paper's Methods. If any session was recalibrated, the drift
-   structure changes meaning.
+1. **Is the decoder genuinely fixed across all sessions?** — *evidence gathered,
+   see §8.2. Consistent with fixed; the paper's Methods should still be read.*
 2. **Is 15 sessions enough?** This is the hard one. T11 has **15 session-level
    observations**, T5 has **6**. Any session-level rolling-window statistic
    (variance, lag-1 autocorrelation, Kendall's τ) computed on 15 points is

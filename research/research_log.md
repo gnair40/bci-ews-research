@@ -229,3 +229,32 @@ the analysis level is now the central design decision.**
 
 Decide operational definitions of "performance" and "deterioration", and settle
 the analysis level. Then design the analysis.
+
+## 2026-08-25 (late) — Fixed-decoder question
+
+Could not read the paper's Methods: pmc.ncbi.nlm.nih.gov, nature.com and
+biorxiv.org are all outside the environment's Custom allowlist, which covers only
+Dryad. Web search confirmed the abstract-level claim ("two BrainGate2
+participants ... used fixed decoders") and surfaced the companion paper
+identifying T11's decoder as a fixed LSTM (Hosman & Pun).
+
+Rather than rely on an abstract, tested the claim against the data.
+`scripts/05_check_decoder_stability.py` fits a linear map from neural features to
+cursorVel (the decoder's own output) in every block and compares the fitted maps
+over time. A recalibration would show as a discontinuous jump; a fixed decoder
+with drifting signal shows a smooth decline.
+
+Result: smooth decline, no jumps. Largest single-session increase in similarity
+was +0.089 (T11) and +0.023 (T5). Most telling: T5's performance recovery at day
+2149 (37% -> 93% correct) came with cosine similarity 0.621 vs 0.620 at day 2135
+- unchanged. So that recovery was NOT a recalibration; something in the neural
+signal or the user restored performance.
+
+Caveat recorded honestly: this is a diagnostic, not proof. T11's decoder is an
+LSTM with internal memory, so a memoryless linear fit only approximates it and
+the modest R2 (0.29/0.41) is expected by construction, not a finding.
+
+### Skill practised
+
+Testing a claim from a paper against the data itself instead of accepting it,
+and stating precisely how much weight the test can bear.
