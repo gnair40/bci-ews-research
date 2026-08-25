@@ -208,3 +208,69 @@ autocorrelation, Kendall's τ) were computed. No preprocessing decisions were
 made. No operational definition of "deterioration" was adopted. These are
 deferred until the definitions in `reports/DATASET_EXPLORATION.md` §6 are settled
 and the synthetic control pipeline (Phase 2) has been validated.
+
+---
+
+## Phase 2 — Detector validation and study design
+
+*Added 25 August 2026. Continues the numbering above.*
+
+**Procedure 23. Build a positive and negative control pair on simulated data.**
+Implemented three systems whose nature is known by construction
+(`scripts/06_ews_controls.py`): a saddle-node bifurcation where critical slowing
+down is present; monotonic decline plus noise with a constant recovery rate; and
+rising noise with a constant recovery rate. The detector de-trends with a
+Gaussian filter, computes rolling variance and lag-1 autocorrelation, summarises
+each trend with Kendall's tau, and tests that tau **two-sided** against
+AR(1)-matched surrogates. Two-sided deliberately: a compressed basin of
+attraction can produce falling indicators before a transition, so a one-sided
+test would miss real signals.
+
+**Procedure 24. Establish that a single run is not a validation.**
+Repeated Procedure 23 across ten random seeds. It passed 4 of 10, with every
+failure a *miss* on the positive control and no false alarms on the negative
+controls — establishing that the detector was underpowered rather than
+over-eager, which a single run could not have revealed.
+
+**Procedure 25. Diagnose the cause of low power.**
+Quantified the simulated system's correlation time near the transition (~357
+steps) and showed that de-trending at a shorter scale removes the fluctuations
+carrying the signal. Power at sigma = 100 was 0.17.
+
+**Procedure 26. Measure power and false-positive rate across analysis choices.**
+Swept rolling-window length against de-trending strength
+(`scripts/07_ews_power_sweep.py`), reporting the full surface rather than
+selecting a setting silently. Also established the resolution limit: with N
+repetitions the smallest measurable rate is 1/N, so a false-positive rate
+"exceeding 0.05" with 12 seeds is an artifact rather than a finding.
+
+**Procedure 27. Distinguish a faulty detector from a data-length limit.**
+Held the detector fixed and lengthened the simulated record. Power rose 0.25 →
+0.42 → 0.83 → 1.00 across 4,000 → 40,000 steps, establishing that the detector
+is sound and that low power reflects record length. This is an empirical
+restatement of van der Bolt et al. (2021) on this project's own pipeline.
+
+**Procedure 28. Estimate correlation times of candidate observables in the real
+data.** `scripts/08_record_length_check.py`. Found that raw binned neural
+features are near-white at 20 ms (0.3–0.5 bins of memory) while cursor velocity
+has 27–52 bins, establishing that critical slowing down cannot be measured on raw
+features at that resolution.
+
+**Procedure 29. Reproduce the published baseline.**
+Independently reimplemented Pun et al. (2024) Fig. 1b
+(`scripts/09_reproduce_mindful.py`) and ran it on the downloaded data, obtaining
+T11 r = 0.985 against a published 0.985, and T5 r = 0.980 against 0.983 —
+confirming the pipeline end to end and providing the comparator the project must
+benchmark against.
+
+**Procedure 30. Compute the detectable effect size at each candidate analysis
+level.** `scripts/10_design_power_analysis.py`. Derived exact Kendall tau null
+distributions for n ≤ 8 and permutation nulls above, giving the smallest
+detectable trend and the power curve for every sample size available in the
+dataset, and identifying block level as the choice that moves the study from
+marginal to usable.
+
+**Procedure 31. Record the design decision and its alternatives.**
+`research/design_decisions.md` documents four decisions, their interactions, four
+coherent study designs and a recommendation, with all numbers reproducible from
+Procedure 30. No design has been adopted.

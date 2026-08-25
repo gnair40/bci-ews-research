@@ -309,25 +309,35 @@ def main() -> int:
                          "expected_power": expected_power(n_sessions)})
 
     print("\n" + "=" * 78)
-    print("READING THIS HONESTLY")
+    print("READING THIS HONESTLY  --  IMPORTANT CORRECTION")
     print("=" * 78)
     print("""
-  The two framings give opposite answers, and that is the real finding.
+  The "fast framing" number above is real but it answers the WRONG QUESTION,
+  and an earlier version of this project drew the wrong conclusion from it.
 
-  Under the FAST framing the record is enormous in units of its own
-  correlation time, and the detector would have ample power -- but it is
-  then detecting something about within-session dynamics, and it must be
-  argued that the transition actually lives there.
+  It compares the record length against the correlation time of a FAST
+  observable (cursor velocity, about half a second). What an early-warning
+  test actually asks is whether an indicator TRENDS UPWARD across time, and
+  the sample size for a trend test is the number of independent observations
+  of the SLOW variable -- the thing drifting toward the transition.
 
-  Under the SLOW framing there are 15 sessions (T11) and 6 (T5). That is far
-  below where the synthetic controls reach usable power. A null result at
-  this level would be uninformative: it would reflect the record length, not
-  the neural data. This is exactly van der Bolt et al. (2021).
+  Sampling more finely inside a block gives a more PRECISE estimate at each
+  point. It does not give more POINTS.
 
-  Neither framing is chosen here. The numbers are the input to that decision,
-  not a substitute for it. What the numbers DO settle is that the decision
-  cannot be deferred -- it determines whether a negative result means
-  anything at all.
+  So the fast framing does not deliver thousands of usable observations. The
+  usable counts are:
+
+      T11   21 blocks (or 11 sessions) before its transition
+      T5     9 blocks (or  3 sessions) before its transition
+
+  Run scripts/10_design_power_analysis.py for what those sample sizes can
+  actually detect, and see research/design_decisions.md for the consequences.
+
+  What this script IS good for: the correlation times in STEP 1. Those show
+  that raw binned neural features are near-white at 20 ms (0.3-0.5 bins of
+  memory) while cursor velocity has 27-52 bins. An observable with no memory
+  has no recovery rate to slow down, so critical slowing down cannot be
+  measured on raw features at that resolution. That finding stands.
 """)
 
     PROCESSED.mkdir(parents=True, exist_ok=True)

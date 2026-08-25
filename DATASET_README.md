@@ -614,6 +614,12 @@ T5 42.2% on day 0, dropping to 2.9% and recovering to 11.3% on the last session.
 
 1. ~~Is the decoder genuinely fixed?~~ — **ANSWERED from the paper's Methods.
    See §8.3. Weights fixed, but an adaptive normalisation layer remains.**
+> **Update (25 Aug 2026):** questions 2 and 3 below are now analysed
+> quantitatively in **`research/design_decisions.md`**, which supersedes the
+> rough reasoning here. Short version: the usable pre-transition sample is
+> **21 blocks** (or 11 sessions) for T11, and block level rather than session
+> level is what moves the study from marginal to usable.
+
 2. **Is 15 sessions enough?** This is the hard one. T11 has **15 session-level
    observations**, T5 has **6**. Any session-level rolling-window statistic
    (variance, lag-1 autocorrelation, Kendall's τ) computed on 15 points is

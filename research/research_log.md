@@ -374,3 +374,70 @@ statistics; a batched lfilter recursion for surrogate generation), and the
 surrogate set is now shared between the two indicators. Kendall's tau values are
 unchanged; only p-values shift in the third decimal because the random draws
 differ.
+
+## 2026-08-25 (late night) — Study design analysis, and a correction
+
+### A correction to my own earlier reasoning
+
+`scripts/08_record_length_check.py` reported that the "fast framing" gives 16,144
+correlation times of data and therefore ample statistical power. That number is
+real but answers the wrong question, and I drew the wrong conclusion from it.
+
+It compares record length against the correlation time of a FAST observable
+(cursor velocity, ~0.55 s). An early-warning test asks whether an indicator
+TRENDS UPWARD over time, and the sample size for a trend test is the number of
+independent observations of the SLOW variable. Sampling more finely inside a
+block gives a more precise estimate at each point; it does not give more points.
+
+Script 08 now prints this correction directly, so the repository does not
+contradict itself. The correlation-time findings in its Step 1 still stand.
+
+### The real sample sizes
+
+| Level | T11 | T5 |
+|---|---|---|
+| session (all) | 15 | 6 |
+| session (pre-transition) | 11 | 3 |
+| block (all) | 29 | 21 |
+| block (pre-transition) | **21** | 9 |
+
+### What those sizes can detect
+
+Smallest detectable |tau| at alpha = 0.05, two-sided: n=6 -> 0.733 (unusable);
+n=11 -> 0.455 (marginal); n=21 -> 0.305 (usable); n=29 -> 0.256 (usable).
+Power against a 2 sd rise: 0.25 at n=6, 0.47 at n=11, 0.74 at n=21, 0.86 at n=29.
+
+At n=3 the exact test cannot reach alpha=0.05 at all - the smallest attainable
+two-sided p-value is 1/3. The script flags this rather than reporting a
+meaningless power figure.
+
+### The consequence
+
+Choosing BLOCK rather than SESSION as the unit of observation takes T11's
+pre-transition sample from 11 to 21 and moves the study from marginal to usable,
+at essentially no cost: blocks are already separate recordings and each still
+holds a median of 15,161 bins, so the indicator at each point stays precise.
+
+Overlapping sliding windows (725 for T11) are NOT a valid sample size for a trend
+test - adjacent windows share most of their data, so the effective count stays
+near the block count.
+
+### A design option I had not considered
+
+T5's percent-correct runs 97.8, 98.7, 95.5, 60.9, 37.0, 92.8 - it collapses and
+then RECOVERS, with no change to the decoder. That makes T5 a built-in
+reversibility control on real data: a genuine CSD indicator should rise into the
+dip and fall again with the recovery, while a detector responding to elapsed time
+or accumulated drift will keep climbing. No simulation can provide that test.
+
+### Recorded
+
+- `research/design_decisions.md` - four decisions, their interactions, four
+  coherent designs, and a recommendation.
+- `scripts/10_design_power_analysis.py` - makes every number above reproducible.
+
+### Still undecided (deliberately)
+
+Which performance variable is the declared primary, and where exactly the change
+point sits. The latter must be located by a method rather than by eye, and fixed
+before the indicator is computed.
