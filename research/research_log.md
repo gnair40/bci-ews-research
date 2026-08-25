@@ -50,3 +50,58 @@ The project should not begin by assuming a particular dataset, EWS method, or ha
 ### Next Step
 
 Begin Python fundamentals and continue literature/dataset reconnaissance.
+
+## 2026-08-25 — Dataset acquisition and technical foundation
+
+### What was set up
+
+- Installed the Python data-analysis toolchain (pandas, numpy, scipy, matplotlib, h5py).
+- Created a raw/processed data separation (`data/raw/`, `data/processed/`) with
+  `data/raw/` treated as strictly read-only, plus `.gitignore` rules so large data
+  files are never committed to GitHub.
+- Wrote `scripts/01_download_dataset.py` — reproducible download from Dryad with
+  MD5 checksum verification and an automatic provenance manifest.
+- Wrote `scripts/02_inspect_dataset.py` — inventories files, `.mat` variables,
+  shapes, dtypes, and missingness without modifying raw data.
+- Wrote `DATASET_README.md` documenting the dataset, with every claim labelled
+  [CODE] / [LIT] / [UNVERIFIED] by evidence source.
+
+### Dataset resolved
+
+Short ID `n2z34tn5s` resolves to DOI **10.5061/dryad.n2z34tn5s** — Pun et al. (2024),
+*Communications Biology*, deposited 25 Oct 2024. Associated analysis code found at
+github.com/ewinapun/MINDFUL (MATLAB).
+
+### Blocker encountered
+
+The cloud environment's network policy blocks outbound access to `datadryad.org`
+(HTTP 403 at the egress proxy), along with doi.org, nature.com, and ncbi.nlm.nih.gov.
+GitHub and PyPI are reachable. **The dataset has not been downloaded.** This is an
+environment settings issue, not a code issue; the download script is written and
+tested and will run unchanged once access is granted.
+
+### Worked around productively
+
+Because `github.com` is reachable, the authors' own MATLAB analysis code was read
+instead. That code must load the real files to run, so it establishes the deposit's
+directory layout and variable names with high confidence — documented in
+DATASET_README.md §4–§6. Notably confirmed from code: nesting is
+participant → day_<N> → block_<M> → {data,info,task}.mat; time bins are 20 ms (50 Hz);
+and `info.mat` carries per-trial behavioural performance including `angleErrorPerTrial`,
+`trialSuccess`, `timeToTarget`, `pathEfficiency`, and `orthChanges`.
+
+### Validation performed
+
+`02_inspect_dataset.py` was tested against synthetic `.mat` files mimicking the
+expected structure. This surfaced a real bug — the v7.3/HDF5 fallback did not trigger
+reliably — which was fixed by detecting the file format from its magic bytes.
+
+### Not yet done
+
+`DATASET_EXPLORATION.md` is deliberately NOT written. It requires the actual data;
+writing it from assumptions would defeat its purpose.
+
+### Next step
+
+Resolve the network access blocker, run the download, then produce the exploration
+report against real data.
