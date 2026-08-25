@@ -1,0 +1,36 @@
+# ---------------------------------------------------------------------------
+# Files Git should IGNORE (never upload to GitHub).
+#
+# Why: raw research data can be large (hundreds of MB to GB). GitHub is for
+# CODE and DOCUMENTATION, not for storing datasets. The dataset already has a
+# permanent public home (its Dryad DOI), so re-uploading it here would be
+# redundant AND would make this repository painfully slow to clone.
+#
+# Reproducibility is preserved because scripts/01_download_dataset.py can
+# re-fetch the exact same data from Dryad on any machine.
+# ---------------------------------------------------------------------------
+
+# Raw downloaded data — never committed, never edited.
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/README.md
+
+# Processed/derived data — regenerable from raw data by our scripts.
+data/processed/*
+!data/processed/.gitkeep
+!data/processed/README.md
+
+# Generated figures are regenerable; keep the repo light.
+reports/figures/*
+!reports/figures/.gitkeep
+
+# Python housekeeping
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# OS clutter
+.DS_Store
+Thumbs.db
