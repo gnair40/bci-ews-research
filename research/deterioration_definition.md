@@ -1,6 +1,6 @@
 # Defining Deterioration — comparison and proposed preregistration
 
-**Status: PROPOSED. Not frozen. Awaiting your approval.**
+**Status: FROZEN 26 August 2026.** Adopted by the researcher and recorded in `research/FROZEN_DESIGN.json` at commit `20db485`, **before any early-warning indicator was computed on the real data**. Changing the event definition after this point produces a visible git history and must be reported as exploratory rather than planned.
 **Written:** 25 August 2026, before any early-warning indicator has been computed.
 **Evidence:** `scripts/11_define_deterioration.py` → `data/processed/deterioration_candidates.csv`
 
