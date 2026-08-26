@@ -210,23 +210,22 @@ _(first 10 of 54 rows)_
 
 ---
 
-## 6. What measurements appear relevant to the research question — *Requires your judgement*
+## 6. What measurements appear relevant — *ANSWERED by Phases 1–2*
 
-The project asks whether early-warning signals precede BCI performance
-deterioration. That requires (a) a performance measure over time and (b) a
-neural measure over the same time. Both exist — §3 lists them.
+Originally left blank pending decisions. Those decisions were made, frozen in
+`research/FROZEN_DESIGN.json`, and tested. What the analysis established:
 
-**Decisions only you should make, with reasons written down:**
-
-- Which variable *operationally defines* "performance"? `angle_error_deg` is what
-  the original paper uses, but `time_to_target`, `path_efficiency` and
-  `orth_changes` are also present and are not the same quantity.
-- What counts as "deterioration"? A threshold? A relative drop? A change point?
-  Until this is defined, no analysis can be specified.
-- At what level is the analysis? Per trial, per block, or per session? The
-  answer changes the sample size and the meaning of the result.
-
----
+- **Performance** was defined as median angle error per block, with block success
+  rate as confirmation. They agree on both the timing and direction of decline.
+- **Deterioration** was defined as a change point at **T11 trial day 758**, agreed
+  by three independent methods on two independent variables (p = 0.0018).
+- **The neural observable** turned out to be the binding constraint. Every purely
+  neural quantity is essentially memoryless (0.3–0.7 samples of memory from 20 ms
+  to 5 s bins), so the autocorrelation half of critical slowing down could not be
+  measured at all. A robust dispersion measure was used instead.
+- **The most relevant measurement turned out to be the simplest one.** Mean firing
+  rate falls 56.5% across T11's record and predicts performance (ρ = −0.880) as
+  well as the full five-dimensional pipeline does (ρ = +0.858).
 
 ## 7. What the dataset does NOT contain — *Computed where possible*
 
@@ -253,26 +252,51 @@ Carried over from `DATASET_README.md` §8, still open:
 
 ---
 
-## 9. What preprocessing may eventually be necessary — *Requires your judgement*
+## 9. What preprocessing is necessary — *ANSWERED by Phases 1–2*
 
-Candidates suggested by what is above — **none decided**:
+Established by testing rather than assumed:
 
-- Normalisation across sessions (the original code rolling z-scores; whether
-  that is appropriate for an early-warning analysis is an open question, since
-  normalisation can remove the very drift being studied).
-- Handling the missing values quantified in §3.
-- A decision on excluded trials.
-- Aggregation from bins to trials or sessions.
-- Handling uneven session spacing (§1).
+| Step | Verdict |
+|---|---|
+| Trailing 180 s rolling z-score | Correct for distribution-shape measures (validated: reproduces the published result to three decimals). **Wrong for scale-based indicators** — it forces block variance to ≈1 by construction. |
+| Smoothing to give a signal "memory" | **Never.** A 25-sample moving average raises the lag-1 correlation of pure white noise from −0.002 to +0.962. |
+| Non-overlapping rebinning | Safe — rebinned white noise stays white. |
+| Robust dispersion instead of variance | Necessary. Raw per-channel variance swings ~100× between healthy blocks; robust estimation halves the noise floor. |
+| **De-trending the block-level indicator series** | **Necessary and omitted.** This omission is why monotonic drift produced p = 0.0002. Required in Phase 3. |
+| Regressing out mean firing rate | Necessary. It explains 71% of the indicator. |
 
----
+## 10. What analyses are possible — *ANSWERED by Phases 1–2*
 
-## 10. What analyses appear potentially possible — *Requires your judgement*
+**Not possible on this dataset:**
 
-**Not filled in deliberately.** Whether the dataset can support the research
-question depends on the numbers in §1 and §4 and on the definitions in §6.
-Work through those first, then write this section yourself — that is the
-argument the project rests on, and it should be yours.
+- Autocorrelation-based critical slowing down. No observable has a measurable
+  recovery rate. The one candidate with memory (the decoder output) has it
+  because of the decoder's own exponential smoothing filter.
+- A session-level trend test on T5. With 3 pre-transition sessions, no test can
+  reach α = 0.05 at all.
+- Separating "neural instability" from "electrode signal decline" using
+  scale-based measures. They are entangled: controlling for firing rate removes
+  the indicator's relationship to performance entirely.
+
+**Possible and done:**
+
+- Reproduction of the published MINDFUL baseline (r = 0.985 vs 0.985).
+- Change-point location of the deterioration event with method agreement.
+- A preregistered variance-based trend test at block level (n = 21, detects
+  |τ| ≥ 0.305 with power 0.74 against a 2 sd rise).
+- Reversibility tests using T5's recovery and T11's internal day-727→751 excursion.
+- An out-of-distribution check using the extra T11 sessions.
+
+**Possible but not yet attempted — candidates for Phase 3:**
+
+- The *residual* after regressing out firing rate, which is what the literature
+  review's framing (C) actually predicts.
+- Covariance **geometry** rather than scale, which is less rate-dependent.
+- Flickering, visible in T11 (day 727 degraded → 751 fully recovered → 758
+  collapsed) and a recognised early-warning phenomenon distinct from variance and
+  autocorrelation.
+
+All three require preregistration in advance.
 
 ---
 

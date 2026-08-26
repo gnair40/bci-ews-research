@@ -610,30 +610,28 @@ T5's day-2149 recovery involved no change in the decoder map.
 accounted for by the top two direction-dependent components: T11 50.0% on day 0;
 T5 42.2% on day 0, dropping to 2.9% and recovering to 11.3% on the last session.
 
-### ⚠️ Still open — and these constrain the project
+### Status of the remaining questions — CLOSED by Phases 1–2
 
-1. ~~Is the decoder genuinely fixed?~~ — **ANSWERED from the paper's Methods.
-   See §8.3. Weights fixed, but an adaptive normalisation layer remains.**
-> **Update (25 Aug 2026):** questions 2 and 3 below are now analysed
-> quantitatively in **`research/design_decisions.md`**, which supersedes the
-> rough reasoning here. Short version: the usable pre-transition sample is
-> **21 blocks** (or 11 sessions) for T11, and block level rather than session
-> level is what moves the study from marginal to usable.
+| Question | Answer |
+|---|---|
+| Is the decoder genuinely fixed? | **Yes.** Confirmed from the Methods and independently from the data (§8.2–8.3). Weights fixed; an adaptive normalisation layer remains (§8.4). |
+| Is 15 sessions enough? | **At session level, marginal.** Detects only \|τ\| ≥ 0.455. **Block level gives 21 pre-transition observations and \|τ\| ≥ 0.305**, which is usable. See `research/design_decisions.md`. |
+| What is the pre-transition window? | **21 blocks over 11 sessions, trial days 658–751.** Frozen in `research/FROZEN_DESIGN.json`. Note it is *not* a flat healthy baseline — it contains the day-727 excursion and day-751 recovery. |
+| Units/scaling of `cursorVel`? | Normalised workspace units per bin. The T5/T11 difference is participant-specific **gain**: the Methods state "smoothing and gain were manually adjusted during the first session and fixed on subsequent days." Not a data problem. |
+| Use `personal_use` / `random_targets`? | **Yes, and done** (`scripts/16`). They gave the decisive out-of-distribution result: the indicator differs by only 5.9–8.4% between completely different tasks on the same day, against a 3× range across the record — so it tracks the recording, not the task. |
+| Licence terms? | **CC0-1.0** (public domain dedication), confirmed from the Dryad API. No restriction on publishing; cite the DOI and paper as a matter of good practice. |
 
-2. **Is 15 sessions enough?** This is the hard one. T11 has **15 session-level
-   observations**, T5 has **6**. Any session-level rolling-window statistic
-   (variance, lag-1 autocorrelation, Kendall's τ) computed on 15 points is
-   fragile, and van der Bolt et al. (2021) is directly about this. Bin-level
-   data is plentiful (440,045 bins for T11) — so **the choice of analysis level
-   is now the central design decision**, not a detail.
-3. **What is the pre-transition window?** For T11 the change is between day 751
-   and 758 — one 7-day gap, with 11 sessions before it. Whether 11 points can
-   support an early-warning claim is exactly the question to answer honestly.
-4. What are the units/scaling of `cursorVel` (range ≈ ±0.03 for T5, ±0.006 for
-   T11 — very different, suggesting per-participant scaling)?
-5. Should `personal_use` and `random_targets` blocks be used as the
-   out-of-distribution robustness check the literature review mentions?
-6. Licence terms of the deposit — check before publishing.
+### New questions raised by Phases 1–2
+
+1. **What drives the within-baseline rise in the indicator?** Firing rate does not
+   explain it (τ = −0.286, n.s. across baseline, while the indicator runs
+   τ = +0.857). `avgOutliers`, silent channels and low-variance channels were
+   tested and rejected. **Unidentified.**
+2. Does anything survive after regressing out firing rate *and* de-trending?
+   That is the Phase 3 question.
+3. Is the day-689→751 flickering (degrade, recover, collapse) a real
+   early-warning phenomenon here, or noise? It would need preregistering.
+
 
 ## 9. Glossary
 

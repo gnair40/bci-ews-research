@@ -764,3 +764,60 @@ Recorded in research/phase3_design_implications.md, which also lists where a
 positive result could still legitimately come from: the residual after removing
 firing rate (which is what framing C actually predicts), covariance geometry
 rather than scale, and flickering - all requiring preregistration in advance.
+
+## 2026-08-26 — Phases 1 and 2 closed out
+
+### Loose ends tied up
+
+1. Licence resolved: the deposit is CC0-1.0, public domain dedication. No
+   restriction on publishing; cite the DOI and paper as good practice.
+2. cursorVel units resolved: normalised workspace units per bin. The T5/T11
+   range difference is participant-specific GAIN - the Methods state smoothing
+   and gain were manually adjusted in the first session and fixed thereafter.
+   Not a data problem.
+3. The additional T11 cohort (personal_use, random_targets), flagged by the
+   literature review as "a free out-of-distribution robustness check sitting in
+   the download" and never used, has now been used. See below.
+4. DATASET_EXPLORATION sections 6, 9 and 10, deliberately left blank pending
+   decisions, are now filled in from what the analysis established.
+5. DATASET_README's open questions are all closed, and the new questions the
+   analysis raised are recorded in their place.
+6. Procedures 32-40 added.
+7. reports/PHASE1_2_REPORT.md consolidates everything.
+
+### The out-of-distribution check, and it is decisive
+
+The indicator computed on completely different tasks recorded on the SAME DAY:
+
+    day 658:  cursor task 22.65   free web browsing 24.55   difference  8.4%
+    day 665:  cursor task 27.86   random targets    26.21   difference  5.9%
+
+Against a threefold range across the whole record (21.7 to 67.7). So the
+indicator is essentially task-invariant: it gives nearly the same value whether
+the participant is doing a structured cursor task or browsing the web.
+
+That is a third independent confirmation, alongside the firing-rate correlation
+and the participant disagreement, that the indicator tracks the state of the
+RECORDING rather than the task or the participant's performance.
+
+### The figure that explains the negative result
+
+reports/figures/11_t11_why_negative.png stacks three quantities on one time
+axis: the indicator, task performance, and mean firing rate, with the healthy
+baseline shaded. The indicator climbs from 22 to 50 INSIDE the shaded baseline
+while performance sits flat at about 20 degrees. That is the whole result in one
+picture.
+
+### Still incomplete
+
+The length-scaling run keeps being interrupted by session restarts; it has
+completed 2 of 4 rows both times (n=4000 power 0.25, n=8000 power 0.42). The
+finding it supports - that power rises with record length, reaching 1.00 at
+40000 steps - was already established by the ad-hoc run and is recorded in the
+log for 25 August. The scripted version is reproducible via
+scripts/07 --length-scaling for anyone who wants the full curve.
+
+### Phase 3 not started
+
+Deliberately. The five requirements are set out in
+research/phase3_design_implications.md and section 8 of the Phase 1-2 report.

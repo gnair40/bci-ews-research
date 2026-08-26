@@ -274,3 +274,67 @@ marginal to usable.
 `research/design_decisions.md` documents four decisions, their interactions, four
 coherent study designs and a recommendation, with all numbers reproducible from
 Procedure 30. No design has been adopted.
+
+---
+
+## Phase 2 (continued) — the preregistered analysis and its characterisation
+
+**Procedure 32. Compare candidate definitions of deterioration.**
+Applied four methods (least-squares change point, CUSUM, rank scan, and a
+baseline-anchored threshold with persistence) to both participants at block and
+session level on both performance variables, using **behavioural data only**
+(`scripts/11_define_deterioration.py`). The test applied was whether independent
+methods *agree*, not which gives a preferred answer. Three data-driven methods
+agreed on T11 trial day 758 on both variables (permutation p = 0.0018 and 0.0014).
+
+**Procedure 33. Test the robustness of the alternative.**
+Ran the threshold rule across all 24 combinations of its parameters. The onset
+moved 26 days (day 689 in 12 cases, day 715 in 10, day 709 in 2), establishing
+that a destabilisation-based event definition is not well determined. Also
+reported the smallest attainable p-value at each sample size, showing that every
+"significant" per-session test sat exactly at that floor.
+
+**Procedure 34. Compute the detectable effect size at each sample size.**
+`scripts/10_design_power_analysis.py`. Established that block level (n = 21)
+detects |τ| ≥ 0.305 with power 0.74 against a 2 sd rise, against |τ| ≥ 0.455 at
+session level (n = 11).
+
+**Procedure 35. Freeze the study design.**
+`scripts/12_freeze_design.py --confirm` recorded the boundary, the explicit block
+membership of the before and after sets, the indicators, the reversibility
+criteria with their failure conditions, the secondary outcome, the statistical
+procedure and the power commitment — with SHA-256 hashes of the input tables and
+the git commit, so the ordering is verifiable. Two amendments followed, each
+timestamped and justified, both before any indicator was computed.
+
+**Procedure 36. Select the observable using baseline data only.**
+`scripts/13_select_observable.py`. Demonstrated on white noise that smoothing
+manufactures memory (lag-1 correlation −0.002 → +0.962 with a 25-sample window)
+while non-overlapping rebinning does not, then measured every candidate on the
+baseline blocks alone. All purely neural observables proved essentially
+memoryless; the decoder output's memory matched its own documented exponential
+smoothing filter. Lag-1 autocorrelation was therefore excluded in advance.
+
+**Procedure 37. Run the preregistered analysis.**
+`scripts/14_run_ews_analysis.py`, reading every choice from the frozen design.
+Primary τ = +0.743 (p = 0.0002), parallel τ = −0.419 (p = 0.0068, opposite sign),
+session-level sensitivity in agreement, both reversibility tests passing their
+stated criteria, and an equivocal secondary outcome.
+
+**Procedure 38. Apply the prespecified limitation check.**
+Tested the trend within the healthy baseline alone, as amendment 2 required. The
+indicator rises *more* steeply there (τ = +0.857) than over the whole
+pre-transition period, so the significant result is not specific to the approach
+to deterioration.
+
+**Procedure 39. Diagnose the drift (exploratory).**
+`scripts/15_diagnose_drift.py`. Mean firing rate falls 56.5%; a linear fit of the
+indicator on it gives R² = 0.707; controlling for it removes the indicator's
+relationship to performance (ρ 0.858 → 0.260, n.s.); controlling for elapsed time
+removes essentially everything.
+
+**Procedure 40. Out-of-distribution check.**
+`scripts/16_phase12_synthesis.py`. Computed the indicator on the two extra T11
+sessions using different tasks. Values differ from the same-day cursor-task value
+by only 5.9–8.4%, against a threefold range across the record — confirming the
+indicator tracks the state of the recording rather than the task.
