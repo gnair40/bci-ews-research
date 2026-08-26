@@ -165,18 +165,45 @@ DESIGN = {
                          "same pipeline validated in scripts/09 against the "
                          "published result",
         "primary_indicator": {
-            "name": "within-block temporal variance",
-            "definition": "total variance (trace of the covariance) of the "
-                          "5-dimensional projected neural series within a block",
+            "name": "within-block robust dispersion",
+            "definition": "sum over the 5 projected dimensions of the squared "
+                          "median absolute deviation (MAD x 1.4826, so it "
+                          "estimates the same quantity as a standard deviation "
+                          "for Gaussian data)",
             "tested_over": "the 21 pre-transition blocks",
+            "why_robust_not_raw_variance": "these recordings contain large noise "
+                                           "artifacts - raw per-channel variance "
+                                           "swings about 100-fold between blocks "
+                                           "WITHIN the healthy baseline period, "
+                                           "and the deposit documents this via "
+                                           "avgOutliers and prctOutliers. "
+                                           "Measured across the 8 healthy "
+                                           "baseline blocks, raw projected "
+                                           "variance has a coefficient of "
+                                           "variation of 0.543 against 0.281 for "
+                                           "the robust version. The robust "
+                                           "estimator roughly halves the noise "
+                                           "floor the indicator must beat. This "
+                                           "was determined from BASELINE BLOCKS "
+                                           "ONLY, before any outcome was "
+                                           "computed.",
         },
         "parallel_indicator": {
-            "name": "trial-to-trial variance",
-            "definition": "variance across trials of the per-trial mean of the "
-                          "5-dimensional projection",
+            "name": "trial-to-trial robust dispersion",
+            "definition": "the same robust dispersion, applied across trials to "
+                          "the per-trial means of the 5-dimensional projection",
             "rationale": "trials are separate events, so this measures spread "
                          "without relying on temporal memory at all",
         },
+        "known_limitation_recorded_in_advance": "the indicator is not flat even "
+            "across the healthy baseline blocks (it runs 23.5, 21.5, 28.1, 27.3, "
+            "36.6, 36.7, 42.9, 50.3 in the robust version). Part of the noise "
+            "floor is therefore systematic rather than random, and the baseline "
+            "is not a perfectly stable reference. This is reported as a "
+            "limitation whatever the outcome.",
+        "available_sensitivity_not_run_by_default": "excluding high-artifact "
+            "bins using the deposit's own avgOutliers field, as an alternative "
+            "to relying on the robust estimator",
         "EXCLUDED_IN_ADVANCE": {
             "indicator": "lag-1 autocorrelation (the 'slowing recovery rate' "
                          "half of critical slowing down)",
@@ -390,6 +417,7 @@ def main() -> int:
             "sections_added_or_changed": ["observable_and_indicators",
                                           "statistics.null",
                                           "still_open_after_freezing"],
+            "note": "see the amendment reason for what changed and why",
             "no_results_existed": True,
         }]
         record["design"]["observable_and_indicators"] = \

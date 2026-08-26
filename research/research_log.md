@@ -653,3 +653,56 @@ preregistration cannot be amended after seeing results.
 The event, the observable, the indicators, the null and the power statement are
 all fixed. The block-level summary uses whole blocks, so no rolling window
 remains to choose.
+
+## 2026-08-26 — Amendment 2: the specified indicator was not measurable
+
+### What went wrong
+
+Amendment 1 specified "within-block temporal variance" as the primary indicator,
+on features z-scored with a trailing 180 s rolling window. Checking the pipeline
+before running it revealed two problems, both caught before any outcome existed.
+
+1. The rolling z-score forces every block's variance to about 1 BY CONSTRUCTION.
+   Across the 8 baseline blocks it gives mean 1.025 with a coefficient of
+   variation of 0.045. A variance indicator built on it measures the normaliser,
+   not the brain. The rolling z-score is right for MINDFUL, which measures
+   distribution SHAPE change via KLD, and wrong for a scale-based indicator.
+
+2. Raw (unnormalised) variance is dominated by artifacts. Per-channel variance
+   across the healthy baseline blocks runs 98756, 1481, 724, 725, 4605, 45102,
+   839, 1174 - a roughly 100-fold swing WITHIN a period where performance is
+   93-100% correct. The deposit documents these artifacts itself via avgOutliers
+   and prctOutliers.
+
+### The diagnostic that settled it
+
+Measured on baseline blocks only - all healthy, 93-100% correct, angle error
+17.9-24.5 degrees - so any spread is the indicator's noise floor:
+
+    raw projected variance : CV 0.543, range 3.7x
+    robust dispersion MAD2 : CV 0.281, range 2.3x
+
+The robust estimator roughly halves the noise floor the indicator has to beat.
+
+### Amendment 2
+
+Primary and parallel indicators now use robust dispersion (sum of squared median
+absolute deviations, scaled by 1.4826) rather than raw variance. Recorded with
+the baseline-only justification.
+
+### A limitation recorded in advance
+
+The indicator is not flat even across healthy baseline blocks: robust values run
+23.5, 21.5, 28.1, 27.3, 36.6, 36.7, 42.9, 50.3. Part of the noise floor is
+therefore systematic rather than random, and the baseline is not a perfectly
+stable reference. This is reported whatever the outcome.
+
+### On amending twice
+
+Repeated amendment erodes the value of a preregistration, and that cost is real
+even when each change is justified. Both amendments were forced by specification
+errors caught before any outcome was computed, and both are recorded with their
+own timestamps, reasons and commits rather than silently applied. The guard that
+refuses to amend once any result file exists is what keeps this honest. The
+specification is now checked against the data rather than assumed, which is what
+should have happened before amendment 1.
