@@ -821,3 +821,157 @@ scripts/07 --length-scaling for anyone who wants the full curve.
 
 Deliberately. The five requirements are set out in
 research/phase3_design_implications.md and section 8 of the Phase 1-2 report.
+
+---
+
+## 26 August 2026 — Session record: Phase 1–2 closeout, and defining the project backward from its final product
+
+This entry records an entire working session, per request, so that nothing
+depends on the chat transcript surviving. Everything below is reproducible from
+files in this repository.
+
+### Why this entry exists at all
+
+Working sessions are not permanent. The conversation gets summarised when it
+grows too long, and the machine the work runs on is temporary — it is reclaimed
+after inactivity and the working directory goes with it. Only what is committed
+and pushed survives. `data/raw/` (about 9 GB) is deliberately not committed and
+must be re-fetched with `scripts/01_download_dataset.py`, which verifies
+SHA-256 checksums against the manifest. For a cold start, read
+`reports/PHASE1_2_REPORT.md` and then this log.
+
+### Part 1 — Phases 1 and 2 finished
+
+The confirmatory analysis was run once against the design frozen at commit
+`20db485` with two recorded amendments, and the result is negative. The full
+account is in `reports/EWS_RESULTS.md` and `reports/PHASE1_2_REPORT.md`; the
+short version is that the preregistered primary test was significant
+(τ = +0.743, p = 0.0002) and is not interpretable as an early warning, because a
+limitation recorded *in advance* — that the indicator was not flat across the
+healthy baseline — turned out to explain it. The indicator's trend was in fact
+steeper inside the healthy baseline (τ = +0.857, p = 0.0018, across blocks where
+the participant was at 93–100% correct) than across the whole pre-transition
+period.
+
+Three independent lines of evidence converged on the same explanation: the
+indicator is largely mean firing rate (R² = 0.707), which falls 56.5% across
+T11's record; it is task-invariant (8.4% difference between a structured cursor
+task and free web browsing recorded the same day, against a threefold range
+overall); and T5 and T11 disagree in sign.
+
+Loose ends tied off in this session: `reports/DATASET_EXPLORATION.md` sections 6,
+9 and 10 were filled in from what the analysis established; procedures 32–40 were
+added to `research/procedures.md`; `reports/figures/11_t11_why_negative.png` was
+produced, stacking indicator, performance, and firing rate on one time axis with
+the healthy baseline shaded, which is the entire result in one picture; and
+`reports/PHASE1_2_REPORT.md` was written to consolidate all of it.
+
+One thing remains genuinely unexplained and is recorded as such: **what drives
+the indicator's rise during the healthy baseline.** Firing rate does not (its
+baseline trend is not significant). `avgOutliers`, silent channels, and
+low-variance channels were each tested and rejected as explanations. This is an
+open question, not a solved one.
+
+The length-scaling sweep has still never completed past 2 of 4 rows, having been
+interrupted by session restarts twice. The finding it supports — that detection
+power rises with record length, from 0.42 at 8,000 samples to 1.00 at 40,000 —
+was established by an earlier ad-hoc run and is recorded in the 25 August entry.
+Anyone wanting the full curve can run `scripts/07_ews_power_sweep.py
+--length-scaling`.
+
+### Part 2 — Reading the ISEF research plan form
+
+The 2025-26 Research Plan form (aligned to page 2 of Form 1A) was supplied as a
+`.docx` and read by unzipping it and stripping the XML, because `pandoc` is not
+installed in this container. Its structure is: A Rationale; B Hypotheses /
+Research Questions / Engineering Goals / Expected Outcomes; C Research Methods
+(Materials, Procedures, Risk and Safety, Data Analysis, and an **Artificial
+Intelligence disclosure**); D Bibliography with at least five formal references;
+then conditional sections for Human Participants, Vertebrate Animals, Hazardous
+Biological Agents, and Hazardous Chemicals/Activities/Devices.
+
+Two things in the form matter more than the rest. It states at the top that
+"the presentation of fraudulent data, the evidence of plagiarism, or the
+inappropriate use of AI are prohibited and grounds for a project to be
+disqualified," and it requires an explicit description of AI use. And the Human
+Participants section requires SRC approval **before** experimentation begins,
+with the plan fully developed at approval time — meaning the paperwork must start
+long before the experiment runs.
+
+### Part 3 — The project, redefined by working backward
+
+The instruction was to determine what the final product actually is before
+drafting any section, and explicitly not to assume the current idea was the best
+version. That produced `research/PROJECT_DEFINITION.md`. The reasoning:
+
+**The pilot exposed a problem deeper than a negative result.** In observational
+data nobody knows when deterioration *began*. Onset is defined by the analyst
+after the fact, so lead time is partly an artefact of that definition, and the
+false-alarm rate cannot be estimated at all — there is no known-healthy stretch
+of controlled length with no impending event. Lead time and false-alarm rate are
+the only two numbers that decide whether a warning system is worth deploying, and
+neither is measurable observationally.
+
+**This makes the original experiment logically necessary rather than decorative.**
+The central claim is uncheckable without a system in which the experimenter
+controls and logs the onset of degradation in advance. That is the argument the
+project needed, and it came out of the pilot's failure rather than being imposed
+on it.
+
+**Four project framings were compared.** The original early-warning-signal
+detector came out weakest: its autocorrelation half is unmeasurable on this data
+(measured, not assumed), and the mechanism the data actually shows — a monotonic
+signal ramp into a saturating adaptive-normalisation compensator — is not a fold
+bifurcation and does not generically produce critical slowing down. A broad
+failure-prediction framework is better but generic and badly underpowered at
+n = 2 participants, and it inherits the same missing ground truth. A multimodal
+detector is directly argued against by the finding that mean firing rate alone
+matches the full pipeline. The recommendation is the fourth: a **validated
+decoder-health monitor plus the experimental system that establishes whether any
+such monitor works.**
+
+**The final product is three artefacts.** `decoder-guard`, a real-time monitor
+reading the same feature stream the decoder reads, emitting a calibrated risk
+score, a discrete state (`NOMINAL`/`WATCH`/`WARN`/`FAIL-LIKELY`), and an
+attribution naming which failure mode is responsible — with `TASK-CHANGE` as an
+explicit output class, because the pilot found the old indicator could not tell a
+cursor task from web browsing. A degradation-controlled corpus recorded from a
+closed-loop testbed with injected, pre-logged onsets. And a validation benchmark:
+the five gates plus the lead-time/false-alarm curve, with three reference
+baselines including MINDFUL, already reproduced exactly at r = 0.985.
+
+**One methodological rule governs what may be simulated:** *the perturbation may
+be simulated, the response to it may not.* Simulating the non-stationarity you
+are trying to detect measures your own generative assumptions. Simulating the
+human's compensation is impossible to do credibly, and that compensation is
+precisely what the monitor must see through.
+
+**Success criteria were set now, before anything is built**, and the silence gate
+comes first in reporting order: an indicator that is not silent when the system
+is healthy is not a detector, whatever its p-value. That sentence is what the
+pilot bought.
+
+Four decisions are left open on purpose and belong to the researcher: the signal
+source (surface EMG with a human in the loop, versus a hardware replay rig,
+versus both); how many failure modes; whether the impact demonstration is in
+scope this year; and the performance-threshold rule for the original corpus,
+which must be fixed before data collection. None of them should be settled by
+asking which choice would look better in the results.
+
+### Part 4 — The ISEF plan draft
+
+`research/ISEF_RESEARCH_PLAN.md` maps the definition onto the form's structure.
+It is a draft with every researcher-only field marked, and it flags three things
+that need outside confirmation rather than assumption: the Rules Wizard must be
+re-run once the signal source is chosen, because Form 3 may be required in
+addition to Form 4 when an electronic device is attached to a person; the AI
+disclosure must be re-checked against the 2026-27 rules; and whether sustained
+muscle contraction counts as physical exertion is a question for the SRC, not one
+to answer "no" by default.
+
+The AI disclosure was written honestly and in two parts: AI as a research
+assistant used for code, explanation, drafting and design criticism — with the
+log, the version-controlled scripts, and the advance freeze offered as the record
+that scientific decisions were the researcher's — and machine learning inside
+the project's own system, which is an engineered component rather than a tool
+used to produce results.
