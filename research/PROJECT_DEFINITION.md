@@ -10,6 +10,34 @@ and is unaffected by anything in this document.
 
 ---
 
+## Amendment 1 — 26 August 2026: no human participants
+
+**The researcher has established that human participants are not available for
+this project.** Recorded here rather than silently rewritten, because the point
+of this project's paper trail is that constraints are dated when they appear.
+
+**What this removes:** Configuration 2 (surface EMG) throughout; Stage 3 of §9;
+ISEF Form 4 and SRC participant approval; consent forms and recruitment. The
+entire Human Participants section of the ISEF plan is struck.
+
+**What this does not remove:** everything else. The ground truth for onset never
+came from the human — it comes from the injection log (§5.1), which is unchanged.
+Real non-stationarity, a real compensator, recorded human compensation, transfer
+testing, and H4 in offline form all survive. See Amendment 1 notes inline in
+§§5.3–5.6, 8, 9 and 11.
+
+**What is genuinely lost, and is now a stated limitation:** a live human adapting
+to *this project's own* injected degradation. The compensation gap can be
+measured in recorded data and reasoned about, but not newly created. Evaluation
+of injected episodes is therefore **open-loop** — the decoder's output error
+against the participant's real recorded intended direction, rather than closed-loop
+task success. Stated in §5.6.
+
+**What this promotes:** the hardware replay rig, from optional to the main
+defence against circularity. See §5.4.
+
+---
+
 ## 0. Read this first: the honest starting position
 
 Phases 1–2 tested the original idea — early-warning signals of decoder failure,
@@ -128,9 +156,11 @@ Why this dominates A–C:
    with and without the monitor and count recalibrations.
 
 **Honest weaknesses of D, stated now rather than discovered later:** it is a
-larger build; it requires human participants and therefore ISEF Forms; and its
-transfer claim (from the student's recorded signals to intracortical data) is a
-claim that must be *tested*, not assumed. §8 addresses each.
+larger build; and its transfer claim — that a monitor validated on designed
+faults generalises to undesigned ones — is a claim that must be *tested*, not
+assumed. §8 addresses each. *(Amendment 1: an earlier version of this paragraph
+also listed human participants and ISEF Forms as a cost. That cost is gone, and
+so is the benefit it bought — see §5.6.)*
 
 ---
 
@@ -274,25 +304,48 @@ configures. The human is in the loop, which matters enormously: **the
 compensation the project is trying to see through only exists when a real person
 is adapting.**
 
-### 5.3 The signal source — the one genuinely open decision
+### 5.3 The signal source — settled by Amendment 1
 
 The abstraction the monitor consumes is *multichannel, non-stationary, binned
-activity*. Three sources fit it, and they trade off realism against feasibility:
+activity*. Three sources were considered; **Amendment 1 rules out both that
+require human participants.**
 
-| Source | Realism of degradation | Feasibility | Human subjects? |
-|---|---|---|---|
-| **Surface EMG**, multichannel, cursor control | **High** — electrode lift-off, gel drying, sweat, fatigue, posture shift are *real* physical degradations with the same character as electrode failure | Moderate — needs an isolated, battery-powered, commercially-made amplifier | Yes → Form 4 |
-| **Hardware-in-the-loop replay rig** — recorded spike trains played through a real analog front end with switchable channel loss / attenuation | Moderate — real analog path, synthetic source | High | No |
-| **Consumer EEG** | Low for this purpose — poor channel count, dominated by artefact | High | Yes → Form 4 |
+| Source | Realism of degradation | Feasibility | Human subjects? | Status |
+|---|---|---|---|---|
+| ~~Surface EMG, multichannel, cursor control~~ | High | Moderate | Yes → Form 4 | **Ruled out — Amendment 1** |
+| ~~Consumer EEG~~ | Low for this purpose | High | Yes → Form 4 | **Ruled out — Amendment 1** |
+| **Replayed real neural data + software injector** | Real signal, designed perturbation | High | **No** | **Primary** |
+| **Hardware-in-the-loop replay rig** — recorded activity played through a real analog front end with switchable channel loss and attenuation | Real analog path, and see §5.4a | High | **No** | **Recommended addition** |
 
-**Recommendation: EMG as primary, replay rig as the controlled ladder.** The rig
-gives a clean severity ladder (dropout of 1, 2, 4, 8, 16 channels; gain drift of
-−5%, −10%, −20% per hour) with perfect repeatability and no ethics burden; EMG
-gives the human-in-the-loop compensation that the rig cannot fake. Together they
-cover both halves of the argument. **This decision is the researcher's to make
-and is deliberately left open here.**
+**Settled: replayed real data with a software injector is the primary source.**
+The remaining open decision is whether to add the hardware rig (§11).
 
-### 5.4 What may be simulated, and what may not
+### 5.4 Why the rig matters more now, not less
+
+With no human participants, the project's principal remaining risk is
+**circularity of a specific kind**: if the monitor only ever meets degradations
+the researcher wrote, then passing the test partly measures the researcher's
+imagination rather than the monitor's generality.
+
+The rig is the answer, and this is now its main scientific job rather than a
+convenience. On real hardware you can induce faults whose *feature-level
+signature you did not design*:
+
+- physically loosening a connector
+- warming a component to induce thermal drift
+- introducing electromagnetic interference from a nearby device
+- letting contact impedance drift over hours
+
+In every case the **onset is known** (the experimenter did it, and logged it)
+while the **signature is not** (it emerges from physics). That combination —
+known onset, undesigned signature — is the strongest ground truth available to
+this project, and it requires no participants at all.
+
+Two failure-mode classes should therefore be reported separately: **designed**
+(software injector) and **undesigned** (rig). Generalisation from the first to
+the second is a testable claim, not an assumption.
+
+### 5.5 What may be simulated, and what may not
 
 A single rule, which is worth stating in the plan verbatim because it is the
 methodological line the project must not cross:
@@ -312,6 +365,27 @@ costume, as choosing a deterioration definition after seeing which one gives the
 best result — which this project already refused to do once.
 
 ---
+
+### 5.6 The limitation Amendment 1 creates, stated plainly
+
+Injected episodes are evaluated **open-loop**. In the recorded sessions the
+participant felt the cursor misbehaving and adjusted; in an injected episode the
+behaviour is a recording and cannot respond. So the performance measure for
+injected episodes is *how wrong the frozen decoder's output would have been,
+relative to the participant's real recorded intended direction* — not actual
+closed-loop task success.
+
+This is an approximation and it belongs in the limitations section of any write-up.
+
+It is worth seeing what the two data sources give between them, because neither
+alone was sufficient and the pairing is the honest framing:
+
+| | Onset known? | Live compensation present? |
+|---|---|---|
+| Recorded sessions, natural degradation | **No** | **Yes** |
+| Injected episodes | **Yes** | **No** |
+
+Every quantitative claim must state which of the two it rests on.
 
 ## 6. Variables
 
@@ -340,7 +414,7 @@ architecture and its hyperparameters, session time of day, and the monitor's
 operating point (frozen before the test set is touched).
 
 **Confounds identified in advance, from Phase 1–2:** elapsed time within session;
-overall signal amplitude (the firing-rate confound in its EMG form); task
+overall signal amplitude (the firing-rate confound); task
 difficulty; participant learning across sessions. Each is either randomised
 (onset time), counterbalanced (mode order), or measured and regressed (amplitude,
 elapsed time).
@@ -378,15 +452,19 @@ relative to that session's own pre-onset baseline).
 
 ## 8. The three honest risks, and what is done about each
 
-**Risk 1 — transfer.** EMG is not cortex. A judge will ask, correctly, whether
-anything here says something about iBCIs.
+**Risk 1 — transfer, in its post-Amendment-1 form.** The question is no longer
+"does EMG say anything about cortex?" but the sharper one: **does a monitor
+validated on faults the researcher designed work on faults the researcher did
+not design?**
 
-*Response:* the monitor consumes an abstraction (channels × binned activity) that
-both satisfy, and **the same code, unmodified, is run on the public
-intracortical dataset** — that is H3, and it either passes the gates or it does
-not. The claim is tested, not argued. Notably the pilot already establishes the
-bar it must clear: it must be silent across T11's healthy baseline, where the
-previous indicator rose from 23.6 to 50.4.
+*Response:* two tests, both of which can fail. **(a)** The same code, unmodified,
+is run on the public intracortical dataset and on the other participants — that
+is H3, and the bar is already set by the pilot: it must stay silent across T11's
+healthy baseline, where the previous indicator rose from 23.6 to 50.4. **(b)**
+Designed faults (software injector) and undesigned faults (hardware rig, §5.4)
+are reported as separate result classes, so generalisation between them is
+visible rather than assumed. If the rig is not built, this is a stated gap, not
+a silent one.
 
 **Risk 2 — scope.** Four failure modes, attribution, real-time operation, a
 benchmark, and a closed-loop impact demonstration is a lot for one year.
@@ -410,14 +488,16 @@ contribution and it is a more useful one than a fragile positive.
 | Stage | Deliverable | Standalone result if the project stops here |
 |---|---|---|
 | **1. Benchmark** | The five gates + three baselines, run on the public data | *"Published iBCI instability measures fail the silence gate; here is why and here is the test"* — already 80% complete |
-| **2. Rig** | Replay rig + injector + `decoder-guard` v1 (risk + state) | *"Lead time and false-alarm rate measured against known onset for the first time"* |
-| **3. Human loop** | EMG closed-loop corpus with human compensation | *"Compensation masks degradation by N seconds; the monitor sees through it"* |
+| **2. Injector** | Software fault injector on replayed real data + `decoder-guard` v1 (risk + state) | *"Lead time and false-alarm rate measured against known onset for the first time"* |
+| ~~**3. Human loop**~~ | ~~EMG closed-loop corpus~~ | **Struck — Amendment 1.** Replaced by **3′. Undesigned faults**: hardware rig (§5.4) — *"the monitor generalises to faults it was not designed against"* |
 | **4. Attribution** | Failure-mode classification incl. `TASK-CHANGE` | *"Warnings are actionable, not just present"* |
 | **5. Impact** | Monitor-triggered vs fixed-schedule recalibration (H4) | *"K% fewer recalibrations at equal performance"* — the headline |
 
-Stage 1 uses work that already exists in this repository. Stages 2 and 4 require
-no human participants. Stage 3 is the one gated on ISEF approval, so its
-paperwork starts first even though it runs third.
+Stage 1 uses work that already exists in this repository. **After Amendment 1 no
+stage requires human participants, and no stage is gated on SRC participant
+approval** — the schedule constraint that used to dominate the plan is gone.
+Stage 3′ is the only one requiring hardware purchase, and is the only optional
+stage.
 
 ---
 
@@ -430,9 +510,9 @@ paperwork starts first even though it runs third.
 | S3 | **Silence gate** — monitor's trend during healthy baseline | not significant at α = 0.05, on *every* healthy segment tested |
 | S4 | Beats the trivial comparator | outperforms mean-amplitude/mean-rate alone on S1 at matched S2 |
 | S5 | Survives elapsed-time control | S1 holds with elapsed time regressed out |
-| S6 | Attribution accuracy | > chance (1/6), with `TASK-CHANGE` recall > 0.8 |
+| S6 | Attribution accuracy | > chance, with `TASK-CHANGE` recall > 0.8 |
 | S7 | Transfer | passes S3 unchanged on public T11 data |
-| S8 | Impact | fewer recalibrations than fixed schedule at non-inferior performance |
+| S8 | Impact (offline, §5.6) | fewer recalibrations than fixed schedule at non-inferior performance |
 
 S3 is non-negotiable and comes first in reporting order: **an indicator that is
 not silent when the system is healthy is not a detector, whatever its p-value.**
@@ -454,9 +534,11 @@ That sentence is the thing Phase 1–2 bought, and it is the spine of the projec
 
 **Open, and deliberately left to the researcher:**
 
-1. **Signal source** — EMG primary, or rig only, or both (§5.3). This is the
-   single biggest decision and it drives the ISEF forms, the timeline, and the
-   equipment budget.
+1. **Whether to build the hardware rig** (§5.4), on top of the software injector
+   which is settled. This is now the biggest open decision. Building it is what
+   lets the project test generalisation to *undesigned* faults; skipping it is
+   defensible but must be declared as a limitation rather than left unmentioned.
+   *(Amendment 1 replaced the former "EMG / rig / both" question with this one.)*
 2. **How many failure modes** — four is proposed; two (rate-loss and dropout)
    would be defensible and much faster.
 3. **Whether Stage 5 (impact) is in scope this year** or is stated as the next

@@ -975,3 +975,94 @@ log, the version-controlled scripts, and the advance freeze offered as the recor
 that scientific decisions were the researcher's — and machine learning inside
 the project's own system, which is an engineered component rather than a tool
 used to produce results.
+
+---
+
+## 26 August 2026 (later) — Amendment 1, and the fault injector
+
+### Amendment 1: no human participants
+
+The researcher established that human participants are not available. Recorded
+as **Amendment 1** in `research/PROJECT_DEFINITION.md` and
+`research/ISEF_RESEARCH_PLAN.md` rather than silently rewritten, so that the
+decision and its cost are both recoverable.
+
+Struck: surface EMG (Configuration 2), Stage 3 of the staging table, ISEF Form 4,
+SRC participant approval, consent forms, recruitment. The Human Participants
+section of the ISEF plan is marked NOT APPLICABLE with a pointer to the commit
+that still holds the drafted version.
+
+Survives untouched: the ground truth for onset, which never came from the human —
+it comes from the injection log. Also real non-stationarity, a real compensator
+(the decoder's adaptive normalisation, which is software), recorded human
+compensation already in the dataset, transfer testing, and H4 in offline form.
+
+**The one real loss, now a stated limitation (§5.6):** injected episodes are
+evaluated **open-loop**. A recording cannot adapt to a fault the way a live
+person would, so the performance measure is the frozen decoder's output error
+against the participant's real recorded intended direction, not closed-loop task
+success. The two data sources are complementary and neither alone suffices:
+recorded sessions have live compensation but unknown onset; injected episodes
+have known onset but no compensation. Every claim must say which it rests on.
+
+**What Amendment 1 promotes:** the hardware replay rig, from optional convenience
+to the main defence against a specific circularity — if the monitor only ever
+meets faults the researcher designed, passing the test partly measures the
+researcher's imagination. Real hardware gives faults with **known onset but
+undesigned signature** (loosened connector, thermal drift, induced interference).
+Designed and undesigned faults are to be reported as separate result classes.
+This is now the biggest open decision, replacing the former "EMG / rig / both".
+
+### The fault injector — `scripts/17_fault_injector.py`
+
+725 episodes over 29 T11 blocks. Three subcommands: `plan` draws the onsets and
+writes them with a git commit hash and a SHA-256; `apply` can only read that
+file; `verify` checks the injector before anything is scored with it. Re-planning
+refuses to overwrite without `--amend REASON`, which preserves the superseded
+checksum. Same discipline as `scripts/12_freeze_design.py`.
+
+**The four modes were chosen to span one axis: visibility to mean activity.**
+Phase 1–2 found mean firing rate alone matched the whole pipeline, so gate S4
+("beat the trivial comparator") is only a real test if some faults are invisible
+to it. Measured, relative to the untouched control on the same block:
+
+| Mode | Change in mean activity vs control | Clipped |
+|---|---|---|
+| RATE_LOSS (severe) | **−51.3%** — mean activity sees it | 0% |
+| CHANNEL_DROPOUT (severe) | −28.6% — partly visible | 0% |
+| GAIN_DRIFT (severe) | **+4.3%** — near-blind, by construction | 0% |
+| GEOMETRY_ROTATION (mild / severe) | **−1.1% / +2.8%** — near-blind | 3.1% / 4.7% |
+
+`GAIN_DRIFT` centres its per-channel log-gains to zero mean, so it changes
+relative scaling without changing the overall level. `GEOMETRY_ROTATION` uses
+Givens rotations on disjoint channel pairs, which preserve the norm exactly —
+pairs drawn only *within* a feature group, never across, because T11's matrix
+concatenates threshold crossings with spike power and their scales differ by
+orders of magnitude.
+
+`clipped` is honest bookkeeping: these features are non-negative, rotation can
+drive entries below zero, and flooring them is the physically correct choice. It
+is also precisely the amount by which the mode falls short of being exactly
+norm-preserving, so it is reported rather than hidden.
+
+### Two things went wrong, both worth recording
+
+**1. The `NONE` control skipped the diagnostics.** `apply_episode` returned early
+for the control, so `verify` crashed with a `KeyError`. The crash was the good
+outcome; the bad outcome would have been the control being the one episode nobody
+checked. Fixed so every mode takes the same path.
+
+**2. The naive diagnostic was contaminated, and the control is what exposed it.**
+The first verification table measured "mean after onset vs mean before onset" and
+reported **+15.6% for `NONE` — an episode that returns a bit-identical array.**
+Nothing was wrong with the injector (the identity invariant passes). The block's
+own activity genuinely drifts upward by ~15% within a single block.
+
+That is the same class of error as the headline result of Phase 1–2: a
+before/after statistic with a non-zero floor that has nothing to do with the
+effect being measured. The fix is to report change **relative to the untouched
+control on the same block**, which is what the verifier now does — the raw column
+is still printed, labelled *(misleading)*, as a standing reminder.
+
+**Worth carrying forward:** within-block drift of ~15% is a real property of this
+data and a floor that any block-level statistic has to clear.
