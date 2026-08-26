@@ -274,6 +274,80 @@ checking that distinguishes careful work.
 
 ---
 
+## 3b. Why the *destabilization* is not the event — considered and rejected
+
+A natural objection: *this project is about early warning, so shouldn't the event
+be the moment things start destabilising (≈ day 689–715) rather than the collapse
+(day 758)?* It was considered seriously and rejected, for three reasons.
+
+### Reason 1 — the destabilization IS the early-warning signal
+
+Rising variance, wobbling, and flickering between good and bad states are exactly
+what critical slowing down predicts as the **precursor**. Making them the event
+promotes the warning into the thing needing warning, and then a *new* warning is
+required before it — and the period before day 689 is flat and healthy, so there
+is nothing there to find.
+
+```
+warning : destabilization  (~day 689–751)
+event   : collapse          (day 758)
+lead    : the quantity being measured
+```
+
+### Reason 2 — its date is not determined
+
+The threshold rule has three parameters someone must choose. Running all 24
+combinations (`scripts/11_define_deterioration.py --sensitivity`):
+
+| Onset | Frequency |
+|---|---|
+| day 689 | 12 / 24 |
+| day 715 | 10 / 24 |
+| day 709 | 2 / 24 |
+
+**The date swings 26 days depending on whether 2 or 3 consecutive degraded blocks
+are required.** A date that moves that much with its own parameters is a property
+of the choice, not of the data — and a study should not be built on it.
+
+The per-session tests look stronger than they are:
+
+| Trial day | mean AE | p | smallest p possible at this n |
+|---|---|---|---|
+| 689 | 34.1 | 0.0444 | **0.0444** |
+| 715 | 36.2 | 0.0444 | **0.0444** |
+| 727 | 59.4 | 0.0444 | **0.0444** |
+| 758 | 121.4 | 0.0444 | **0.0444** |
+
+Every "significant" session sits exactly at the floor. With 8 baseline blocks
+against 2, 0.0444 is the smallest value the test can return — it means "completely
+separated", which is easy at n = 2, and carries no information about how large the
+effect is. Identical p-values across very different effect sizes are the signature
+of that floor.
+
+By contrast the day-758 boundary is agreed by three independent methods on two
+independent variables at **p = 0.0018**, with no parameters to choose.
+
+### Reason 3 — it costs most of the sample
+
+| Event | Blocks before it | Smallest detectable \|τ\| | Verdict |
+|---|---|---|---|
+| day 689 | 8 | ≈ 0.57 | unusable |
+| day 715 | 16 | ≈ 0.36 | marginal |
+| **day 758** | **21** | **0.305** | **usable** |
+
+### But the objection contains a real point, and it is now tested — see §6, C2
+
+The sharp form of the worry is not about which date to pick. It is: *if the
+destabilization was already visible in behaviour, what does the neural signal
+add?* A clinician watching performance would notice trouble around day 689–715.
+An indicator that only fires at day 750 predicts a collapse that was already
+obvious.
+
+That deserves its own test, and it is added to the preregistration as a
+prespecified secondary outcome (§6, C2). The destabilization becomes a
+**comparator**, not the target.
+
+
 ## 4. Hindsight bias — the honest treatment
 
 **The circularity that would matter is absent.** The event is defined from
@@ -385,6 +459,43 @@ measure is tracking elapsed time or accumulated drift rather than system dynamic
 **Run the same test within T11** across days 727 → 751, where performance
 degrades to 56.5% and returns to 100%.
 
+### C2. PRESPECIFIED SECONDARY OUTCOME — neural versus behavioural lead time
+
+*Answers: does the neural indicator warn earlier than simply watching performance?*
+
+This is the clinically meaningful comparison. Predicting a collapse that was
+already visible in behaviour is worth little; warning before behaviour shows
+anything is worth a great deal.
+
+**One detection rule, applied identically to both signals.**
+
+| Element | Fixed value |
+|---|---|
+| Baseline | the first 8 T11 blocks (trial days 658–675) — these precede every candidate destabilization date, so the baseline cannot be contaminated by it |
+| Limit | baseline mean + *k* × baseline SD |
+| Detection | first block exceeding the limit and staying beyond it for *p* consecutive blocks |
+| Behavioural signal | median angle error per block |
+| Neural signal | the early-warning indicator per block |
+| Outcome | `detection_day(behaviour) − detection_day(neural)`, in trial days. **Positive means the neural indicator warned first.** |
+
+**Reported across the parameter grid, not at one setting.** We now know this rule
+is parameter-sensitive (§3b), so *k* ∈ {1.5, 2.0, 2.5, 3.0}, baseline ∈ {4, 6, 8}
+and *p* ∈ {2, 3} are all run — the same 24 combinations. Because both signals use
+identical parameters at every setting, the *comparison* is fair even though either
+date alone is not well determined. Report the full distribution of lead times plus
+its median.
+
+**Prespecified interpretation, fixed in advance:**
+
+| Result | Conclusion |
+|---|---|
+| Lead > 0 in a clear majority of settings | Neural monitoring detects earlier than behavioural monitoring |
+| Lead ≈ 0 | No advantage over watching performance |
+| Lead < 0 | Behaviour detects first — **the neural indicator adds nothing**, and this must be reported as such |
+
+That third row is the point of prespecifying it. It is a result the project can
+lose, which is what makes winning it meaningful.
+
 ### D. What must be frozen before any indicator is computed
 
 1. This document, committed, with its commit hash recorded.
@@ -400,6 +511,10 @@ degrades to 56.5% and returns to 100%.
 6. The power statement: at n = 21 the test detects |τ| ≥ 0.305, with power 0.74
    against a 2-standard-deviation rise. **A null result will be reported as a
    null.**
+7. The secondary outcome of §6.4 — the detection rule, its baseline blocks, the
+   parameter grid it is reported across, and the three prespecified
+   interpretations, **including that a negative lead means the neural indicator
+   adds nothing and will be reported that way.**
 
 ### E. What may still be decided afterwards
 

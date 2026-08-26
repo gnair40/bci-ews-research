@@ -65,6 +65,8 @@ import json
 import sys
 from pathlib import Path
 
+from math import comb
+
 import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
@@ -224,6 +226,69 @@ def analyse(df: pd.DataFrame, part: str, level: str, args) -> list[dict]:
     return rows
 
 
+# ---------------------------------------------------------------------------
+# HOW WELL DETERMINED IS A THRESHOLD-BASED ONSET?
+# ---------------------------------------------------------------------------
+
+def threshold_sensitivity(df: pd.DataFrame, level: str,
+                          baselines=(4, 6, 8), sds=(1.5, 2.0, 2.5, 3.0),
+                          persists=(2, 3)) -> pd.DataFrame:
+    """
+    Re-run the baseline+persistence rule across every combination of its
+    parameters, and see how much the answer moves.
+
+    Why this matters: that rule has three numbers in it that someone has to
+    choose (how much history counts as "normal", how far past normal counts as
+    degraded, how long it must stay there). If the onset date barely moves as
+    those change, the date is a property of the data. If it swings wildly, the
+    date is really a property of the choice -- and should not be used to define
+    the event a whole study is built on.
+    """
+    y = df["angle_error"].to_numpy(float)
+    rows = []
+    for bn in baselines:
+        for sd in sds:
+            for pr in persists:
+                k = cp_baseline_threshold(y, bn, sd, pr, True)
+                rows.append({"baseline_n": bn, "n_sd": sd, "persist": pr,
+                             "index": k, "onset": label_of(df, k, level)})
+    return pd.DataFrame(rows)
+
+
+def session_vs_baseline(df: pd.DataFrame, n_baseline: int = 8) -> pd.DataFrame:
+    """
+    Test each session against the early blocks.
+
+    IMPORTANT LIMITATION, reported alongside the numbers: with only 1-2 blocks
+    per session the smallest attainable two-sided p-value is about 0.044, so a
+    p of 0.044 means "as separated as this test can show" rather than "strong
+    evidence". Identical p-values across sessions are the signature of that
+    floor, not of equally strong effects.
+    """
+    from scipy.stats import mannwhitneyu
+    y = df["angle_error"].to_numpy(float)
+    early = y[:n_baseline]
+    rows = []
+    for day, g in df.groupby("trial_day"):
+        v = y[(df.trial_day == day).to_numpy()]
+        if len(v) == 0 or day in df.trial_day.unique()[:3]:
+            continue
+        try:
+            u = mannwhitneyu(early, v, alternative="two-sided")
+        except ValueError:
+            continue
+        rows.append({"trial_day": int(day), "n_blocks": len(v),
+                     "mean_ae": round(float(np.mean(v)), 1),
+                     "baseline_mean_ae": round(float(np.mean(early)), 1),
+                     "p": round(float(u.pvalue), 4)})
+    out = pd.DataFrame(rows)
+    if len(out):
+        out["p_floor_for_this_n"] = out["n_blocks"].map(
+            lambda n2: round(2 / comb(n_baseline + n2, n2), 4)
+            if n2 > 0 else np.nan)
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -234,6 +299,9 @@ def main() -> int:
     ap.add_argument("--persist", type=int, default=2,
                     help="consecutive degraded observations required")
     ap.add_argument("--n-perm", type=int, default=N_PERM)
+    ap.add_argument("--sensitivity", action="store_true",
+                    help="also report how much a threshold-based onset moves "
+                         "when its parameters change")
     args = ap.parse_args()
 
     tp, bp = PROCESSED / "trials.csv", PROCESSED / "blocks.csv"
@@ -261,6 +329,39 @@ def main() -> int:
     out = pd.DataFrame(rows)
     PROCESSED.mkdir(parents=True, exist_ok=True)
     out.to_csv(PROCESSED / "deterioration_candidates.csv", index=False)
+
+    if args.sensitivity:
+        print("=" * 78)
+        print("HOW WELL DETERMINED IS A THRESHOLD-BASED ONSET? (T11, block level)")
+        print("=" * 78)
+        df11 = series_for(trials, blocks, "T11", "block")
+        sens = threshold_sensitivity(df11, "block")
+        counts = sens["onset"].value_counts()
+        print(f"\n{len(sens)} parameter combinations tried "
+              f"(baseline x SD x persistence):\n")
+        for lab, c in counts.items():
+            print(f"   {lab:<22} {c:>2}/{len(sens)}   {'#' * int(c)}")
+        spread = sens["index"].dropna()
+        if len(spread) > 1:
+            lo, hi = int(spread.min()), int(spread.max())
+            d_lo = int(df11.iloc[lo].trial_day); d_hi = int(df11.iloc[hi].trial_day)
+            print(f"\n   Onset ranges from trial day {d_lo} to {d_hi} "
+                  f"— a spread of {d_hi - d_lo} days.")
+            print("   A date that moves this much with its own parameters is a")
+            print("   property of the choice, not of the data.")
+        sens.to_csv(PROCESSED / "threshold_sensitivity.csv", index=False)
+
+        print("\n" + "-" * 78)
+        print("EACH SESSION AGAINST THE EARLY BLOCKS (T11)")
+        print("-" * 78)
+        sv = session_vs_baseline(df11)
+        print(sv.to_string(index=False))
+        print("\n   p_floor_for_this_n is the SMALLEST p-value the test could")
+        print("   possibly return at that sample size. Where p equals the floor,")
+        print("   the result means 'completely separated', which is easy with 2")
+        print("   blocks — it is not strong evidence.")
+        sv.to_csv(PROCESSED / "session_vs_baseline.csv", index=False)
+        print()
     print("=" * 78)
     print(f"Wrote {(PROCESSED / 'deterioration_candidates.csv').relative_to(REPO_ROOT)}")
     print("""

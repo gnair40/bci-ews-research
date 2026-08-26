@@ -103,6 +103,57 @@ DESIGN = {
                               "spanned by days 658-675",
          "failure_criterion": "indicator at day 751 remains elevated"},
     ],
+    "secondary_outcome_neural_vs_behavioural": {
+        "question": "does the neural indicator warn earlier than simply "
+                    "watching performance?",
+        "rationale": "predicting a collapse that was already visible in "
+                     "behaviour is worth little; warning before behaviour "
+                     "shows anything is worth a great deal",
+        "baseline_blocks": "first 8 T11 blocks (trial days 658-675), which "
+                           "precede every candidate destabilization date",
+        "detection_rule": "first block exceeding baseline mean + k*SD and "
+                          "staying beyond it for p consecutive blocks",
+        "behavioural_signal": "median angle error per block",
+        "neural_signal": "the early-warning indicator per block",
+        "outcome": "detection_day(behaviour) - detection_day(neural), in trial "
+                   "days; positive means the neural indicator warned first",
+        "parameter_grid": {"k": [1.5, 2.0, 2.5, 3.0], "baseline_n": [4, 6, 8],
+                           "persist": [2, 3]},
+        "why_a_grid": "the rule is known to be parameter-sensitive (the "
+                      "destabilization date moves 26 days across this grid), so "
+                      "the full distribution is reported rather than one "
+                      "setting; both signals use identical parameters at every "
+                      "setting, which keeps the COMPARISON fair even though "
+                      "either date alone is not well determined",
+        "interpretation_fixed_in_advance": {
+            "lead_positive_majority": "neural monitoring detects earlier than "
+                                      "behavioural monitoring",
+            "lead_near_zero": "no advantage over watching performance",
+            "lead_negative": "behaviour detects first; the neural indicator "
+                             "adds nothing and will be reported as such",
+        },
+    },
+    "rejected_alternatives": {
+        "destabilization_as_the_event": {
+            "considered": True,
+            "rejected_because": [
+                "the destabilization IS the early-warning signal; making it the "
+                "event would require a new warning before it, and the period "
+                "before day 689 is flat and healthy",
+                "its date is not determined: across 24 parameter combinations "
+                "the onset lands on day 689 (12/24), day 715 (10/24) or day 709 "
+                "(2/24) — a 26-day spread",
+                "per-session tests sit exactly at the smallest p-value the "
+                "sample size allows (0.0444), so they carry no information "
+                "about effect size",
+                "it costs most of the sample: 8 blocks before day 689 or 16 "
+                "before day 715, against 21 before day 758",
+            ],
+            "retained_as": "a comparator in the secondary outcome above",
+            "evidence": "data/processed/threshold_sensitivity.csv, "
+                        "data/processed/session_vs_baseline.csv",
+        },
+    },
     "statistics": {
         "trend_statistic": "Kendall's tau",
         "null": "AR(1)-matched surrogates, two-sided",
@@ -225,6 +276,19 @@ def main() -> int:
           f"detects |tau| >= {ps['smallest_detectable_tau']}; "
           f"power {ps['power_vs_2sd_rise']} vs a 2 sd rise.")
     print(f"  Commitment: {ps['commitment']}")
+
+    sec = DESIGN["secondary_outcome_neural_vs_behavioural"]
+    print("\nSecondary outcome (prespecified): neural vs behavioural lead time")
+    print(f"  {sec['question']}")
+    print(f"  outcome: {sec['outcome']}")
+    print(f"  reported across {len(sec['parameter_grid']['k']) * len(sec['parameter_grid']['baseline_n']) * len(sec['parameter_grid']['persist'])} parameter settings, same for both signals")
+    for k, v in sec["interpretation_fixed_in_advance"].items():
+        print(f"    {k:<26} -> {v}")
+
+    rej = DESIGN["rejected_alternatives"]["destabilization_as_the_event"]
+    print("\nRejected alternative, recorded: destabilization as the event")
+    for r in rej["rejected_because"]:
+        print(f"  - {r}")
 
     print("\nStill open after freezing (independent of the event definition):")
     for s in DESIGN["still_open_after_freezing"]:

@@ -511,3 +511,83 @@ preregistration. Status: PROPOSED, not frozen, awaiting approval.
 No definition has been adopted and nothing has been frozen. That is the
 researcher's decision, and freezing must be a deliberate act with a recorded
 commit, not a side effect of analysis.
+
+## 2026-08-26 — Should the event be the destabilization? Considered and rejected
+
+### The question
+
+Raised by Gayathri: the project is about EARLY WARNING, so shouldn't the event be
+the moment things start destabilising (~day 689-715) rather than the collapse
+(day 758)? Doesn't using the collapse defeat the point?
+
+### Answer: the logic inverts
+
+The destabilization IS the early-warning signal. Rising variance, wobbling and
+flickering between good and bad states are exactly what critical slowing down
+predicts as the precursor. Making them the event promotes the warning into the
+thing needing warning, and then a NEW warning is required before it - and the
+period before day 689 is flat and healthy, so there is nothing there to find.
+
+    warning : destabilization  (~day 689-751)
+    event   : collapse          (day 758)
+    lead    : the quantity being measured
+
+### And the destabilization date is not determined
+
+Ran all 24 combinations of the threshold rule's parameters
+(`scripts/11_define_deterioration.py --sensitivity`):
+
+    day 689   12/24
+    day 715   10/24
+    day 709    2/24
+
+The date swings 26 days depending on whether 2 or 3 consecutive degraded blocks
+are required. A date that moves that much with its own parameters is a property
+of the choice, not of the data.
+
+The per-session tests also look stronger than they are. Every "significant"
+session returns p = 0.0444 - which is exactly the SMALLEST p-value obtainable
+with 8 baseline blocks against 2. Identical p-values across very different effect
+sizes (34.1 vs 121.4 degrees) are the signature of that floor, not of equally
+strong evidence. The script now reports p_floor_for_this_n alongside every p so
+this cannot be misread.
+
+By contrast day 758 is agreed by three independent methods on two independent
+variables at p = 0.0018, with no parameters to choose.
+
+### Cost in sample size
+
+    event day 689 ->  8 blocks before -> smallest detectable tau ~0.57 (unusable)
+    event day 715 -> 16 blocks before -> ~0.36 (marginal)
+    event day 758 -> 21 blocks before ->  0.305 (usable)
+
+### But the objection contained a real point, and it improved the design
+
+The sharp form is not about which date to pick. It is: if the destabilization was
+already visible in BEHAVIOUR, what does the neural signal add? A clinician
+watching performance would notice trouble around day 689-715. An indicator that
+only fires at day 750 predicts a collapse that was already obvious.
+
+That is now a PRESPECIFIED SECONDARY OUTCOME: neural versus behavioural detection
+time, using one detection rule applied identically to both signals, reported
+across the same 24-parameter grid so the comparison stays fair even though either
+date alone is not well determined. Outcome is
+detection_day(behaviour) - detection_day(neural) in trial days.
+
+Interpretation fixed in advance, including the losing case: if behaviour detects
+first, the neural indicator adds nothing and will be reported that way. That is a
+result the project can lose, which is what makes winning it meaningful.
+
+The destabilization thus becomes a COMPARATOR rather than the target.
+
+### Recorded
+
+- research/deterioration_definition.md section 3b (why rejected) and section 6 C2
+  (the new secondary outcome).
+- scripts/11 --sensitivity makes the parameter sweep and the p-floor reproducible.
+- scripts/12 now records both the secondary outcome and the rejected alternative
+  in the freeze, so the reasoning survives in the preregistration itself.
+
+### Still not frozen
+
+research/FROZEN_DESIGN.json does not exist. The decision remains Gayathri's.
