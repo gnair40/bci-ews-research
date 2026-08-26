@@ -706,3 +706,61 @@ own timestamps, reasons and commits rather than silently applied. The guard that
 refuses to amend once any result file exists is what keeps this honest. The
 specification is now checked against the data rather than assumed, which is what
 should have happened before amendment 1.
+
+## 2026-08-26 — Phase 1-2 characterisation complete; what the dataset actually is
+
+Exploratory, run after the confirmatory analysis was reported. Does not revise it.
+
+### The number that explains most of the phase
+
+Mean firing rate falls 56.5% across T11's record, 26.5 to 11.5. Over 142 days
+more than half the recorded neural activity disappears.
+
+### The indicator adds nothing beyond firing rate
+
+    indicator vs angle error, raw                  rho +0.858  p < 0.0001
+      controlling for mean firing rate             rho +0.260  p = 0.17  (n.s.)
+      controlling for elapsed time                 rho +0.105  p = 0.59  (n.s.)
+    mean firing rate vs angle error                rho -0.880  p < 0.0001
+
+A linear fit of the indicator on firing rate gives R2 = 0.707. Controlling for
+firing rate, the indicator's link to performance is no longer significant.
+Controlling for time, nothing remains.
+
+And mean firing rate predicts performance as well as the whole dispersion
+pipeline does. A one-line calculation matches a five-dimensional projection with
+robust statistics. That is now a comparator any future indicator must beat,
+alongside MINDFUL.
+
+### The diagnosis is only partial, and that is stated
+
+Firing rate does NOT explain the within-baseline rise that overturned the
+headline. Across the healthy baseline the indicator climbs steeply (tau +0.857,
+p 0.0018) while firing rate barely moves (tau -0.286, p 0.40). Something else
+drives it and has not been identified; avgOutliers, silent channels and
+low-variance channels were all tested and rejected (|rho| < 0.32).
+
+### Five requirements for Phase 3
+
+1. De-trend the block-level indicator series before testing its trend.
+2. A prespecified within-baseline SILENCE GATE - the indicator must show no
+   significant trend during healthy performance before its pre-transition trend
+   may be interpreted. Had this been a gate rather than a footnote, the headline
+   would never have been reported as positive.
+3. Demonstrate invariance to mean firing rate, on the baseline, rather than
+   assert it.
+4. Add mean firing rate as a comparator to beat.
+5. Control for elapsed time.
+
+### The honest possibility
+
+This dataset may not be able to answer the question, because the array's signal
+decline is so large and so entangled with performance that no measure separates
+"approaching a transition" from "the electrodes are failing". If Phase 3's gates
+are applied and nothing passes, that is itself a publishable methodological
+result.
+
+Recorded in research/phase3_design_implications.md, which also lists where a
+positive result could still legitimately come from: the residual after removing
+firing rate (which is what framing C actually predicts), covariance geometry
+rather than scale, and flickering - all requiring preregistration in advance.
