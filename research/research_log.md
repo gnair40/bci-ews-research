@@ -591,3 +591,65 @@ The destabilization thus becomes a COMPARATOR rather than the target.
 ### Still not frozen
 
 research/FROZEN_DESIGN.json does not exist. The decision remains Gayathri's.
+
+## 2026-08-26 — Observable chosen; autocorrelation excluded in advance
+
+### The finding that forced this
+
+`scripts/13_select_observable.py`, run on BASELINE BLOCKS ONLY (T11 days 658-675)
+so that no trend information entered the choice:
+
+Every purely neural observable is essentially white at every timescale from 20 ms
+to 5 s. Neural PC1 has 0.33 samples of memory at 20 ms and 0.69 at 5 s bins; the
+population mean is similar. Rebinning improves signal to noise, so slow structure
+would have emerged if present.
+
+The decoder output was the only candidate with real memory (1.10 s) - but the
+paper's Methods record that decoded velocity is exponentially smoothed, which is
+exactly the filter that manufactures memory. Its autocorrelation matches the
+pure-filter prediction at short lags and decays FASTER at long lags, so there is
+no memory beyond the filter. Its 1.08 s constant is a smoothing constant, not a
+neural one.
+
+### The trap that was verified, not assumed
+
+On pure white noise, a 25-sample moving average raises lag-1 correlation from
+-0.002 to +0.962. Non-overlapping rebinning leaves it at +0.038. Smoothing to
+"give the signal memory" would have meant measuring our own filter. Every
+candidate therefore used rebinning, never smoothing.
+
+### Consequence
+
+The strict critical-slowing-down prediction - rising lag-1 autocorrelation, a
+slowing recovery rate - CANNOT be tested within blocks on this dataset. Not for
+want of method (scripts 06-07 validated it) but because nothing recorded has a
+recovery rate to measure. Rising variance, the other half of the signature, does
+not require memory and remains available.
+
+The data structure is also not the classic CSD setup. Within a block there are no
+slow dynamics; the drift is across days. This is 21 sparse samples of a slowly
+drifting system, not a long continuous record with a rolling window.
+
+### Decision, recorded as amendment 1 to the frozen design
+
+- Primary indicator: within-block temporal variance
+- Parallel indicator: trial-to-trial variance
+- EXCLUDED IN ADVANCE: lag-1 autocorrelation, with the evidence as the reason
+- Null changed to a 5000-permutation test on block order, appropriate for a
+  21-point series with no memory. Same null as the power analysis, so
+  |tau| >= 0.305 and power 0.74 against a 2 sd rise apply unchanged.
+- Reported regardless of outcome: that no observable here supports an
+  autocorrelation-based early-warning analysis.
+
+### Why an amendment rather than a rewrite
+
+The original freeze is preserved intact with its own timestamp and commit; the
+change is appended with its own timestamp, reason and commit. The amend path also
+refuses to run if any early-warning result file already exists, so a
+preregistration cannot be amended after seeing results.
+
+### Nothing about the design is open now
+
+The event, the observable, the indicators, the null and the power statement are
+all fixed. The block-level summary uses whole blocks, so no rolling window
+remains to choose.

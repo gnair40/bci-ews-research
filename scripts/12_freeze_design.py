@@ -154,9 +154,67 @@ DESIGN = {
                         "data/processed/session_vs_baseline.csv",
         },
     },
+    "observable_and_indicators": {
+        "decided": "2026-08-26, after freezing the event definition and before "
+                   "any early-warning indicator was computed on the real data",
+        "evidence": "research/observable_selection.md, "
+                    "data/processed/observable_candidates.csv",
+        "preprocessing": "neural features z-scored per block with a trailing "
+                         "180 s rolling window, then projected onto the top 5 "
+                         "principal components of the baseline reference - the "
+                         "same pipeline validated in scripts/09 against the "
+                         "published result",
+        "primary_indicator": {
+            "name": "within-block temporal variance",
+            "definition": "total variance (trace of the covariance) of the "
+                          "5-dimensional projected neural series within a block",
+            "tested_over": "the 21 pre-transition blocks",
+        },
+        "parallel_indicator": {
+            "name": "trial-to-trial variance",
+            "definition": "variance across trials of the per-trial mean of the "
+                          "5-dimensional projection",
+            "rationale": "trials are separate events, so this measures spread "
+                         "without relying on temporal memory at all",
+        },
+        "EXCLUDED_IN_ADVANCE": {
+            "indicator": "lag-1 autocorrelation (the 'slowing recovery rate' "
+                         "half of critical slowing down)",
+            "reason": "no observable in this dataset has a measurable recovery "
+                      "rate. Every purely neural candidate is essentially white "
+                      "from 20 ms to 5 s bins (neural PC1: 0.33 samples of "
+                      "memory at 20 ms, 0.69 at 5 s). The decoder output is the "
+                      "only candidate with memory (1.10 s), but the Methods "
+                      "record that decoded velocity is exponentially smoothed, "
+                      "and its autocorrelation matches that filter's prediction "
+                      "at short lags while decaying FASTER at long lags - so "
+                      "there is no memory beyond the filter.",
+            "why_this_matters": "an indicator built on a smoothed signal "
+                                "measures the smoothing window, not the system. "
+                                "A 25-sample moving average raises the lag-1 "
+                                "correlation of pure white noise from -0.002 to "
+                                "+0.962.",
+            "commitment": "this exclusion is recorded BEFORE the analysis. It "
+                          "must not be revisited after seeing the variance "
+                          "results.",
+        },
+        "reported_regardless_of_outcome": "that no observable in this dataset "
+            "supports an autocorrelation-based early-warning analysis, with the "
+            "evidence in research/observable_selection.md. This is a "
+            "methodological finding about what these recordings can support, and "
+            "is reported whether or not the variance indicators show anything.",
+    },
     "statistics": {
         "trend_statistic": "Kendall's tau",
-        "null": "AR(1)-matched surrogates, two-sided",
+        "null": "5000-permutation test on block order, two-sided",
+        "null_changed_from": "AR(1)-matched surrogates, which are appropriate "
+                             "for a long continuous autocorrelated series. The "
+                             "observable here is a 21-point block-level series "
+                             "with no temporal memory, for which permuting the "
+                             "block order is the correct and exact-in-spirit "
+                             "null. This matches the null already used in the "
+                             "power analysis (scripts/10), so the quoted power "
+                             "figures apply unchanged.",
         "alpha": 0.05,
         "two_sided_rationale": "a compressed basin can produce falling indicators "
                                "before a transition (Titus et al. 2019), so a "
@@ -173,9 +231,10 @@ DESIGN = {
         "T11(additional) cohort (personal_use, random_targets) - different tasks",
     ],
     "still_open_after_freezing": [
-        "which neural observable carries the indicator (raw 20 ms features are "
-        "ruled out: near-white, 0.3-0.5 bins of memory)",
-        "rolling-window length, which must be swept and reported as a surface",
+        "nothing about the event definition, the observable, or the indicators - "
+        "all are fixed above",
+        "the block-level summary is computed over whole blocks, so no rolling "
+        "window remains to choose",
     ],
 }
 
@@ -232,6 +291,12 @@ def main() -> int:
                     help="actually write the freeze file (without this, preview only)")
     ap.add_argument("--force", action="store_true",
                     help="overwrite an existing freeze (requires --confirm)")
+    ap.add_argument("--amend", metavar="REASON",
+                    help="record an AMENDMENT to an existing freeze rather than "
+                         "overwriting it. The original freeze is preserved and "
+                         "the change is appended with its own timestamp, reason "
+                         "and commit. Refused if any early-warning result "
+                         "already exists.")
     args = ap.parse_args()
 
     for f in ("blocks.csv", "trials.csv"):
@@ -299,6 +364,45 @@ def main() -> int:
         print("NOTHING WAS WRITTEN. This was a preview.")
         print("Check it against research/deterioration_definition.md, then run:")
         print("    python3 scripts/12_freeze_design.py --confirm")
+        print("=" * 78)
+        return 0
+
+    # ---- amendment path --------------------------------------------------
+    if args.amend:
+        if not FREEZE_PATH.exists():
+            print("Nothing to amend: no freeze exists.", file=sys.stderr)
+            return 1
+        # An amendment is only legitimate before any result is known.
+        ews_outputs = list(PROCESSED.glob("ews_result*")) + \
+                      list(PROCESSED.glob("*indicator*"))
+        if ews_outputs:
+            print("REFUSED: early-warning results already exist "
+                  f"({[p.name for p in ews_outputs]}).", file=sys.stderr)
+            print("Amending a preregistration after seeing results destroys its "
+                  "purpose.", file=sys.stderr)
+            return 1
+        record = json.loads(FREEZE_PATH.read_text())
+        prior = record.get("amendments", [])
+        record["amendments"] = prior + [{
+            "amended_at_utc": datetime.now(timezone.utc).isoformat(),
+            "reason": args.amend,
+            "git_commit_at_amendment": git("rev-parse", "HEAD"),
+            "sections_added_or_changed": ["observable_and_indicators",
+                                          "statistics.null",
+                                          "still_open_after_freezing"],
+            "no_results_existed": True,
+        }]
+        record["design"]["observable_and_indicators"] = \
+            DESIGN["observable_and_indicators"]
+        record["design"]["statistics"] = DESIGN["statistics"]
+        record["design"]["still_open_after_freezing"] = \
+            DESIGN["still_open_after_freezing"]
+        FREEZE_PATH.write_text(json.dumps(record, indent=2))
+        print("\n" + "=" * 78)
+        print(f"AMENDED. {FREEZE_PATH.relative_to(REPO_ROOT)}")
+        print(f"  amendment {len(record['amendments'])}: {args.amend}")
+        print(f"  original freeze preserved (frozen_at_utc "
+              f"{record['frozen_at_utc']})")
         print("=" * 78)
         return 0
 

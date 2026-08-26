@@ -1,6 +1,6 @@
 # Choosing the observable — and a constraint the data impose
 
-**Status: OPEN. A decision is required before the EWS analysis can run.**
+**Status: DECIDED 26 August 2026 and recorded as amendment 1 to `research/FROZEN_DESIGN.json`**, before any early-warning indicator was computed on the real data. Option A adopted as primary, Option B in parallel, Option D as part of the write-up regardless of outcome.
 **Written:** 26 August 2026, after the deterioration definition was frozen, before
 any early-warning indicator has been computed on the real data.
 **Reproduce:** `python3 scripts/13_select_observable.py`
@@ -164,7 +164,7 @@ originally intended.
 
 ---
 
-## 6. Recommendation
+## 6. Recommendation — ADOPTED
 
 **Option A as primary, Option B as a parallel indicator, and Option D as part of
 the write-up regardless of what A and B produce.**
@@ -173,6 +173,18 @@ The exclusion of lag-1 autocorrelation should be **added to the frozen design
 before the analysis runs**, with §2–3 as its justification — so that it is on
 record as a decision made in advance, not an omission noticed afterwards.
 
-**This requires the researcher's decision.** It is a choice about what the
-early-warning claim is a statement about, and it changes what the project can
-conclude.
+**Adopted.** Recorded as amendment 1 to the frozen design, which now fixes:
+
+| | |
+|---|---|
+| Primary indicator | within-block temporal variance (trace of the covariance of the 5-D projected neural series) |
+| Parallel indicator | trial-to-trial variance (across trials, of per-trial means) |
+| **Excluded in advance** | **lag-1 autocorrelation**, with §2–3 as the reason |
+| Null | 5,000-permutation test on block order, two-sided |
+| Reported regardless | that no observable here supports an autocorrelation-based analysis |
+
+The null changed from AR(1)-matched surrogates because those suit a long
+continuous autocorrelated series; a 21-point block-level series with no temporal
+memory calls for permuting the block order instead. That is the same null already
+used in the power analysis, so the quoted figures (|τ| ≥ 0.305, power 0.74
+against a 2 sd rise) apply unchanged.
