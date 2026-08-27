@@ -74,16 +74,51 @@ MODES = ("NONE", "RATE_LOSS", "CHANNEL_DROPOUT", "GAIN_DRIFT", "GEOMETRY_ROTATIO
 # fault reaches full severity in a tenth of the remaining record.
 RATE_FRACTIONS = {"fast": 0.10, "medium": 0.35, "slow": 0.80}
 
-# Severity at the endpoint, in each mode's own natural units. Which of these
-# actually crosses the performance threshold is an EMPIRICAL question answered
-# by the decoder in a later step -- it is deliberately not assumed here.
+# Severity at the endpoint, in each mode's own natural units.
+#
+# These values are CALIBRATED, not chosen: scripts/18_reference_decoder.py
+# calibrate sweeps severity against the frozen decoder and reports how much
+# each level actually degrades decoding. The design always specified levels
+# spanning a performance threshold and deliberately declined to guess the
+# numbers; this is the measurement that supplied them.
+# See data/processed/severity_calibration.csv.
+#
+#   benign    a real change to the data that does NOT degrade decoding.
+#             A monitor should notice a change but must not call it a failure.
+#             These are false-alarm material, alongside NONE.
+#   sub       degrades, but by less than the crossing threshold.
+#   crossing  degrades well past the threshold.
+#
+# The labels are the DESIGN INTENT. Whether a given episode actually crossed is
+# determined per episode by measurement, because draw-to-draw variance is large
+# (see CHANNEL_DROPOUT, where sd across seeds is ~13 deg at low severity: losing
+# 5% of channels is harmless or ruinous depending on WHICH channels die).
 SEVERITIES = {
-    "RATE_LOSS":         {"mild": 0.25, "severe": 0.60},   # fractional loss of scale
-    "CHANNEL_DROPOUT":   {"mild": 0.10, "severe": 0.35},   # fraction of channels lost
-    "GAIN_DRIFT":        {"mild": 0.20, "severe": 0.50},   # sd of per-channel log gain
-    "GEOMETRY_ROTATION": {"mild": 0.15, "severe": 0.45},   # final rotation angle, radians
+    "RATE_LOSS":         {"benign": 0.10, "sub": 0.25, "crossing": 0.55},
+    "CHANNEL_DROPOUT":   {"benign": 0.05, "sub": 0.30, "crossing": 0.60},
+    "GAIN_DRIFT":        {"benign": 0.20, "sub": 0.50, "crossing": 1.20},
+    "GEOMETRY_ROTATION": {"benign": 0.15, "sub": 0.45, "crossing": 1.20},
     "NONE":              {"none": 0.0},
 }
+
+# Measured degradation vs control, in degrees of angular error, at these levels:
+#   RATE_LOSS          +0.3  /  +5.0  / +24.5
+#   CHANNEL_DROPOUT    +2.7  /  +11.1 / +24.1
+#   GAIN_DRIFT         +1.3  /  +9.0  / +23.3
+#   GEOMETRY_ROTATION  -11.0 /  +7.3  / +31.1
+#
+# Note GEOMETRY_ROTATION's benign level: mild rotation IMPROVES decoding by
+# about 11 deg, consistently across seeds. Mixing correlated channels appears to
+# average away noise for this heavily-regularised decoder. It is kept precisely
+# because it is a hard negative -- a large, real change in the neural statistics
+# with no performance cost, which a monitor must not report as a failure.
+
+# The performance threshold this is calibrated against: a +10 deg rise in median
+# angular error above the episode's own pre-onset baseline. Fixed here, before
+# any detector exists. Anchored by measurement, not taste: healthy held-out
+# decoding is 54.6 deg and chance is 90.7 deg, so +10 deg consumes 28% of the
+# distance from healthy to useless, and it is ~40x the control's own drift.
+PERFORMANCE_THRESHOLD_DEG = 10.0
 
 # Onset is drawn uniformly in this window, as a fraction of the block. The lower
 # bound guarantees enough healthy record to fit a reference on; the upper bound
@@ -174,13 +209,27 @@ def apply_channel_dropout(X: np.ndarray, ep: Episode, f: np.ndarray) -> np.ndarr
     """
     rng = _rng(ep)
     n_feats = X.shape[1]
+
+    # NESTED BY CONSTRUCTION. One permutation is drawn, and severity s takes the
+    # FIRST k = s*n channels from it -- so a more severe episode kills a
+    # superset of the channels a milder one kills.
+    #
+    # This is a fix, not a preference. The first version drew a fresh
+    # rng.choice() sized by severity, which meant each severity hit a different
+    # random set of channels rather than more of the same ones. Calibration
+    # exposed it immediately: measured damage went +22.6d at severity 0.15, then
+    # -6.2d at 0.30, then +26.8d at 0.60. A ladder that goes backwards is not a
+    # ladder. The non-monotonicity was draw-to-draw variance -- some sets
+    # happened to spare channels the decoder leans on -- masquerading as a
+    # severity effect.
+    order = rng.permutation(n_feats)
+    thresholds_all = rng.uniform(0.0, 1.0, size=n_feats)
     k = max(1, int(round(ep.severity * n_feats)))
-    doomed = rng.choice(n_feats, size=k, replace=False)
-    thresholds = rng.uniform(0.0, 1.0, size=k)
+    doomed = order[:k]
 
     Y = X.copy()
-    for col, thr in zip(doomed, thresholds):
-        Y[f >= thr, col] = 0.0
+    for col in doomed:
+        Y[f >= thresholds_all[col], col] = 0.0
     return Y
 
 
@@ -194,8 +243,37 @@ def apply_gain_drift(X: np.ndarray, ep: Episode, f: np.ndarray) -> np.ndarray:
     """
     rng = _rng(ep)
     log_g = rng.normal(0.0, ep.severity, size=X.shape[1])
-    log_g -= log_g.mean()                      # mean-preserving by construction
-    return X * np.exp(f[:, None] * log_g[None, :])
+    log_g -= log_g.mean()
+
+    G = np.exp(f[:, None] * log_g[None, :])          # (bins, channels)
+
+    # Centring the LOG-gains preserves the geometric mean, not the arithmetic
+    # one. At small sigma those are nearly the same; at the severities that
+    # actually degrade decoding they are not. The first version did only the log
+    # centring and verification caught it: at severity 1.2 the mode raised mean
+    # activity by +116%, which would have made it trivially visible to the very
+    # comparator it exists to be invisible to.
+    #
+    # Fix: rescale at every time step so the channel-mean-weighted total is
+    # conserved exactly. This makes the mode mean-preserving by construction at
+    # any severity, rather than approximately so at small ones.
+    # Rescale so the TOTAL ACTIVITY IN EVERY BIN is exactly conserved. Only the
+    # distribution across channels changes; the per-bin sum does not move at all.
+    #
+    # Two earlier attempts were wrong and both were caught by verification.
+    # Centring the log-gains preserves the geometric mean, and at severity 1.2
+    # that let mean activity rise +116%. Rescaling by the PRE-ONSET channel
+    # profile fixed most of it but still left +20.8%, because the block's own
+    # activity drifts ~15% within a block, so a profile measured before onset no
+    # longer describes the data after it. Normalising against the current bin is
+    # exact regardless of drift, and uses no information from the future.
+    Y = X * G
+    src = X.sum(axis=1)
+    dst = Y.sum(axis=1)
+    scale = np.ones_like(src)
+    good = dst > 0
+    scale[good] = src[good] / dst[good]
+    return Y * scale[:, None]
 
 
 def apply_geometry_rotation(X: np.ndarray, ep: Episode, f: np.ndarray) -> tuple[np.ndarray, float]:
@@ -266,7 +344,14 @@ def apply_episode(X: np.ndarray, ep: Episode) -> tuple[np.ndarray, dict]:
         else:
             Y = APPLIERS[ep.mode](X, ep, f)
 
+    # Restore the pre-onset rows exactly. Several modes compute a scale factor
+    # that is algebraically 1.0 before onset but differs in the last bits of
+    # floating point, and "the record before onset is untouched" is too load-
+    # bearing to leave to rounding: if it leaked, a detector could 'warn' by
+    # sensing the leak and the measured lead time would be an artefact of this
+    # file rather than a property of the detector.
     pre = slice(0, ep.onset_bin)
+    Y[pre] = X[pre]
     diag["pre_onset_identical"] = bool(np.array_equal(X[pre], Y[pre]))
     diag["mean_before"] = float(X[pre].mean()) if ep.onset_bin > 0 else float("nan")
     diag["mean_after"] = float(Y[ep.onset_bin:].mean())
@@ -438,7 +523,7 @@ def cmd_verify() -> int:
     for ep in episodes:
         if ep.block_id != target or ep.rate_label not in ("medium", "none"):
             continue
-        if ep.severity_label == "mild" and ep.mode != "GEOMETRY_ROTATION":
+        if ep.severity_label == "sub":
             continue
         Y, diag = apply_episode(X, ep)
         raw = diag["mean_after"] / diag["mean_before"] - 1.0
@@ -475,7 +560,7 @@ def cmd_verify() -> int:
 
     before = X.copy()
     rot = next(e for e in episodes if e.block_id == target
-               and e.mode == "GEOMETRY_ROTATION" and e.severity_label == "severe")
+               and e.mode == "GEOMETRY_ROTATION" and e.severity_label == "crossing")
     apply_episode(X, rot)
     untouched = np.array_equal(before, X)
     print(f"  the source array is never mutated .............. {'PASS' if untouched else 'FAIL'}")

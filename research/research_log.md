@@ -1066,3 +1066,124 @@ is still printed, labelled *(misleading)*, as a standing reminder.
 
 **Worth carrying forward:** within-block drift of ~15% is a real property of this
 data and a floor that any block-level statistic has to clear.
+
+---
+
+## 27 August 2026 — The reference decoder, and four bugs the corpus would have hidden
+
+### The reference decoder — `scripts/18_reference_decoder.py`
+
+The decoder exists only to **grade**: it turns a degraded feature stream into a
+performance number, so "the monitor warned before performance fell" becomes
+checkable. `decoder-guard` never looks at it. It needs exactly two properties —
+better than chance on healthy held-out data, and frozen — and chasing accuracy
+beyond that is explicitly not a goal.
+
+It predicts the participant's intended direction (unit vector from cursor to
+target) at each 20 ms bin, by ridge regression on the neural features. Fitted on
+four healthy blocks (days 658, 665, 670), selected on two held-out healthy blocks
+(671, 675). It never sees a degraded block.
+
+| | median angular error |
+|---|---|
+| train | 32.5° |
+| **held-out healthy** | **54.6°** |
+| chance (shuffled pairing, measured not assumed) | 90.7° |
+
+Better than chance by 36°. Property 1 passes.
+
+**Worth noting for later:** the 22° gap between train and held-out is almost
+entirely across-day change, not overfitting — ridge from 1e-1 to 1e4 barely moves
+the held-out number. **Moving to a different day costs ~22° with no injected
+fault at all.** That is the natural drift floor, and it constrains what
+"performance dropped" can mean.
+
+Normalisation is frozen at training. The real system used *adaptive*
+normalisation, which Phase 1–2 identified as the compensator that masked
+degradation until it saturated; freezing it here isolates degradation from a
+compensator fighting it. Re-running with adaptive normalisation is a separate
+condition, left as such rather than silently mixed in.
+
+### Calibration: the severities were guesses, and now they are measurements
+
+The design always specified two severity levels spanning a performance threshold
+and deliberately declined to guess the numbers. `calibrate` supplies them by
+sweeping severity against the frozen decoder.
+
+**The performance threshold is fixed at +10° above an episode's own pre-onset
+baseline**, set before any detector exists. Anchored by measurement: healthy
+decoding is 54.6° and chance is 90.7°, so +10° consumes 28% of the distance from
+healthy to useless, and is ~40× the control's own drift (+0.24°).
+
+Final calibrated levels, with measured degradation vs control:
+
+| Mode | benign | sub | crossing |
+|---|---|---|---|
+| RATE_LOSS | 0.10 → +0.3° | 0.25 → +5.0° | 0.55 → +24.5° |
+| CHANNEL_DROPOUT | 0.05 → +2.7° | 0.30 → +11.1° | 0.60 → +24.1° |
+| GAIN_DRIFT | 0.20 → +1.1° | 0.50 → +7.1° | 1.20 → +21.5° |
+| GEOMETRY_ROTATION | 0.15 → **−11.0°** | 0.45 → +7.3° | 1.20 → +31.1° |
+
+`benign` is a new level: a real change to the data that does **not** degrade
+decoding. A monitor should notice the change but must not call it a failure.
+These are false-alarm material alongside `NONE`. The corpus is now 1073 episodes.
+
+**Mild rotation improves decoding by 11°, consistently across seeds.** Mixing
+correlated channels appears to average away noise for this heavily-regularised
+decoder. It is kept precisely because it is a hard negative — a large, real change
+in the neural statistics with no performance cost.
+
+### Four bugs, all found by verification, all of which would have corrupted results
+
+**1. `CHANNEL_DROPOUT`'s severity ladder ran backwards.** Measured damage went
++22.6° at severity 0.15, **−6.2° at 0.30**, +26.8° at 0.60. The cause: each
+severity drew a *fresh* random channel set sized by severity, so levels were
+independent draws rather than nested — severity 0.30 hit a different set than
+0.15, not a superset, and some sets happened to spare channels the decoder leans
+on. Fixed by drawing one permutation and taking the first k channels, so a more
+severe episode kills a superset. Now monotone.
+
+**2. One seed was never enough.** Averaging over five seeds shows the spread is
+enormous: **sd ≈ 13° for `CHANNEL_DROPOUT` at low severity, against a mean of
+2.7°.** Losing 5% of channels is harmless or ruinous depending on *which* channels
+die. This is realistic — real arrays lose specific units — and it has a design
+consequence: severity labels are the *design intent*, and whether a given episode
+actually crossed the threshold must be determined per episode by measurement.
+
+**3. `GAIN_DRIFT` was not mean-preserving, twice.** Its whole purpose is to be a
+fault that mean activity is blind to, so that gate S4 is a real test. Centring the
+*log*-gains preserves the geometric mean; at the severity that actually degrades
+decoding, mean activity rose **+116%**. Rescaling by the pre-onset channel profile
+fixed most of it but still left **+20.8%**, because the block's own activity
+drifts ~15% within a block and a profile measured before onset no longer describes
+the data after it. The working fix normalises against the current bin: total
+activity per bin is conserved exactly, only the distribution across channels
+changes. Now **−2.4%** at crossing severity — a fault that wrecks decoding while
+being invisible to counting spikes, which is exactly what S4 needs.
+
+**4. The pre-onset guarantee held only by rounding.** Several modes compute a
+scale factor that is algebraically 1.0 before onset but differs in the last bits
+of floating point. That surfaced as `pre-onset intact: NO`. It matters more than
+it looks: if the ramp leaked backwards at all, a detector could "warn" by sensing
+the leak, and the measured lead time would be an artefact of the injector rather
+than a property of the detector. Pre-onset rows are now restored exactly, for
+every mode, by construction.
+
+### One honest limitation of the corpus
+
+`GEOMETRY_ROTATION` at crossing severity (1.2 rad ≈ 69°) drives **17% of entries
+below zero**, which have to be floored because these features are non-negative.
+That flooring costs 18% of mean activity, so at the severity where rotation
+finally degrades decoding it is **no longer invisible to mean activity**, and
+stops being a clean S4 test.
+
+Stated plainly: *on this decoder, a geometry change large enough to hurt
+performance is also large enough to change overall activity.* `GAIN_DRIFT` is
+therefore the primary S4 mode, and rotation's clipping fraction is reported with
+every result rather than hidden.
+
+### Plan status
+
+Three amendments recorded, each with its reason and the superseded checksum. All
+three predate any detector — nothing has yet been run against this corpus, which
+is the ordering the whole design depends on.
