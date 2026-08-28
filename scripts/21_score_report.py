@@ -106,10 +106,37 @@ def trailing_z(y: np.ndarray, k: int = 12, gap: int = 2) -> np.ndarray:
     return np.abs(out)
 
 
+def pre_onset_z(y: np.ndarray, onset_w: int) -> np.ndarray:
+    """Express each window in units of the episode's OWN healthy spread.
+
+    Indicated by the achievability result rather than guessed at. That analysis
+    showed the raw score carries real information about the fault (AUC 0.69-0.71
+    under a local baseline), while the deployed benchmark still failed -- which
+    locates the problem in the step that turns scores into warnings.
+
+    One concrete reason that step fails: the WARN threshold is an absolute
+    number, but the score's scale differs from episode to episode. A threshold
+    that is sensitive on one block is deaf on the next. Dividing by the
+    episode's own pre-onset spread makes the threshold dimensionless, so a
+    single operating point means the same thing everywhere.
+
+    Causal: median and spread come only from windows before the onset. Unlike
+    the detrend transform there is no extrapolation -- a constant is carried
+    forward, not a slope, so error does not grow with distance.
+    """
+    if onset_w < 6 or len(y) <= onset_w:
+        return y
+    pre = y[:onset_w]
+    med = float(np.median(pre))
+    mad = float(np.median(np.abs(pre - med))) * 1.4826
+    return np.abs((y - med) / (mad + 1e-9))
+
+
 TRANSFORMS = {
     "none": lambda y, ow: y,
     "detrend": causal_detrend,
     "trailing": lambda y, ow: trailing_z(y),
+    "prez": pre_onset_z,
 }
 
 
@@ -477,7 +504,10 @@ def write_markdown(summary: dict, meta: dict, participant: str, sfx: str) -> Non
                 A(f"| {m} | {v} s |")
             A("")
 
-    path = REPORTS / f"BENCHMARK_{participant}{sfx}.md"
+    # sfx already carries the participant suffix, so interpolating
+    # `participant` as well produced BENCHMARK_T5_T5_local.md.
+    stem = sfx if sfx.startswith(f"_{participant}") else f"_{participant}{sfx}"
+    path = REPORTS / f"BENCHMARK{stem}.md"
     path.parent.mkdir(exist_ok=True)
     path.write_text("\n".join(L))
     print(f"wrote {path}")

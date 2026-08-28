@@ -1,6 +1,6 @@
 # Detector benchmark — T11
 
-**Generated:** 2026-08-28 02:25 UTC  
+**Generated:** 2026-08-28 14:49 UTC  
 **Reproduce:** `python3 scripts/20_evaluation_harness.py run --participant T11` then `python3 scripts/21_score_report.py --participant T11`
 
 > Gates are reported before lead time, and that ordering is not cosmetic. A detector that fails the silence gate has not earned the right to have its lead time discussed.
@@ -16,10 +16,10 @@
 
 | Detector | Median lead | 95% CI | Detected | False alarms/h | Operating point |
 |---|---|---|---|---|---|
-| `decoder_guard` | -5.0 s | -10.0..0.0 | 175/586 | 18.121 | 48.00 |
-| `distribution_shift` | — | — | — | — | **none meets budget** |
+| `decoder_guard` | 0.0 s | -10.0..0.0 | 174/586 | 18.2691 | 47.62 |
+| `distribution_shift` | -25.0 s | -40.0..-20.0 | 144/586 | 1.7775 | 130.96 |
 | `mean_activity` | -10.0 s | -15.0..0.0 | 137/586 | 2.37 | 2.00 |
-| `robust_dispersion` | -30.0 s | -50.0..40.0 | 11/586 | 0.1975 | 1.00 |
+| `robust_dispersion` | -30.0 s | -35.0..10.0 | 16/586 | 0.1975 | 0.75 |
 
 ## Gates
 
@@ -36,9 +36,18 @@ Gate meanings: **silence** — no trend in risk while healthy. **rate invariance
 
 | Fault | Median lead |
 |---|---|
-| CHANNEL_DROPOUT | -2.5 s |
-| GAIN_DRIFT | -2.5 s |
+| CHANNEL_DROPOUT | 0.0 s |
+| GAIN_DRIFT | 0.0 s |
 | GEOMETRY_ROTATION | -5.0 s |
+
+### `distribution_shift` by fault mode
+
+| Fault | Median lead |
+|---|---|
+| CHANNEL_DROPOUT | -20.0 s |
+| GAIN_DRIFT | -20.0 s |
+| GEOMETRY_ROTATION | -35.0 s |
+| RATE_LOSS | -30.0 s |
 
 ### `mean_activity` by fault mode
 
@@ -52,6 +61,6 @@ Gate meanings: **silence** — no trend in risk while healthy. **rate invariance
 
 | Fault | Median lead |
 |---|---|
-| CHANNEL_DROPOUT | -30.0 s |
-| GAIN_DRIFT | -7.5 s |
-| GEOMETRY_ROTATION | -17.5 s |
+| CHANNEL_DROPOUT | -20.0 s |
+| GAIN_DRIFT | -30.0 s |
+| GEOMETRY_ROTATION | -30.0 s |

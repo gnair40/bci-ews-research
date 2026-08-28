@@ -71,7 +71,16 @@ FAIL_MULT = 2.0             # FAIL-LIKELY threshold as a multiple of it
 
 # ---- the operating point ------------------------------------------------
 FALSE_ALARM_BUDGET_PER_HOUR = 0.1     # 1 false WARN per 10 hours of healthy record
-THRESHOLD_GRID = np.concatenate([np.arange(1.0, 10.0, 0.25), np.arange(10.0, 60.0, 1.0)])
+# The search must cover the range the scores actually occupy. An earlier grid
+# stopped at 59 while observed scores reach 300 (decoder_guard) and 3200
+# (distribution_shift), so configurations were reported as "no operating point
+# exists" when the truth was "no operating point below 59 exists" -- an
+# arbitrary bound presented as a property of the detector. Log-spaced above 10
+# so the top of the range is reachable without an absurd number of steps.
+THRESHOLD_GRID = np.unique(np.concatenate([
+    np.arange(0.5, 10.0, 0.25),
+    np.geomspace(10.0, 1e4, 240),
+]))
 
 STATES = ("NOMINAL", "WATCH", "WARN", "FAIL-LIKELY")
 

@@ -1,6 +1,6 @@
 # Detector benchmark — T11
 
-**Generated:** 2026-08-28 02:25 UTC  
+**Generated:** 2026-08-28 14:51 UTC  
 **Reproduce:** `python3 scripts/20_evaluation_harness.py run --participant T11` then `python3 scripts/21_score_report.py --participant T11`
 
 > Gates are reported before lead time, and that ordering is not cosmetic. A detector that fails the silence gate has not earned the right to have its lead time discussed.
@@ -16,10 +16,10 @@
 
 | Detector | Median lead | 95% CI | Detected | False alarms/h | Operating point |
 |---|---|---|---|---|---|
-| `decoder_guard` | -5.0 s | -7.5..0.0 | 54/586 | 3.7526 | 32.00 |
-| `distribution_shift` | -5.0 s | -5.0..0.0 | 80/586 | 5.8757 | 34.00 |
-| `mean_activity` | 0.0 s | -5.0..15.0 | 82/586 | 6.0239 | 16.00 |
-| `robust_dispersion` | 5.0 s | 0.0..10.0 | 96/586 | 6.962 | 20.00 |
+| `decoder_guard` | -5.0 s | -5.0..0.0 | 54/586 | 3.8019 | 31.78 |
+| `distribution_shift` | -5.0 s | -5.0..0.0 | 81/586 | 5.8757 | 33.67 |
+| `mean_activity` | 0.0 s | -5.0..15.0 | 83/586 | 6.0732 | 15.88 |
+| `robust_dispersion` | 5.0 s | 0.0..10.0 | 96/586 | 6.962 | 20.01 |
 
 ## Gates
 
@@ -46,7 +46,7 @@ Gate meanings: **silence** — no trend in risk while healthy. **rate invariance
 |---|---|
 | CHANNEL_DROPOUT | 0.0 s |
 | GAIN_DRIFT | -5.0 s |
-| GEOMETRY_ROTATION | -15.0 s |
+| GEOMETRY_ROTATION | -20.0 s |
 | NONE | -50.0 s |
 | RATE_LOSS | 0.0 s |
 

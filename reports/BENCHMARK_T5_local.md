@@ -1,6 +1,6 @@
 # Detector benchmark — T5
 
-**Generated:** 2026-08-28 02:20 UTC  
+**Generated:** 2026-08-28 14:50 UTC  
 **Reproduce:** `python3 scripts/20_evaluation_harness.py run --participant T5` then `python3 scripts/21_score_report.py --participant T5`
 
 > Gates are reported before lead time, and that ordering is not cosmetic. A detector that fails the silence gate has not earned the right to have its lead time discussed.
@@ -16,28 +16,42 @@
 
 | Detector | Median lead | 95% CI | Detected | False alarms/h | Operating point |
 |---|---|---|---|---|---|
-| `decoder_guard` | — | — | — | — | **none meets budget** |
-| `distribution_shift` | — | — | — | — | **none meets budget** |
-| `mean_activity` | -52.5 s | — | 4/219 | 0.2254 | 32.00 |
-| `robust_dispersion` | 57.5 s | 2.5..82.5 | 12/219 | 0.9015 | 53.00 |
+| `decoder_guard` | -35.0 s | — | 6/219 | 0.2254 | 60.01 |
+| `distribution_shift` | -10.0 s | — | 2/219 | 0.2254 | 660.82 |
+| `mean_activity` | -55.0 s | — | 4/219 | 0.2254 | 32.71 |
+| `robust_dispersion` | 57.5 s | 2.5..82.5 | 12/219 | 0.9015 | 53.46 |
 
 ## Gates
 
 | Detector | silence | rate_invariance | comparator | elapsed_time | detrend |
 |---|---|---|---|---|---|
-| `decoder_guard` | **FAIL** | **FAIL** | **FAIL** | **FAIL** | PASS |
-| `distribution_shift` | **FAIL** | **FAIL** | **FAIL** | **FAIL** | PASS |
+| `decoder_guard` | **FAIL** | **FAIL** | PASS | **FAIL** | PASS |
+| `distribution_shift` | **FAIL** | **FAIL** | PASS | **FAIL** | PASS |
 | `mean_activity` | **FAIL** | **FAIL** | — | **FAIL** | PASS |
 | `robust_dispersion` | **FAIL** | PASS | PASS | PASS | PASS |
 
 Gate meanings: **silence** — no trend in risk while healthy. **rate invariance** — risk is not a restatement of total activity. **comparator** — beats counting spikes at a matched false-alarm rate. **elapsed time** — not merely tracking time. **detrend** — silence still holds after removing a linear trend.
+
+### `decoder_guard` by fault mode
+
+| Fault | Median lead |
+|---|---|
+| CHANNEL_DROPOUT | -60.0 s |
+| GAIN_DRIFT | -30.0 s |
+| GEOMETRY_ROTATION | 37.5 s |
+
+### `distribution_shift` by fault mode
+
+| Fault | Median lead |
+|---|---|
+| GAIN_DRIFT | -10.0 s |
 
 ### `mean_activity` by fault mode
 
 | Fault | Median lead |
 |---|---|
 | CHANNEL_DROPOUT | -30.0 s |
-| RATE_LOSS | -100.0 s |
+| RATE_LOSS | -105.0 s |
 
 ### `robust_dispersion` by fault mode
 

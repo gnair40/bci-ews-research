@@ -20,7 +20,8 @@ OUT = REPO / "data" / "processed"
 REPORTS = REPO / "reports"
 
 BASELINES = [("", "calibrate once"), ("_local", "recent normal")]
-TRANSFORMS = [("", "none"), ("_detrend", "detrend"), ("_trailing", "trailing")]
+TRANSFORMS = [("", "none"), ("_detrend", "detrend"),
+              ("_trailing", "trailing"), ("_prez", "pre-onset z")]
 PARTICIPANTS = [("", "T11"), ("_T5", "T5")]
 ORDER = ["decoder_guard", "mean_activity", "robust_dispersion", "distribution_shift"]
 NICE = {"decoder_guard": "decoder-guard", "mean_activity": "mean activity",
@@ -69,6 +70,12 @@ def main() -> int:
     n_silence = sum(1 for r in rows if r["silence"] is not None and r["silence"] <= 0.10)
     n_all = sum(1 for r in rows if r["n_pass"] == len(GATES))
 
+    A("> **Correction, 28 Aug.** An earlier version of this table searched WARN "
+      "thresholds only up to 59, while observed scores reach 300 "
+      "(`decoder-guard`) and 3200 (`distribution_shift`). Configurations were "
+      "therefore reported as having no operating point when the truth was that "
+      "none existed *below an arbitrary bound*. The grid now spans the range the "
+      "scores occupy and every row here is from the corrected search.\n")
     A("## The headline\n")
     A(f"| | count | of {n_total} |")
     A("|---|---|---|")
