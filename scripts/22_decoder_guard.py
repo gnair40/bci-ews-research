@@ -244,4 +244,80 @@ EXPECTED_ATTRIBUTION = {
     "GEOMETRY_ROTATION": "profile",
 }
 
-DETECTORS = {DecoderGuard.name: DecoderGuard}
+class DecoderGuardJoint(DecoderGuard):
+    """Risk as a JOINT departure from healthy, instead of the largest component.
+
+    STATUS: EXPLORATORY. Developed after the benchmark had been read, so it does
+    not carry the frozen-evaluation guarantee that the first version does. A
+    confirmatory test needs data this project has not yet touched. Reported
+    beside v1 rather than replacing it.
+
+    THE DIAGNOSIS IT ANSWERS
+    ------------------------
+    Taking the largest of four calibrated components throws away the pattern
+    across them, and the pattern turns out to carry most of the information.
+    Measured on T11: during healthy recording the component named as the cause is
+    `profile` 40.6% of the time, but during the early-warning window only 5.4%.
+
+        component      healthy    during fault    ratio
+        profile         40.6%          5.4%        0.13
+        silence          7.8%         13.6%        1.75
+        dispersion      33.8%         56.0%        1.66
+        level           17.9%         25.0%        1.40
+
+    So a high `profile` reading is evidence AGAINST a fault -- it is the
+    signature of ordinary drift, which is what a residual catch-all component
+    should absorb. The `max` rule scores it as risk anyway, which is precisely
+    backwards, and it is the single largest source of false alarms.
+
+    WHY THIS STAYS ONE-CLASS
+    ------------------------
+    The fix is NOT to hand-weight the components using the table above -- those
+    numbers come from fault labels, and using them would quietly turn a
+    one-class detector into a supervised one whose validation no longer means
+    anything. Instead the four components are modelled JOINTLY on healthy data:
+    mean and covariance of the 4-vector, then Mahalanobis distance. Healthy
+    drift has a characteristic joint signature, so the model learns it as normal
+    and discounts it automatically, without ever seeing a fault.
+
+    The component breakdown and attribution are unchanged, so a warning still
+    comes with a named cause. Only the scalar risk changes.
+    """
+
+    name = "decoder_guard_joint"
+    KEYS = ("dispersion", "level", "profile", "silence")
+
+    def _vec(self, F: np.ndarray) -> np.ndarray:
+        c = self._components(F)
+        # Log-compress before modelling: these components are positive and
+        # heavy-tailed, and a covariance fitted on raw values is dominated by a
+        # handful of extreme healthy windows.
+        return np.vstack([np.log1p(np.maximum(c[k], 0.0)) for k in self.KEYS]).T
+
+    def _fit(self, H: np.ndarray) -> None:
+        super()._fit(H)
+        V = self._vec(H)
+        self.jmu = V.mean(axis=0)
+        S = np.cov(V.T) + np.eye(len(self.KEYS)) * 1e-6
+        self.jSi = np.linalg.inv(S)
+        d = self._maha(V)
+        self.jmed, self.jscale = robust_center_scale(d, floor=0.25)
+
+    def _maha(self, V: np.ndarray) -> np.ndarray:
+        D = V - self.jmu
+        return np.sqrt(np.maximum(np.einsum("ij,jk,ik->i", D, self.jSi, D), 0.0))
+
+    def _score(self, F: np.ndarray) -> np.ndarray:
+        return np.maximum((self._maha(self._vec(F)) - self.jmed) / self.jscale, 0.0)
+
+    def recenter(self, pre: np.ndarray) -> "DecoderGuardJoint":
+        super().recenter(pre)
+        V = self._vec(pre)
+        self.jmu = V.mean(axis=0)
+        d = self._maha(V)
+        self.jmed, self.jscale = robust_center_scale(d, floor=0.25)
+        return self
+
+
+DETECTORS = {DecoderGuard.name: DecoderGuard,
+             DecoderGuardJoint.name: DecoderGuardJoint}
