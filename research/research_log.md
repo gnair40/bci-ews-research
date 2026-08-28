@@ -1476,3 +1476,81 @@ healthy episodes that trend. No dual axes: lead time and false alarms have
 different units and opposite senses of "good", and the tradeoff between them is
 the finding, so it stays visible as two panels rather than being collapsed into
 one score.
+
+---
+
+## 28 August 2026 — The task-change test, and the first clean positive
+
+### The question no accuracy number answers
+
+A monitor that fires whenever the user switches from a typing app to browsing the
+web is **worse than no monitor** — it trains its user to ignore it. Nothing in the
+injected-fault corpus tests this, because there the task never changes.
+
+The dataset happens to contain the exact control needed. On two days T11 did the
+structured cursor task **and** something completely different, same day, same
+array, nothing wrong with the recording:
+
+| Day | Cursor task | Also did |
+|---|---|---|
+| 658 | circleOfCircles | free personal use — web browsing |
+| 665 | circleOfCircles | fitts — random targets |
+
+Three reference points make the answer interpretable: same task healthy (what
+normal looks like), **different task healthy** (the thing under test), and same
+task with an injected crossing-severity fault taken from the locked plan (what a
+real fault looks like). The question is which extreme the middle one resembles.
+
+### Result
+
+**Day 658 — cursor task vs web browsing**
+
+| Detector | same task | different task | real fault | verdict |
+|---|---|---|---|---|
+| **`decoder_guard`** | 11.16 | **8.67** | 135.35 | healthy — **15.6× separation** |
+| `mean_activity` | 1.49 | 1.72 | 3.82 | healthy |
+| `robust_dispersion` | 0.14 | **0.46** | 0.29 | **would false-alarm** |
+
+**Day 665 — cursor task vs random targets**
+
+| Detector | same task | different task | real fault | verdict |
+|---|---|---|---|---|
+| **`decoder_guard`** | 1.14 | **1.98** | 138.00 | healthy — **70× separation** |
+| `mean_activity` | 0.52 | 2.05 | 36.06 | healthy |
+| `robust_dispersion` | 0.80 | 0.88 | 86.28 | healthy |
+
+**`decoder_guard` separates "the user is doing something different" from "the
+hardware is failing" by 15× and 70×.** On day 658 a task change actually scored
+*lower* than the same task. This is the first thing in the project that has
+cleanly worked.
+
+`robust_dispersion` fails day 658: a healthy task change scored **higher** than a
+real fault. A monitor built on it would alarm on app switching and stay quiet on
+degradation — precisely inverted.
+
+### Why this matters more than it looks
+
+Phase 1–2 found the old indicator was *task-invariant* — 8.4% difference between
+the cursor task and web browsing — and reported that as evidence it tracked the
+recording rather than the task. That was the right reading, but it left the
+reverse question open: does a monitor sensitive enough to catch faults become
+sensitive to behaviour instead? For `decoder_guard`, measured here, it does not.
+
+It also isolates *where* the project's difficulty actually lies. The monitor is
+not confused by what the person is doing. It is defeated by **slow drift in the
+recording itself** — which is exactly what the 36-configuration benchmark showed
+and what the silence gate keeps failing on. Those are different problems, and one
+of them is now demonstrably solved.
+
+### Limitations, and they are real
+
+- **Two days, four comparison blocks.** This is a demonstration, not an estimate.
+  No confidence interval is quoted because none would be meaningful at this n.
+- The fault reference is a *single* crossing-severity episode per block, averaged
+  over two rate settings, not a distribution.
+- Personal-use blocks have no cursor task, so there is no performance measure to
+  cross-check against — only risk.
+- Both comparisons are within-day. A task change on a *different* day would
+  confound task with drift, which is the very thing the monitor cannot handle.
+
+**Reproduce:** `python3 scripts/25_task_change_test.py`
