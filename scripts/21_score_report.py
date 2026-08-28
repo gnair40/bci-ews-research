@@ -95,13 +95,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--participant", default="T11")
     ap.add_argument("--local", action="store_true")
+    ap.add_argument("--detrend", action="store_true")
     args = ap.parse_args()
     sfx = ("" if args.participant == "T11" else f"_{args.participant}") \
-          + ("_local" if args.local else "")
+          + ("_local" if args.local else "") + ("_dt" if args.detrend else "")
     df = pd.read_csv(OUT / f"episode_scores{sfx}.csv")
     meta = json.loads((OUT / f"harness_meta{sfx}.json").read_text())
     print(f"Participant: {args.participant}"
-          f"{'   [local re-baseline]' if args.local else '   [global baseline]'}")
+          f"{('   [local re-baseline]' if args.local else '   [global baseline]') + ('   [causal detrend]' if args.detrend else '')}")
     harness = _load("harness", "20_evaluation_harness.py")
     step_s = meta["step_bins"] * meta["bin_s"]
     budget = meta["false_alarm_budget_per_hour"]
@@ -413,7 +414,8 @@ def write_markdown(summary: dict, meta: dict, participant: str, sfx: str) -> Non
                 A(f"| {m} | {v} s |")
             A("")
 
-    path = REPORTS / f"BENCHMARK_{participant}{'_local' if meta.get('local_rebaseline') else ''}.md"
+    tag = ('_local' if meta.get('local_rebaseline') else '') + ('_dt' if meta.get('causal_detrend') else '')
+    path = REPORTS / f"BENCHMARK_{participant}{tag}.md"
     path.parent.mkdir(exist_ok=True)
     path.write_text("\n".join(L))
     print(f"wrote {path}")

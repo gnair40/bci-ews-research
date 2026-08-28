@@ -88,6 +88,31 @@ def _load(name: str, path: str):
 # STATE MACHINE
 # --------------------------------------------------------------------------
 
+def causal_detrend(score: np.ndarray, onset_w: int) -> np.ndarray:
+    """Remove a trend estimated ONLY from the windows before onset.
+
+    Prespecified. `research/phase3_design_implications.md`, written 26 August
+    before any of this code existed, lists as requirement 1: "De-trend the
+    block-level indicator series before testing its trend. The synthetic
+    controls established this is necessary; the frozen design omitted it, and
+    that omission is why monotonic drift produced p = 0.0002." Running this is
+    executing a written plan, not searching for a condition that works.
+
+    Causal by construction: the fit uses pre-onset windows only and is
+    extrapolated forward, so no information from after the fault reaches the
+    judgement. Extrapolating a line is not free -- far past the fit window it
+    can drift -- so the slope is estimated over the whole pre-onset stretch
+    rather than a short tail, and episodes with too few pre-onset windows are
+    left untouched rather than detrended from noise.
+    """
+    if onset_w < 6 or len(score) <= onset_w:
+        return score
+    x = np.arange(len(score), dtype=float)
+    pre = slice(0, onset_w)
+    b, a = np.polyfit(x[pre], score[pre], 1)
+    return score - (a + b * x)
+
+
 def run_state_machine(score: np.ndarray, t_warn: float) -> np.ndarray:
     """Turn a risk series into states, with dwell and hysteresis.
 
@@ -168,7 +193,7 @@ def crossing_window(perf: np.ndarray, onset_w: int) -> int | None:
 # --------------------------------------------------------------------------
 
 def evaluate(limit: int | None, only: str | None, participant: str = "T11",
-             local: bool = False) -> int:
+             local: bool = False, dtr: bool = False) -> int:
     inj = _load("injector", "17_fault_injector.py")
     det = _load("det", "19_detectors.py")
     guard = _load("guard", "22_decoder_guard.py")
@@ -273,6 +298,8 @@ def evaluate(limit: int | None, only: str | None, participant: str = "T11",
                     else:
                         continue
                 sc = D.score(F)
+                if dtr:
+                    sc = causal_detrend(sc, onset_w)
                 row = {**base, "detector": n,
                        "scores": ",".join(f"{v:.4f}" for v in sc)}
                 con = D.contributions(F)
@@ -284,7 +311,7 @@ def evaluate(limit: int | None, only: str | None, participant: str = "T11",
                 print(f"  {done}/{len(eps)}")
 
     df = pd.DataFrame(rows)
-    suffix = ("" if participant == "T11" else f"_{participant}") + ("_local" if local else "")
+    suffix = ("" if participant == "T11" else f"_{participant}") + ("_local" if local else "") + ("_dt" if dtr else "")
     scores_path = OUT / f"episode_scores{suffix}.csv"
     df.to_csv(scores_path, index=False)
     print(f"\nwrote {scores_path}  ({len(df)} detector-episode rows)")
@@ -300,6 +327,7 @@ def evaluate(limit: int | None, only: str | None, participant: str = "T11",
         "test_blocks": test_blocks,
         "detectors": list(detectors),
         "local_rebaseline": local,
+        "causal_detrend": dtr,
         "n_episodes_scored": len(eps),
     }
     meta_out_path = OUT / f"harness_meta{suffix}.json"
@@ -318,8 +346,10 @@ def main() -> int:
     r.add_argument("--participant", default="T11")
     r.add_argument("--local", action="store_true",
                    help="re-baseline each episode on its own pre-onset windows")
+    r.add_argument("--detrend", action="store_true",
+                   help="remove a trend fitted on pre-onset windows (prespecified)")
     a = ap.parse_args()
-    return evaluate(a.limit, a.detector, a.participant, a.local)
+    return evaluate(a.limit, a.detector, a.participant, a.local, a.detrend)
 
 
 if __name__ == "__main__":
