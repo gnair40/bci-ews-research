@@ -140,7 +140,105 @@ def main() -> int:
     out = FIGS / "12_baseline_conditions.png"
     fig.savefig(out, dpi=165, facecolor=SURFACE)
     print(f"wrote {out}")
+    figure_auc()
     return 0
+
+
+
+
+# ---------------------------------------------------------------------------
+# FIGURE 13 -- the achievability result, per fault mode
+# ---------------------------------------------------------------------------
+
+def figure_auc() -> None:
+    """Does the monitor see what counting spikes cannot?
+
+    This is the design rationale made checkable. decoder-guard was built so that
+    a uniform change in activity and a change in the SHAPE of activity land in
+    different components. If that works, it should beat mean activity precisely
+    on the faults that leave overall activity unchanged -- and lose to it on the
+    fault that is nothing but a change in overall activity.
+
+    One panel per participant rather than an average, because an average over
+    two participants who disagreed in Phase 1-2 would hide the thing worth
+    knowing: whether the pattern replicates.
+    """
+    import pandas as pd
+    from scipy import stats as _st
+
+    SRC = [("episode_scores_local.csv", "T11"), ("episode_scores_T5_local.csv", "T5")]
+    MODES = ["RATE_LOSS", "CHANNEL_DROPOUT", "GAIN_DRIFT", "GEOMETRY_ROTATION"]
+    SHORT = {"RATE_LOSS": "overall\nsignal loss", "CHANNEL_DROPOUT": "electrodes\ndying",
+             "GAIN_DRIFT": "channels\ndrifting apart", "GEOMETRY_ROTATION": "signal shape\nrotating"}
+    PAIR = [("decoder_guard", C_LOCAL, "decoder-guard"),
+            ("mean_activity", C_GLOBAL, "counting activity")]
+
+    fig, axes = plt.subplots(1, 2, figsize=(11.4, 4.4), facecolor=SURFACE, sharey=True)
+    for ax, (fname, pname) in zip(axes, SRC):
+        path = OUT / fname
+        if not path.exists():
+            continue
+        df = pd.read_csv(path)
+        ax.set_facecolor(SURFACE)
+        x = np.arange(len(MODES))
+        w = 0.36
+        for j, (det, colour, lab) in enumerate(PAIR):
+            sub = df[df.detector == det]
+            H = np.concatenate([np.fromstring(r.scores, sep=",")
+                                for _, r in sub[~sub.crossed].iterrows()]) \
+                if (~sub.crossed).any() else np.array([])
+            vals = []
+            for m in MODES:
+                pool = []
+                for _, r in sub[(sub.crossed) & (sub["mode"] == m)].iterrows():
+                    y = np.fromstring(r.scores, sep=",")
+                    ow, cw = int(r.onset_w), int(r.crossing_w)
+                    if cw > ow and len(y) >= cw:
+                        pool.append(y[ow:cw])
+                if pool and len(H) > 40:
+                    P = np.concatenate(pool)
+                    u, _ = _st.mannwhitneyu(P, H, alternative="two-sided")
+                    vals.append(u / (len(P) * len(H)))
+                else:
+                    vals.append(np.nan)
+            ax.bar(x + (j - 0.5) * w, vals, w * 0.92, color=colour, label=lab,
+                   edgecolor=SURFACE, linewidth=2, zorder=3)
+            for xi, v in zip(x + (j - 0.5) * w, vals):
+                if np.isfinite(v):
+                    ax.text(xi, v + 0.012, f"{v:.2f}", ha="center", va="bottom",
+                            fontsize=8, color=INK2)
+        ax.axhline(0.5, color=BAD, lw=1.4, ls=(0, (4, 3)), zorder=2)
+        # Left edge: the right-hand bars sit closest to 0.5, and their value
+        # labels land exactly where a right-aligned annotation would.
+        ax.annotate("chance", xy=(0.012, 0.5), xycoords=("axes fraction", "data"),
+                    color=BAD, fontsize=7.5, va="bottom", ha="left")
+        ax.set_xticks(x)
+        ax.set_xticklabels([SHORT[m] for m in MODES], fontsize=8, color=INK2,
+                           linespacing=1.25)
+        ax.set_ylim(0.3, 0.92)
+        ax.set_title(f"Participant {pname}", fontsize=10.5, color=INK, loc="left", pad=8)
+        ax.grid(axis="y", color=GRID, lw=0.7, zorder=0)
+        ax.set_axisbelow(True)
+        for s in ("top", "right"):
+            ax.spines[s].set_visible(False)
+        for s in ("left", "bottom"):
+            ax.spines[s].set_color(GRID)
+        ax.tick_params(colors=INK2, labelsize=8.5)
+    axes[0].set_ylabel("ability to spot the fault before performance drops",
+                       fontsize=9, color=INK2)
+    h, lab = axes[0].get_legend_handles_labels()
+    fig.legend(h, lab, loc="upper right", frameon=False, fontsize=9, ncol=2,
+               bbox_to_anchor=(0.99, 1.005))
+    fig.suptitle("The monitor sees what counting spikes cannot", x=0.008, y=0.985,
+                 ha="left", fontsize=13.5, color=INK, weight="bold")
+    fig.text(0.008, 0.925, "Same pattern on both participants: it wins on the two "
+             "faults that leave overall activity unchanged, and loses on the one "
+             "that is nothing but overall activity.",
+             ha="left", fontsize=9, color=INK2)
+    fig.tight_layout(rect=(0, 0, 1, 0.885))
+    out = FIGS / "13_auc_by_fault_mode.png"
+    fig.savefig(out, dpi=165, facecolor=SURFACE)
+    print(f"wrote {out}")
 
 
 if __name__ == "__main__":
