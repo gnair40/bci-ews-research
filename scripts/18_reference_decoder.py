@@ -62,6 +62,23 @@ OUT_DIR = REPO_ROOT / "data" / "processed"
 DECODER_PATH = OUT_DIR / "reference_decoder.npz"
 META_PATH = OUT_DIR / "reference_decoder.json"
 
+
+def decoder_paths(participant: str = "T11") -> tuple[Path, Path]:
+    """T11 keeps the original filenames so existing references stay valid."""
+    if participant == "T11":
+        return DECODER_PATH, META_PATH
+    return (OUT_DIR / f"reference_decoder_{participant}.npz",
+            OUT_DIR / f"reference_decoder_{participant}.json")
+
+
+# Healthy training/validation days per participant. T11's are the Phase 1-2
+# healthy baseline. T5's are simply its earliest days, since it has no separately
+# established baseline -- stated rather than implied.
+DAYS = {
+    "T11": {"train": (658, 665, 670), "val": (671, 675)},
+    "T5":  {"train": None, "val": None},        # filled at fit time from the data
+}
+
 # The healthy baseline established in Phase 1-2: T11 performing at 93-100%.
 # Split within it, so the decoder is fitted and selected entirely on healthy
 # data and never sees a degraded block during fitting.
@@ -214,20 +231,33 @@ def decode_stream(X: np.ndarray, W, mean, std) -> np.ndarray:
 # COMMANDS
 # --------------------------------------------------------------------------
 
-def cmd_fit() -> int:
+def cmd_fit(participant: str = "T11") -> int:
+    dec_path, meta_path = decoder_paths(participant)
     loader = load_loader()
-    ds = loader.load_dataset(participant="T11", load_neural=True, verbose=False)
+    ds = loader.load_dataset(participant=participant, load_neural=True, verbose=False)
     trials = pd.read_csv(OUT_DIR / "trials.csv")
     blocks = pd.read_csv(OUT_DIR / "blocks.csv")
     blocks = blocks[(blocks["cohort"] == "main") & (blocks["block_id"].isin(ds.neural))]
 
-    train_ids = sorted(blocks[blocks["trial_day"].isin(TRAIN_DAYS)]["block_id"])
-    val_ids = sorted(blocks[blocks["trial_day"].isin(VAL_DAYS)]["block_id"])
+    cfg = DAYS.get(participant, {"train": None, "val": None})
+    train_days, val_days = cfg["train"], cfg["val"]
+    if train_days is None:
+        # No established healthy baseline for this participant: take the
+        # earliest days, which is the closest available thing to "before it
+        # degraded", and say so rather than implying a baseline exists.
+        days = sorted(blocks["trial_day"].unique())
+        cut = max(2, int(round(len(days) * 0.6)))
+        train_days, val_days = tuple(days[:cut]), tuple(days[cut:cut + 2])
+        print(f"  [{participant}] no established baseline; using earliest days")
+
+    TRAIN_DAYS_L, VAL_DAYS_L = train_days, val_days
+    train_ids = sorted(blocks[blocks["trial_day"].isin(TRAIN_DAYS_L)]["block_id"])
+    val_ids = sorted(blocks[blocks["trial_day"].isin(VAL_DAYS_L)]["block_id"])
     if not train_ids or not val_ids:
         raise SystemExit("no train/val blocks found -- check TRAIN_DAYS/VAL_DAYS")
 
-    print(f"Fitting on {len(train_ids)} healthy blocks (days {TRAIN_DAYS})")
-    print(f"Selecting on {len(val_ids)} held-out healthy blocks (days {VAL_DAYS})")
+    print(f"Fitting on {len(train_ids)} healthy blocks (days {TRAIN_DAYS_L})")
+    print(f"Selecting on {len(val_ids)} held-out healthy blocks (days {VAL_DAYS_L})")
     print("The decoder never sees a degraded block.\n")
 
     mean, std, n_scale = accumulate(ds, trials, train_ids)
@@ -266,11 +296,11 @@ def cmd_fit() -> int:
         chance.append(angular_error_deg(pred, unit[ok][rng.permutation(int(ok.sum()))]))
     chance_err = float(np.nanmedian(np.concatenate(chance)))
 
-    np.savez(DECODER_PATH, W=W, mean=mean, std=std)
+    np.savez(dec_path, W=W, mean=mean, std=std)
     meta = {
         "fitted_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "participant": "T11",
-        "train_days": list(TRAIN_DAYS), "val_days": list(VAL_DAYS),
+        "participant": participant,
+        "train_days": list(TRAIN_DAYS_L), "val_days": list(VAL_DAYS_L),
         "train_blocks": train_ids, "val_blocks": val_ids,
         "n_fit_bins": int(n_fit),
         "ridge_lambda": float(lam),
@@ -281,7 +311,7 @@ def cmd_fit() -> int:
         "target": "unit vector from cursorPos to targetPos",
         "min_target_dist": MIN_TARGET_DIST,
     }
-    META_PATH.write_text(json.dumps(meta, indent=2))
+    meta_path.write_text(json.dumps(meta, indent=2))
 
     print(f"\n  chosen ridge {lam:.1e}")
     print(f"  train  {train_err:.2f} deg")
@@ -292,7 +322,7 @@ def cmd_fit() -> int:
     print(f"\n  Property 1 -- better than chance by {margin:.1f} deg: "
           f"{'PASS' if margin > 5 else 'FAIL'}")
     print(f"  Property 2 -- frozen: weights and normalisation written to")
-    print(f"                {DECODER_PATH.name}, never refitted downstream.")
+    print(f"                {dec_path.name}, never refitted downstream.")
     print("\n  This decoder is not tuned for accuracy beyond clearing chance,")
     print("  and it should not be. It is a measuring instrument, not a result.")
     return 0
@@ -482,12 +512,13 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("fit", help="fit and freeze the reference decoder")
+    f = sub.add_parser("fit", help="fit and freeze the reference decoder")
+    f.add_argument("--participant", default="T11")
     sub.add_parser("check", help="confirm degradation moves the performance number")
     sub.add_parser("calibrate", help="find the severity at which each mode bites")
     args = ap.parse_args()
     if args.cmd == "fit":
-        return cmd_fit()
+        return cmd_fit(args.participant)
     if args.cmd == "check":
         return cmd_check()
     return cmd_calibrate()

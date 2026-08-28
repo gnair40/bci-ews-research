@@ -91,8 +91,14 @@ def episode_outcome(scores, onset_w, crossing_w, t_warn, sm, step_s):
 
 
 def main() -> int:
-    df = pd.read_csv(OUT / "episode_scores.csv")
-    meta = json.loads((OUT / "harness_meta.json").read_text())
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--participant", default="T11")
+    args = ap.parse_args()
+    sfx = "" if args.participant == "T11" else f"_{args.participant}"
+    df = pd.read_csv(OUT / f"episode_scores{sfx}.csv")
+    meta = json.loads((OUT / f"harness_meta{sfx}.json").read_text())
+    print(f"Participant: {args.participant}")
     harness = _load("harness", "20_evaluation_harness.py")
     step_s = meta["step_bins"] * meta["bin_s"]
     budget = meta["false_alarm_budget_per_hour"]

@@ -64,6 +64,17 @@ import numpy as np
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PLAN_PATH = REPO_ROOT / "data" / "processed" / "injection_plan.json"
 
+
+def plan_path(participant: str = "T11") -> Path:
+    """Where a participant's locked plan lives.
+
+    T11 keeps the original filename so its three recorded amendments and their
+    checksums stay valid without being rewritten.
+    """
+    if participant == "T11":
+        return PLAN_PATH
+    return PLAN_PATH.parent / f"injection_plan_{participant}.json"
+
 # --------------------------------------------------------------------------
 # DESIGN CONSTANTS -- these define the corpus and are frozen by `plan`
 # --------------------------------------------------------------------------
@@ -462,11 +473,12 @@ def build_plan(participant: str = "T11") -> dict:
     return plan
 
 
-def load_plan() -> tuple[dict, list[Episode]]:
-    if not PLAN_PATH.exists():
-        raise SystemExit(f"no plan at {PLAN_PATH}. Run: "
-                         f"python3 scripts/17_fault_injector.py plan")
-    plan = json.loads(PLAN_PATH.read_text())
+def load_plan(participant: str = "T11") -> tuple[dict, list[Episode]]:
+    pp = plan_path(participant)
+    if not pp.exists():
+        raise SystemExit(f"no plan at {pp}. Run: "
+                         f"python3 scripts/17_fault_injector.py plan --participant {participant}")
+    plan = json.loads(pp.read_text())
     body = json.dumps(plan["episodes"], sort_keys=True).encode()
     got = hashlib.sha256(body).hexdigest()
     if got != plan.get("episodes_sha256"):
@@ -485,8 +497,8 @@ def load_plan() -> tuple[dict, list[Episode]]:
 # VERIFICATION -- the injector must be checked before anything is scored with it
 # --------------------------------------------------------------------------
 
-def cmd_verify() -> int:
-    plan, episodes = load_plan()
+def cmd_verify(participant: str = "T11") -> int:
+    plan, episodes = load_plan(participant)
     loader = load_loader()
     ds = loader.load_dataset(participant=plan["participant"],
                              load_neural=True, verbose=False)
@@ -593,10 +605,11 @@ def cmd_verify() -> int:
 # CLI
 # --------------------------------------------------------------------------
 
-def cmd_plan(amend: str | None) -> int:
-    if PLAN_PATH.exists() and not amend:
-        existing = json.loads(PLAN_PATH.read_text())
-        print(f"A plan already exists: {PLAN_PATH}")
+def cmd_plan(amend: str | None, participant: str = "T11") -> int:
+    pp = plan_path(participant)
+    if pp.exists() and not amend:
+        existing = json.loads(pp.read_text())
+        print(f"A plan already exists: {pp}")
         print(f"  created {existing['created_utc']} with "
               f"{existing['n_episodes']} episodes")
         print("\nRefusing to overwrite. The onsets in that file were drawn before")
@@ -605,9 +618,9 @@ def cmd_plan(amend: str | None) -> int:
         print("\n    python3 scripts/17_fault_injector.py plan --amend 'why'\n")
         return 1
 
-    plan = build_plan()
+    plan = build_plan(participant)
     if amend:
-        old = json.loads(PLAN_PATH.read_text()) if PLAN_PATH.exists() else {}
+        old = json.loads(pp.read_text()) if pp.exists() else {}
         plan["amendments"] = old.get("amendments", []) + [{
             "at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "reason": amend,
@@ -615,10 +628,10 @@ def cmd_plan(amend: str | None) -> int:
             "superseded_created": old.get("created_utc"),
         }]
 
-    PLAN_PATH.parent.mkdir(parents=True, exist_ok=True)
-    PLAN_PATH.write_text(json.dumps(plan, indent=2))
+    pp.parent.mkdir(parents=True, exist_ok=True)
+    pp.write_text(json.dumps(plan, indent=2))
 
-    print(f"Wrote {PLAN_PATH}")
+    print(f"Wrote {pp}")
     print(f"  {plan['n_episodes']} episodes over {plan['n_blocks']} blocks")
     print(f"  commit   {plan['git_commit'][:12]}")
     print(f"  checksum {plan['episodes_sha256'][:16]}...")
@@ -628,8 +641,8 @@ def cmd_plan(amend: str | None) -> int:
     return 0
 
 
-def cmd_apply(episode_id: str, out: str | None) -> int:
-    plan, episodes = load_plan()
+def cmd_apply(episode_id: str, out: str | None, participant: str = "T11") -> int:
+    plan, episodes = load_plan(participant)
     match = [e for e in episodes if e.episode_id == episode_id]
     if not match:
         raise SystemExit(f"no episode {episode_id!r} in the plan")
@@ -663,19 +676,22 @@ def main() -> int:
     p = sub.add_parser("plan", help="draw onsets and lock them to disk")
     p.add_argument("--amend", metavar="REASON",
                    help="overwrite an existing plan, recording why")
+    p.add_argument("--participant", default="T11")
 
-    sub.add_parser("verify", help="check the injector behaves as specified")
+    v = sub.add_parser("verify", help="check the injector behaves as specified")
+    v.add_argument("--participant", default="T11")
 
     a = sub.add_parser("apply", help="degrade one block per one episode")
     a.add_argument("--episode", required=True)
     a.add_argument("--out", help="save the degraded array as .npy")
+    a.add_argument("--participant", default="T11")
 
     args = ap.parse_args()
     if args.cmd == "plan":
-        return cmd_plan(args.amend)
+        return cmd_plan(args.amend, args.participant)
     if args.cmd == "verify":
-        return cmd_verify()
-    return cmd_apply(args.episode, args.out)
+        return cmd_verify(args.participant)
+    return cmd_apply(args.episode, args.out, args.participant)
 
 
 if __name__ == "__main__":

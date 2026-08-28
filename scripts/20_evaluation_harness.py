@@ -167,7 +167,7 @@ def crossing_window(perf: np.ndarray, onset_w: int) -> int | None:
 # MAIN EVALUATION
 # --------------------------------------------------------------------------
 
-def evaluate(limit: int | None, only: str | None) -> int:
+def evaluate(limit: int | None, only: str | None, participant: str = "T11") -> int:
     inj = _load("injector", "17_fault_injector.py")
     det = _load("det", "19_detectors.py")
     guard = _load("guard", "22_decoder_guard.py")
@@ -175,12 +175,13 @@ def evaluate(limit: int | None, only: str | None) -> int:
     rd = _load("refdec", "18_reference_decoder.py")
     loader = _load("loader", "03_load_dataset.py")
 
-    dz = np.load(OUT / "reference_decoder.npz")
+    dec_path, meta_path = rd.decoder_paths(participant)
+    dz = np.load(dec_path)
     dec = (dz["W"], dz["mean"], dz["std"])
-    meta = json.loads((OUT / "reference_decoder.json").read_text())
-    plan, episodes = inj.load_plan()
+    meta = json.loads(meta_path.read_text())
+    plan, episodes = inj.load_plan(participant)
 
-    ds = loader.load_dataset(participant="T11", load_neural=True, verbose=False)
+    ds = loader.load_dataset(participant=participant, load_neural=True, verbose=False)
     trials = pd.read_csv(OUT / "trials.csv")
 
     fit_blocks = set(meta["train_blocks"])
@@ -267,12 +268,15 @@ def evaluate(limit: int | None, only: str | None) -> int:
                 print(f"  {done}/{len(eps)}")
 
     df = pd.DataFrame(rows)
-    df.to_csv(OUT / "episode_scores.csv", index=False)
-    print(f"\nwrote {OUT/'episode_scores.csv'}  ({len(df)} detector-episode rows)")
+    suffix = "" if participant == "T11" else f"_{participant}"
+    scores_path = OUT / f"episode_scores{suffix}.csv"
+    df.to_csv(scores_path, index=False)
+    print(f"\nwrote {scores_path}  ({len(df)} detector-episode rows)")
 
     # window time in seconds, needed for lead time
     meta_out = {
         "written_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "participant": participant,
         "window_bins": WINDOW_BINS, "step_bins": STEP_BINS, "bin_s": BIN_S,
         "threshold_deg": THRESHOLD_DEG, "dwell": DWELL,
         "false_alarm_budget_per_hour": FALSE_ALARM_BUDGET_PER_HOUR,
@@ -281,8 +285,9 @@ def evaluate(limit: int | None, only: str | None) -> int:
         "detectors": list(detectors),
         "n_episodes_scored": len(eps),
     }
-    (OUT / "harness_meta.json").write_text(json.dumps(meta_out, indent=2))
-    print(f"wrote {OUT/'harness_meta.json'}")
+    meta_out_path = OUT / f"harness_meta{suffix}.json"
+    meta_out_path.write_text(json.dumps(meta_out, indent=2))
+    print(f"wrote {meta_out_path}")
     return 0
 
 
@@ -293,8 +298,9 @@ def main() -> int:
     r = sub.add_parser("run", help="score every episode with every detector")
     r.add_argument("--limit", type=int)
     r.add_argument("--detector")
+    r.add_argument("--participant", default="T11")
     a = ap.parse_args()
-    return evaluate(a.limit, a.detector)
+    return evaluate(a.limit, a.detector, a.participant)
 
 
 if __name__ == "__main__":
