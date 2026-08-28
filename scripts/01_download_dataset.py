@@ -261,9 +261,9 @@ def hash_file(path: Path, algo: str) -> str:
 # TALKING TO DRYAD
 # ---------------------------------------------------------------------------
 
-def fetch_dataset_record(session: requests.Session) -> dict:
+def fetch_dataset_record(session: requests.Session, doi: str = DATASET_DOI) -> dict:
     """Get the top-level metadata record for our DOI (title, authors, etc.)."""
-    url = f"{DRYAD_API}/datasets/{encode_doi(DATASET_DOI)}"
+    url = f"{DRYAD_API}/datasets/{encode_doi(doi)}"
     print(f"[1/4] Looking up dataset record\n      {url}")
     return get_json(url, session)
 
@@ -497,6 +497,16 @@ def _manifest_entry(name, dest, url, expected_size, digest, digest_type,
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--doi", default=DATASET_DOI,
+                        help="Dryad DOI to fetch. Defaults to the primary dataset. "
+                             "Candidate third participants, sizes checked from the "
+                             "public metadata API: "
+                             "10.5061/dryad.dncjsxm85 (Card 2024, T15 speech, 11.6 GB "
+                             "- a genuine THIRD participant, which the two-participant "
+                             "disagreement makes the most valuable addition available); "
+                             "10.5061/dryad.hqbzkh1p6 (Fan 2023, T5 one year, 3.6 GB "
+                             "- same participant as the existing T5, but self-recalibrating "
+                             "by design, so it is a contrast condition rather than a new case).")
     parser.add_argument("--list-only", action="store_true",
                         help="show the file list without downloading")
     parser.add_argument("--outdir", type=Path, default=DEFAULT_OUTDIR,
@@ -508,7 +518,7 @@ def main() -> int:
     print("=" * 72)
     print("Dryad dataset download")
     print(f"  DOI:         {DATASET_DOI}")
-    print(f"  Landing page https://doi.org/{DATASET_DOI}")
+    print(f"  Landing page https://doi.org/{args.doi}")
     print(f"  Destination: {args.outdir}")
     print("=" * 72)
 
@@ -519,7 +529,7 @@ def main() -> int:
         print("      no DRYAD_CLIENT_ID / DRYAD_CLIENT_SECRET set;\n"
               "      will try the public route (may hit Dryad's anti-bot check)")
 
-    dataset = fetch_dataset_record(session)
+    dataset = fetch_dataset_record(session, args.doi)
     title = dataset.get("title", "(no title returned)")
     authors = ", ".join(
         f"{a.get('firstName','')} {a.get('lastName','')}".strip()
@@ -557,9 +567,9 @@ def main() -> int:
                for f in files]
 
     manifest = {
-        "dataset_doi": DATASET_DOI,
-        "dataset_doi_url": f"https://doi.org/{DATASET_DOI}",
-        "dryad_landing_page": f"https://datadryad.org/dataset/doi:{DATASET_DOI}",
+        "dataset_doi": args.doi,
+        "dataset_doi_url": f"https://doi.org/{args.doi}",
+        "dryad_landing_page": f"https://datadryad.org/dataset/doi:{args.doi}",
         "dataset_title": title,
         "dataset_authors": authors,
         "dryad_version_number": version_number,

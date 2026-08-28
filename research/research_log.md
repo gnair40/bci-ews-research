@@ -1844,3 +1844,70 @@ to state now and would have been expensive to learn later.
 4. **A worked example of the full loop** — measure a mechanism, predict, record
    the prediction with a checksum before the results exist, run, report the
    split honestly, and decline to adopt the change.
+
+---
+
+## 28 August 2026 — Attempting a third participant, and what blocks it
+
+### Why this was attempted
+
+The T11/T5 disagreement on the joint detector makes **a third participant the
+single most valuable addition available to this project** — more valuable than a
+better detector, because with n = 2 an improvement cannot be told from noise.
+
+### What was found
+
+Dryad's **metadata** API is readable without credentials. Two candidates, sizes
+confirmed from the live API rather than guessed:
+
+| Deposit | Size | Value |
+|---|---|---|
+| **Card et al. 2024 — T15, speech neuroprosthesis** `10.5061/dryad.dncjsxm85` | 11.6 GB | **A genuine third participant.** 256 electrodes, 45 sessions Aug 2023 – Apr 2025, a completely different task. Different implant, different task, different feature dimensionality — exactly the generality test the design calls for. |
+| Fan et al. 2023 — T5, one year `10.5061/dryad.hqbzkh1p6` | 3.6 GB | Same participant as the existing T5, but **self-recalibrating by design**. A contrast condition, not a new case. |
+
+The T15 neural data is a single 11.05 GB zip and cannot be subset. There are two
+small pickles (57.8 MB and 1.1 MB) that were worth probing first.
+
+### What blocks it
+
+**Downloads require OAuth credentials, which did not survive the container
+restart.** Both routes were tried and both are closed:
+
+- `api/v2/files/{id}/download` → **HTTP 401**
+- `downloads/file_stream/{id}` → HTTP 200 but returns the **anti-bot challenge
+  page**, not the file. This is the same Anubis challenge documented in
+  `DATASET_README.md` §7 for the primary dataset, and `scripts/01` already
+  rejects an HTML doctype for exactly this reason.
+
+No attempt was made to work around the challenge. It is there deliberately, and
+Dryad publishes an authenticated API that is the correct route.
+
+### What was done instead
+
+`scripts/01_download_dataset.py` now takes `--doi`, so once
+`DRYAD_CLIENT_ID` and `DRYAD_CLIENT_SECRET` are present in the environment, a
+third participant is one command:
+
+    python3 scripts/01_download_dataset.py --doi 10.5061/dryad.dncjsxm85
+
+The candidate DOIs and the reasoning above are recorded in the flag's help text,
+so the option does not need this log entry to be usable.
+
+### Honest cost estimate before anyone commits to it
+
+- **11.6 GB download**, plus unzip. Free disk was 29 GB at the time of writing,
+  so it fits, but not with room to spare.
+- **A new loader.** T15's format is unrelated to the `.mat` structure the current
+  loader handles, so `scripts/03` will not read it.
+- **No cursor task**, therefore no angular error and no reference decoder. Lead
+  time as currently defined would not be computable.
+
+**But the silence gate needs none of that.** It requires only healthy neural
+recordings and the monitor, and it is the gate every configuration currently
+fails. Running it on a third participant with a different implant and a different
+task would establish whether that failure is a property of *these two arrays* or
+of *the approach*. Those are very different conclusions and the test is cheap
+once the data is loadable.
+
+That is the recommended next experiment, and it is now blocked only on
+credentials.
