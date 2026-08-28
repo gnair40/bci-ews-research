@@ -1297,3 +1297,85 @@ check. `GEOMETRY_ROTATION` attributes to `dispersion` rather than `profile` —
 a genuine physical ambiguity, since mixing channels does spread the log-profile.
 **Left uncorrected on purpose**, to be measured on the real corpus rather than
 tuned against a synthetic test.
+
+---
+
+## 28 August 2026 — First benchmark results, and they are negative
+
+### Condition A: a reference fitted once and deployed
+
+Detectors fitted on healthy windows from the decoder's own training days
+(658, 665, 670), then applied unchanged across the whole record. This is what a
+naive monitor does: calibrate at install, then run.
+
+**Every detector fails.**
+
+| Detector | Median lead | Detection | False alarms/h | Budget |
+|---|---|---|---|---|
+| `decoder_guard` | **−5.0 s** | 175/586 | **18.1** | 0.1 |
+| `mean_activity` | **−10.0 s** | 137/586 | **2.4** | 0.1 |
+| `robust_dispersion` | **−30.0 s** | 11/586 | 0.20 | 0.1 |
+| `distribution_shift` | — | — | — | **no operating point exists at all** |
+
+Negative lead time means the monitor warns *after* performance has already
+fallen. That is not an early-warning system; it is a delayed confirmation.
+
+Gates, on healthy test episodes:
+
+| Gate | `decoder_guard` | `mean_activity` | `robust_dispersion` |
+|---|---|---|---|
+| G1 silence | **FAIL** (87% of healthy episodes trend) | **FAIL** | **FAIL** (85%) |
+| G4 elapsed time | **FAIL** (ρ=0.74) | **FAIL** | **FAIL** (ρ=0.73) |
+| G2 rate invariance | PASS (ρ=0.40) | n/a | PASS (0.57) |
+| G5 detrend | **PASS** (4.5%) | — | FAIL (11.7%) |
+
+### G5 is the diagnosis
+
+`decoder_guard`'s silence-gate failure drops from **87% of healthy episodes to
+4.5%** once a linear trend is removed. So the failure is **monotonic drift, not
+noise**.
+
+That is the whole explanation. The array genuinely changed over 142 days — Phase
+1–2 measured mean firing rate falling 56.5% — so a reference taken on day 658 and
+applied on day 800 is measuring *months of real change*, not the injected fault.
+The monitor is not broken. It is answering a question nobody asked.
+
+### Attribution collapsed too
+
+Only **two of four** components were ever named, and overall accuracy was 26%
+against a 25% chance rate. `dispersion` claimed almost everything, including
+145/149 channel-dropout episodes. The reason is the same drift: dispersion is
+chronically elevated against an old reference, so the specificity rule keeps
+selecting it. **A component that never fires is not a subtle failure** — it means
+attribution has collapsed onto whatever is permanently lit.
+
+### Why this is reported rather than quietly replaced
+
+"Calibrate once and deploy" is what a naive monitor does, and showing precisely
+how it fails — with the gate that isolates the cause — is worth more than
+skipping to the version that works. It also makes the fix principled rather than
+convenient: the reference must be **local**, because the question is "has
+something changed relative to recent normal", not "does today look like install
+day".
+
+Condition B (local re-baseline: shape global, centre and scale re-estimated from
+each episode's own pre-onset windows, causally) is running next.
+
+### Two report bugs fixed
+
+- NumPy booleans leak through Python's `and`, so the gate results were not
+  JSON-serialisable and the summary file never got written.
+- Attribution chance was computed over the components that *happened to appear*
+  rather than the components the monitor *can emit* — which flattered a
+  collapsed attribution into looking like a coin flip instead of chance.
+
+### T5 is ready as a transfer test
+
+T5's reference decoder is fitted (47.9° held-out healthy against 72.7° chance)
+and its injection plan is drawn: 777 episodes over 21 blocks, 192 features
+against T11's 384. The dimensionality difference is the point — nothing in the
+design may assume 384.
+
+**T5's chance level is 72.7°, not 90°**, because its target directions are not
+uniformly distributed. Measuring chance rather than assuming it is what caught
+that; a hard-coded 90° would have overstated the decoder's margin by 18°.
