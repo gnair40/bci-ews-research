@@ -1796,5 +1796,51 @@ the useful information is in *which* component fires rather than in the joint
 geometry of all four, and exploiting that without using labels is the open
 problem.
 
-*(T11's run is still in flight; this entry will be extended when it returns
-rather than rewritten.)*
+### T11 returned, and it says the opposite
+
+| T11 | Detection | False alarms | Silence gate |
+|---|---|---|---|
+| `decoder_guard` v1 | 143/586 | 69 (3.407/h) | 98.1% fail |
+| `decoder_guard_joint` | **177/586** | **62 (3.061/h)** | 97.4% fail |
+
+On T11 the joint model **detects more faults *and* raises fewer false alarms**.
+That is dominance on both axes at its own operating point, which is a stronger
+result than the prediction asked for — the prediction only claimed a reduction at
+*matched* detection, and this beats it without needing the match.
+
+### The verdict: it does not replicate, so it is not adopted
+
+| | Prediction | Outcome |
+|---|---|---|
+| **T11** | fewer false alarms at matched detection | **Satisfied, and exceeded** — dominates on both axes |
+| **T5** | fewer false alarms at matched detection | **Falsified** — detection exactly matched, false alarms rose 3 → 5 |
+
+**A change that helps one participant and hurts the other is not an improvement,
+and `decoder_guard_joint` is therefore not promoted over v1.** Both are kept and
+both are reported. Neither passes the silence gate — 97.4% and 98.7% of healthy
+episodes still trend — so the headline is untouched either way.
+
+### This is the project's central limitation showing itself again
+
+T5 and T11 disagreed in sign in Phase 1–2. They disagree again here. That is now
+a consistent, replicated property of this dataset rather than an oddity of one
+analysis, and it is the strongest argument in the project for why **n = 2 is not
+enough** and why a third participant is the single most valuable thing that could
+be added.
+
+It also means any "improvement" measured on one participant in this dataset
+should be treated as unproven until it is shown on the other. That rule is cheap
+to state now and would have been expensive to learn later.
+
+### What survives from this episode
+
+1. **The diagnosis**, which is unaffected: `profile` fires 40.6% on healthy
+   record and 5.4% during faults. The `max` rule scores drift as risk.
+2. **A more specific negative**: a joint Gaussian over the four components
+   captures that structure well enough to help on one participant and not the
+   other, which places it firmly in "not robust" rather than "wrong".
+3. **A method rule**, earned rather than assumed: single-participant improvements
+   in this dataset do not count.
+4. **A worked example of the full loop** — measure a mechanism, predict, record
+   the prediction with a checksum before the results exist, run, report the
+   split honestly, and decline to adopt the change.

@@ -1,6 +1,6 @@
 # Detector benchmark — T11
 
-**Generated:** 2026-08-28 14:49 UTC  
+**Generated:** 2026-08-28 15:30 UTC  
 **Reproduce:** `python3 scripts/20_evaluation_harness.py run --participant T11` then `python3 scripts/21_score_report.py --participant T11`
 
 > Gates are reported before lead time, and that ordering is not cosmetic. A detector that fails the silence gate has not earned the right to have its lead time discussed.
@@ -17,6 +17,7 @@
 | Detector | Median lead | 95% CI | Detected | False alarms/h | Operating point |
 |---|---|---|---|---|---|
 | `decoder_guard` | -20.0 s | -25.0..-10.0 | 143/586 | 3.4069 | 50.46 |
+| `decoder_guard_joint` | -15.0 s | -15.0..-10.0 | 177/586 | 3.0613 | 174.85 |
 | `distribution_shift` | -35.0 s | -45.0..-25.0 | 161/586 | 2.6663 | 480.85 |
 | `mean_activity` | -35.0 s | -40.0..-20.0 | 90/586 | 2.1725 | 60.01 |
 | `robust_dispersion` | 5.0 s | 0.0..10.0 | 275/586 | 15.6028 | 6.50 |
@@ -26,6 +27,7 @@
 | Detector | silence | rate_invariance | comparator | elapsed_time | detrend |
 |---|---|---|---|---|---|
 | `decoder_guard` | **FAIL** | **FAIL** | PASS | **FAIL** | PASS |
+| `decoder_guard_joint` | **FAIL** | **FAIL** | PASS | **FAIL** | **FAIL** |
 | `distribution_shift` | **FAIL** | **FAIL** | **FAIL** | **FAIL** | **FAIL** |
 | `mean_activity` | **FAIL** | **FAIL** | — | **FAIL** | PASS |
 | `robust_dispersion` | **FAIL** | **FAIL** | PASS | **FAIL** | **FAIL** |
@@ -39,6 +41,14 @@ Gate meanings: **silence** — no trend in risk while healthy. **rate invariance
 | CHANNEL_DROPOUT | -25.0 s |
 | GAIN_DRIFT | -10.0 s |
 | GEOMETRY_ROTATION | -20.0 s |
+
+### `decoder_guard_joint` by fault mode
+
+| Fault | Median lead |
+|---|---|
+| CHANNEL_DROPOUT | -10.0 s |
+| GAIN_DRIFT | -20.0 s |
+| GEOMETRY_ROTATION | -15.0 s |
 
 ### `distribution_shift` by fault mode
 
