@@ -38,8 +38,10 @@ GRID = "#dcdcd8"
 SURFACE = "#fcfcfb"
 BAD = "#b3261e"
 
-NICE = {"decoder_guard": "decoder-guard", "mean_activity": "mean activity",
-        "robust_dispersion": "robust dispersion", "distribution_shift": "distribution shift"}
+# Two lines each: on a four-category axis at this width the single-line names
+# overlap, and an unreadable axis is a broken chart no matter how good the data.
+NICE = {"decoder_guard": "decoder-\nguard", "mean_activity": "mean\nactivity",
+        "robust_dispersion": "robust\ndispersion", "distribution_shift": "distribution\nshift"}
 
 
 def load(sfx: str) -> dict:
@@ -57,16 +59,23 @@ def panel(ax, dets, gv, lv, title, ylabel, ref=None, ref_label=None, log=False):
                edgecolor=SURFACE, linewidth=2, zorder=3)
         for xi, q in zip(x + off, v):
             if np.isnan(q):
-                ax.text(xi, 0, "none", ha="center", va="bottom", fontsize=7.5,
-                        color=BAD, rotation=90, zorder=4)
+                # No bar to draw: say so in place rather than leaving a gap the
+                # reader has to interpret as either zero or missing.
+                lo, hi = ax.get_ylim()
+                # Short marker: adjacent missing bars are only 0.36 apart, and
+                # a three-line label at that spacing collides with its neighbour.
+                ax.text(xi, lo + (hi - lo) * 0.03, "n/a", ha="center",
+                        va="bottom", fontsize=8, color=BAD, zorder=4)
     if ref is not None:
         ax.axhline(ref, color=BAD, lw=1.4, ls=(0, (4, 3)), zorder=2)
-        ax.text(len(dets) - 0.45, ref, f" {ref_label}", color=BAD, fontsize=8,
-                va="bottom", ha="right")
+        if ref_label:
+            ax.annotate(ref_label, xy=(0.985, ref), xycoords=("axes fraction", "data"),
+                        color=BAD, fontsize=7.5, va="bottom", ha="right")
     if log:
         ax.set_yscale("log")
     ax.set_xticks(x)
-    ax.set_xticklabels([NICE.get(d, d) for d in dets], fontsize=8.5, color=INK2)
+    ax.set_xticklabels([NICE.get(d, d) for d in dets], fontsize=8,
+                       color=INK2, linespacing=1.25)
     ax.set_title(title, fontsize=10.5, color=INK, pad=8, loc="left")
     ax.set_ylabel(ylabel, fontsize=9, color=INK2)
     ax.grid(axis="y", color=GRID, lw=0.7, zorder=0)
@@ -95,7 +104,7 @@ def main() -> int:
                                         or gv.get("fraction_significant_after_detrend"))
 
     FIGS.mkdir(parents=True, exist_ok=True)
-    fig, axes = plt.subplots(1, 3, figsize=(12.6, 4.1), facecolor=SURFACE)
+    fig, axes = plt.subplots(1, 3, figsize=(13.2, 4.5), facecolor=SURFACE)
     fig.patch.set_facecolor(SURFACE)
     for a in axes:
         a.set_facecolor(SURFACE)
@@ -104,7 +113,7 @@ def main() -> int:
           [get(g, d, "median_lead_s") for d in dets],
           [get(l, d, "median_lead_s") for d in dets],
           "Median lead time", "seconds  (positive = warned first)", ref=0,
-          ref_label="warning arrives too late below this line")
+          ref_label="too late below")
 
     panel(axes[1], dets,
           [get(g, d, "false_alarms_per_hour") for d in dets],
@@ -121,9 +130,13 @@ def main() -> int:
     h, lab = axes[0].get_legend_handles_labels()
     fig.legend(h, lab, loc="upper right", frameon=False, fontsize=9,
                ncol=2, bbox_to_anchor=(0.99, 1.005))
-    fig.suptitle("Calibrate once, or hold a recent normal?", x=0.008, y=0.99,
+    fig.suptitle("Neither baseline strategy passes", x=0.008, y=0.985,
                  ha="left", fontsize=13.5, color=INK, weight="bold")
-    fig.tight_layout(rect=(0, 0, 1, 0.90))
+    fig.text(0.008, 0.925, "T11 - four detectors, no transform. Every bar in the "
+             "right-hand panel must fall below the dashed line; none does.  "
+             "n/a = no threshold met the false-alarm budget at all.",
+             ha="left", fontsize=9, color=INK2)
+    fig.tight_layout(rect=(0, 0, 1, 0.885))
     out = FIGS / "12_baseline_conditions.png"
     fig.savefig(out, dpi=165, facecolor=SURFACE)
     print(f"wrote {out}")

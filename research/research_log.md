@@ -1379,3 +1379,100 @@ design may assume 384.
 **T5's chance level is 72.7°, not 90°**, because its target directions are not
 uniformly distributed. Measuring chance rather than assuming it is what caught
 that; a hard-coded 90° would have overstated the decoder's margin by 18°.
+
+---
+
+## 28 August 2026 — The full benchmark: 36 configurations, none passes
+
+### What was run
+
+Four detectors × two baseline strategies × three causal transforms × two
+participants. Every configuration is in `reports/BENCHMARK_SUMMARY.md`, including
+the ones that failed and the fifteen that could not find an operating point at
+all.
+
+Reporting the whole grid rather than a best row is the point. A best row selected
+after the fact from a grid is not a result — it is the maximum of a set of noisy
+numbers.
+
+| | count | of 36 |
+|---|---|---|
+| Found any operating point at all | 21 | 58% |
+| Achieved a **positive** median lead time | 5 | 14% |
+| Met the false-alarm budget (≤0.1/h) | 1 | 3% |
+| Passed the silence gate | **0** | **0%** |
+| **Passed all five gates** | **0** | **0%** |
+
+### The finding, stated precisely
+
+**The binding constraint is not detection.** Five configurations do warn before
+performance falls — T5's `robust_dispersion` reaches **+57.5 s median lead
+(95% CI 2.5–82.5)**, and T11's `mean_activity` under a trailing reference reaches
++15 s.
+
+**The binding constraint is specificity.** The risk signal is never quiet during
+healthy operation. Any threshold low enough to catch a fault early also fires
+constantly on healthy record. Only one configuration in 36 met the false-alarm
+budget, and it had a *negative* lead time — it was quiet because it barely fired.
+
+The closest approach to the silence gate is **31% of healthy episodes still
+trending, against a 10% requirement** (`decoder_guard`, T11, calibrate-once
+baseline, trailing transform).
+
+### What the three transforms established
+
+- **none** — 80–98% of healthy episodes trend. Hopeless.
+- **detrend** — the prespecified fix, and it **does not work**. On T5 it made the
+  silence gate *worse*, 63% → 81%. The reason is instructive: a line fitted on
+  pre-onset windows and extrapolated forward accumulates error with distance, so
+  on drift that is not exactly linear it *adds* a trend to the far end. Removing
+  the trend requires knowing the whole series, which a live monitor cannot do.
+- **trailing** — comparing each window against a short sliding reference of the
+  recent past is the only transform that helps, roughly halving the failure rate
+  (87% → 31%). It is causal and needs no model of how drift should behave. It
+  still does not come close to passing.
+
+The prespecified fix failing is recorded as a result, not quietly replaced. It
+was written into `phase3_design_implications.md` on 26 August, it was run, and it
+failed — that ordering is the whole value of writing it down first.
+
+### Why this is a real result rather than a dead end
+
+The project was designed so that this outcome is reportable, and Phase 1–2 was
+the proof that a negative finding would actually be reported. The contribution
+here is not a working detector. It is:
+
+1. **A benchmark that did not previously exist** — 1,073 + 777 fault episodes
+   with known onset, four fault types spanning visibility to the trivial
+   comparator, and a stated performance threshold.
+2. **A test battery** — five gates, applied in a fixed order, with silence first.
+3. **Systematic evidence** that neural-instability measures — including the
+   published MINDFUL-style measure reproduced at r = 0.985, and a purpose-built
+   monitor — cannot warn early at a usable false-alarm rate on chronic iBCI data.
+4. **A diagnosis of why**: the neural statistics change continuously, at a
+   magnitude comparable to the injected faults, for reasons unrelated to failure.
+   Within-block drift alone is ~15%; across 142 days mean firing rate falls 56.5%.
+
+### Honest limitations of this benchmark
+
+- **Open-loop.** Injected episodes cannot include a human adapting, so the
+  performance measure is decoder output error rather than task success.
+- **Two participants.** T5 and T11 disagreed in Phase 1–2 and disagree here.
+- **`GEOMETRY_ROTATION` at crossing severity** clips 17% of entries and loses 18%
+  of mean activity, so it is not a clean test of the trivial-comparator gate.
+  `GAIN_DRIFT` carries that role.
+- **Attribution reached 52% against 25% chance on T5**, but only 3 of 4
+  components were ever named — the fourth never fires, which means attribution
+  is partly collapsing onto whatever is chronically lit.
+- **The trailing reference has two unfitted constants** (window length, gap).
+  They were set once, not swept, precisely to avoid turning the transform into
+  another grid to search.
+
+### Figure
+
+`reports/figures/12_baseline_conditions.png` — three panels sharing a detector
+axis: median lead time, false alarms per hour on a log scale, and the fraction of
+healthy episodes that trend. No dual axes: lead time and false alarms have
+different units and opposite senses of "good", and the tradeoff between them is
+the finding, so it stays visible as two panels rather than being collapsed into
+one score.

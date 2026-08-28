@@ -16,19 +16,19 @@
 
 | Detector | Median lead | 95% CI | Detected | False alarms/h | Operating point |
 |---|---|---|---|---|---|
-| `decoder_guard` | -5.0 s | -10.0..0.0 | 175/586 | 18.121 | 48.00 |
+| `decoder_guard` | -15.0 s | -20.1..-10.0 | 145/586 | 3.1107 | 45.00 |
 | `distribution_shift` | — | — | — | — | **none meets budget** |
-| `mean_activity` | -10.0 s | -15.0..0.0 | 137/586 | 2.37 | 2.00 |
-| `robust_dispersion` | -30.0 s | -50.0..40.0 | 11/586 | 0.1975 | 1.00 |
+| `mean_activity` | -35.0 s | -45.0..-30.0 | 79/586 | 1.8269 | 55.00 |
+| `robust_dispersion` | -5.0 s | -10.0..0.0 | 227/586 | 5.1845 | 14.00 |
 
 ## Gates
 
 | Detector | silence | rate_invariance | comparator | elapsed_time | detrend |
 |---|---|---|---|---|---|
-| `decoder_guard` | **FAIL** | PASS | PASS | **FAIL** | PASS |
-| `distribution_shift` | **FAIL** | **FAIL** | **FAIL** | **FAIL** | PASS |
+| `decoder_guard` | **FAIL** | **FAIL** | PASS | **FAIL** | PASS |
+| `distribution_shift` | **FAIL** | **FAIL** | **FAIL** | **FAIL** | **FAIL** |
 | `mean_activity` | **FAIL** | **FAIL** | — | **FAIL** | PASS |
-| `robust_dispersion` | **FAIL** | PASS | **FAIL** | **FAIL** | **FAIL** |
+| `robust_dispersion` | **FAIL** | PASS | PASS | **FAIL** | **FAIL** |
 
 Gate meanings: **silence** — no trend in risk while healthy. **rate invariance** — risk is not a restatement of total activity. **comparator** — beats counting spikes at a matched false-alarm rate. **elapsed time** — not merely tracking time. **detrend** — silence still holds after removing a linear trend.
 
@@ -36,22 +36,24 @@ Gate meanings: **silence** — no trend in risk while healthy. **rate invariance
 
 | Fault | Median lead |
 |---|---|
-| CHANNEL_DROPOUT | -2.5 s |
-| GAIN_DRIFT | -2.5 s |
-| GEOMETRY_ROTATION | -5.0 s |
+| CHANNEL_DROPOUT | -30.0 s |
+| GAIN_DRIFT | -15.0 s |
+| GEOMETRY_ROTATION | -10.0 s |
 
 ### `mean_activity` by fault mode
 
 | Fault | Median lead |
 |---|---|
-| CHANNEL_DROPOUT | -10.0 s |
-| GEOMETRY_ROTATION | -45.0 s |
-| RATE_LOSS | 0.0 s |
+| CHANNEL_DROPOUT | -32.5 s |
+| GEOMETRY_ROTATION | -47.5 s |
+| RATE_LOSS | -15.0 s |
 
 ### `robust_dispersion` by fault mode
 
 | Fault | Median lead |
 |---|---|
-| CHANNEL_DROPOUT | -30.0 s |
-| GAIN_DRIFT | -7.5 s |
-| GEOMETRY_ROTATION | -17.5 s |
+| CHANNEL_DROPOUT | -5.0 s |
+| GAIN_DRIFT | 0.0 s |
+| GEOMETRY_ROTATION | -10.0 s |
+| NONE | -45.0 s |
+| RATE_LOSS | 0.0 s |

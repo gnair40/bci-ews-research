@@ -53,6 +53,66 @@ def parse_scores(s: str) -> np.ndarray:
     return np.fromstring(s, sep=",")
 
 
+TRANSFORM = {"fn": None}
+
+
+def series(row) -> np.ndarray:
+    """Score series for one episode, with the active transform applied."""
+    y = parse_scores(row.scores)
+    fn = TRANSFORM["fn"]
+    return y if fn is None else fn(y, int(row.onset_w))
+
+
+def causal_detrend(y: np.ndarray, onset_w: int) -> np.ndarray:
+    """Fit a line on pre-onset windows, extrapolate forward, subtract.
+
+    Prespecified in research/phase3_design_implications.md requirement 1. It
+    does NOT work, and the failure is informative: extrapolation error grows
+    with distance from the fit window, so on a drift that is not exactly linear
+    this ADDS a trend to the far end rather than removing one. Measured on T5,
+    the silence gate went from 63% of healthy episodes trending to 81%.
+    Kept and reported because a plan that was written down and then failed is
+    a result, not an embarrassment.
+    """
+    if onset_w < 6 or len(y) <= onset_w:
+        return y
+    x = np.arange(len(y), dtype=float)
+    b, a = np.polyfit(x[:onset_w], y[:onset_w], 1)
+    return y - (a + b * x)
+
+
+def trailing_z(y: np.ndarray, k: int = 12, gap: int = 2) -> np.ndarray:
+    """Compare each window against a short TRAILING reference that slides.
+
+    The alternative to removing a global trend is never to assume one. Each
+    window is scored against the recent past only -- median and spread over the
+    preceding k windows, ending `gap` windows back so a slow ramp does not
+    contaminate its own reference.
+
+    Causal, local, and free of extrapolation, which is exactly where the
+    detrend approach failed. This is also what a deployed monitor can actually
+    compute: it needs no future and no model of how drift should behave.
+    """
+    out = np.zeros_like(y)
+    for i in range(len(y)):
+        lo, hi = max(0, i - gap - k), max(0, i - gap)
+        ref = y[lo:hi]
+        if len(ref) < 4:
+            out[i] = 0.0
+            continue
+        med = np.median(ref)
+        mad = np.median(np.abs(ref - med)) * 1.4826
+        out[i] = (y[i] - med) / (mad + 1e-9)
+    return np.abs(out)
+
+
+TRANSFORMS = {
+    "none": lambda y, ow: y,
+    "detrend": causal_detrend,
+    "trailing": lambda y, ow: trailing_z(y),
+}
+
+
 def detrend(y: np.ndarray) -> np.ndarray:
     """Remove a linear trend. Gate 5: monotonic drift is not an early warning.
 
@@ -95,14 +155,17 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--participant", default="T11")
     ap.add_argument("--local", action="store_true")
-    ap.add_argument("--detrend", action="store_true")
+    ap.add_argument("--transform", default="none", choices=list(TRANSFORMS),
+                    help="post-hoc, causal transform of the score series")
     args = ap.parse_args()
     sfx = ("" if args.participant == "T11" else f"_{args.participant}") \
-          + ("_local" if args.local else "") + ("_dt" if args.detrend else "")
+          + ("_local" if args.local else "")
+    TRANSFORM["fn"] = None if args.transform == "none" else TRANSFORMS[args.transform]
+    tsfx = "" if args.transform == "none" else f"_{args.transform}"
     df = pd.read_csv(OUT / f"episode_scores{sfx}.csv")
     meta = json.loads((OUT / f"harness_meta{sfx}.json").read_text())
     print(f"Participant: {args.participant}"
-          f"{('   [local re-baseline]' if args.local else '   [global baseline]') + ('   [causal detrend]' if args.detrend else '')}")
+          f"{('   [local re-baseline]' if args.local else '   [global baseline]') + f'   [transform: {args.transform}]'}")
     harness = _load("harness", "20_evaluation_harness.py")
     step_s = meta["step_bins"] * meta["bin_s"]
     budget = meta["false_alarm_budget_per_hour"]
@@ -132,7 +195,7 @@ def main() -> int:
         # G1 SILENCE -- risk must not trend while nothing is wrong.
         taus, ps = [], []
         for _, r in healthy_test.iterrows():
-            y = parse_scores(r.scores)
+            y = series(r)
             if len(y) < 8:
                 continue
             t, p = stats.kendalltau(np.arange(len(y)), y)
@@ -150,7 +213,7 @@ def main() -> int:
         # G5 DETREND -- the same test after removing a linear trend.
         taus_d, ps_d = [], []
         for _, r in healthy_test.iterrows():
-            y = detrend(parse_scores(r.scores))
+            y = detrend(series(r))
             if len(y) < 8:
                 continue
             t, p = stats.kendalltau(np.arange(len(y)), y)
@@ -171,7 +234,7 @@ def main() -> int:
             other = ma_map.get(r.episode_id)
             if other is None:
                 continue
-            a, b = parse_scores(r.scores), parse_scores(other)
+            a, b = series(r), parse_scores(other)
             n = min(len(a), len(b))
             if n < 8:
                 continue
@@ -188,7 +251,7 @@ def main() -> int:
         # G4 TIME -- does risk track elapsed time within a healthy block?
         tt = []
         for _, r in healthy_test.iterrows():
-            y = parse_scores(r.scores)
+            y = series(r)
             if len(y) < 8:
                 continue
             rho, _ = stats.spearmanr(np.arange(len(y)), y)
@@ -206,7 +269,7 @@ def main() -> int:
         for t_warn in harness.THRESHOLD_GRID:
             fa = 0
             for _, r in healthy_val.iterrows():
-                o = episode_outcome(parse_scores(r.scores), r.onset_w, -1,
+                o = episode_outcome(series(r), r.onset_w, -1,
                                     t_warn, harness.run_state_machine, step_s)
                 fa += int(o["false_alarm"])
             rate = fa / healthy_hours_val if healthy_hours_val else np.inf
@@ -225,7 +288,7 @@ def main() -> int:
         leads, fa_test, n_pos, n_det = [], 0, 0, 0
         per_mode: dict[str, list] = {}
         for _, r in test.iterrows():
-            o = episode_outcome(parse_scores(r.scores), r.onset_w, r.crossing_w,
+            o = episode_outcome(series(r), r.onset_w, r.crossing_w,
                                 chosen, harness.run_state_machine, step_s)
             if r.crossed:
                 n_pos += 1
@@ -346,9 +409,9 @@ def main() -> int:
             "median_lead_s": lead, "baseline_lead_s": base_lead, "pass": bool(beat)}
         print(f"  {n:<24} {lead} s   {'PASS' if beat else 'FAIL'}")
 
-    (OUT / f"harness_summary{sfx}.json").write_text(json.dumps(summary, indent=2))
-    print(f"\nwrote {OUT/f'harness_summary{sfx}.json'}")
-    write_markdown(summary, meta, args.participant, sfx)
+    (OUT / f"harness_summary{sfx}{tsfx}.json").write_text(json.dumps(summary, indent=2))
+    print(f"\nwrote {OUT/f'harness_summary{sfx}{tsfx}.json'}")
+    write_markdown(summary, meta, args.participant, sfx + tsfx)
     return 0
 
 
@@ -414,8 +477,7 @@ def write_markdown(summary: dict, meta: dict, participant: str, sfx: str) -> Non
                 A(f"| {m} | {v} s |")
             A("")
 
-    tag = ('_local' if meta.get('local_rebaseline') else '') + ('_dt' if meta.get('causal_detrend') else '')
-    path = REPORTS / f"BENCHMARK_{participant}{tag}.md"
+    path = REPORTS / f"BENCHMARK_{participant}{sfx}.md"
     path.parent.mkdir(exist_ok=True)
     path.write_text("\n".join(L))
     print(f"wrote {path}")
