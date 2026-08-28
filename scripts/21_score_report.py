@@ -143,7 +143,7 @@ def main() -> int:
             "n_healthy_episodes": len(ps),
             "median_tau": round(float(np.median(taus)), 3) if taus else None,
             "fraction_significant": round(frac_sig, 3) if ps else None,
-            "pass": bool(ps) and frac_sig <= 0.10,
+            "pass": bool(bool(ps) and frac_sig <= 0.10),
         }
 
         # G5 DETREND -- the same test after removing a linear trend.
@@ -158,7 +158,7 @@ def main() -> int:
         frac_sig_d = (np.mean(np.array(ps_d) < 0.05) if ps_d else np.nan)
         g["G5_detrend"] = {
             "fraction_significant_after_detrend": round(float(frac_sig_d), 3) if ps_d else None,
-            "pass": bool(ps_d) and frac_sig_d <= 0.10,
+            "pass": bool(bool(ps_d) and frac_sig_d <= 0.10),
         }
 
         # G2 RATE -- is the risk score just total activity wearing a hat?
@@ -180,7 +180,7 @@ def main() -> int:
         med_rho = float(np.median(rhos)) if rhos else np.nan
         g["G2_rate_invariance"] = {
             "median_abs_rho_vs_mean_activity": round(med_rho, 3) if rhos else None,
-            "pass": bool(rhos) and med_rho < 0.6,
+            "pass": bool(bool(rhos) and med_rho < 0.6),
             "note": "not applicable to mean_activity itself" if name == "mean_activity" else "",
         }
 
@@ -196,7 +196,7 @@ def main() -> int:
         med_t = float(np.median(tt)) if tt else np.nan
         g["G4_elapsed_time"] = {
             "median_abs_rho_vs_time": round(med_t, 3) if tt else None,
-            "pass": bool(tt) and med_t < 0.5,
+            "pass": bool(bool(tt) and med_t < 0.5),
         }
 
         # ---------- operating point, chosen on val ----------
@@ -314,9 +314,16 @@ def main() -> int:
                 total += n; right += ok
                 pct = f"{100*ok/n:.0f}%" if n else "-"
                 print(f"  {m:<20}{cells}{e:>14}{pct:>9}")
+            n_possible = len(set(exp.values()))
             if total:
                 print(f"\n  overall {right}/{total} = {100*right/total:.0f}% "
-                      f"(chance with {len(comps)} components = {100/len(comps):.0f}%)")
+                      f"(chance over the {n_possible} components the monitor can "
+                      f"emit = {100/n_possible:.0f}%)")
+                if len(comps) < n_possible:
+                    print(f"  Only {len(comps)} of {n_possible} components were ever "
+                          f"named: {', '.join(comps)}.")
+                    print("  A component that never fires is not a subtle failure -- it means")
+                    print("  the attribution is collapsing onto whatever is chronically lit.")
             print("\n  Mismatches are reported, not corrected. The expected mapping was")
             print("  written down in scripts/22 before this was run.")
             print()

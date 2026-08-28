@@ -247,7 +247,10 @@ def cmd_fit(participant: str = "T11") -> int:
         # degraded", and say so rather than implying a baseline exists.
         days = sorted(blocks["trial_day"].unique())
         cut = max(2, int(round(len(days) * 0.6)))
-        train_days, val_days = tuple(days[:cut]), tuple(days[cut:cut + 2])
+        # Cast off numpy integer types: they survive arithmetic happily and
+        # then fail at json.dumps, several minutes of fitting later.
+        train_days = tuple(int(d) for d in days[:cut])
+        val_days = tuple(int(d) for d in days[cut:cut + 2])
         print(f"  [{participant}] no established baseline; using earliest days")
 
     TRAIN_DAYS_L, VAL_DAYS_L = train_days, val_days
