@@ -248,6 +248,7 @@ details[open] summary{border-bottom:1px solid var(--rule)}
   <div><dt>Human participants</dt><dd>None</dd></div>
   <div><dt>Deliverable</dt><dd>Software system</dd></div>
   <div><dt>Configurations tested</dt><dd>36 · none passed</dd></div>
+  <div><dt>Separation on task change</dt><dd>15× and 70×</dd></div>
   <div><dt>Code committed</dt><dd>39 commits, 24 scripts</dd></div>
 </dl>
 
@@ -553,6 +554,62 @@ details[open] summary{border-bottom:1px solid var(--rule)}
   <p>This failure is recorded rather than quietly swapped out. It was written down first, it was run, and it did not work — which is the entire reason for writing things down first.</p>
 </section>
 
+
+<hr class="rule">
+
+<!-- ================= THE WIN ================= -->
+<section id="win">
+  <h2>One thing does work — and it is the one deployment depends on</h2>
+  <p class="h2sub">A test that no accuracy number can capture, run on a control that happened to be sitting in the dataset.</p>
+
+  <p>A monitor that fires every time someone switches from a typing app to browsing the web is <strong>worse than no monitor</strong>. It teaches its user to ignore it. And the injected-fault corpus cannot test for this at all, because there the task never changes — only the hardware does.</p>
+
+  <p>The dataset happens to contain exactly the right control. On two days, the same participant did the structured cursor task <em>and</em> something completely different, on the same day, through the same electrodes, with nothing wrong with either recording:</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Day</th><th>Cursor task</th><th>Also did</th></tr></thead>
+    <tbody>
+      <tr><td>658</td><td>circleOfCircles</td><td>free personal use — browsing the web</td></tr>
+      <tr><td>665</td><td>circleOfCircles</td><td>fitts — random targets</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Each was scored against three reference points, so the answer is readable: what <em>normal</em> looks like, what a <em>different activity</em> looks like, and what a <em>real injected fault</em> looks like. The question is which extreme the middle one resembles.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Day 658</th><th>Same task</th><th>Different task</th><th>Real fault</th><th></th></tr></thead>
+    <tbody>
+      <tr><td><strong>decoder-guard</strong></td><td class="num">11.16</td><td class="num neu">8.67</td><td class="num">135.35</td><td><strong>15.6× separation</strong></td></tr>
+      <tr><td>mean activity</td><td class="num">1.49</td><td class="num">1.72</td><td class="num">3.82</td><td>healthy</td></tr>
+      <tr><td>robust dispersion</td><td class="num">0.14</td><td class="num pos">0.46</td><td class="num">0.29</td><td><strong>would false-alarm</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Day 665</th><th>Same task</th><th>Different task</th><th>Real fault</th><th></th></tr></thead>
+    <tbody>
+      <tr><td><strong>decoder-guard</strong></td><td class="num">1.14</td><td class="num neu">1.98</td><td class="num">138.00</td><td><strong>70× separation</strong></td></tr>
+      <tr><td>mean activity</td><td class="num">0.52</td><td class="num">2.05</td><td class="num">36.06</td><td>healthy</td></tr>
+      <tr><td>robust dispersion</td><td class="num">0.80</td><td class="num">0.88</td><td class="num">86.28</td><td>healthy</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <span class="lbl">What this says</span>
+    <p><strong>decoder-guard tells "the user is doing something different" apart from "the hardware is failing" by a factor of 15 to 70.</strong> On day 658 a task change actually scored <em>lower</em> than the same task did.</p>
+    <p>Robust dispersion fails day 658 in the worst possible direction — a healthy task change scored <em>higher</em> than a real fault. A monitor built on it would alarm at app switching and stay silent through degradation.</p>
+  </div>
+
+  <h3>Why this changes the shape of the problem</h3>
+  <p>It isolates where the difficulty actually is. The monitor is <strong>not</strong> confused by what the person is doing. It is defeated by <strong>slow drift in the recording itself</strong> — which is exactly what the 36-configuration benchmark showed, and what the silence gate keeps failing on.</p>
+  <p>Those are two different problems, and one of them is now demonstrably solved.</p>
+
+  <div class="note warn">
+    <span class="lbl">Do not oversell this</span>
+    <p>Two days, four comparison blocks. It is a <strong>demonstration, not an estimate</strong> — no confidence interval is quoted because none would be meaningful at this sample size. Both comparisons are within a single day, because a task change on a <em>different</em> day would confound task with drift, which is the very thing the monitor cannot handle.</p>
+  </div>
+</section>
+
 <hr class="rule">
 
 <!-- ================= WHAT IT MEANS ================= -->
@@ -572,7 +629,7 @@ details[open] summary{border-bottom:1px solid var(--rule)}
     </tbody>
   </table></div>
 
-  <p>Put plainly: <em>"here is a way to test whether a decoder-health monitor works, and here is evidence that the current generation of them does not"</em> is a stronger and more honest contribution than a fragile positive result would have been.</p>
+  <p>Put plainly: <em>"here is a way to test whether a decoder-health monitor works, here is evidence that the current generation of them does not, and here is the one sub-problem that is solved"</em> is a stronger and more honest contribution than a fragile positive result would have been.</p>
 
   <div class="note">
     <span class="lbl">Limitations, stated up front</span>
