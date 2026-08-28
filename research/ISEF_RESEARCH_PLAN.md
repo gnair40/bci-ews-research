@@ -78,6 +78,43 @@ performance — but, as their own framing makes clear, that is a **nowcast**: it
 estimates present performance from present neural activity. It does not ask
 whether the signal anticipates a decline before the decline occurs.
 
+### Preliminary findings from work already completed
+
+The engineering work described in this plan is partly built, and its early
+results shape what remains. Three findings, all reproducible from the project
+repository:
+
+**1. A monitor cannot be calibrated once and left alone.** Detectors fitted on
+early healthy recordings and applied months later carry no usable information
+about an injected fault — the area under the ROC curve in the early-warning
+window is **0.491**, which is chance. The array's own change over 142 days
+swamps the fault. Re-fitting the notion of "normal" from recent healthy data
+raises the same measurement to **0.693** on one participant and **0.707** on the
+other.
+
+**2. The monitor detects what a trivial baseline cannot, and the pattern
+replicates.** Against simply counting overall activity, the purpose-built monitor
+wins by roughly 0.09 AUC overall. Broken down by fault type, the separation is
+sharper and matches the design intent: on the two injected faults that leave
+overall activity unchanged, counting activity sits at or below chance (0.40–0.52)
+while the monitor reaches **0.71–0.79**. On the fault that *is* nothing but a
+change in overall activity, counting activity correctly wins. This holds on both
+participants, who disagreed on the earlier analysis.
+
+**3. A task change is not mistaken for a fault.** The dataset contains days on
+which the same participant used the cursor task and also did something entirely
+different — web browsing, random targets — through the same electrodes with
+nothing wrong. The monitor separates those healthy task changes from real
+injected faults by factors of **15 and 70**. This matters for deployment more
+than any accuracy figure: a monitor that alarms whenever someone switches
+application trains its user to ignore it.
+
+**What has not yet worked**, stated because it defines the remaining problem: no
+configuration tested so far stays quiet during healthy operation at a usable
+false-alarm rate. The information is present in the signal; converting it into a
+warning without also firing on ordinary drift is the open engineering problem
+this project now addresses.
+
 That gap matters practically. Recalibration is not free: it costs the user time,
 requires supervised data, and on many systems interrupts use entirely. A system
 that recalibrated only when it was about to need to would give back that time. A
