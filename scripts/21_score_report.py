@@ -269,6 +269,49 @@ def main() -> int:
         }
         print()
 
+    # ---------- attribution, for detectors that name a cause ----------
+    if "attribution" in df.columns:
+        att = df[df.attribution.notna() & (df.split == "test")]
+        if len(att):
+            print("=" * 72)
+            print("ATTRIBUTION -- when it warns, does it name the right cause?")
+            print("=" * 72)
+            guard = _load("guard", "22_decoder_guard.py")
+            exp = guard.EXPECTED_ATTRIBUTION
+            print("  Scored only on episodes that actually crossed the performance")
+            print("  threshold. Naming a cause for a fault that did no damage is a")
+            print("  different question, and a warning nobody should have raised.\n")
+
+            conf: dict[tuple[str, str], int] = {}
+            for _, r in att[att.crossed].iterrows():
+                labels = r.attribution.split(",")
+                cw = int(r.crossing_w)
+                seg = labels[int(r.onset_w):cw + 1] or labels[int(r.onset_w):]
+                if not seg:
+                    continue
+                got = max(set(seg), key=seg.count)
+                conf[(r["mode"], got)] = conf.get((r["mode"], got), 0) + 1
+
+            modes = sorted({m for m, _ in conf})
+            comps = sorted({c for _, c in conf})
+            print(f"  {'injected fault':<20}" + "".join(f"{c:>13}" for c in comps)
+                  + f"{'expected':>14}{'correct':>9}")
+            total = right = 0
+            for m in modes:
+                n = sum(conf.get((m, c), 0) for c in comps)
+                cells = "".join(f"{conf.get((m,c),0):>13}" for c in comps)
+                e = exp.get(m, "-")
+                ok = conf.get((m, e), 0)
+                total += n; right += ok
+                pct = f"{100*ok/n:.0f}%" if n else "-"
+                print(f"  {m:<20}{cells}{e:>14}{pct:>9}")
+            if total:
+                print(f"\n  overall {right}/{total} = {100*right/total:.0f}% "
+                      f"(chance with {len(comps)} components = {100/len(comps):.0f}%)")
+            print("\n  Mismatches are reported, not corrected. The expected mapping was")
+            print("  written down in scripts/22 before this was run.")
+            print()
+
     # ---------- G3, across detectors ----------
     print("=" * 72)
     print("G3 COMPARATOR -- does anything beat counting spikes?")

@@ -1187,3 +1187,113 @@ every result rather than hidden.
 Three amendments recorded, each with its reason and the superseded checksum. All
 three predate any detector — nothing has yet been run against this corpus, which
 is the ordering the whole design depends on.
+
+---
+
+## 27–28 August 2026 — The grading system, and the monitor
+
+### Order of construction, on purpose
+
+The grading system was built and committed **before** the monitor existed. If a
+detector comes first and the metric second, the metric gets chosen — usually
+without anyone noticing — to flatter the detector. Phase 1–2 lost a headline
+result to exactly that family of mistake. At the moment `scripts/20` and
+`scripts/21` were committed, the only detectors they could score were three
+baselines, none of which this project invented.
+
+`scripts/22` (the monitor) was then written and committed **while the baseline
+scores were still being computed**, so its design could not be tuned against
+numbers it had not seen.
+
+### The detector contract — `scripts/19_detectors.py`
+
+A detector sees only the feature stream. Never the decoder's output, the task,
+the performance number, or any degradation label. Fitted on healthy windows
+alone. `fit(healthy) → score(windows)`, one number per window, higher = less
+healthy. Everything else — calibration, thresholds, states, lead time — belongs
+to the harness. Keeping that boundary sharp is what makes baselines and the
+monitor comparable: they differ in exactly one function.
+
+Three baselines, implemented to the same standard because "did it beat something
+trivial?" is the question that decides whether any of this was worth building:
+
+- **`mean_activity`** — counting spikes. Not a straw man: in Phase 1–2 this
+  matched the entire sophisticated pipeline (ρ = −0.880 vs +0.858). It is the
+  incumbent.
+- **`robust_dispersion`** — the Phase 1–2 indicator, reimplemented at window
+  level. A project should be able to say what its own earlier attempt scores
+  under its own later test.
+- **`distribution_shift`** — distance to a healthy reference, in the spirit of
+  the published MINDFUL measure reproduced at r = 0.985 in `scripts/09`.
+
+### The harness — `scripts/20`, `scripts/21`
+
+30-second windows stepped every 5 seconds. Per-window angular error through the
+frozen decoder. The performance event stays at +10° above each episode's own
+pre-onset baseline, as fixed in `scripts/17` before any detector existed.
+
+A state machine with **dwell and hysteresis**, because a monitor that chatters is
+one people learn to ignore — a failure mode that never appears in an accuracy
+number. Splits are fit / val / test by block: detectors fitted on healthy windows
+from the decoder's training days, the single free parameter (the WARN threshold)
+chosen on the held-out healthy days, and the test split read once.
+
+**Lead time and false-alarm rate are always reported as a pair.** A detector that
+warns instantly on everything has infinite lead time and is useless; one that
+never warns has a perfect false-alarm rate and is useless.
+
+One decision worth recording: **a warning raised before the fault even started is
+counted as a false alarm, not as a very early detection.** Counting it the other
+way would be the most flattering possible error, and it is the error a careless
+harness makes by default.
+
+### The monitor — `scripts/22_decoder_guard.py`
+
+Phase 1–2's failure was that a sophisticated indicator turned out to be 71%
+"how much activity is there" — a quantity that falls steadily whether or not
+anything is wrong. So the monitor does not produce one opaque number. It computes
+four named quantities, calibrates each against healthy data, reports the largest
+as the risk, and names which one it was:
+
+| Component | Meaning | Expected to fire on |
+|---|---|---|
+| `level` | total activity has moved | RATE_LOSS |
+| `silence` | individual channels have gone quiet | CHANNEL_DROPOUT |
+| `dispersion` | channels drifted apart in gain, total unchanged | GAIN_DRIFT |
+| `profile` | the shape across channels changed | GEOMETRY_ROTATION |
+
+**The load-bearing trick is working in logs.** A multiplicative gain change is an
+*additive* shift in log space, so subtracting each window's mean log activity
+removes any uniform gain change exactly. What survives is a change in the profile
+across channels — precisely the part counting spikes cannot see. `level` is kept
+as its own component so uniform faults are still caught, but caught *and
+labelled* as uniform.
+
+The expected fault → component mapping was written into the file **in advance**,
+so attribution accuracy is scored against a stated prediction rather than
+whatever mapping happens to fit the results.
+
+### Three bugs in the monitor, all found by smoke-testing before the real run
+
+1. **Risk scores of 3 × 10⁸.** The `silence` component is flat at zero across all
+   healthy windows, so its MAD is ~0 and calibration divided by it. Components
+   now carry a floor stating what counts as a *meaningful* amount in their own
+   units, rather than letting the healthy data's own noise set the unit.
+2. **`GAIN_DRIFT` mis-attributed as `CHANNEL_DROPOUT`.** The silence threshold was
+   15% of a channel's healthy median, which ordinary gain reduction routinely
+   crosses. Tightened to 2% — injected dropout sets channels to exactly zero, and
+   reaching 2% by gain drift needs a >3σ excursion.
+3. **Attribution collapsed onto the least informative component.** `profile` was a
+   *squared* Mahalanobis distance, growing quadratically and swamping everything,
+   so `max` always chose it. Now a distance rather than a squared distance — and
+   attribution prefers the most **specific** sufficiently-lit component rather
+   than the largest. The components form a specificity hierarchy (`silence` has
+   essentially one physical cause; `profile` is a residual by design), and
+   preferring a named diagnosis over "abnormal findings" when both fit is
+   ordinary diagnostic reasoning.
+
+After those fixes, three of four fault types attribute correctly on a synthetic
+check. `GEOMETRY_ROTATION` attributes to `dispersion` rather than `profile` —
+a genuine physical ambiguity, since mixing channels does spread the log-profile.
+**Left uncorrected on purpose**, to be measured on the real corpus rather than
+tuned against a synthetic test.

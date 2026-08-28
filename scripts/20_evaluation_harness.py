@@ -170,6 +170,8 @@ def crossing_window(perf: np.ndarray, onset_w: int) -> int | None:
 def evaluate(limit: int | None, only: str | None) -> int:
     inj = _load("injector", "17_fault_injector.py")
     det = _load("det", "19_detectors.py")
+    guard = _load("guard", "22_decoder_guard.py")
+    ALL = {**det.BASELINES, **guard.DETECTORS}
     rd = _load("refdec", "18_reference_decoder.py")
     loader = _load("loader", "03_load_dataset.py")
 
@@ -214,10 +216,10 @@ def evaluate(limit: int | None, only: str | None) -> int:
     print(f"Fitting detectors on {len(H)} healthy windows "
           f"({len(H) * STEP_BINS * BIN_S / 60:.0f} min of record)\n")
 
-    names = [only] if only else list(det.BASELINES)
+    names = [only] if only else list(ALL)
     detectors = {}
     for n in names:
-        detectors[n] = det.BASELINES[n]().fit(H)
+        detectors[n] = ALL[n]().fit(H)
         print(f"  fitted {n}")
 
     # ---- score every episode --------------------------------------------
@@ -254,8 +256,12 @@ def evaluate(limit: int | None, only: str | None) -> int:
             }
             for n, D in detectors.items():
                 sc = D.score(F)
-                rows.append({**base, "detector": n,
-                             "scores": ",".join(f"{v:.4f}" for v in sc)})
+                row = {**base, "detector": n,
+                       "scores": ",".join(f"{v:.4f}" for v in sc)}
+                con = D.contributions(F)
+                if con:
+                    row["attribution"] = ",".join(con["attribution"])
+                rows.append(row)
             done += 1
             if done % 100 == 0:
                 print(f"  {done}/{len(eps)}")
