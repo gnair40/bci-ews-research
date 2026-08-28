@@ -246,11 +246,19 @@ def cmd_fit(participant: str = "T11") -> int:
         # earliest days, which is the closest available thing to "before it
         # degraded", and say so rather than implying a baseline exists.
         days = sorted(blocks["trial_day"].unique())
-        cut = max(2, int(round(len(days) * 0.6)))
+        # Leave room for a test split. An earlier version took 60% of days for
+        # train plus the next two for val, which on T5's six days consumed every
+        # one of them and produced a benchmark with an EMPTY test set -- a silent
+        # way of reporting nothing at all.
+        cut = max(2, int(round(len(days) * 0.34)))
+        if cut + 1 >= len(days):
+            raise SystemExit(
+                f"{participant}: only {len(days)} days; cannot split into "
+                f"train/val/test.")
         # Cast off numpy integer types: they survive arithmetic happily and
         # then fail at json.dumps, several minutes of fitting later.
         train_days = tuple(int(d) for d in days[:cut])
-        val_days = tuple(int(d) for d in days[cut:cut + 2])
+        val_days = tuple(int(d) for d in days[cut:cut + 1])
         print(f"  [{participant}] no established baseline; using earliest days")
 
     TRAIN_DAYS_L, VAL_DAYS_L = train_days, val_days

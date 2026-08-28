@@ -190,6 +190,12 @@ def evaluate(limit: int | None, only: str | None, participant: str = "T11",
     all_blocks = sorted({e.block_id for e in episodes})
     test_blocks = [b for b in all_blocks if b not in fit_blocks and b not in val_blocks]
 
+    if not test_blocks:
+        raise SystemExit(
+            f"{participant}: the test split is EMPTY -- every block landed in fit "
+            f"or val. A benchmark with no held-out data reports nothing, so this "
+            f"refuses to run rather than printing numbers that mean nothing.")
+
     print("Splits")
     print(f"  fit   {len(fit_blocks):>3} blocks -- detectors fitted here, healthy only")
     print(f"  val   {len(val_blocks):>3} blocks -- WARN threshold chosen here")
