@@ -1,0 +1,649 @@
+<title>Decoder-Guard Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --ground:#F6F7F9;
+  --surface:#FFFFFF;
+  --surface-2:#EDEFF3;
+  --ink:#161B22;
+  --ink-2:#414B58;
+  --ink-3:#6B7683;
+  --rule:#D9DEE5;
+  --rule-strong:#BCC4CE;
+  --signal:#0E6E78;
+  --signal-soft:#DCEDEF;
+  --good:#3D6B4C;
+  --good-soft:#DFEBE2;
+  --warn:#9A5B08;
+  --warn-soft:#F6E9D6;
+  --fail:#9B3138;
+  --fail-soft:#F6DFE0;
+  --shadow:0 1px 2px rgba(22,27,34,.06),0 8px 24px -12px rgba(22,27,34,.14);
+  --measure:66ch;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#10141A;
+    --surface:#171D25;
+    --surface-2:#1F2731;
+    --ink:#E7ECF2;
+    --ink-2:#B2BDCA;
+    --ink-3:#8593A2;
+    --rule:#2A333F;
+    --rule-strong:#3B4757;
+    --signal:#5AC3CE;
+    --signal-soft:#123840;
+    --good:#8CC79C;
+    --good-soft:#183426;
+    --warn:#E0A75C;
+    --warn-soft:#3A2A12;
+    --fail:#E58A90;
+    --fail-soft:#3A1C1F;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#10141A;
+  --surface:#171D25;
+  --surface-2:#1F2731;
+  --ink:#E7ECF2;
+  --ink-2:#B2BDCA;
+  --ink-3:#8593A2;
+  --rule:#2A333F;
+  --rule-strong:#3B4757;
+  --signal:#5AC3CE;
+  --signal-soft:#123840;
+  --good:#8CC79C;
+  --good-soft:#183426;
+  --warn:#E0A75C;
+  --warn-soft:#3A2A12;
+  --fail:#E58A90;
+  --fail-soft:#3A1C1F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Source Sans 3",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:17px; line-height:1.62; margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 96px}
+
+/* ---------- masthead ---------- */
+.mast{padding:64px 0 40px;border-bottom:2px solid var(--ink);margin-bottom:0}
+.eyebrow{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--signal);font-weight:700;margin:0 0 18px
+}
+h1{
+  font-family:Spectral,Georgia,serif;font-weight:700;
+  font-size:clamp(38px,6vw,62px);line-height:1.04;letter-spacing:-.02em;
+  margin:0 0 20px;text-wrap:balance
+}
+.standfirst{
+  font-family:Spectral,Georgia,serif;font-size:clamp(19px,2.4vw,23px);
+  line-height:1.5;color:var(--ink-2);max-width:60ch;margin:0;font-style:italic
+}
+
+/* ---------- status strip ---------- */
+.strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);
+  margin:0 0 72px;border-top:none
+}
+.strip div{background:var(--surface);padding:18px 20px}
+.strip dt{
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 7px;font-weight:500
+}
+.strip dd{margin:0;font-size:15.5px;font-weight:600;line-height:1.35}
+
+/* ---------- sections ---------- */
+section{margin:0 0 76px;scroll-margin-top:24px}
+h2{
+  font-family:Spectral,Georgia,serif;font-weight:600;
+  font-size:clamp(26px,3.6vw,36px);line-height:1.16;letter-spacing:-.015em;
+  margin:0 0 8px;text-wrap:balance
+}
+.h2sub{color:var(--ink-3);font-size:16px;margin:0 0 30px;max-width:var(--measure)}
+h3{
+  font-family:"Source Sans 3",sans-serif;font-weight:700;font-size:19px;
+  line-height:1.3;margin:36px 0 10px;letter-spacing:-.005em
+}
+p{margin:0 0 17px;max-width:var(--measure)}
+ul,ol{max-width:var(--measure);margin:0 0 17px;padding-left:22px}
+li{margin:0 0 9px}
+strong{font-weight:700}
+a{color:var(--signal);text-decoration-thickness:1px;text-underline-offset:2px}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:2px}
+
+.rule{border:none;border-top:1px solid var(--rule);margin:0 0 48px}
+
+/* ---------- phase timeline ---------- */
+.phases{display:flex;flex-direction:column;gap:0;margin:0 0 8px}
+.phase{
+  display:grid;grid-template-columns:64px 1fr;gap:24px;
+  padding:26px 0;border-top:1px solid var(--rule)
+}
+.phase:last-child{border-bottom:1px solid var(--rule)}
+.pnum{
+  font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;
+  color:var(--signal);padding-top:3px;letter-spacing:.04em
+}
+.pbody h3{margin:0 0 8px}
+.pbody p{margin:0 0 10px}
+.pbody p:last-child{margin-bottom:0}
+
+/* ---------- chips ---------- */
+.chip{
+  display:inline-block;font-family:"JetBrains Mono",monospace;
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 9px;border-radius:3px;vertical-align:2px;margin-left:9px;white-space:nowrap
+}
+.c-done{background:var(--good-soft);color:var(--good)}
+.c-now{background:var(--signal-soft);color:var(--signal)}
+.c-next{background:var(--surface-2);color:var(--ink-3)}
+.c-warn{background:var(--warn-soft);color:var(--warn)}
+
+/* ---------- callout ---------- */
+.note{
+  background:var(--surface);border:1px solid var(--rule);
+  border-left:3px solid var(--signal);
+  padding:22px 26px;margin:0 0 24px;box-shadow:var(--shadow);
+  max-width:var(--measure)
+}
+.note.warn{border-left-color:var(--warn)}
+.note.fail{border-left-color:var(--fail)}
+.note p:last-child{margin-bottom:0}
+.note .lbl{
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:700;display:block;margin-bottom:9px
+}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:0 0 26px;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{
+  text-align:left;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);font-weight:700;
+  padding:13px 16px;border-bottom:1px solid var(--rule-strong);white-space:nowrap
+}
+td{padding:12px 16px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;font-size:14px}
+.pos{color:var(--fail);font-weight:600}
+.neu{color:var(--good);font-weight:600}
+
+/* ---------- state ladder ---------- */
+.ladder{display:flex;flex-wrap:wrap;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:0 0 26px}
+.st{background:var(--surface);padding:16px 20px;flex:1 1 150px}
+.st .nm{font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;letter-spacing:.06em;margin-bottom:6px}
+.st .ds{font-size:14px;color:var(--ink-2);line-height:1.42}
+.st.s1 .nm{color:var(--good)}
+.st.s2 .nm{color:var(--signal)}
+.st.s3 .nm{color:var(--warn)}
+.st.s4 .nm{color:var(--fail)}
+
+/* ---------- flow ---------- */
+.flow{
+  font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.9;
+  background:var(--surface);border:1px solid var(--rule);
+  padding:22px 24px;margin:0 0 26px;overflow-x:auto;white-space:pre;color:var(--ink-2)
+}
+.flow b{color:var(--signal);font-weight:700}
+
+/* ---------- glossary ---------- */
+details{
+  background:var(--surface);border:1px solid var(--rule);
+  margin:0 0 8px;max-width:var(--measure)
+}
+summary{
+  padding:14px 18px;cursor:pointer;font-weight:600;font-size:16px;
+  list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:"JetBrains Mono",monospace;color:var(--signal);font-weight:700}
+details[open] summary::after{content:"−"}
+details[open] summary{border-bottom:1px solid var(--rule)}
+.dbody{padding:16px 18px 4px}
+.dbody p{font-size:15.5px}
+
+/* ---------- decisions ---------- */
+.dec{
+  display:grid;grid-template-columns:1fr;gap:0;
+  border:1px solid var(--rule);background:var(--surface);margin:0 0 26px
+}
+.dec > div{padding:20px 22px;border-bottom:1px solid var(--rule)}
+.dec > div:last-child{border-bottom:none}
+.dec h3{margin:0 0 7px;font-size:17px}
+.dec p{margin:0;font-size:15.5px;color:var(--ink-2);max-width:none}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .phase{grid-template-columns:1fr;gap:6px}
+  .pnum{padding-top:0}
+  .mast{padding:44px 0 32px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">ISEF Project Reference · Updated 28 Aug 2026</p>
+  <h1>Decoder-Guard</h1>
+  <p class="standfirst">A brain-computer interface slowly stops working, and nobody notices until it fails. This is everything we have built to catch that, why we changed course once, and what is left to do.</p>
+</header>
+
+<dl class="strip">
+  <div><dt>Project stage</dt><dd>Phase 3 · first results in</dd></div>
+  <div><dt>Data</dt><dd>Public, de-identified</dd></div>
+  <div><dt>Human participants</dt><dd>None</dd></div>
+  <div><dt>Deliverable</dt><dd>Software system</dd></div>
+  <div><dt>Configurations tested</dt><dd>36 · none passed</dd></div>
+  <div><dt>Code committed</dt><dd>39 commits, 24 scripts</dd></div>
+</dl>
+
+<!-- ================= THE PROBLEM ================= -->
+<section id="problem">
+  <h2>The problem, in plain language</h2>
+  <p class="h2sub">Start here. Everything else in this document serves this one paragraph.</p>
+
+  <p>Some people with paralysis have a small array of electrodes implanted in the motor cortex. Software called a <strong>decoder</strong> reads the electrical activity and turns it into cursor movement, so they can use a computer by thinking about moving.</p>
+
+  <p>Over months, the recording gets worse. Electrodes drift, individual neurons drop out, the electrical relationship between brain and machine shifts. The decoder was trained on how the signal looked <em>then</em>, and it keeps confidently producing output based on a signal that no longer matches.</p>
+
+  <p>Eventually the cursor stops obeying and someone has to stop everything and retrain the system — <strong>recalibration</strong>. It is slow, it interrupts the person's day, and today it happens on a fixed schedule or after something has already broken.</p>
+
+  <div class="note">
+    <span class="lbl">The gap this project fills</span>
+    <p>Nobody is watching the <em>input</em>. The field has spent a decade building better ways to <em>correct</em> drift, and almost no effort on <strong>noticing it early enough to act</strong>. There is no standard way to even test whether such a warning system works.</p>
+  </div>
+
+  <p>So: build the thing that watches, and build the test that proves whether watching works.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ================= IMPACT ================= -->
+<section id="impact">
+  <h2>Why it matters — and the honest weak spot</h2>
+  <p class="h2sub">Stated with its problem first, because a judge will find the problem anyway.</p>
+
+  <div class="note warn">
+    <span class="lbl">The weakness, said plainly</span>
+    <p>Very few people currently use implanted brain-computer interfaces — on the order of <strong>dozens worldwide</strong>. If the project's whole claim is "this helps those people," that is a thin claim. <em>Verify the real figures yourself and cite them; do not take this number on trust.</em></p>
+  </div>
+
+  <p>But that is not actually the scope of the problem. The real failure mode is more general:</p>
+
+  <div class="note">
+    <p><strong>A machine-learning model runs on a sensor that slowly degrades, and nobody watches the sensor. The model keeps producing confident output long after its input stopped being trustworthy.</strong></p>
+  </div>
+
+  <p>That is not a brain-implant problem. It is a continuous-glucose-monitor problem, a myoelectric-prosthesis problem, a wearable-heart-monitor problem. Those user populations are in the <strong>millions</strong>.</p>
+
+  <p>And the claim is earnable rather than rhetorical: the monitor reads <em>channels × activity over time</em>, which describes all of those signals. It can be tested on a second modality using <strong>public, de-identified datasets</strong> — no participants, no permissions, no risk.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Layer</th><th>The claim</th><th>Reaches</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Immediate</strong></td><td>A benchmark for a problem that has no current standard — because nobody had ground truth, and this project builds ground truth</td><td>the research field</td></tr>
+      <tr><td><strong>Near-term</strong></td><td>Recalibrate when it is actually needed, not on a fixed schedule</td><td>iBCI users — dozens now, growing</td></tr>
+      <tr><td><strong>Broad</strong></td><td>The same silent-degradation failure affects any sensor-driven medical ML</td><td>millions</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <span class="lbl">Recommended addition</span>
+    <p>Testing on <strong>one second signal type</strong> from a public dataset is the single largest upgrade available to this project. It converts the broad claim from an assertion into a demonstration, and it costs only time.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= WHAT WE BUILT ================= -->
+<section id="phases">
+  <h2>Everything done so far</h2>
+  <p class="h2sub">In order. The numbering is real chronology, not decoration — each phase depended on the one before it.</p>
+
+  <div class="phases">
+
+    <div class="phase">
+      <div class="pnum">P0</div>
+      <div class="pbody">
+        <h3>Get the data and understand it<span class="chip c-done">done</span></h3>
+        <p>Found a public dataset: two people with implants, using a BCI over months while it degraded. About 9 GB. Written a program that downloads it automatically and checks each file's fingerprint, so anyone can repeat it exactly.</p>
+        <p>Then catalogued it — every file, every column, what each number means. Each fact labelled either <em>checked in the data</em>, <em>stated by the paper</em>, or <em>my guess</em>, so those never get confused.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="pnum">P1</div>
+      <div class="pbody">
+        <h3>Prove the code can be trusted<span class="chip c-done">done</span></h3>
+        <p>Before doing anything new, we re-computed a result the original scientists had already published, to see whether we would get their number.</p>
+        <p><strong>They got 0.985. We got 0.985.</strong> That means the pipeline works and the data is being read correctly. Without this, everything downstream would be unverifiable.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="pnum">P2</div>
+      <div class="pbody">
+        <h3>Run the original test — and report that it failed<span class="chip c-done">done</span></h3>
+        <p>The original idea came from <em>early-warning signal</em> theory: systems approaching a tipping point get twitchier and slower to recover, and you can measure that.</p>
+        <p>We wrote down exactly what would be tested and what would count as success, locked it in a timestamped file, and ran it <strong>once</strong>. The number came back "statistically significant" — which normally means you found something.</p>
+        <p>It was wrong, and we caught it, because we had also written down one check in advance: <em>is the warning signal quiet when the person is doing fine?</em> It was not. It climbed steeply during weeks when performance was 93–100%.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="pnum">P2b</div>
+      <div class="pbody">
+        <h3>Work out why it failed<span class="chip c-done">done</span></h3>
+        <p>Three findings, each independently confirming the same thing:</p>
+        <p>The elaborate warning signal was mostly just <strong>how much brain activity there is</strong>, which drops 56% across the recording. Simply <em>counting</em> activity predicted performance just as well as the whole five-step method. And the signal read almost the same whether the person was doing the cursor task or <strong>browsing the web</strong> — so it was measuring the electrodes, not the person.</p>
+        <p>Out of that came the rule the whole project now rests on:</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note fail" style="margin-top:26px">
+    <span class="lbl">The rule this bought</span>
+    <p><strong>A warning light that is on when nothing is wrong is not a warning light.</strong> Any candidate signal must first prove it stays quiet during healthy operation. That check comes before any other result is even looked at.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= TURNING POINT ================= -->
+<section id="turn">
+  <h2>The turning point</h2>
+  <p class="h2sub">Why the project changed shape, and why the change was necessary rather than optional.</p>
+
+  <p>Think about grading a fire alarm. To know whether it went off <em>early enough</em>, you need to know <strong>when the fire started</strong>.</p>
+
+  <p>In this dataset, nobody wrote that down. We only see the damage afterwards and guess backwards. So "the warning came 12 days early" really means "12 days before the moment <em>we decided</em> to call it a fire." Change the definition, change the answer. That is circular, and no amount of statistical care fixes it — we were careful, and it did not.</p>
+
+  <p>It is worse than that: <strong>you cannot count false alarms either</strong>, because that needs a long stretch you know was fine with nothing coming, and the data cannot supply one.</p>
+
+  <div class="note">
+    <span class="lbl">The consequence</span>
+    <p>Early-warning time and false-alarm rate are the only two numbers that decide whether a warning system is worth having. <strong>Neither is measurable from data you merely found.</strong> They become measurable the moment you cause the problem yourself, at a time you wrote down first.</p>
+  </div>
+
+  <p>That is why this project generates its own data. Not because a competition wants originality — because the central claim is uncheckable without it.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ================= THE PRODUCT ================= -->
+<section id="product">
+  <h2>What is actually being built</h2>
+  <p class="h2sub">No hardware. Nothing worn by anyone. Nothing attached to a real BCI.</p>
+
+  <p>The deliverable is <strong>a program that runs live</strong>. It sits beside the decoder and reads the same incoming signal the decoder reads — but never sees the decoder's output, and never sees the task. It branches off <em>before</em> the decoder:</p>
+
+  <div class="flow">neural signal ──┬──→ decoder ──→ cursor moves
+                │
+                └──→ <b>decoder-guard</b> ──→ risk · state · reason</div>
+
+  <p>This is why the decoder does not need to be good, or even finished. The monitor does not look at it. Every update, the monitor outputs four things:</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Output</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Risk score</strong></td><td>A number from 0 to 1 — how far today's signal has moved from healthy</td></tr>
+      <tr><td><strong>Warning state</strong></td><td>One of four levels, so it reads at a glance</td></tr>
+      <tr><td><strong>Reason</strong></td><td>Which kind of problem is driving the risk — the part that makes it actionable</td></tr>
+      <tr><td><strong>Confidence</strong></td><td>How sure it is. Low confidence is reported, not hidden</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="ladder">
+    <div class="st s1"><div class="nm">NOMINAL</div><div class="ds">Signal matches healthy. Nothing to do.</div></div>
+    <div class="st s2"><div class="nm">WATCH</div><div class="ds">Something is moving. Not yet actionable.</div></div>
+    <div class="st s3"><div class="nm">WARN</div><div class="ds">Schedule a recalibration soon.</div></div>
+    <div class="st s4"><div class="nm">FAIL-LIKELY</div><div class="ds">Do not trust the decoder's output.</div></div>
+  </div>
+
+  <h3>The demonstration a judge watches</h3>
+  <p>A laptop replays recorded neural data at real speed, like playing a video. It streams into the monitor. On screen: the risk score moving, the status light stepping up, and a line of text saying <em>why</em>. At some point the software says <strong>WARN</strong>. Some seconds later, the cursor performance visibly falls apart.</p>
+  <p><strong>The warning came first — and you can state exactly how early, because you chose when to break it.</strong></p>
+
+  <div class="note">
+    <span class="lbl">Why "no reason given" is a design failure</span>
+    <p>"Recalibrate", "the electrode is failing", and "nothing is wrong, the person is just doing something different" are three completely different responses. A monitor that cannot tell them apart is not usable, no matter how good its accuracy number is.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= PHASE 3 ================= -->
+<section id="now">
+  <h2>Phase 3 — what is built and what is next</h2>
+  <p class="h2sub">Deliberate order: the grading system gets built before the thing being graded, so the grading cannot be bent to fit.</p>
+
+  <div class="phases">
+
+    <div class="phase">
+      <div class="pnum">3.1</div>
+      <div class="pbody">
+        <h3>The fault injector<span class="chip c-done">done</span></h3>
+        <p>Deliberately breaks a <em>copy</em> of the real recorded data, at a moment chosen and written to disk beforehand. <strong>1,073 test cases.</strong> Original files are never touched. Re-drawing the schedule is refused unless a written reason is recorded — so a start time cannot be moved after seeing how the monitor did.</p>
+        <p>Four kinds of breakage, chosen to span one axis: <em>how visible each is to the crude method of simply counting activity.</em> If every fault were the obvious kind, "beat the simple method" would be a formality rather than a test.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="pnum">3.2</div>
+      <div class="pbody">
+        <h3>The reference decoder<span class="chip c-done">done</span></h3>
+        <p>Exists only to <em>grade</em> — it turns a broken signal into a performance number, so "the warning came before performance dropped" becomes checkable. It needs to beat chance and never change; beyond that, accuracy is not a goal.</p>
+        <p>It gets <span class="num">54.6°</span> of error on held-out healthy data against <span class="num">90.7°</span> for chance. Good enough, and frozen.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="pnum">3.3</div>
+      <div class="pbody">
+        <h3>The grading system<span class="chip c-done">done</span></h3>
+        <p>How early the warning came, how often it cries wolf, and the five pass/fail gates — including the silence gate. Built <em>before</em> the monitor exists, on purpose.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="pnum">3.4</div>
+      <div class="pbody">
+        <h3>Score the simple methods first<span class="chip c-done">done</span></h3>
+        <p>Run three crude baselines through the grading system, so the bar to beat is known before there is anything invested in clearing it.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="pnum">3.5</div>
+      <div class="pbody">
+        <h3>Build decoder-guard<span class="chip c-done">done</span></h3>
+        <p>Learn what healthy looks like — from healthy data only, never seeing a failure label. Then score risk, run the state machine, and add the reason-giving.</p>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="pnum">3.6</div>
+      <div class="pbody">
+        <h3>Second signal type<span class="chip c-warn">recommended next</span></h3>
+        <p>Run the same code, unchanged, on a public dataset of a different kind. This is what turns the broad impact claim into a demonstration.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <h3>Something worth knowing: the calibration caught four real bugs</h3>
+  <p>Before the corpus could be trusted, each kind of breakage had to be checked against the decoder. That check found four errors that would each have quietly corrupted the final results — a severity ladder that ran <em>backwards</em>, a fault type that was supposed to be invisible to activity-counting but raised activity by 116%, and a start-time guarantee that held only by floating-point luck.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Kind of breakage</th><th>Effect on total activity</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>Overall signal loss</td><td class="num pos">−48%</td><td>The easy case. Counting activity catches it.</td></tr>
+      <tr><td>Electrodes dying</td><td class="num pos">−54%</td><td>Partly visible</td></tr>
+      <tr><td>Channels drifting apart</td><td class="num neu">−2%</td><td><strong>Wrecks decoding while invisible to counting</strong></td></tr>
+      <tr><td>Signal geometry rotating</td><td class="num pos">−18%</td><td>Only bites when large — a stated limitation</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>The third row is the important one. It is the case that makes "is your method better than just counting?" a genuine question.</p>
+</section>
+
+
+<hr class="rule">
+
+<!-- ================= RESULTS ================= -->
+<section id="results">
+  <h2>The first results — and they are negative</h2>
+  <p class="h2sub">Four detectors, two ways of deciding what "normal" means, three ways of handling drift, two participants. Thirty-six combinations.</p>
+
+  <div class="note fail">
+    <span class="lbl">Headline</span>
+    <p><strong>None of the 36 passed.</strong> Not the published measure from the literature, not the simple activity count, not the purpose-built monitor.</p>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Of 36 configurations</th><th>Count</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Found a usable threshold at all</td><td class="num">21</td><td>58%</td></tr>
+      <tr><td>Warned <em>before</em> performance fell</td><td class="num">5</td><td>14%</td></tr>
+      <tr><td>Stayed within the false-alarm budget</td><td class="num">1</td><td>3%</td></tr>
+      <tr><td><strong>Passed the silence gate</strong></td><td class="num pos">0</td><td>0%</td></tr>
+      <tr><td><strong>Passed all five gates</strong></td><td class="num pos">0</td><td>0%</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>What actually went wrong — and it is not what you would guess</h3>
+
+  <p>The problem is <strong>not</strong> that nothing can detect the faults. Five configurations warned early, and one of them warned by nearly a minute:</p>
+
+  <div class="note">
+    <span class="lbl">The best single number so far</span>
+    <p>On participant T5, the robust-dispersion measure reached a <strong>median lead time of +57.5 seconds</strong> (95% confidence interval 2.5 to 82.5). It genuinely warned before performance fell.</p>
+    <p>It also cried wolf <strong>nine times more often than the budget allows</strong>.</p>
+  </div>
+
+  <p>That is the real finding. The constraint is not detection, it is <strong>specificity</strong>. The risk signal is never quiet when the system is healthy — so any threshold sensitive enough to catch a fault early also fires constantly on a perfectly good recording. The one configuration that stayed within the false-alarm budget did so by barely firing at all, and its lead time was negative.</p>
+
+  <p>The closest anything came to the silence gate: <strong>31% of healthy stretches still showed a rising trend, against a 10% requirement.</strong></p>
+
+  <h3>Why the signal is never quiet</h3>
+  <p>Because the neural recording changes constantly for reasons that have nothing to do with failure. Within a single five-minute block, overall activity drifts about <strong>15%</strong>. Across the 142-day record, mean activity falls <strong>56.5%</strong>. Those changes are comparable in size to the injected faults. The monitor is not wrong to notice them — they are real. They are just not failures.</p>
+
+  <h3>A planned fix that failed, reported as a result</h3>
+  <div class="note warn">
+    <p>Back in August the project wrote down, in advance, that the drift should be removed by fitting a trend line and subtracting it. That was run. <strong>It made things worse</strong> — on T5 the silence gate went from 63% to 81% of healthy stretches trending.</p>
+    <p>The reason is worth understanding: a line fitted on the past and extended forward drifts further from the truth the further out it goes. So on drift that is not exactly straight, subtracting the line <em>adds</em> a trend at the far end. Removing a trend properly requires seeing the whole recording — which a live monitor, by definition, cannot do.</p>
+    <p>Comparing each moment against a short <em>sliding</em> window of the recent past is the only approach that helped, roughly halving the failure rate. It still did not come close to passing.</p>
+  </div>
+
+  <p>This failure is recorded rather than quietly swapped out. It was written down first, it was run, and it did not work — which is the entire reason for writing things down first.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ================= WHAT IT MEANS ================= -->
+<section id="meaning">
+  <h2>So is the project in trouble?</h2>
+  <p class="h2sub">No — but the deliverable is now clearly the one that was always the more valuable half.</p>
+
+  <p>The project was deliberately built so that this outcome would still be worth reporting, and Phase 2 already proved it would actually be reported rather than buried. What exists now:</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Contribution</th><th>Why it stands regardless of the monitor's score</th></tr></thead>
+    <tbody>
+      <tr><td><strong>A benchmark that did not exist</strong></td><td>1,850 fault episodes across two participants with <em>known</em> start times — the ground truth nobody previously had</td></tr>
+      <tr><td><strong>A test battery</strong></td><td>Five gates in a fixed order, silence first, so a detector cannot be praised for a trend that was there all along</td></tr>
+      <tr><td><strong>Systematic evidence</strong></td><td>The published measure, a trivial baseline, and a purpose-built monitor all fail — measured, not asserted</td></tr>
+      <tr><td><strong>A diagnosis</strong></td><td>Why they fail: the signal moves constantly, at a scale comparable to real faults</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Put plainly: <em>"here is a way to test whether a decoder-health monitor works, and here is evidence that the current generation of them does not"</em> is a stronger and more honest contribution than a fragile positive result would have been.</p>
+
+  <div class="note">
+    <span class="lbl">Limitations, stated up front</span>
+    <p>Injected episodes are evaluated <strong>open-loop</strong> — no live person adapting. Only <strong>two participants</strong>, and they disagree. One fault type stops being a clean test at high severity. Attribution names only three of its four possible causes, meaning it is partly collapsing onto whatever is chronically lit.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= DECISIONS ================= -->
+<section id="decisions">
+  <h2>Open decisions — yours</h2>
+  <p class="h2sub">None of these should be settled by asking which choice would make the results look better.</p>
+
+  <div class="dec">
+    <div>
+      <h3>Add a second signal type?</h3>
+      <p><strong>Recommended: yes.</strong> It is the difference between "this might generalise" and "here is it generalising." Public data, no participants, no risk.</p>
+    </div>
+    <div>
+      <h3>Two kinds of breakage, or four?</h3>
+      <p>Four is designed and built. Two would be faster and is defensible. Four is already working, so there is little reason to cut unless time gets short.</p>
+    </div>
+    <div>
+      <h3>Is the recalibration-savings result in scope this year?</h3>
+      <p>This is the headline claim — <em>fewer recalibrations for the same performance</em>. It is also the last thing built. Decide after the grading system reports.</p>
+    </div>
+    <div>
+      <h3>Hardware rig</h3>
+      <p><strong>Dropped.</strong> It was optional, and it adds cost and risk for a capability the software path already covers. The project is now purely software.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= GLOSSARY ================= -->
+<section id="glossary">
+  <h2>Every term, defined</h2>
+  <p class="h2sub">Nothing here assumes prior knowledge. Open what you need.</p>
+
+  <details><summary>Decoder</summary><div class="dbody"><p>The software that turns brain activity into cursor movement. It learns a mapping once, then applies it. When the brain signal changes but the mapping does not, output quality falls.</p></div></details>
+
+  <details><summary>Recalibration</summary><div class="dbody"><p>Retraining the decoder on fresh data so it matches the current signal. It works, but it costs the user time and interrupts what they were doing — which is why doing it only when needed is worth something.</p></div></details>
+
+  <details><summary>Fault injection</summary><div class="dbody"><p>Deliberately breaking something to see whether your detector notices. Standard engineering practice — Netflix runs a tool that randomly kills their own servers to prove the system survives. Here it means editing numbers in a copy of a data file. <strong>Nothing is injected into a person.</strong></p></div></details>
+
+  <details><summary>Ground truth</summary><div class="dbody"><p>The right answer, known independently of whatever you are testing. Here it means knowing exactly when the problem started — which is only knowable if you caused it.</p></div></details>
+
+  <details><summary>Lead time</summary><div class="dbody"><p>How long before the failure the warning arrived. Meaningless unless you know when the failure actually began, which is the entire reason this project generates its own data.</p></div></details>
+
+  <details><summary>False-alarm rate</summary><div class="dbody"><p>How often the monitor cries wolf during healthy operation. A detector with a great lead time and a terrible false-alarm rate is useless — people stop believing it.</p></div></details>
+
+  <details><summary>The silence gate</summary><div class="dbody"><p>The requirement that a monitor stays quiet while the system is healthy. This project's first attempt failed it, which is why the whole approach changed. It is checked <em>first</em>, before any other result is interpreted.</p></div></details>
+
+  <details><summary>Freezing / preregistration</summary><div class="dbody"><p>Writing down exactly what you will test and what counts as success, and locking that file with a timestamp and a fingerprint, <em>before</em> looking at any result. It is what stops you from unconsciously picking whichever analysis looked best afterwards.</p></div></details>
+
+  <details><summary>Baseline / trivial comparator</summary><div class="dbody"><p>The simplest method that could possibly work — here, just counting how much activity there is. If an elaborate method cannot beat it, the elaborate method has added nothing. In Phase 2, counting activity matched the whole pipeline.</p></div></details>
+
+  <details><summary>Open-loop vs closed-loop</summary><div class="dbody"><p><em>Closed-loop</em> means a real person sees the cursor and adjusts. <em>Open-loop</em> means replaying a recording, which cannot adjust. Injected faults are evaluated open-loop, so the performance number is "how wrong the decoder would have been" rather than "how badly the task went." This is a stated limitation.</p></div></details>
+
+  <details><summary>Angular error</summary><div class="dbody"><p>The angle between where the decoder pointed and where the person meant to go. 0° is perfect; 90° is chance; 180° is exactly backwards. It is the performance measure used throughout.</p></div></details>
+
+  <details><summary>Data leakage</summary><div class="dbody"><p>Accidentally letting information from the test set influence the model, which makes results look far better than they are. Prevented here by fitting only on healthy data, splitting by session, and opening the test set exactly once.</p></div></details>
+</section>
+
+<hr class="rule">
+
+<section id="close">
+  <h2>The one-sentence version</h2>
+  <p style="font-family:Spectral,Georgia,serif;font-size:21px;line-height:1.5;font-style:italic;color:var(--ink-2)">Build the thing that notices a brain-computer interface is failing before it fails — and, because nobody could previously prove such a thing works, build the test that proves it.</p>
+</section>
+
+</div>
