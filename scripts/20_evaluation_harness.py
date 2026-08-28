@@ -167,7 +167,8 @@ def crossing_window(perf: np.ndarray, onset_w: int) -> int | None:
 # MAIN EVALUATION
 # --------------------------------------------------------------------------
 
-def evaluate(limit: int | None, only: str | None, participant: str = "T11") -> int:
+def evaluate(limit: int | None, only: str | None, participant: str = "T11",
+             local: bool = False) -> int:
     inj = _load("injector", "17_fault_injector.py")
     det = _load("det", "19_detectors.py")
     guard = _load("guard", "22_decoder_guard.py")
@@ -256,6 +257,15 @@ def evaluate(limit: int | None, only: str | None, participant: str = "T11") -> i
                 "clipped_fraction": round(diag.get("clipped_fraction", 0.0), 5),
             }
             for n, D in detectors.items():
+                if local:
+                    # Re-baseline on this episode's own pre-onset windows. Causal:
+                    # only data from before the fault started is used, so nothing
+                    # from the future leaks into the judgement.
+                    pre = F[:onset_w]
+                    if len(pre) >= 6:
+                        D.recenter(pre)
+                    else:
+                        continue
                 sc = D.score(F)
                 row = {**base, "detector": n,
                        "scores": ",".join(f"{v:.4f}" for v in sc)}
@@ -268,7 +278,7 @@ def evaluate(limit: int | None, only: str | None, participant: str = "T11") -> i
                 print(f"  {done}/{len(eps)}")
 
     df = pd.DataFrame(rows)
-    suffix = "" if participant == "T11" else f"_{participant}"
+    suffix = ("" if participant == "T11" else f"_{participant}") + ("_local" if local else "")
     scores_path = OUT / f"episode_scores{suffix}.csv"
     df.to_csv(scores_path, index=False)
     print(f"\nwrote {scores_path}  ({len(df)} detector-episode rows)")
@@ -283,6 +293,7 @@ def evaluate(limit: int | None, only: str | None, participant: str = "T11") -> i
         "fit_blocks": sorted(fit_blocks), "val_blocks": sorted(val_blocks),
         "test_blocks": test_blocks,
         "detectors": list(detectors),
+        "local_rebaseline": local,
         "n_episodes_scored": len(eps),
     }
     meta_out_path = OUT / f"harness_meta{suffix}.json"
@@ -299,8 +310,10 @@ def main() -> int:
     r.add_argument("--limit", type=int)
     r.add_argument("--detector")
     r.add_argument("--participant", default="T11")
+    r.add_argument("--local", action="store_true",
+                   help="re-baseline each episode on its own pre-onset windows")
     a = ap.parse_args()
-    return evaluate(a.limit, a.detector, a.participant)
+    return evaluate(a.limit, a.detector, a.participant, a.local)
 
 
 if __name__ == "__main__":

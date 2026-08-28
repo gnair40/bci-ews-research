@@ -78,6 +78,30 @@ class Detector:
         """Named, unit-carrying components of the score. Empty unless overridden."""
         return {}
 
+    def recenter(self, pre: np.ndarray) -> "Detector":
+        """Re-estimate only the CALIBRATION from recent healthy data.
+
+        Why this exists. A reference fitted on day 658 and applied on day 800 is
+        being asked a different question than the one this project is about:
+        the array genuinely changed over those months, so a monitor calibrated
+        on the old state will report a large departure that is entirely real and
+        entirely not the injected fault.
+
+        A deployed monitor would not work that way. It would hold a recent
+        notion of normal and judge against that -- which is also what makes
+        "how early did it warn?" answerable, since the injected onset is the
+        only thing that changes relative to a recent baseline.
+
+        The split is deliberate: the SHAPE of the model (projection bases,
+        subspace covariance) stays global, estimated from plenty of data; only
+        the centre and scale are re-estimated locally, because those are few
+        enough parameters to estimate from the handful of windows available
+        before an onset.
+
+        Subclasses that need nothing local may leave this as a no-op.
+        """
+        return self
+
 
 # --------------------------------------------------------------------------
 # BASELINE 1 -- counting spikes
@@ -103,6 +127,12 @@ class MeanActivity(Detector):
 
     def _score(self, F):
         return np.abs(F.sum(axis=1) - self.mu) / self.sd
+
+    def recenter(self, pre):
+        t = pre.sum(axis=1)
+        self.mu = float(np.median(t))
+        self.sd = float(np.median(np.abs(t - self.mu))) * 1.4826 + EPS
+        return self
 
 
 # --------------------------------------------------------------------------
@@ -139,6 +169,12 @@ class RobustDispersion(Detector):
     def _score(self, F):
         Z = (F - self.mu) @ self.P
         return np.abs(self._disp(Z) - self.dmu) / self.dsd
+
+    def recenter(self, pre):
+        d = self._disp((pre - self.mu) @ self.P)
+        self.dmu = float(np.median(d))
+        self.dsd = float(np.median(np.abs(d - self.dmu))) * 1.4826 + EPS
+        return self
 
 
 # --------------------------------------------------------------------------
@@ -184,6 +220,14 @@ class DistributionShift(Detector):
     def _score(self, F):
         Z = (F - self.mu) @ self.P
         return np.abs(self._kl_points(Z) - self.dmu) / self.dsd
+
+    def recenter(self, pre):
+        Zp = (pre - self.mu) @ self.P
+        self.m0 = Zp.mean(axis=0)          # recent normal, not original normal
+        d = self._kl_points(Zp)
+        self.dmu = float(np.median(d))
+        self.dsd = float(np.median(np.abs(d - self.dmu))) * 1.4826 + EPS
+        return self
 
 
 BASELINES = {d.name: d for d in (MeanActivity, RobustDispersion, DistributionShift)}

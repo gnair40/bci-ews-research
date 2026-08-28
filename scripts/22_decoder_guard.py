@@ -195,6 +195,27 @@ class DecoderGuard(_det.Detector):
             out.append(pick)
         return out
 
+    def recenter(self, pre: np.ndarray) -> "DecoderGuard":
+        """Re-estimate the local notion of normal; keep the learned shape.
+
+        `ch_ref` and `p_ref` must both be local. If they were not, a channel
+        that legitimately quietened over months would read as newly silent, and
+        `silence` -- the most specific component, and the one attribution leans
+        on hardest -- would be firing on the array's history rather than on
+        anything happening now.
+
+        `Pc` and `Si` stay global: a subspace basis and its covariance need far
+        more windows than exist before a single onset.
+        """
+        self.ch_ref = np.median(pre, axis=0) + EPS
+        Lp = np.log1p(np.maximum(pre, 0.0))
+        Pp = Lp - Lp.mean(axis=1, keepdims=True)
+        self.p_ref = np.median(Pp, axis=0)
+        comp = self._components(pre)
+        self.cal = {k: robust_center_scale(v, SCALE_FLOOR.get(k, 0.0))
+                    for k, v in comp.items()}
+        return self
+
     def contributions(self, F: np.ndarray) -> dict:
         """Per-window named contributions and the attributed cause.
 

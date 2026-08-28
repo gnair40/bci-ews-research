@@ -94,11 +94,14 @@ def main() -> int:
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--participant", default="T11")
+    ap.add_argument("--local", action="store_true")
     args = ap.parse_args()
-    sfx = "" if args.participant == "T11" else f"_{args.participant}"
+    sfx = ("" if args.participant == "T11" else f"_{args.participant}") \
+          + ("_local" if args.local else "")
     df = pd.read_csv(OUT / f"episode_scores{sfx}.csv")
     meta = json.loads((OUT / f"harness_meta{sfx}.json").read_text())
-    print(f"Participant: {args.participant}")
+    print(f"Participant: {args.participant}"
+          f"{'   [local re-baseline]' if args.local else '   [global baseline]'}")
     harness = _load("harness", "20_evaluation_harness.py")
     step_s = meta["step_bins"] * meta["bin_s"]
     budget = meta["false_alarm_budget_per_hour"]
@@ -403,7 +406,7 @@ def write_markdown(summary: dict, meta: dict, participant: str, sfx: str) -> Non
                 A(f"| {m} | {v} s |")
             A("")
 
-    path = REPORTS / f"BENCHMARK_{participant}.md"
+    path = REPORTS / f"BENCHMARK_{participant}{'_local' if meta.get('local_rebaseline') else ''}.md"
     path.parent.mkdir(exist_ok=True)
     path.write_text("\n".join(L))
     print(f"wrote {path}")
