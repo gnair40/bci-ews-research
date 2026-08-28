@@ -335,9 +335,78 @@ def main() -> int:
             "median_lead_s": lead, "baseline_lead_s": base_lead, "pass": bool(beat)}
         print(f"  {n:<24} {lead} s   {'PASS' if beat else 'FAIL'}")
 
-    (OUT / "harness_summary.json").write_text(json.dumps(summary, indent=2))
-    print(f"\nwrote {OUT/'harness_summary.json'}")
+    (OUT / f"harness_summary{sfx}.json").write_text(json.dumps(summary, indent=2))
+    print(f"\nwrote {OUT/f'harness_summary{sfx}.json'}")
+    write_markdown(summary, meta, args.participant, sfx)
     return 0
+
+
+def write_markdown(summary: dict, meta: dict, participant: str, sfx: str) -> None:
+    """Emit the report as a document, so results are readable without re-running."""
+    L = []
+    A = L.append
+    A(f"# Detector benchmark — {participant}\n")
+    A(f"**Generated:** {pd.Timestamp.utcnow().strftime('%Y-%m-%d %H:%M UTC')}  ")
+    A(f"**Reproduce:** `python3 scripts/20_evaluation_harness.py run "
+      f"--participant {participant}` then `python3 scripts/21_score_report.py "
+      f"--participant {participant}`\n")
+    A("> Gates are reported before lead time, and that ordering is not cosmetic. "
+      "A detector that fails the silence gate has not earned the right to have "
+      "its lead time discussed.\n")
+
+    A("## Setup\n")
+    A(f"- Window {meta['window_bins']*meta['bin_s']:.0f} s, "
+      f"step {meta['step_bins']*meta['bin_s']:.0f} s")
+    A(f"- Performance event: **+{meta['threshold_deg']:.0f}°** above each "
+      f"episode's own pre-onset baseline, fixed before any detector existed")
+    A(f"- False-alarm budget: **{meta['false_alarm_budget_per_hour']}/h**, "
+      f"threshold chosen on validation and frozen")
+    A(f"- Episodes scored: {meta['n_episodes_scored']}\n")
+
+    A("## Results\n")
+    A("| Detector | Median lead | 95% CI | Detected | False alarms/h | Operating point |")
+    A("|---|---|---|---|---|---|")
+    for n, s_ in summary.items():
+        if s_.get("operating_point") is None:
+            A(f"| `{n}` | — | — | — | — | **none meets budget** |")
+            continue
+        ci = s_.get("lead_ci95")
+        A(f"| `{n}` | {s_.get('median_lead_s')} s | "
+          f"{f'{ci[0]}..{ci[1]}' if ci else '—'} | {s_.get('detection_rate')} | "
+          f"{s_.get('false_alarms_per_hour')} | {s_['operating_point']:.2f} |")
+    A("")
+
+    A("## Gates\n")
+    gate_names = ["G1_silence", "G2_rate_invariance", "G3_comparator",
+                  "G4_elapsed_time", "G5_detrend"]
+    A("| Detector | " + " | ".join(g.split("_", 1)[1] for g in gate_names) + " |")
+    A("|---|" + "---|" * len(gate_names))
+    for n, s_ in summary.items():
+        cells = []
+        for g in gate_names:
+            gv = s_["gates"].get(g)
+            cells.append("—" if gv is None else ("PASS" if gv.get("pass") else "**FAIL**"))
+        A(f"| `{n}` | " + " | ".join(cells) + " |")
+    A("")
+    A("Gate meanings: **silence** — no trend in risk while healthy. "
+      "**rate invariance** — risk is not a restatement of total activity. "
+      "**comparator** — beats counting spikes at a matched false-alarm rate. "
+      "**elapsed time** — not merely tracking time. "
+      "**detrend** — silence still holds after removing a linear trend.\n")
+
+    for n, s_ in summary.items():
+        if s_.get("by_mode_median_lead_s"):
+            A(f"### `{n}` by fault mode\n")
+            A("| Fault | Median lead |")
+            A("|---|---|")
+            for m, v in sorted(s_["by_mode_median_lead_s"].items()):
+                A(f"| {m} | {v} s |")
+            A("")
+
+    path = REPORTS / f"BENCHMARK_{participant}.md"
+    path.parent.mkdir(exist_ok=True)
+    path.write_text("\n".join(L))
+    print(f"wrote {path}")
 
 
 if __name__ == "__main__":
