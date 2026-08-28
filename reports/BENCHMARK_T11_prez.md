@@ -16,19 +16,19 @@
 
 | Detector | Median lead | 95% CI | Detected | False alarms/h | Operating point |
 |---|---|---|---|---|---|
-| `decoder_guard` | -25.0 s | -35.0..-5.0 | 121/586 | 2.0738 | 285.80 |
-| `distribution_shift` | -45.0 s | -55.0..-20.0 | 97/586 | 1.6294 | 1361.10 |
-| `mean_activity` | -30.0 s | -35.0..-15.0 | 105/586 | 2.2219 | 84.89 |
-| `robust_dispersion` | 10.0 s | 5.0..17.5 | 284/586 | 20.3429 | 6.00 |
+| `decoder_guard` | -25.0 s | -30.0..-10.0 | 130/586 | 1.975 | 58.30 |
+| `distribution_shift` | -27.5 s | -45.0..-10.0 | 78/586 | 1.3825 | 134.81 |
+| `mean_activity` | -20.0 s | -35.0..-10.0 | 71/586 | 1.3825 | 40.04 |
+| `robust_dispersion` | 5.0 s | 0.0..10.0 | 273/586 | 15.6522 | 6.50 |
 
 ## Gates
 
 | Detector | silence | rate_invariance | comparator | elapsed_time | detrend |
 |---|---|---|---|---|---|
-| `decoder_guard` | **FAIL** | **FAIL** | PASS | **FAIL** | PASS |
-| `distribution_shift` | **FAIL** | **FAIL** | **FAIL** | **FAIL** | **FAIL** |
+| `decoder_guard` | **FAIL** | PASS | **FAIL** | **FAIL** | PASS |
+| `distribution_shift` | **FAIL** | PASS | **FAIL** | **FAIL** | PASS |
 | `mean_activity` | **FAIL** | **FAIL** | — | **FAIL** | PASS |
-| `robust_dispersion` | **FAIL** | **FAIL** | PASS | **FAIL** | **FAIL** |
+| `robust_dispersion` | **FAIL** | PASS | PASS | **FAIL** | **FAIL** |
 
 Gate meanings: **silence** — no trend in risk while healthy. **rate invariance** — risk is not a restatement of total activity. **comparator** — beats counting spikes at a matched false-alarm rate. **elapsed time** — not merely tracking time. **detrend** — silence still holds after removing a linear trend.
 
@@ -36,26 +36,26 @@ Gate meanings: **silence** — no trend in risk while healthy. **rate invariance
 
 | Fault | Median lead |
 |---|---|
-| CHANNEL_DROPOUT | -30.0 s |
-| GAIN_DRIFT | -20.0 s |
+| CHANNEL_DROPOUT | -15.0 s |
+| GAIN_DRIFT | -25.0 s |
 | GEOMETRY_ROTATION | -25.0 s |
 
 ### `distribution_shift` by fault mode
 
 | Fault | Median lead |
 |---|---|
-| CHANNEL_DROPOUT | -50.0 s |
+| CHANNEL_DROPOUT | -7.5 s |
 | GAIN_DRIFT | -20.0 s |
-| GEOMETRY_ROTATION | -52.5 s |
-| RATE_LOSS | -35.0 s |
+| GEOMETRY_ROTATION | -40.0 s |
+| RATE_LOSS | -45.0 s |
 
 ### `mean_activity` by fault mode
 
 | Fault | Median lead |
 |---|---|
-| CHANNEL_DROPOUT | -30.0 s |
-| GEOMETRY_ROTATION | -45.0 s |
-| RATE_LOSS | -10.0 s |
+| CHANNEL_DROPOUT | -20.0 s |
+| GEOMETRY_ROTATION | -40.0 s |
+| RATE_LOSS | -15.0 s |
 
 ### `robust_dispersion` by fault mode
 
@@ -63,6 +63,6 @@ Gate meanings: **silence** — no trend in risk while healthy. **rate invariance
 |---|---|
 | CHANNEL_DROPOUT | 0.0 s |
 | GAIN_DRIFT | 5.0 s |
-| GEOMETRY_ROTATION | 5.0 s |
-| NONE | 0.0 s |
-| RATE_LOSS | 42.5 s |
+| GEOMETRY_ROTATION | 0.0 s |
+| NONE | -5.0 s |
+| RATE_LOSS | 12.5 s |

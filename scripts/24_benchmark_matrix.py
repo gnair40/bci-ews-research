@@ -54,6 +54,7 @@ def main() -> int:
                         "n_pass": sum(1 for k in GATES
                                       if (g.get(k) or {}).get("pass") is True),
                         "op": s.get("operating_point"),
+                        "det_rate": s.get("detection_rate"),
                     })
 
     L = []
@@ -93,18 +94,41 @@ def main() -> int:
       "enough to catch a fault early also fires constantly on healthy record.\n")
 
     A("## Every configuration\n")
-    A("| Participant | Baseline | Transform | Detector | Lead (s) | "
+    A("| Participant | Baseline | Transform | Detector | Lead (s) | Detected | "
       "False alarms/h | Healthy episodes trending | Gates passed |")
-    A("|---|---|---|---|---|---|---|---|")
+    A("|---|---|---|---|---|---|---|---|---|")
     for r in rows:
         lead = "—" if r["op"] is None else f"{r['lead']}"
         far = "—" if r["far"] is None else f"{r['far']:.2f}"
         sil = "—" if r["silence"] is None else f"{r['silence']*100:.0f}%"
         note = " *(no operating point)*" if r["op"] is None else ""
+        dr = r.get("det_rate") or "—"
+        # Flag a lead time computed from almost nothing. A two-minute warning on
+        # one episode out of 219 is not a fast detector, it is a silent one that
+        # fired once, and without this marker the table would read as a success.
+        if isinstance(dr, str) and "/" in dr:
+            hit, tot = (int(v) for v in dr.split("/"))
+            if tot and hit / tot < 0.05:
+                dr = f"{dr} ⚠"
         A(f"| {r['participant']} | {r['baseline']} | {r['transform']} | "
-          f"`{NICE.get(r['detector'], r['detector'])}` | {lead}{note} | {far} | "
+          f"`{NICE.get(r['detector'], r['detector'])}` | {lead}{note} | {dr} | {far} | "
           f"{sil} | {r['n_pass']}/5 |")
     A("")
+
+    A("⚠ marks a lead time computed from fewer than 5% of the fault episodes. "
+      "A long lead measured on one or two detections is not a fast detector; it "
+      "is a near-silent one that happened to fire early, and the two are easy to "
+      "confuse in a table.\n")
+
+    A("## The tradeoff, stated as a rule\n")
+    usable = [r for r in rows if r["far"] is not None and r["far"] <= 0.1
+              and r.get("det_rate")]
+    A("Across the whole grid, a configuration either detects a meaningful share "
+      "of faults and false-alarms far past budget, or meets budget and barely "
+      "fires at all. The single configuration meeting the false-alarm budget "
+      "with a positive lead time (T5, recent normal, trailing, robust "
+      "dispersion: **+115 s**) detected **1 fault in 219**. There is no middle "
+      "of this curve in the data as it stands.\n")
 
     best = min((r for r in rows if r["silence"] is not None),
                key=lambda r: r["silence"], default=None)

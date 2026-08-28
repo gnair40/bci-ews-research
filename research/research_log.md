@@ -1640,3 +1640,83 @@ something real rather than restating firing rate.
   two.
 
 **Reproduce:** `python3 scripts/26_achievability.py`
+
+---
+
+## 28 August 2026 — A correction, and the tradeoff made precise
+
+### The correction
+
+The previous entry reported that **15 of 36 configurations could not find a
+usable operating point.** That was wrong, and it was a bug in this harness rather
+than a property of the detectors.
+
+`THRESHOLD_GRID` stopped at **59**. Observed scores reach **300**
+(`decoder_guard`) and **3200** (`distribution_shift`). So "no operating point
+exists" actually meant "none exists below a number I chose arbitrarily", and it
+was presented as the former.
+
+With the grid spanning the range the scores occupy — fine steps below 10,
+log-spaced to 1e4 above — **47 of 48 configurations find an operating point.**
+`reports/BENCHMARK_SUMMARY.md` carries the correction inline rather than quietly
+displaying different numbers.
+
+**What the correction does not touch, checked rather than assumed:** neither the
+silence gate nor the achievability AUCs reference a threshold anywhere in the
+code (verified by grep, recorded here). Those results stand exactly as reported.
+
+### The corrected headline
+
+| | count | of 48 |
+|---|---|---|
+| Found any operating point | 47 | 98% |
+| **Positive** median lead time | 10 | 21% |
+| Met the false-alarm budget (≤0.1/h) | 3 | 6% |
+| **Passed the silence gate** | **0** | **0%** |
+| **Passed all five gates** | **0** | **0%** |
+
+The headline is unchanged: nothing passes. What changed is that the failure is
+now cleanly attributable to the silence gate rather than partly to an artefact
+of my own search.
+
+### The tradeoff, now precise — and a trap in the table
+
+One configuration **meets the false-alarm budget with a positive lead time**:
+T5, recent-normal baseline, trailing transform, robust dispersion — **+115 s at
+0.075 false alarms per hour.**
+
+It detected **1 fault out of 219.**
+
+That is not a fast detector. It is a near-silent one that happened to fire early
+once, and in a table of lead times it would read as the best result in the
+project. The summary now marks any lead time computed from fewer than 5% of fault
+episodes with a warning symbol, and reports detection rate as its own column,
+because the two are otherwise indistinguishable at a glance.
+
+Stated as a rule, which is the actual finding:
+
+> **Across the whole grid a configuration either detects a meaningful share of
+> faults and false-alarms far past budget, or meets budget and barely fires at
+> all. There is no middle of this curve in the data as it stands.**
+
+T11's best-detecting configurations sit at 275–284 detections out of 586 — but at
+15–20 false alarms per hour, 150–200× over budget. The two ends of the curve are
+both useless, in opposite directions.
+
+### Why this is consistent with the achievability result rather than contradicting it
+
+The information is present (AUC 0.69–0.71). The curve above is what happens when
+information of that strength is pushed through a single global threshold: an AUC
+near 0.7 simply does not support a 0.1/h operating point at useful sensitivity.
+The two findings agree, and together they say what the next engineering step must
+be — **not a better feature, but a decision rule that does not reduce to one
+threshold on one number.**
+
+### A fourth transform, and it does not rescue anything
+
+`prez` — express each window in units of the episode's own pre-onset spread —
+was added because the achievability result located the failure in the
+score-to-warning step, and an absolute threshold against a per-episode-varying
+scale is one concrete reason that step fails. It raises detection sharply
+(284/586 on T11, the highest in the grid) and raises false alarms with it
+(20.3/h). It is reported alongside the others, not instead of them.
