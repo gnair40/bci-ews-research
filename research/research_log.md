@@ -1720,3 +1720,81 @@ score-to-warning step, and an absolute threshold against a per-episode-varying
 scale is one concrete reason that step fails. It raises detection sharply
 (284/586 on T11, the highest in the grid) and raises false alarms with it
 (20.3/h). It is reported alongside the others, not instead of them.
+
+---
+
+## 28 August 2026 — A prediction recorded in advance, and falsified
+
+### The diagnosis was right
+
+`decoder_guard` reports the **largest** of its four components as the risk.
+Measuring which component gets named, healthy versus during the early-warning
+window on T11:
+
+| Component | Healthy | During fault | Ratio |
+|---|---|---|---|
+| **`profile`** | **40.6%** | **5.4%** | **0.13** |
+| `silence` | 7.8% | 13.6% | 1.75 |
+| `dispersion` | 33.8% | 56.0% | 1.66 |
+| `level` | 17.9% | 25.0% | 1.40 |
+
+A high `profile` reading is evidence **against** a fault. It is the signature of
+ordinary drift — which is precisely what a residual catch-all component should
+absorb — and the `max` rule scores it as risk anyway. That finding stands.
+
+### The fix, and the trap deliberately avoided
+
+The obvious move is to down-weight `profile` using that table. **That was not
+done.** Those numbers come from fault labels, and hand-weighting with them would
+quietly convert a one-class detector into a supervised one whose validation stops
+meaning anything.
+
+Instead the four components were modelled **jointly** on healthy data alone —
+mean and covariance of the log-compressed 4-vector, then Mahalanobis distance.
+Healthy drift has a characteristic joint signature, so the model should learn it
+as normal without ever seeing a fault.
+
+### The prediction, written down before the results existed
+
+`research/DETECTOR_V2_RECORD.json`, committed at `9c1279e` while both harness
+runs were still in flight and the results files untouched:
+
+> *"Modelling the four components jointly, rather than taking their maximum, will
+> reduce the false-alarm rate at matched detection, because healthy drift has a
+> characteristic joint signature that a max rule cannot represent."*
+
+Falsification criterion, recorded at the same time: *no reduction in false alarms
+at matched detection, or a silence gate no better than v1.*
+
+### The result on T5: falsified
+
+| | Detection | False alarms | Silence gate |
+|---|---|---|---|
+| `decoder_guard` v1 | 6/219 | **3** (0.225/h) | 100% fail |
+| `decoder_guard_joint` | 6/219 | **5** (0.376/h) | 98.7% fail |
+
+Detection is **exactly** matched at 6/219, and false alarms went **up**, 3 to 5.
+The silence gate moved from 100% to 98.7% of healthy episodes trending, which is
+not an improvement in any meaningful sense.
+
+Both halves of the falsification criterion are met on this participant. The
+prediction is wrong, and it is recorded as wrong.
+
+### Why it is worth having done anyway
+
+The diagnosis and the remedy are separable, and only the remedy failed. It is
+still true that `profile` fires overwhelmingly on healthy record and rarely on
+faults. What is now known, and was not before, is that **a joint Gaussian model
+of the four components does not capture that structure well enough to exploit
+it** — plausibly because with local re-baselining the joint covariance is
+estimated from roughly 25 pre-onset windows, or because the healthy-drift
+signature is not stable enough from episode to episode to be modelled as a fixed
+shape.
+
+That is a more specific negative than "it didn't work", and it points somewhere:
+the useful information is in *which* component fires rather than in the joint
+geometry of all four, and exploiting that without using labels is the open
+problem.
+
+*(T11's run is still in flight; this entry will be extended when it returns
+rather than rewritten.)*
