@@ -54,6 +54,7 @@ def parse_scores(s: str) -> np.ndarray:
 
 
 TRANSFORM = {"fn": None}
+RULE = {"name": "threshold"}
 
 
 def series(row) -> np.ndarray:
@@ -154,11 +155,60 @@ def detrend(y: np.ndarray) -> np.ndarray:
     return y - (a + b * x)
 
 
-def episode_outcome(scores, onset_w, crossing_w, t_warn, sm, step_s):
+def cusum_warn(scores: np.ndarray, onset_w: int, h: float) -> int | None:
+    """Accumulate evidence over time instead of judging each window alone.
+
+    WHY THIS RULE
+    -------------
+    The achievability analysis measured AUC 0.69-0.71 in the early-warning
+    window. That is real information, but it is WEAK information: a single
+    window barely separates fault from healthy, so any threshold sensitive
+    enough to catch one window of a fault also catches many windows of healthy
+    drift. That is the shape of every failure in the 48-configuration benchmark.
+
+    Weak per-sample evidence about a change that PERSISTS is exactly the problem
+    the cumulative sum was invented for. A fault pushes the score up and keeps it
+    up, so small excesses add together; noise pushes it up and down, so excesses
+    cancel. The rule is
+
+        S_t = max(0, S_{t-1} + (x_t - k))          alarm when S_t > h
+
+    The slack `k` is what makes this more than an integrator. Anything below k
+    does not accumulate at all, so a slow healthy drift sitting just above normal
+    never triggers, however long it runs -- which is the precise failure mode of
+    a plain threshold on this data. Clamping at zero stops old quiet periods
+    from banking credit against a later fault.
+
+    PARAMETER COUNT IS HELD EQUAL, DELIBERATELY
+    -------------------------------------------
+    A two-parameter rule compared against a one-parameter rule would win partly
+    by having more freedom to fit. So `k` is not searched: it is estimated
+    causally from each episode's own pre-onset windows, as median + 1 MAD. Only
+    `h` is chosen on validation, exactly as the single threshold was. The
+    comparison is like for like.
+    """
+    if onset_w < 6 or len(scores) <= onset_w:
+        return None
+    pre = scores[:onset_w]
+    med = float(np.median(pre))
+    mad = float(np.median(np.abs(pre - med))) * 1.4826
+    k = med + mad                      # slack: ordinary healthy variation
+    S = 0.0
+    for i, x in enumerate(scores):
+        S = max(0.0, S + (x - k))
+        if S > h:
+            return i
+    return None
+
+
+def episode_outcome(scores, onset_w, crossing_w, t_warn, sm, step_s, rule="threshold"):
     """Lead time for one episode at one threshold, or a false alarm."""
-    states = sm(scores, t_warn)
-    warn_at = np.flatnonzero(states >= 2)
-    warn_w = int(warn_at[0]) if len(warn_at) else None
+    if rule == "cusum":
+        warn_w = cusum_warn(scores, int(onset_w), t_warn)
+    else:
+        states = sm(scores, t_warn)
+        warn_at = np.flatnonzero(states >= 2)
+        warn_w = int(warn_at[0]) if len(warn_at) else None
 
     if crossing_w < 0:                       # nothing ever broke
         return {"false_alarm": warn_w is not None, "warn_w": warn_w,
@@ -182,17 +232,22 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--participant", default="T11")
     ap.add_argument("--local", action="store_true")
+    ap.add_argument("--rule", default="threshold",
+                    choices=["threshold", "cusum"],
+                    help="how a score series becomes a warning")
     ap.add_argument("--transform", default="none", choices=list(TRANSFORMS),
                     help="post-hoc, causal transform of the score series")
     args = ap.parse_args()
     sfx = ("" if args.participant == "T11" else f"_{args.participant}") \
           + ("_local" if args.local else "")
+    RULE["name"] = args.rule
     TRANSFORM["fn"] = None if args.transform == "none" else TRANSFORMS[args.transform]
-    tsfx = "" if args.transform == "none" else f"_{args.transform}"
+    tsfx = ("" if args.transform == "none" else f"_{args.transform}") \
+           + ("" if args.rule == "threshold" else f"_{args.rule}")
     df = pd.read_csv(OUT / f"episode_scores{sfx}.csv")
     meta = json.loads((OUT / f"harness_meta{sfx}.json").read_text())
     print(f"Participant: {args.participant}"
-          f"{('   [local re-baseline]' if args.local else '   [global baseline]') + f'   [transform: {args.transform}]'}")
+          f"{('   [local re-baseline]' if args.local else '   [global baseline]') + f'   [transform: {args.transform}]   [rule: {args.rule}]'}")
     harness = _load("harness", "20_evaluation_harness.py")
     step_s = meta["step_bins"] * meta["bin_s"]
     budget = meta["false_alarm_budget_per_hour"]
@@ -297,7 +352,8 @@ def main() -> int:
             fa = 0
             for _, r in healthy_val.iterrows():
                 o = episode_outcome(series(r), r.onset_w, -1,
-                                    t_warn, harness.run_state_machine, step_s)
+                                    t_warn, harness.run_state_machine, step_s,
+                                    RULE["name"])
                 fa += int(o["false_alarm"])
             rate = fa / healthy_hours_val if healthy_hours_val else np.inf
             if rate <= budget:
@@ -316,7 +372,8 @@ def main() -> int:
         per_mode: dict[str, list] = {}
         for _, r in test.iterrows():
             o = episode_outcome(series(r), r.onset_w, r.crossing_w,
-                                chosen, harness.run_state_machine, step_s)
+                                chosen, harness.run_state_machine, step_s,
+                                RULE["name"])
             if r.crossed:
                 n_pos += 1
                 if o["detected"]:

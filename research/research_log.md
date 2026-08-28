@@ -1911,3 +1911,108 @@ once the data is loadable.
 
 That is the recommended next experiment, and it is now blocked only on
 credentials.
+
+---
+
+## 28 August 2026 — The decision rule is not the bottleneck, and here is what is
+
+### A correction to the previous entry
+
+The achievability analysis measured AUC 0.69–0.71 in the early-warning window and
+I concluded from it that **"the failure is in the machinery that turns scores
+into warnings — a fixable engineering problem."**
+
+**That was wrong.** Testing it refutes it.
+
+### Comparing decision rules by their whole curve, not one operating point
+
+Three rules, sweeping the free parameter and plotting detection against false
+alarms — the only honest comparison, because a single operating point can hide
+behind a favourable threshold:
+
+- **threshold** — the existing rule
+- **CUSUM** — accumulate excess evidence over time, alarm on the total. The
+  textbook answer to weak per-sample evidence about a change that persists. Its
+  slack `k` is estimated causally per episode rather than searched, so both
+  rules expose exactly **one** searched parameter and the comparison is like for
+  like.
+- **CUSUM + specificity gate** — suppress a warning while the monitor's own
+  named cause is `profile`, the residual catch-all.
+
+**Detection achievable inside the false-alarm budget:**
+
+| Rule | T11 | T5 |
+|---|---|---|
+| threshold | 0.0% | 0.8% |
+| cusum | 0.0% | 0.3% |
+| cusum+spec | 0.0% | 0.3% |
+
+The rule makes no difference. All three are at zero.
+
+A caution learned here: at its chosen operating point CUSUM detects **221** faults
+to the threshold rule's **143**, but shows a *later* median lead time. That looks
+like a loss and is not — the extra 78 detections are cases the other rule missed
+entirely, and they are the hard, late ones. Adding hard cases drags a median
+down. **Single-point comparisons of detectors are actively misleading**; the
+curve is the only fair view.
+
+### What the bottleneck actually is — arithmetic, not effort
+
+The budget is 0.1 false alarms **per hour**. The monitor decides every **5
+seconds** — 720 decisions an hour.
+
+| | T11 | T5 |
+|---|---|---|
+| Healthy windows in test | 17,014 | 17,337 |
+| Alarms the budget permits | 2.4 | 2.4 |
+| **Required per-window false-positive rate** | **1.4 × 10⁻⁴** | 1.4 × 10⁻⁴ |
+| Observed per-window AUC | 0.693 | 0.707 |
+| **Detection achievable there** | **0.18%** | **0.03%** |
+| **AUC needed for 80% detection there** | **0.9992** | 0.9992 |
+
+An AUC of 0.999 is not a detector needing tuning; it is a different measurement
+problem. No decision rule closes a gap from 0.70 to 0.9992. **The budget, as
+applied, demands near-perfect discrimination on every one of 720 decisions an
+hour** — a multiple-comparisons burden, not a detector failure.
+
+### The operating point was mis-specified, and this is why that claim is not a dodge
+
+Relaxing a target after failing to meet it is the standard way to manufacture a
+success, so the reasoning matters more than the conclusion.
+
+The argument is **not** that 0.1/h was too strict. As a constraint on an *alarm*
+it is sensible — more than one spurious alert per ten hours trains a user to
+ignore it. **The error is that a per-hour alarm budget and a per-5-second
+decision rate are different quantities, and the design conflated them.** The
+per-hour figure is unchanged. What changes is how many decisions it is divided
+among.
+
+A real monitor does not re-decide every 5 seconds. *"Should this session be
+flagged for a recalibration check?"* is a once-per-session question.
+
+### The same detector, judged once per session
+
+| | T11 | T5 |
+|---|---|---|
+| Session-level AUC | 0.673 | **0.742** |
+| Detection at 10% false-flag rate | 14.4% | **30.4%** |
+| Detection at 5% false-flag rate | 8.5% | 17.0% |
+
+Aggregation is **not** the rescue either — it helps T5 and slightly hurts T11, so
+the two-participant disagreement appears here too. But it moves the problem from
+*impossible* to *hard*.
+
+### The design target that follows
+
+To flag 80% of degrading sessions while wrongly flagging 10% of healthy ones
+requires a session-level AUC of about **0.93**. The monitor achieves **0.67–0.74**.
+
+That is a specific, quotable gap. It is the difference between *"this cannot
+work"* and *"this needs a measurement about this much better"* — and only the
+second is a research programme.
+
+### The headline is unchanged
+
+**On this data, at the operating point the design specified, no configuration
+works.** That stands. What is added is *why*, in arithmetic, and what number a
+future attempt has to beat.
