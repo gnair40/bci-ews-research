@@ -2016,3 +2016,100 @@ second is a research programme.
 **On this data, at the operating point the design specified, no configuration
 works.** That stands. What is added is *why*, in arithmetic, and what number a
 future attempt has to beat.
+
+---
+
+## 28 August 2026 — One measurement per session: the finding that explains everything else
+
+### The puzzle
+
+Per-window AUC is 0.693 (T11). A session holds ~55 windows. If those were
+independent, aggregating them would raise discriminability by roughly √55.
+Session-level AUC is **0.673** — slightly *worse*.
+
+Which of two explanations holds decides the entire next direction, so it was
+measured rather than guessed.
+
+### The measurement
+
+| Participant | Windows/session | Lag-1 autocorrelation | **Effective independent samples** |
+|---|---|---|---|
+| T11 | 55 | **0.995** | **0.1** |
+| T5 | 42 | **0.980** | **0.4** |
+
+**A session does not contain 55 measurements. It contains one measurement taken
+55 times.** Consecutive windows are almost perfectly correlated, so the effective
+sample size per session is *less than one*.
+
+Confirmed independently by trying six aggregators — none beats the median, and
+the ones that lean on the tail are near chance:
+
+| Aggregator | T11 | T5 |
+|---|---|---|
+| median | 0.684 | 0.736 |
+| mean | 0.589 | 0.670 |
+| 90th percentile | 0.469 | 0.510 |
+| max | 0.457 | 0.487 |
+| fraction above own median | 0.436 | 0.322 |
+
+### This is the unifying explanation
+
+Every negative result in this project follows from it:
+
+- **Why CUSUM did not help.** Accumulating evidence works when samples are
+  independent. Accumulating 55 copies of the same measurement adds nothing.
+- **Why longer windows or more windows are a dead end.** There is no √N to
+  collect; N is already 1.
+- **Why the silence gate always fails.** The risk score is a slowly-varying
+  quantity whose consecutive values are 99.5% correlated. A series like that
+  *is* a trend — testing it for a trend will almost always find one.
+- **Why aggregation could never rescue the operating point.**
+
+### A correction to my own bound, which does not change the verdict
+
+The previous entry computed the required false-positive rate treating each
+5-second window as an independent opportunity to false-alarm. Given r = 0.995
+that is wrong: healthy *episodes*, not windows, are the independent unit.
+Recomputed properly:
+
+| | T11 | T5 |
+|---|---|---|
+| Independent healthy units | 309 sessions | 408 sessions |
+| Budget permits | 2.4 flags | 2.4 flags |
+| Required per-session false-flag rate | 0.76% | 0.59% |
+| Session AUC | 0.673 | 0.742 |
+| **Detection achievable there** | **0.9%** | **1.8%** |
+| **AUC needed for 80% detection** | **0.990** | **0.991** |
+
+The window-based version said 0.18% detection and AUC 0.9992; the corrected
+version says 0.9% and 0.990. **Rigorously different, practically identical.**
+The verdict is unchanged, and the correction is recorded because the first
+calculation was wrong even though it pointed the same way.
+
+### What this rules in and out
+
+**Ruled out**, on evidence rather than preference:
+
+- Better decision rules (measured: all at 0% inside budget)
+- Longer or more windows (there is no independent information to average)
+- Better session-level aggregators (six tried; none beats a plain median)
+
+**Ruled in**, as the only remaining direction: **a fundamentally better
+measurement.** Different features, not more processing of these ones. The
+current features are per-channel mean activity in a 30-second window; the
+untried directions are per-channel variability, cross-channel covariance
+structure, and spectral content.
+
+### The honest position on stopping here
+
+The project now has a complete, quantitative account: a benchmark, a test
+battery, a replicated demonstration that the monitor beats the trivial
+comparator, one clean positive (task changes are not mistaken for faults), and a
+negative result whose cause is measured to three decimal places with a specific
+target attached — **AUC 0.99 needed, 0.67–0.74 achieved, and the reason no
+amount of averaging closes it.**
+
+Chasing new features from here is open-ended and carries a real risk of fishing:
+with two participants who disagree, any feature that helps one can be found by
+trying enough of them. **That work should be preregistered before it is run**,
+in the same way the Phase 1–2 analysis was, rather than begun opportunistically.
