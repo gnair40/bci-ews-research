@@ -7,6 +7,19 @@ been computed on the corpus.**
 
 ---
 
+> **Terminology note.** Throughout this project, "participant" means **whose
+> published recording a data file contains** — the convention used by the
+> researchers who collected it, who label their de-identified subjects T5, T11,
+> T15. It does **NOT** mean a person this project recruits.
+>
+> **This project has no human participants in the ISEF sense.** Nobody is
+> recruited, nobody wears anything, no consent forms are collected, and Form 4
+> is not required. "Adding a third participant" means **downloading one more
+> public data file** that somebody else collected years ago under their own
+> ethics approval. See Amendment 1 in `research/PROJECT_DEFINITION.md`.
+
+---
+
 ## 1. Why this document exists
 
 Phase 3 ruled out better decision rules, longer windows, and better aggregators —

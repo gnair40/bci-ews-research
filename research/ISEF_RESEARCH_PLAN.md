@@ -78,6 +78,17 @@ performance — but, as their own framing makes clear, that is a **nowcast**: it
 estimates present performance from present neural activity. It does not ask
 whether the signal anticipates a decline before the decline occurs.
 
+
+**Terminology, so it cannot be misread by a reviewer.** This plan uses
+"participant" in the sense the source researchers use it — *whose published,
+de-identified recording a given data file contains*, labelled T5, T11, T15.
+**It never means a person this project recruits.** This project involves **no
+human participants**: nobody is recruited, nobody wears a device, no consent
+forms are collected, and Form 4 is not required. Where the plan discusses
+"adding a third participant", that means **downloading one additional public
+data file** collected years ago by other researchers under their own ethics
+approval.
+
 ### Preliminary findings from work already completed
 
 The engineering work described in this plan is partly built, and its early
