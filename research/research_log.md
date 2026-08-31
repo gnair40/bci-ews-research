@@ -2113,3 +2113,61 @@ Chasing new features from here is open-ended and carries a real risk of fishing:
 with two participants who disagree, any feature that helps one can be found by
 trying enough of them. **That work should be preregistered before it is run**,
 in the same way the Phase 1–2 analysis was, rather than begun opportunistically.
+
+---
+
+## 28 August 2026 — The live demonstration
+
+### What was built
+
+The project's stated deliverable has always been *"a program that runs live"* and
+a demonstration a judge can watch. That existed as a description and not as a
+thing. It now exists: `reports/monitor_demo.html`, generated from
+`scripts/30_export_demo.py`.
+
+It replays three real episodes through the real monitor at its real threshold —
+recorded neural data, the frozen decoder, onsets from the locked injection plan.
+Nothing is staged or reconstructed.
+
+### The design decision that mattered
+
+The obvious demo replays a fault, shows the state chip turn amber before
+performance collapses, and stops. **That demo would be dishonest.** This project
+measured that at this operating point the monitor catches 143 of 586 faults and
+raises 3.41 false alarms per hour against a 0.1/h budget. A viewer shown only a
+success would leave with a false impression of a system that does not work.
+
+So the demo shows **three** episodes, and the viewer picks between them:
+
+| Shown as | What it is |
+|---|---|
+| **Caught** | A channel-dropout fault the monitor reports. What working looks like. |
+| **Missed** | A real rate-loss fault it never reports. The common case. |
+| **False alarm** | A healthy recording it alarms on anyway. |
+
+Same monitor, same threshold, same participant. **The ratio is not a
+presentation choice** — it is what the measurement found, and the page says so.
+
+### A selection bug worth recording
+
+The first version chose episodes by a rule that sounded reasonable — risk rising
+threefold above the episode's own pre-onset baseline. It selected three episodes
+that **never came within a factor of five of the actual WARN threshold of 50.5**,
+so the "caught" case was not caught and the "false alarm" case raised no alarm.
+The demo would have shown three flat traces while claiming to show a detection.
+
+Fixed by selecting against the operating point the benchmark actually used, read
+from `harness_summary_local.json` rather than restated. The chosen episodes now
+are: EP00019 (fires at window 46, onset 28), EP00003 (never fires), EP00182
+(healthy, fires at window 21).
+
+**The lesson generalises:** a plausible-sounding proxy for "the detector fired"
+is not the same as the detector firing, and only the real threshold settles it.
+
+### Why this is worth having beyond the demo
+
+It is the first artefact in the project that shows the monitor *operating* rather
+than being *scored*. A table of AUCs does not convey that the risk score sits
+quietly at 0.1 and then climbs to 288 within a few windows, or that the named
+cause switches from `dispersion` to `silence` as channels start dropping. Those
+are properties of the system that the summary statistics flatten.

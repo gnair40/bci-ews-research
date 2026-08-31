@@ -1,0 +1,298 @@
+<title>Decoder-Guard Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --ground:#F4F6F8; --panel:#FFFFFF; --panel-2:#EAEEF2;
+  --ink:#151A21; --ink-2:#454F5B; --ink-3:#6E7885;
+  --rule:#D7DDE4; --rule-2:#BAC3CD;
+  --signal:#0E6E78;
+  --nominal:#3D6B4C; --watch:#0E6E78; --warn:#9A5B08; --fail:#9B3138;
+  --nominal-bg:#E2EDE6; --watch-bg:#DDEDEF; --warn-bg:#F7EAD8; --fail-bg:#F7E1E2;
+  --trace:#0E6E78; --perf:#7A4E9B; --marker:#9B3138;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0D1116; --panel:#151B22; --panel-2:#1D242C;
+  --ink:#E6EBF1; --ink-2:#AEB9C5; --ink-3:#7F8B98;
+  --rule:#262F39; --rule-2:#374250;
+  --signal:#5AC3CE;
+  --nominal:#8CC79C; --watch:#5AC3CE; --warn:#E0A75C; --fail:#E58A90;
+  --nominal-bg:#17301F; --watch-bg:#0F343A; --warn-bg:#3A2A12; --fail-bg:#3A1B1E;
+  --trace:#5AC3CE; --perf:#B79BE0; --marker:#E58A90;
+}}
+:root[data-theme="dark"]{
+  --ground:#0D1116; --panel:#151B22; --panel-2:#1D242C;
+  --ink:#E6EBF1; --ink-2:#AEB9C5; --ink-3:#7F8B98;
+  --rule:#262F39; --rule-2:#374250;
+  --signal:#5AC3CE;
+  --nominal:#8CC79C; --watch:#5AC3CE; --warn:#E0A75C; --fail:#E58A90;
+  --nominal-bg:#17301F; --watch-bg:#0F343A; --warn-bg:#3A2A12; --fail-bg:#3A1B1E;
+  --trace:#5AC3CE; --perf:#B79BE0; --marker:#E58A90;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);margin:0;
+  font-family:"Source Sans 3",system-ui,sans-serif;font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:36px 22px 80px;
+  display:flex;flex-direction:column;gap:26px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+header h1{font-family:"JetBrains Mono",monospace;font-weight:700;
+  font-size:clamp(26px,4.2vw,38px);letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
+header p{margin:0;color:var(--ink-2);max-width:64ch}
+.kicker{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--signal);font-weight:700;margin:0 0 14px}
+
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.tab{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--rule-2);
+  padding:13px 15px;cursor:pointer;text-align:left;font:inherit;color:inherit;
+  display:flex;flex-direction:column;gap:3px}
+.tab:hover{border-color:var(--rule-2)}
+.tab[aria-pressed="true"]{border-left-color:var(--signal);background:var(--panel-2)}
+.tab:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.tab .t{font-weight:700;font-size:15px}
+.tab .d{font-size:13px;color:var(--ink-3);line-height:1.35}
+
+.panel{background:var(--panel);border:1px solid var(--rule)}
+.readout{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;
+  padding:18px 20px;border-bottom:1px solid var(--rule)}
+.state{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:15px;
+  letter-spacing:.08em;padding:9px 16px;white-space:nowrap}
+.s-NOMINAL{background:var(--nominal-bg);color:var(--nominal)}
+.s-WATCH{background:var(--watch-bg);color:var(--watch)}
+.s-WARN{background:var(--warn-bg);color:var(--warn)}
+.s-FAIL{background:var(--fail-bg);color:var(--fail)}
+.cause{font-size:14px;color:var(--ink-2)}
+.cause b{font-family:"JetBrains Mono",monospace;color:var(--ink);font-weight:700}
+.figs{display:flex;gap:22px}
+.fig{text-align:right}
+.fig dt{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 2px}
+.fig dd{margin:0;font-family:"JetBrains Mono",monospace;font-size:19px;font-weight:700}
+
+canvas{display:block;width:100%;height:auto}
+.plots{padding:6px 10px 12px}
+.axis{display:flex;justify-content:space-between;padding:0 12px 10px;
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+
+.transport{display:flex;gap:14px;align-items:center;padding:14px 20px;
+  border-top:1px solid var(--rule)}
+button.play{font:inherit;font-family:"JetBrains Mono",monospace;font-weight:700;
+  font-size:13px;letter-spacing:.06em;background:var(--signal);color:var(--panel);
+  border:none;padding:9px 20px;cursor:pointer}
+button.play:hover{filter:brightness(1.08)}
+button.play:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+input[type=range]{flex:1;accent-color:var(--signal);min-width:80px}
+.clock{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink-2);
+  white-space:nowrap}
+
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--ink-3);
+  padding:0 20px 16px}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:14px;height:3px;display:inline-block}
+
+.note{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--warn);
+  padding:18px 22px}
+.note h2{font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 10px;font-weight:700}
+.note p{margin:0 0 11px;max-width:66ch}
+.note p:last-child{margin:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.stats div{background:var(--panel);padding:14px 16px}
+.stats dt{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 5px}
+.stats dd{margin:0;font-family:"JetBrains Mono",monospace;font-size:17px;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:640px){.readout{grid-template-columns:1fr;gap:12px}
+  .figs{justify-content:flex-start}.fig{text-align:left}}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="kicker">Live replay · real recorded data</p>
+  <h1>decoder-guard</h1>
+  <p>A brain-computer interface degrades over months. This watches the incoming
+  neural signal and reports whether the decoder can still be trusted. Three real
+  episodes below, replayed through the actual monitor at its actual threshold —
+  including the two it gets wrong.</p>
+</header>
+
+<div class="tabs" id="tabs"></div>
+
+<div class="panel">
+  <div class="readout">
+    <div class="state s-NOMINAL mono" id="state">NOMINAL</div>
+    <div class="cause" id="cause">Signal matches the healthy reference.</div>
+    <dl class="figs">
+      <div class="fig"><dt>Risk</dt><dd id="risk">0.0</dd></div>
+      <div class="fig"><dt>Decode error</dt><dd id="perf">—</dd></div>
+    </dl>
+  </div>
+  <div class="plots">
+    <canvas id="c1" width="1800" height="420" role="img"
+      aria-label="Risk score over time, with the warning threshold and the moment the fault was injected"></canvas>
+    <canvas id="c2" width="1800" height="300" role="img"
+      aria-label="Decoder angular error over time, with its healthy baseline and the degradation threshold"></canvas>
+  </div>
+  <div class="axis"><span id="t0">0 s</span><span id="t1"></span></div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--trace)"></i> risk score</span>
+    <span><i class="sw" style="background:var(--perf)"></i> decoder error (higher is worse)</span>
+    <span><i class="sw" style="background:var(--marker)"></i> fault injected here</span>
+    <span><i class="sw" style="background:var(--ink-3)"></i> thresholds</span>
+  </div>
+  <div class="transport">
+    <button class="play" id="play" type="button">PLAY</button>
+    <input type="range" id="scrub" min="0" value="0" aria-label="Scrub through the session">
+    <span class="clock mono" id="clock">0:00</span>
+  </div>
+</div>
+
+<div class="note">
+  <h2>What this demo is not hiding</h2>
+  <p>One of the three episodes is caught. One is a real fault the monitor never
+  reports. One is a healthy recording it alarms on anyway. That ratio is not a
+  presentation choice — it is what the measurement found across 586 fault
+  episodes and 265 healthy ones, at this exact threshold.</p>
+  <p>The monitor is <em>not</em> deployable at this operating point. What the
+  measurements do support: it detects faults that leave overall activity
+  unchanged, which counting spikes cannot see at all, and it separates a change
+  of task from a change of hardware by a factor of 15 to 70.</p>
+</div>
+
+<dl class="stats">
+  <div><dt>Faults detected</dt><dd>143 / 586</dd></div>
+  <div><dt>False alarms</dt><dd>3.41 / h</dd></div>
+  <div><dt>Budget</dt><dd>0.10 / h</dd></div>
+  <div><dt>Warn threshold</dt><dd id="thr">—</dd></div>
+</dl>
+</div>
+
+<script>
+const D = {"warn":50.46,"step_s":5.0,"window_s":30.0,"thr_deg":10.0,"eps":[{"role":"missed","id":"EP00003","mode":"RATE_LOSS","sev":"sub","rate":"fast","onset":26,"base":50.31,"risk":[1.099,1.039,0.553,0.206,0.094,0.012,0.715,0.657,0.07,0.012,0.038,0.358,0.545,0.129,1.479,1.027,4.142,4.732,5.141,4.636,3.354,4.235,1.551,1.635,3.231,4.286,5.699,7.342,8.382,9.197,9.051,9.064,9.101,9.571,9.342,7.62,5.394,3.741,2.684,2.729,2.265,2.085,2.0,2.082,2.208,2.628,4.055,3.834,2.213,2.166,3.297,3.731,6.09,6.219,5.791],"cause":["profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","level","level","level","level","level","level","level","level","profile","profile","level","level","level","level","level","level","level","level","level","level","level","level","level","level","level","level","level","level","dispersion","profile","dispersion","dispersion","level","dispersion","dispersion","dispersion","level","level","level","level","level"],"perf":[50.44,49.12,49.2,50.23,49.82,47.66,53.77,55.24,53.04,51.27,51.92,53.8,49.1,48.41,49.41,51.21,50.55,50.44,50.44,49.94,50.4,48.86,49.35,49.34,49.35,55.91,55.66,56.19,59.69,57.92,59.4,58.72,57.54,58.3,56.98,58.03,57.94,53.9,57.12,58.14,60.74,60.64,57.26,53.77,48.92,51.91,53.5,52.66,53.97,56.3,61.32,58.51,50.84,51.3,51.0]},{"role":"caught","id":"EP00019","mode":"CHANNEL_DROPOUT","sev":"crossing","rate":"slow","onset":28,"base":50.41,"risk":[0.825,0.813,0.685,0.366,0.263,0.188,0.48,0.427,0.113,0.165,0.212,0.505,0.677,0.295,1.182,0.767,3.628,4.17,4.546,4.082,2.924,4.129,1.455,1.404,0.842,0.816,1.206,1.547,2.173,3.396,5.99,8.333,10.677,12.24,13.542,16.667,18.49,21.875,23.958,26.042,29.688,30.208,31.771,34.635,35.938,39.746,60.729,94.77,138.951,197.932,244.499,262.048,278.714,280.718,288.547],"cause":["profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","level","profile","level","level","level","level","level","level","level","dispersion","profile","profile","profile","level","level","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","silence","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion"],"perf":[50.44,49.12,49.2,50.23,49.82,47.66,53.77,55.24,53.04,51.27,51.92,53.8,49.1,48.41,49.41,51.21,50.55,50.44,50.44,49.94,50.38,48.97,48.86,49.41,50.08,52.35,52.94,53.63,57.62,53.27,52.38,52.42,48.86,48.59,50.39,50.25,52.33,59.84,72.58,78.2,80.39,81.88,85.85,86.03,73.54,78.93,88.88,92.24,92.11,88.85,101.96,96.18,83.51,82.2,78.75]},{"role":"healthy","id":"EP00182","mode":"GEOMETRY_ROTATION","sev":"crossing","rate":"medium","onset":17,"base":86.4,"risk":[0.4,0.179,0.197,0.187,0.241,0.001,0.252,0.368,0.063,0.291,0.4,0.145,1.625,4.558,8.361,13.349,19.539,27.221,34.667,42.488,49.789,57.677,67.232,76.851,85.351,97.875,107.416,116.358,124.243,131.899,137.164,139.271,140.308,141.118,143.536,142.276,147.277,144.904,146.127,142.92,144.752,144.891,142.717,141.112,140.282,141.305,139.934,141.723,139.848,139.428,144.804,145.222,140.19,139.728,142.372],"cause":["profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","profile","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion","dispersion"],"perf":[89.19,79.6,86.04,81.92,86.48,76.63,69.15,78.99,81.06,86.4,91.63,92.31,96.57,99.65,92.53,88.73,79.02,85.61,81.47,74.38,75.12,84.65,75.18,72.64,75.09,76.29,79.16,73.89,81.5,74.91,73.62,74.14,73.7,74.28,79.83,84.33,82.96,86.82,87.33,87.94,84.27,85.13,86.46,82.32,82.67,80.32,78.47,80.72,79.89,79.01,78.98,78.39,78.82,76.4,76.4]}]};
+const EPS = D.eps, WARN = D.warn, STEP = D.step_s;
+const LABEL = {
+  caught:  {t:"Caught", d:"A fault the monitor reports before performance collapses."},
+  missed:  {t:"Missed", d:"A real fault it never reports. The common case."},
+  healthy: {t:"False alarm", d:"Nothing broke. It warns regardless."}
+};
+const CAUSE_TEXT = {
+  level:"overall activity has moved",
+  silence:"individual channels have gone quiet",
+  dispersion:"channels have drifted apart in gain",
+  profile:"the shape across channels changed — no specific cause"
+};
+const ORDER = ["caught","missed","healthy"];
+const eps = ORDER.map(r => EPS.find(e => e.role === r)).filter(Boolean);
+let cur = 0, idx = 0, playing = false, timer = null;
+
+const $ = id => document.getElementById(id);
+$("thr").textContent = WARN.toFixed(1);
+
+const tabs = $("tabs");
+eps.forEach((e,i) => {
+  const b = document.createElement("button");
+  b.className = "tab"; b.type = "button";
+  b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  b.innerHTML = `<span class="t">${LABEL[e.role].t}</span>
+                 <span class="d">${LABEL[e.role].d}</span>`;
+  b.onclick = () => { cur = i; idx = 0; stop(); sync(); };
+  tabs.appendChild(b);
+});
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+function draw(){
+  const e = eps[cur], n = e.risk.length;
+  const rMax = Math.max(WARN * 1.35, ...e.risk) * 1.06;
+  const perfVals = e.perf.filter(v => v !== null);
+  const pLo = Math.min(...perfVals, e.base) - 6, pHi = Math.max(...perfVals, e.base + D.thr_deg) + 6;
+
+  const panels = [
+    {c:$("c1"), vals:e.risk, lo:0, hi:rMax, col:css("--trace"),
+     lines:[{v:WARN, label:"warn threshold"}]},
+    {c:$("c2"), vals:e.perf, lo:pLo, hi:pHi, col:css("--perf"),
+     lines:[{v:e.base, label:"healthy baseline"},
+            {v:e.base + D.thr_deg, label:"degraded"}]}
+  ];
+
+  for (const p of panels){
+    const ctx = p.c.getContext("2d"), W = p.c.width, H = p.c.height;
+    const padL = 66, padR = 18, padT = 16, padB = 22;
+    ctx.clearRect(0,0,W,H);
+    const x = i => padL + (W - padL - padR) * (i / (n - 1));
+    const y = v => H - padB - (H - padT - padB) * ((v - p.lo) / (p.hi - p.lo));
+
+    ctx.strokeStyle = css("--rule"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(padL, H-padB); ctx.lineTo(W-padR, H-padB); ctx.stroke();
+
+    ctx.setLineDash([9,7]); ctx.lineWidth = 2; ctx.strokeStyle = css("--ink-3");
+    ctx.font = "500 20px 'JetBrains Mono', monospace"; ctx.fillStyle = css("--ink-3");
+    for (const L of p.lines){
+      if (L.v < p.lo || L.v > p.hi) continue;
+      ctx.beginPath(); ctx.moveTo(padL, y(L.v)); ctx.lineTo(W-padR, y(L.v)); ctx.stroke();
+      ctx.textAlign = "right"; ctx.fillText(L.label, W-padR, y(L.v)-8);
+    }
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle = css("--marker"); ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(x(e.onset), padT); ctx.lineTo(x(e.onset), H-padB); ctx.stroke();
+
+    ctx.strokeStyle = p.col; ctx.lineWidth = 4; ctx.lineJoin = "round";
+    ctx.beginPath(); let started = false;
+    for (let i = 0; i <= idx && i < n; i++){
+      const v = p.vals[i];
+      if (v === null || v === undefined){ started = false; continue; }
+      if (!started){ ctx.moveTo(x(i), y(v)); started = true; } else ctx.lineTo(x(i), y(v));
+    }
+    ctx.stroke();
+
+    const v = p.vals[Math.min(idx, n-1)];
+    if (v !== null && v !== undefined){
+      ctx.fillStyle = p.col; ctx.beginPath();
+      ctx.arc(x(Math.min(idx,n-1)), y(v), 7, 0, 6.284); ctx.fill();
+    }
+    ctx.fillStyle = css("--ink-3"); ctx.textAlign = "right";
+    ctx.fillText(p.hi.toFixed(0), padL-10, y(p.hi)+7);
+    ctx.fillText(p.lo.toFixed(0), padL-10, y(p.lo)+7);
+  }
+}
+
+function sync(){
+  const e = eps[cur], n = e.risk.length;
+  [...tabs.children].forEach((b,i) => b.setAttribute("aria-pressed", i===cur ? "true":"false"));
+  const s = $("scrub"); s.max = n-1; s.value = idx;
+  const r = e.risk[idx], c = e.cause[idx], p = e.perf[idx];
+  let st = "NOMINAL";
+  if (r > WARN * 2) st = "FAIL"; else if (r > WARN) st = "WARN";
+  else if (r > WARN * 0.5) st = "WATCH";
+  const el = $("state");
+  el.className = "state mono s-" + (st === "FAIL" ? "FAIL" : st);
+  el.textContent = st === "FAIL" ? "FAIL-LIKELY" : st;
+  $("risk").textContent = r.toFixed(1);
+  $("perf").textContent = (p === null || p === undefined) ? "—" : p.toFixed(0) + "°";
+  $("cause").innerHTML = st === "NOMINAL"
+    ? "Signal matches the healthy reference."
+    : `Driven by <b>${c}</b> — ${CAUSE_TEXT[c] || c}.`;
+  $("clock").textContent = Math.floor(idx*STEP/60) + ":" + String(Math.round(idx*STEP%60)).padStart(2,"0");
+  $("t1").textContent = Math.round((n-1)*STEP) + " s";
+  draw();
+}
+
+function stop(){ playing = false; clearInterval(timer); $("play").textContent = "PLAY"; sync(); }
+$("play").onclick = () => {
+  if (playing){ stop(); return; }
+  if (idx >= eps[cur].risk.length - 1) idx = 0;
+  playing = true; $("play").textContent = "PAUSE";
+  timer = setInterval(() => {
+    idx++;
+    if (idx >= eps[cur].risk.length - 1){ idx = eps[cur].risk.length - 1; stop(); return; }
+    sync();
+  }, 110);
+};
+$("scrub").oninput = ev => { stop(); idx = +ev.target.value; sync(); };
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+sync();
+</script>
