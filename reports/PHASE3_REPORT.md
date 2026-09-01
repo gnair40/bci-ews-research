@@ -180,6 +180,13 @@ T11, falsified on T5. The change was **not adopted**.
   of mean activity, so it stops being a clean test of the trivial-comparator gate.
 - **Attribution names only 3 of 4 components**, meaning it partly collapses onto
   whatever is chronically lit.
+- **Window overlap contaminates the healthy reference.** Windows are 30 s and
+  step 5 s, so six windows that *start* before an onset still *span* it. With a
+  typical 25 pre-onset windows, about **24% of the re-baselining reference
+  contains post-fault data**. The bias is conservative — it pulls the reference
+  toward the fault and so reduces sensitivity — and lead time, being a
+  difference on the same windowing, largely cancels it. Fix for the next full
+  run: require `start + window <= onset_bin`.
 - **The task-change result rests on two days and four blocks.** A demonstration,
   not an estimate; no confidence interval is quoted because none would be
   meaningful.

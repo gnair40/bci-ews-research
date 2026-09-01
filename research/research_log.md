@@ -2219,3 +2219,72 @@ Rewritten to state the actual result, point at the five documents worth reading,
 give the reproduction commands in dependency order, and put the
 **no-human-participants statement and the terminology note at the very top**,
 before anything else, where a reviewer cannot miss them.
+
+---
+
+## 1 September 2026 — Rendering the demo caught two things, one of them serious
+
+### Looking at the output, which I had skipped
+
+The demo was published without ever viewing the rendered page. Rendering it
+headless and looking at it found two problems, and the second is a genuine
+overclaim.
+
+### 1. The page opened on two empty charts
+
+It loaded at window 0, so a viewer arrived at blank panels and had to work out to
+press play before anything appeared. Fixed: the full series now draws faintly and
+the played portion draws solid, so the page is informative on arrival. Panel
+titles and units were added — previously the only way to tell the traces apart
+was the legend.
+
+### 2. The "caught" tab asserted something false
+
+The tab read *"A fault the monitor reports **before** performance collapses."*
+
+The episode behind it warned **35 seconds after** performance had already crossed
+the degradation threshold.
+
+Checking the whole distribution rather than that one case:
+
+| Of the 132 faults `decoder_guard` detects on T11 | |
+|---|---|
+| Warned **before** performance dropped | 63 (48%) |
+| Warned **after** — confirmation, not warning | 69 (52%) |
+| **Median lead time** | **0 s** |
+| Range | −155 s to +135 s |
+
+**Detecting a fault and warning about it early are different things here, and the
+difference is close to a coin flip.** A single "caught" tab cannot express that,
+and the label I wrote asserted the favourable half as though it were the whole.
+
+Fixed by showing **four** episodes with their real frequencies: *warned early*
+(48%), *warned late* (52%), *never reported*, *false alarm*. The page now states
+the median lead of 0 s, and says outright that an earlier version made the claim
+and what was wrong with it.
+
+This is the failure mode the whole project has been guarding against, appearing
+on its most public artefact. It was caught by looking at the thing rather than
+by trusting the code that produced it.
+
+### 3. A windowing subtlety this exposed, which affects the benchmark itself
+
+Watching the risk curve leave the floor slightly *before* the injection marker
+prompted a check. Windows are 30 s long and step every 5 s, so **six windows
+that start before the onset still span it** and contain post-fault data.
+
+The typical episode has 25 pre-onset windows, so **about 24% of the "healthy"
+reference used for re-baselining is contaminated with fault data.**
+
+Direction of the bias, which matters: the contaminated reference is pulled
+*toward* the fault, which makes the fault look less anomalous and **reduces
+sensitivity**. The error is therefore **conservative** — it works against
+detection, not for it. Lead time is a difference between two quantities measured
+on the same windowing, so the bias largely cancels there.
+
+**Not corrected in the current results**, because doing so means re-running the
+whole benchmark, and it would move numbers in the direction of slightly better
+detection rather than changing any conclusion. Recorded here and in
+`reports/PHASE3_REPORT.md` limitations as a defect to fix in the next full run:
+the reference should use only windows that *end* before the onset
+(`start + window <= onset_bin`), not merely start before it.

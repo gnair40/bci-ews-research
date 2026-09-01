@@ -82,27 +82,39 @@ def main() -> int:
     t_warn = float(summary["decoder_guard"]["operating_point"])
     print(f"  selecting against the benchmark's own WARN threshold: {t_warn:.1f}\n")
 
+    # FOUR roles, because three was not enough to be honest.
+    #
+    # An earlier version had a single "caught" case labelled as reporting the
+    # fault BEFORE performance collapsed. The episode it chose warned 35 seconds
+    # AFTER performance had already crossed the degradation threshold, so the
+    # label asserted a capability the episode did not show.
+    #
+    # Checking the whole distribution: of 132 detected faults on T11, 48% are
+    # warned before performance drops and 52% after, with a median lead of
+    # exactly 0 seconds. Detection and early warning are different things here,
+    # and a demo with one "caught" tab cannot express that. So both appear.
     want = {}
     for _, r in g.iterrows():
         y = np.fromstring(r.scores, sep=",")
         ow = int(r.onset_w)
         if len(y) <= ow:
             continue
-        fires_after_onset = bool((y[ow:] > t_warn).any())
+        fired = np.flatnonzero(y > t_warn)
+        fired = fired[fired >= ow]
+        first = int(fired[0]) if len(fired) else None
         if r.crossed:
             cw = int(r.crossing_w)
             if cw <= ow or len(y) < cw:
                 continue
-            if fires_after_onset and "caught" not in want:
-                want["caught"] = r.episode_id
-            elif not fires_after_onset and "missed" not in want:
-                want["missed"] = r.episode_id
-        else:
-            # A healthy episode that alarms anyway: a real false alarm, which is
-            # the common case and the one a demo must not hide.
-            if fires_after_onset and "healthy" not in want:
-                want["healthy"] = r.episode_id
-        if len(want) == 3:
+            if first is None:
+                want.setdefault("missed", r.episode_id)
+            elif (cw - first) * 5 >= 40:
+                want.setdefault("early", r.episode_id)
+            elif (cw - first) * 5 <= -20:
+                want.setdefault("late", r.episode_id)
+        elif first is not None:
+            want.setdefault("false_alarm", r.episode_id)
+        if len(want) == 4:
             break
 
     by_id = {e.episode_id: e for e in episodes}
@@ -114,6 +126,9 @@ def main() -> int:
                "Chosen on validation data to meet the false-alarm budget, then "
                "frozen. At this point the monitor detects 143 of 586 faults and "
                "raises 3.41 false alarms per hour against a 0.1/h budget."),
+           "lead_time_distribution": (
+               "Of the 132 detected faults on T11, 48% are warned before "
+               "performance drops and 52% after. Median lead: 0 s."),
            "episodes": []}
 
     for role, eid in want.items():
