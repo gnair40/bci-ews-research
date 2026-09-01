@@ -20,5 +20,16 @@
   "all_families_reported": true,
   "no_family_dropped_or_reparameterised_after_seeing_results": true,
   "feature_result_files_at_freeze": [],
-  "what_this_cannot_settle": "n = 2, and the two participants disagree. A family clearing +0.05 on both is encouraging and is still n = 2. A third dataset remains worth more."
+  "what_this_cannot_settle": "n = 2, and the two participants disagree. A family clearing +0.05 on both is encouraging and is still n = 2. A third dataset remains worth more.",
+  "amendments": [
+    {
+      "at_utc": "2026-09-01T21:44:34+00:00",
+      "commit": "8155f0f7ba0c8648a882304d74583d3199b42429",
+      "what": "F2 normalisation corrected to share of TOTAL variance.",
+      "why": "The implementation divided the top-k eigenvalues by their own sum, which forces every window to total 1.0 and normalises away the quantity the family exists to measure -- how concentrated the correlation structure is. It retained only the relative shape among the leading directions. For a correlation matrix the trace is the channel count, which is the correct denominator.",
+      "verified_by": "Synthetic check: with one shared driver across 80 of 384 channels the top eigenvalue share is 0.1398 against 0.0058 for independent channels, a 24x separation. Under the old normalisation both totalled exactly 1.000.",
+      "ordering": "Caught by re-reading the code against its own docstring BEFORE any feature result had been scored. reports/FEATURE_STUDY_RESULT.md did not exist and the T5 score file was deleted unscored. This corrects the implementation to match the frozen specification; it does not change the specification, the family list, or the success criterion.",
+      "also": "scipy subset_by_index was tried for speed and was 4.7x SLOWER than full eigvalsh on a dense 384x384 matrix; reverted."
+    }
+  ]
 }

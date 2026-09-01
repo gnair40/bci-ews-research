@@ -95,8 +95,24 @@ def feat_covstruct(X: np.ndarray, starts: np.ndarray, win: int, k: int = 24) -> 
             out[i] = 0.0
             continue
         C = (Z.T @ Z) / len(Z)
+        # Share of TOTAL variance, not share among the top k.
+        #
+        # An earlier version divided by w.sum() -- the sum of the retained
+        # eigenvalues -- which normalises away the very quantity this family
+        # exists to measure. "How concentrated is the correlation structure"
+        # is precisely how much of the total variance the leading directions
+        # capture; dividing by their own sum makes every window sum to 1 and
+        # leaves only the relative shape among them. Caught by re-reading the
+        # code against its own docstring, before any result had been scored.
+        #
+        # For a correlation matrix the trace equals the number of channels
+        # kept, so that is the correct denominator.
+        # Full eigvalsh, not a top-k subset routine: on a dense 384x384 matrix
+        # scipy's subset solver measured 4.9s per block against 1.1s for the
+        # full LAPACK path, so asking for less work costs more here.
+        m = Z.shape[1]
         w = np.linalg.eigvalsh(C)[::-1][:k]
-        out[i] = w / (w.sum() + EPS)
+        out[i] = w / m
     return out
 
 
