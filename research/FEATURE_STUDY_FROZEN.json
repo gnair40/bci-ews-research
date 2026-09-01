@@ -1,0 +1,24 @@
+{
+  "frozen_utc": "2026-09-01T21:08:25+00:00",
+  "git_commit_at_freeze": "0950c0415736ff549f6cda71159c7b83e430ab2c",
+  "preregistration_file": "research/FEATURE_STUDY_PREREGISTRATION.md",
+  "preregistration_sha256": "a5e5bde03c0a326649f4b1fc0e8fa89528aae618dd2e29dbbc82eee9cd86b9f9",
+  "study": "feature families F1-F4",
+  "primary_metric": "session-level AUC in the early-warning window",
+  "success_criterion": "A family must raise session-level AUC by >= 0.05 over decoder_guard v1 ON BOTH PARTICIPANTS IN THE SAME DIRECTION. A family helping only one is recorded as a null result, not a partial success.",
+  "families_closed_list": [
+    "F1 per-channel variability (Fano factor)",
+    "F2 cross-channel covariance structure",
+    "F3 spectral content of binned activity",
+    "F4 channel-count distribution statistics"
+  ],
+  "baselines_to_beat": [
+    "decoder_guard",
+    "mean_activity"
+  ],
+  "confidence_intervals": "bootstrap over EPISODES, not windows (r_lag1 = 0.995)",
+  "all_families_reported": true,
+  "no_family_dropped_or_reparameterised_after_seeing_results": true,
+  "feature_result_files_at_freeze": [],
+  "what_this_cannot_settle": "n = 2, and the two participants disagree. A family clearing +0.05 on both is encouraging and is still n = 2. A third dataset remains worth more."
+}
