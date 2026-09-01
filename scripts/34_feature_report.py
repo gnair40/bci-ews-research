@@ -175,6 +175,37 @@ def main() -> int:
           "four families a careful reading of the problem suggested do not, on "
           "these two datasets.\n")
 
+    # ---- secondary, POST-HOC: family vs the matched control ----
+    A("## Secondary comparison — against the matched control\n")
+    A("> **This is post-hoc and is not the frozen criterion.** It was computed "
+      "after seeing that nothing passed. It is reported because it changes what "
+      "the null result *means*, not because it rescues it.\n")
+    A("The frozen criterion compares each family against `decoder_guard` v1, "
+      "which uses its own four-component scorer. The families use the generic "
+      "one. So a family losing to `decoder_guard` may be losing to the **scorer** "
+      "rather than to the features. `F0_control_mean` — the current features "
+      "through the generic scorer — is what settles that.\n")
+    A("| Family | T11 vs F0 | T5 vs F0 | Both ≥ +0.05? |")
+    A("|---|---|---|---|")
+    for n in names:
+        if not n.startswith("F") or n.startswith("F0"):
+            continue
+        ds = [results[p][n][0] - results[p]["F0_control_mean"][0] for p in results]
+        A(f"| `{n}` | {ds[0]:+.3f} | {ds[1]:+.3f} | "
+          f"{'**yes**' if all(d >= DELTA_REQUIRED for d in ds) else 'no'} |")
+    A("")
+    gap = [results[p]["decoder_guard (incumbent)"][0] - results[p]["F0_control_mean"][0]
+           for p in results]
+    A(f"**And the scorer is worth more than the features.** `decoder_guard` beats "
+      f"its own features under the generic scorer by {gap[0]:+.3f} and "
+      f"{gap[1]:+.3f}. Its advantage is largely in the four-component "
+      f"decomposition, not in the per-channel means it consumes.\n")
+    A("So the honest reading is: **two families are better features than the "
+      "current ones, and that is not enough**, because the gain does not cover "
+      "what the purpose-built scorer contributes. Combining better features with "
+      "that decomposition is a new study, and would need its own "
+      "preregistration.\n")
+
     A("## What this cannot settle\n")
     A(f"{frozen['what_this_cannot_settle']}\n")
 

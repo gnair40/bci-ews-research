@@ -2288,3 +2288,79 @@ detection rather than changing any conclusion. Recorded here and in
 `reports/PHASE3_REPORT.md` limitations as a defect to fix in the next full run:
 the reference should use only windows that *end* before the onset
 (`start + window <= onset_bin`), not merely start before it.
+
+---
+
+## 1 September 2026 — The feature study: the prediction held, and the null result has structure
+
+### The prediction, and the outcome
+
+Before running it I put on record that I expected no family to clear the bar.
+**That held.** The frozen criterion — +0.05 session-level AUC over
+`decoder_guard` v1, **on both participants in the same direction** — is met by
+none of the four.
+
+| Family | T11 Δ | T5 Δ | Verdict |
+|---|---|---|---|
+| F1 variability | +0.004 | −0.075 | no improvement on either |
+| F2 covariance | −0.043 | −0.137 | no improvement on either |
+| **F3 spectral** | **+0.078** | **−0.186** | **null — helped T11 only** |
+| F4 counts | +0.003 | −0.212 | no improvement on either |
+
+### F3 is exactly the trap the preregistration was written to catch
+
+Spectral content **cleared the bar on T11** (+0.078) and **failed badly on T5**
+(−0.186). Had this project had only one participant — or had the both-participants
+rule been written after seeing this table rather than before — F3 would have been
+reported as the feature that worked.
+
+The rule was frozen at commit `0950c04` with a checksum, and it says a family
+helping one participant is a **null result, not a partial success**. So F3 is a
+null result. That is the rule doing precisely the job it was written for, on the
+one occasion it mattered.
+
+### But the null has structure, and the structure is informative
+
+**This part is post-hoc** — computed after seeing that nothing passed — and is
+labelled as such in the report. It is included because it changes what the null
+*means*, not because it rescues it.
+
+The frozen criterion compares each family against `decoder_guard` v1, which uses
+its own four-component scorer, while the families use a generic one. So a family
+could be losing to the **scorer** rather than to the features. `F0` — the current
+features through the generic scorer — settles it:
+
+| Family vs the matched control | T11 | T5 | Both ≥ +0.05 |
+|---|---|---|---|
+| **F1 variability** | **+0.106** | **+0.158** | **yes** |
+| **F2 covariance** | **+0.059** | **+0.095** | **yes** |
+| F3 spectral | +0.180 | +0.047 | no |
+| F4 counts | +0.105 | +0.021 | no |
+
+**Two families are genuinely better features than the ones in use**, on both
+participants, in the same direction.
+
+And yet nothing passes, because:
+
+> **`decoder_guard` beats its own features under the generic scorer by +0.102
+> (T11) and +0.233 (T5). Its advantage is mostly in the four-component
+> decomposition, not in the per-channel means it consumes.**
+
+So the honest reading is: **the new features are better features, and that is not
+enough** — the gain does not cover what the purpose-built scorer contributes.
+
+### What this rules in and out
+
+**Ruled out:** the four obvious feature families, as drop-in replacements. That
+converts *"a better feature is the remaining direction"* into *"the four obvious
+better features were named in advance, tried, and are not sufficient"* — a
+stronger statement than the open question it replaces.
+
+**Newly indicated:** combining the better features (F1, F2) **with** the
+four-component decomposition, rather than substituting one for the other. That is
+a new study and would need its own preregistration. It is not run here, because
+running it now on the strength of a post-hoc table is exactly the move the freeze
+exists to prevent.
+
+**Unchanged:** n = 2, and the participants disagree — visibly, in the F3 row. A
+third dataset is still worth more than any feature.
