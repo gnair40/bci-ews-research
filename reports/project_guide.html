@@ -249,6 +249,7 @@ details[open] summary{border-bottom:1px solid var(--rule)}
   <div><dt>Deliverable</dt><dd>Software system</dd></div>
   <div><dt>Configurations tested</dt><dd>36 · none passed</dd></div>
   <div><dt>Separation on task change</dt><dd>15× and 70×</dd></div>
+  <div><dt>Accuracy needed</dt><dd>0.99 · have 0.67–0.74</dd></div>
   <div><dt>Code committed</dt><dd>39 commits, 24 scripts</dd></div>
 </dl>
 
@@ -416,6 +417,11 @@ details[open] summary{border-bottom:1px solid var(--rule)}
     <div class="st s4"><div class="nm">FAIL-LIKELY</div><div class="ds">Do not trust the decoder's output.</div></div>
   </div>
 
+
+  <div class="note">
+    <span class="lbl">See it running</span>
+    <p>The monitor now exists as a working page you can operate: press play and watch the risk score climb, the status light step up, and the cause be named — on three real recordings. <strong>One fault it catches, one it misses, and one healthy recording it alarms on anyway.</strong> That ratio is what the measurement found, not a presentation choice.</p>
+  </div>
   <h3>The demonstration a judge watches</h3>
   <p>A laptop replays recorded neural data at real speed, like playing a video. It streams into the monitor. On screen: the risk score moving, the status light stepping up, and a line of text saying <em>why</em>. At some point the software says <strong>WARN</strong>. Some seconds later, the cursor performance visibly falls apart.</p>
   <p><strong>The warning came first — and you can state exactly how early, because you chose when to break it.</strong></p>
@@ -554,6 +560,56 @@ details[open] summary{border-bottom:1px solid var(--rule)}
   <p>This failure is recorded rather than quietly swapped out. It was written down first, it was run, and it did not work — which is the entire reason for writing things down first.</p>
 </section>
 
+
+
+<hr class="rule">
+
+<!-- ================= WHY ================= -->
+<section id="why-nothing-passes">
+  <h2>Why nothing passes — the arithmetic</h2>
+  <p class="h2sub">The most useful thing the project found, because it turns "we couldn't" into "here is exactly what it would take".</p>
+
+  <p>After the benchmark failed, the obvious next move was a smarter <em>decision rule</em> — something cleverer than "sound the alarm when the number crosses a line". Three were built and compared across their whole range, not at one setting:</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Rule</th><th>Faults caught inside the budget</th></tr></thead>
+    <tbody>
+      <tr><td>simple threshold</td><td class="num">0%</td></tr>
+      <tr><td>accumulate evidence over time</td><td class="num">0%</td></tr>
+      <tr><td>accumulate + require a specific cause</td><td class="num">0%</td></tr>
+    </tbody>
+  </table></div>
+
+  <p><strong>The rule makes no difference.</strong> So the bottleneck is somewhere else, and it turned out to be countable.</p>
+
+  <div class="note fail">
+    <span class="lbl">The arithmetic</span>
+    <p>The budget allows <strong>0.1 false alarms per hour</strong>. The monitor makes a decision every <strong>5 seconds</strong>. Across the healthy record that permits about <strong>2.4 alarms in total</strong>.</p>
+    <p>To catch 80% of faults while being that quiet, the monitor would need an accuracy of <strong>0.99</strong>. It has <strong>0.67–0.74</strong>.</p>
+  </div>
+
+  <p>That is not a gap you tune your way across. It is a different measurement problem — and saying so precisely is far more useful than "it didn't work".</p>
+
+  <h3>And why averaging cannot rescue it</h3>
+  <p>The natural response is: average more. A session holds 55 windows, so averaging them should sharpen the measurement considerably. It doesn't — and the reason is the single most explanatory number in the project:</p>
+
+  <div class="tw"><table>
+    <thead><tr><th></th><th>T11</th><th>T5</th></tr></thead>
+    <tbody>
+      <tr><td>Windows per session</td><td class="num">55</td><td class="num">42</td></tr>
+      <tr><td>How similar consecutive windows are</td><td class="num pos">99.5%</td><td class="num pos">98.0%</td></tr>
+      <tr><td><strong>Genuinely independent measurements</strong></td><td class="num pos">0.1</td><td class="num pos">0.4</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <p><strong>A session does not contain 55 measurements. It contains one measurement taken 55 times.</strong></p>
+  </div>
+
+  <p>Every negative result in the project follows from that one fact. Accumulating evidence over time can't help, because there is no new evidence arriving. Longer windows can't help, because there is nothing extra to average. And the silence test always fails, because a signal whose consecutive values are 99.5% alike <em>is</em> a trend — so testing it for one will nearly always find one.</p>
+
+  <p>Six different ways of combining a session's windows were tried. None beats a plain median, and the ones leaning on the extremes are no better than guessing.</p>
+</section>
 
 <hr class="rule">
 
