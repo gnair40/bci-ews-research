@@ -2171,3 +2171,51 @@ than being *scored*. A table of AUCs does not convey that the risk score sits
 quietly at 0.1 and then climbs to 288 within a few windows, or that the named
 cause switches from `dispersion` to `silence` as channels start dropping. Those
 are properties of the system that the summary statistics flatten.
+
+---
+
+## 28 August 2026 — Checking that the documents still match the data
+
+### Why this was needed
+
+This project asserts "reproducible" throughout, and that word is cheap. Across
+sixty-odd commits a number quoted in a report and the file it came from can drift
+apart in three ways, none dishonest and all corrosive:
+
+- an analysis is re-run with a fix, and prose written earlier still quotes the
+  old figure;
+- a number is copied between documents by hand and a digit changes;
+- a claim is written from memory of a run rather than from its output.
+
+**Phase 3 already produced one instance** — 15 of 36 configurations were
+described as having no operating point, a figure that came from a search bounded
+at 59. So this is a demonstrated failure mode in this repository, not a
+hypothetical one.
+
+### What was built
+
+`scripts/31_verify_claims.py` recomputes twelve headline figures from
+`data/processed/` and compares each against the number written in the documents:
+both decoders and their measured chance levels, the operating point, the
+false-alarm rate, three AUCs, both autocorrelations, the task-change separation,
+and the count of configurations passing all five gates.
+
+**All twelve match.** The largest discrepancy is rounding — 54.554 quoted as
+54.6.
+
+A mismatch is treated as a *finding*, not a crash: it means a document needs
+updating or a number needs re-deriving, and the script names which document to
+look at. Referenced from the README, to be run before quoting any figure in a
+poster, paper or application.
+
+### The README was badly out of date
+
+It still stated the **abandoned** early-warning-signal question as the research
+question, and described the project's status as "research planning and
+foundational skill development." That is the first thing anyone opening the
+repository sees — a judge, a sponsor, or a future session picking this up cold.
+
+Rewritten to state the actual result, point at the five documents worth reading,
+give the reproduction commands in dependency order, and put the
+**no-human-participants statement and the terminology note at the very top**,
+before anything else, where a reviewer cannot miss them.

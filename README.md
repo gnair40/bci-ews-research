@@ -79,6 +79,16 @@ python3 scripts/24_benchmark_matrix.py
 Raw data (~9 GB) is not committed; the download script verifies SHA-256
 checksums against a manifest. Scripts are numbered in dependency order.
 
+To check that the numbers quoted in these documents still match the data they
+came from:
+
+```bash
+python3 scripts/31_verify_claims.py
+```
+
+It recomputes twelve headline figures from `data/processed/` and compares each
+against the value written in the reports. Run it before quoting any figure.
+
 ## Layout
 
 ```
