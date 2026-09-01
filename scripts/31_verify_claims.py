@@ -161,6 +161,44 @@ def _gates():
     return float(n)
 
 
+def _family_auc(sfx, base_sfx, extractor):
+    df = pd.read_csv(OUT / f"feature_scores{sfx}.csv")
+    b = pd.read_csv(OUT / f"episode_scores{base_sfx}.csv")
+    b = b[b.detector == "decoder_guard"]
+    cm = dict(zip(b.episode_id, b.crossed))
+    wm = dict(zip(b.episode_id, b.crossing_w))
+    E, H = [], []
+    for _, r in df[df.extractor == extractor].iterrows():
+        y = np.fromstring(r.scores, sep=",")
+        ow = int(r.onset_w)
+        if not cm.get(r.episode_id, False):
+            H.append(float(np.median(y)))
+        else:
+            cw = wm.get(r.episode_id, -1)
+            if cw > ow and len(y) >= cw:
+                E.append(float(np.median(y[ow:cw])))
+    u, _ = stats.mannwhitneyu(E, H, alternative="two-sided")
+    return float(u / (len(E) * len(H)))
+
+
+@claim("F3 spectral, T11 (cleared the bar here)", 0.750, 0.004,
+       "FEATURE_STUDY_RESULT, PHASE3_REPORT §3.7")
+def _f3_t11():
+    return _family_auc("", "_local", "F3_spectral")
+
+
+@claim("F3 spectral, T5 (failed badly here)", 0.556, 0.004,
+       "FEATURE_STUDY_RESULT — the both-participants rule in action")
+def _f3_t5():
+    return _family_auc("_T5", "_T5_local", "F3_spectral")
+
+
+@claim("F0 control, T11 (current features, generic scorer)", 0.570, 0.004,
+       "FEATURE_STUDY_RESULT secondary comparison")
+def _f0_t11():
+    return _family_auc("", "_local", "F0_control_mean")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

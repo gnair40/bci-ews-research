@@ -147,6 +147,36 @@ This single fact explains every negative result:
 - The silence gate always fails — a series with r = 0.995 *is* a trend, so
   testing it for one will nearly always find one.
 
+### 3.7 The feature study: four families named in advance, none sufficient
+
+Phase 3 ruled out better decision rules, longer windows and better aggregators,
+leaving a better *measurement* as the only direction — and the direction most
+exposed to fishing, since with two disagreeing participants a family that helps
+one can be found by trying enough. So four families were named, the list closed,
+and the criterion frozen at commit `0950c04` with a checksum before anything was
+computed: **+0.05 session-level AUC over `decoder_guard` v1, on both
+participants in the same direction.**
+
+| Family | T11 Δ | T5 Δ | Verdict |
+|---|---|---|---|
+| F1 variability | +0.004 | −0.075 | no improvement on either |
+| F2 covariance | −0.043 | −0.137 | no improvement on either |
+| **F3 spectral** | **+0.078** | **−0.186** | **null — helped T11 only** |
+| F4 counts | +0.003 | −0.212 | no improvement on either |
+
+**F3 is the case the rule was written for.** It cleared the bar on T11 and failed
+badly on T5. With one participant, or with the rule written after seeing the
+table, it would have been the feature that worked.
+
+**The null has structure** (post-hoc, and labelled as such in
+`reports/FEATURE_STUDY_RESULT.md`). Against the matched control — the current
+features through the *same* generic scorer — F1 (+0.106, +0.158) and F2 (+0.059,
++0.095) both clear +0.05 on both participants. They are better features. Nothing
+passes anyway because `decoder_guard` beats its own features under that scorer by
++0.102 and +0.233: **its advantage is mostly the four-component decomposition,
+not the per-channel means it consumes.** Better features are not enough to cover
+that.
+
 ---
 
 ## 4. Corrections made during Phase 3
@@ -217,9 +247,11 @@ per-channel variability, cross-channel covariance structure, spectral content.
    *Even without a decoder for it, the silence gate needs only healthy
    recordings* — and would establish whether the failure belongs to these two
    arrays or to the approach.
-2. **A preregistered feature study.** With two disagreeing participants, any
-   feature that helps one can be found by trying enough of them. This must be
-   frozen before it is run, as Phase 1–2 was.
+2. ~~**A preregistered feature study.**~~ **Done** (§3.7). Four families named
+   in advance, none sufficient. It newly indicates combining the better features
+   (F1, F2) *with* the four-component decomposition rather than substituting for
+   it — which is a new study needing its own preregistration, not a change to
+   make on the strength of a post-hoc table.
 3. **Re-run with adaptive normalisation.** The reference decoder deliberately
    froze its normalisation to isolate degradation from the compensator Phase 1–2
    identified. Running the other condition is a separate, stated experiment.
