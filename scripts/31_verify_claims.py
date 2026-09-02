@@ -199,6 +199,69 @@ def _f0_t11():
     return _family_auc("", "_local", "F0_control_mean")
 
 
+# ---------------------------------------------------------------- calibration
+
+def _cal(sfx: str, n_windows, col="auc_mean"):
+    d = pd.read_csv(OUT / f"calibration_curve{sfx}.csv")
+    if n_windows == "all":
+        row = d[d.draw == "all-pooled"]
+    else:
+        row = d[d.n_windows == n_windows]
+    return float(row[col].iloc[0])
+
+
+@claim("calibration T11, 20 windows (scattered)", 0.654, 0.003,
+       "CALIBRATION_CURVE — the answer table")
+def _cal_t11_20():
+    return _cal("", 20)
+
+
+@claim("calibration T11, entire healthy record", 0.648, 0.003,
+       "CALIBRATION_CURVE — the answer table")
+def _cal_t11_all():
+    return _cal("", "all")
+
+
+@claim("calibration T5, 20 windows (scattered)", 0.740, 0.003,
+       "CALIBRATION_CURVE — the answer table")
+def _cal_t5_20():
+    return _cal("_T5", 20)
+
+
+@claim("calibration T5, entire healthy record", 0.739, 0.003,
+       "CALIBRATION_CURVE — the answer table")
+def _cal_t5_all():
+    return _cal("_T5", "all")
+
+
+@claim("calibration T5, 40 windows CONTIGUOUS", 0.740, 0.004,
+       "CALIBRATION_CURVE — contiguous draw matches scattered")
+def _cal_t5_40_contig():
+    return _cal("_T5_contiguous", 40)
+
+
+@claim("calibration T11, 20 windows CONTIGUOUS", 0.665, 0.004,
+       "CALIBRATION_CURVE — contiguous draw matches scattered")
+def _cal_t11_20_contig():
+    return _cal("_contiguous", 20)
+
+
+@claim("n=10 profile covariance is singular (min eigenvalue)", 1e-6, 5e-7,
+       "CALIBRATION_CURVE — why the n=10 point is excluded")
+def _cal_singular():
+    d = pd.read_csv(OUT / "calibration_conditioning.csv")
+    return float(d[(d.participant == "T11") & (d.n_windows == 10)]
+                 .min_eigenvalue.iloc[0])
+
+
+@claim("n=20 profile covariance is well posed (min eigenvalue)", 0.057, 0.01,
+       "CALIBRATION_CURVE — why n>=20 is trusted")
+def _cal_wellposed():
+    d = pd.read_csv(OUT / "calibration_conditioning.csv")
+    return float(d[(d.participant == "T11") & (d.n_windows == 20)]
+                 .min_eigenvalue.iloc[0])
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

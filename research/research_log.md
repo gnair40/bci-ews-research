@@ -2439,3 +2439,92 @@ only fail to demonstrate it. A third dataset could show that T5 and T11 are
 unusually dissimilar and that transfer is ordinary. That is exactly why a third
 dataset has been the top recommendation throughout, and this analysis
 **strengthens rather than replaces** it.
+
+---
+
+## 2 September 2026 — Calibration efficiency: the first result that is not a null
+
+Scope was fixed in `research/CALIBRATION_STUDY_NOTE.md` before anything ran. The
+question came directly out of the transfer analysis: if a monitor has to be
+fitted per person anyway, the useful number is **how much healthy data fitting
+one costs**. That is within-participant, so the two-participant limitation that
+has blocked everything else does not apply to it.
+
+**Result:** about **20 healthy windows — roughly two minutes of ordinary
+recording** — and everything after that is free. Going from 20 windows to the
+entire healthy record (221 windows on T11, 211 on T5) changes AUC by −0.0059 and
+−0.0008 respectively. Both curves are flat, and on both arrays more data is very
+slightly *worse*, not better.
+
+Full report: `reports/CALIBRATION_CURVE.md`. Figure:
+`reports/figures/14_calibration_curve.png`.
+
+### Two things I checked before believing it
+
+**1. The n = 10 point is a singular fit, and it nearly produced a false headline.**
+
+The guard's `profile` component is a Mahalanobis distance in a K = 10 dimensional
+subspace, so a 10-window fit gives a rank-9 covariance that only the 1e-6 ridge
+makes invertible. Measured: at n = 10 the smallest eigenvalue is *exactly* the
+ridge and the condition number is 1.8×10⁷, against ~2×10² at every other fit
+size.
+
+This mattered because n = 10 is the **highest** AUC on T11 (0.670 against 0.648
+for the full record). Taken at face value the curve reads "more calibration data
+makes the monitor worse" — a striking claim, and false. The point is not a
+measurement; it is the one grid point where the distance being computed is not a
+distance. It is plotted in a grey band and excluded from every claim.
+
+I want this recorded as a near-miss rather than as a clean catch. The
+conditioning check was run because the two participants' curves *disagreed in
+direction*, which prompted me to look at the smallest fits. Had both curves
+sloped the same way, I might have written the striking version up.
+
+**2. Does "20 windows" actually mean "two minutes"?**
+
+The frozen protocol drew healthy windows at random from the whole record, so they
+were scattered across days. Adjacent windows have lag-1 r = 0.995, so 20
+scattered windows could plausibly carry far more information than 20 contiguous
+ones — in which case quoting minutes would have been false.
+
+So I added a **contiguous draw** (n consecutive windows from one block, which is
+what a real commissioning session collects) and reran the grid. The two agree at
+matched counts: T11 0.665 contiguous vs 0.654 scattered at n = 20; T5 0.740 vs
+0.740 at n = 40. The concern was reasonable and the data did not support it.
+
+This run was **added after seeing the frozen curve**, and the report says so. It
+is a check on what a number means, not a search for a better number, and it is
+reported whichever way it came out. The frozen scattered protocol stays primary.
+
+### Deviations from the frozen scope, recorded not buried
+
+- The **n = 5 grid point never ran** — the script skips fits under 8 windows.
+  Given the conditioning result nothing is lost, but the frozen grid said 5 and
+  it is absent.
+- The **contiguous draw stops at 40 windows**: no single healthy block has 80
+  consecutive windows. That is itself a finding — past ~40 windows, more
+  calibration data *necessarily* means pooling across blocks or days.
+- The contiguous draw was **not in the frozen scope at all**.
+
+### Why this is the constructive half of every earlier null
+
+A session's healthy record barely varies within itself. That is what lag-1
+r = 0.995 says, and it is why aggregating windows never bought the statistical
+power detection needed. The flip side is that the 221st healthy window tells the
+fit nothing the 20th had not already said.
+
+> **The property that makes this monitor hard to make sensitive is the same
+> property that makes it cheap to commission.**
+
+That is one mechanism explaining both a negative and a positive result, which is
+a considerably stronger position than a list of things that did not work.
+
+### What it still cannot say
+
+That two minutes suffices for a **new** participant — that is the transfer
+question and still needs a third dataset (Card et al. 2024, T15). And that the
+monitor is good enough to *use*: AUC 0.65–0.74 is far short of the ~0.99 the
+operating-point analysis showed the false-alarm budget demands. This measures how
+fast the monitor reaches **its own** ceiling, not where that ceiling sits.
+
+Verifier extended to 23 claims (`scripts/31_verify_claims.py`); all match.
