@@ -38,6 +38,9 @@ works — and the reason is now measured rather than guessed.**
 | It **cannot** be deployed at the specified false-alarm rate | 0 of 48 configurations pass the gates |
 | Why: **one measurement per session** | Lag-1 autocorrelation 0.995. Effective independent samples per session: 0.1 |
 | The target a future attempt must beat | Session-level AUC ≈ **0.99**; achieved **0.67–0.74** |
+| Commissioning is **cheap** | ~20 healthy windows — about **two minutes** of recording. More data adds nothing. |
+| A fit does **not** go stale | −0.012 AUC per 100 days over a 142-day span; permutation p = 0.128 |
+| But **which day** you use it on decides almost everything | Same-day AUC ranges **0.32 to 0.97** across 13 sessions; I² = 0.86 |
 
 ## Start here
 
@@ -48,6 +51,8 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/project_guide.html`](reports/project_guide.html) | Plain-language explanation, no background assumed |
 | [`research/research_log.md`](research/research_log.md) | Dated record of every step, every mistake, every correction |
 | [`reports/PHASE1_2_REPORT.md`](reports/PHASE1_2_REPORT.md) | The earlier phase and its negative result |
+| [`reports/CALIBRATION_CURVE.md`](reports/CALIBRATION_CURVE.md) | How much healthy data commissioning costs |
+| [`reports/STALENESS_AND_DAY_VARIANCE.md`](reports/STALENESS_AND_DAY_VARIANCE.md) | Ageing, day-to-day swing, and three near-misses |
 
 ## How the argument runs
 
@@ -86,13 +91,13 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes twelve headline figures from `data/processed/` and compares each
+It recomputes thirty-three headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ## Layout
 
 ```
-scripts/     01-30, numbered in the order they must run
+scripts/     01-45, numbered in the order they must run
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs

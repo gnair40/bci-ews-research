@@ -2528,3 +2528,84 @@ operating-point analysis showed the false-alarm budget demands. This measures ho
 fast the monitor reaches **its own** ceiling, not where that ceiling sits.
 
 Verifier extended to 23 claims (`scripts/31_verify_claims.py`); all match.
+
+---
+
+## 2 September 2026 — Staleness, and a finding I was not looking for
+
+Scope fixed in `research/STALENESS_STUDY_NOTE.md` before running, including my
+prediction that the effect would be small. Full report:
+`reports/STALENESS_AND_DAY_VARIANCE.md`.
+
+### What I asked, and what I got instead
+
+**Asked:** does a monitor's calibration go stale as it ages? **Answer: no
+measurable effect over 142 days.** Point estimate −0.012 AUC per 100 days on
+T11, permutation p = 0.128. Both participants point the same way — the first
+direction they have ever agreed on — and neither is significant. My prediction
+was right, which is worth recording mainly because it was written down first.
+
+**Got instead:** the day the episodes come from swings same-day AUC from **0.32
+to 0.97** across 13 sessions on T11. Three days sit *below chance*, meaning the
+risk score runs backwards on those days. Only 26% of that variance is sampling
+noise (I² = 0.86, and the model-free check agrees). This is a bigger effect than
+anything the feature or combination studies ever moved, and it was invisible in
+every pooled analysis because pooling averages it away.
+
+### Three near-misses, in order of how badly each would have gone
+
+**1. A p-value inflated 43-fold by non-independence.** The naive Spearman on the
+staleness trend gives p = 0.003, and I would have reported "monitors go stale"
+on the strength of it. But the 95 forward day pairs come from only 15 sessions,
+so they share source and target days constantly. Permuting *which calendar date
+belongs to which session* — preserving the whole dependency structure, destroying
+only the time link — gives p = 0.128 (T11) and 0.080 (T5).
+
+This is the project's recurring failure in a new costume. Within a session,
+lag-1 r = 0.995 meant treating windows as independent **overstated** the power
+available for detection. Here, treating day pairs as independent **understates** a
+p-value by more than fortyfold. Same root cause, opposite direction, and both
+directions produce a false claim.
+
+**2. An inverse-variance pooled AUC of 0.836 that is an artefact of my own
+weighting.** Against an unweighted mean of 0.675, and I was one paragraph away
+from writing "the monitor is substantially better than every earlier report
+said." AUC is bounded in [0,1], so its sampling variance shrinks toward the
+bounds, so 1/se² weighting over-weights exactly the days with the most extreme
+AUCs. Measured: Spearman(|AUC−0.5|, se) = −0.913 on T11, with a 31× spread in
+weights. Day 800 (AUC 0.974) got 31× the weight of day 702 (AUC 0.456) purely
+because near-perfect AUCs have small standard errors. The field is now named
+`inverse_variance_pooled_auc_BIASED_DO_NOT_QUOTE` with the reasoning attached.
+
+Cochran's Q uses the same weights, so its p-value is approximate too. The
+conclusion does not rest on it — the unweighted comparison agrees.
+
+**3. A fault-mix control that silently measured nothing.** It tested
+`e.severity`, which is the numeric magnitude, against the string `"high"` —
+always False, so it reported 0.00 on every day and looked like a clean pass. The
+categorical field is `severity_label`. After fixing it the control *changed the
+conclusion*: on T5 the day-to-day spread tracks fault mix (ρ = 0.886, p = 0.019),
+so **T5 cannot corroborate the T11 effect**. On T11 it does not (ρ = 0.05,
+p = 0.87) and the effect stands there.
+
+That one is the most uncomfortable, because a control that returns all-zeros
+looks exactly like a control that passed.
+
+### A hypothesis I tested and abandoned
+
+The per-day AUCs looked better than the pooled ones, which suggested that mixing
+days dilutes the signal — attractive, with an obvious fix. Refuted: holding fit
+and episodes identical and varying only within-day vs across-day, pooling costs
+**0.003** AUC on T11 and 0.016 on T5, and per-session normalisation recovers
+nothing because there was nothing to recover. The apparent gap was near-miss 2
+above. Reported because it was tested.
+
+### Where this points
+
+The project has been searching along "which detector, which feature, which
+combination", and every answer was null. The day-variance result suggests that
+was the wrong axis. The next question is **"what makes day 800 different from
+day 783?"** — answerable with the data already downloaded, and never asked
+because the pooled framing hid the variation entirely.
+
+Verifier now at 33 claims; all match.

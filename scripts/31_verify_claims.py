@@ -262,6 +262,76 @@ def _cal_wellposed():
                  .min_eigenvalue.iloc[0])
 
 
+# ------------------------------------------------- staleness / day variance
+
+def _stale(sfx: str, key: str):
+    return json.loads((OUT / f"staleness_permutation.json").read_text())[sfx][key]
+
+
+def _dayvar(sfx: str, key: str):
+    return json.loads((OUT / f"day_variance_summary{sfx}.json").read_text())[key]
+
+
+@claim("staleness permutation p, T11 (naive said 0.003)", 0.128, 0.02,
+       "STALENESS_AND_DAY_VARIANCE — the statistic that would have been wrong")
+def _stale_p_t11():
+    return _stale("T11", "permutation_p")
+
+
+@claim("staleness permutation p, T5", 0.080, 0.02,
+       "STALENESS_AND_DAY_VARIANCE — the statistic that would have been wrong")
+def _stale_p_t5():
+    return _stale("T5", "permutation_p")
+
+
+@claim("day-to-day AUC spread, T11 (min)", 0.319, 0.01,
+       "STALENESS_AND_DAY_VARIANCE — below chance on day 783")
+def _dv_min():
+    return _dayvar("", "auc_min")
+
+
+@claim("day-to-day AUC spread, T11 (max)", 0.974, 0.01,
+       "STALENESS_AND_DAY_VARIANCE — day 800")
+def _dv_max():
+    return _dayvar("", "auc_max")
+
+
+@claim("I-squared across days, T11", 0.856, 0.02,
+       "STALENESS_AND_DAY_VARIANCE — heterogeneity")
+def _dv_i2():
+    return _dayvar("", "I_squared")
+
+
+@claim("share of day variance that is sampling, T11", 0.255, 0.02,
+       "STALENESS_AND_DAY_VARIANCE — model-free check")
+def _dv_share():
+    return _dayvar("", "variance_share_from_sampling")
+
+
+@claim("fault-mix confound, T5 (rho) — why T5 cannot corroborate", 0.886, 0.02,
+       "STALENESS_AND_DAY_VARIANCE — the two arrays split here")
+def _dv_mix_t5():
+    return _dayvar("_T5", "spearman_frac_crossing_vs_auc")
+
+
+@claim("fault-mix confound, T11 (rho) — day effect stands", 0.05, 0.02,
+       "STALENESS_AND_DAY_VARIANCE — the two arrays split here")
+def _dv_mix_t11():
+    return _dayvar("", "spearman_frac_crossing_vs_auc")
+
+
+@claim("inverse-variance weighting bias, T11 (rho)", -0.913, 0.02,
+       "STALENESS_AND_DAY_VARIANCE — why 0.836 was an artefact")
+def _dv_bias():
+    return _dayvar("", "spearman_abs_effect_vs_se")
+
+
+@claim("cost of pooling episodes across days, T11", 0.003, 0.005,
+       "STALENESS_AND_DAY_VARIANCE — hypothesis refuted")
+def _pool_t11():
+    return json.loads((OUT / "pooling_loss.json").read_text())["loss_from_pooling"]
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

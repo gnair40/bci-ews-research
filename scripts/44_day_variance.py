@@ -185,7 +185,24 @@ def main() -> int:
         summ["cochran_df"] = dfree
         summ["cochran_p"] = float(f"{stats.chi2.sf(Q, dfree):.3g}")
         summ["I_squared"] = round(max(0.0, (Q - dfree) / Q), 3) if Q > 0 else 0.0
-        summ["inverse_variance_pooled_auc"] = round(pooled, 4)
+
+        # DO NOT QUOTE THE INVERSE-VARIANCE POOLED AUC AS A PERFORMANCE FIGURE.
+        # AUC is bounded in [0,1] and its sampling variance shrinks toward the
+        # bounds, so 1/se^2 weighting systematically over-weights the days with
+        # the most extreme AUCs. Measured here: Spearman(|AUC-0.5|, se) = -0.91
+        # on T11 and -0.94 on T5, with a 31x spread in weights. It inflated the
+        # estimate from 0.675 to 0.836 on T11, and I nearly reported that as
+        # "the monitor is much better than we thought". It is kept only because
+        # Cochran's Q is built from the same weights and the reader should be
+        # able to see them. The unweighted mean is the performance figure.
+        summ["unweighted_mean_auc"] = round(float(d.auc.mean()), 4)
+        summ["inverse_variance_pooled_auc_BIASED_DO_NOT_QUOTE"] = round(pooled, 4)
+        r_b, p_b = stats.spearmanr((d.auc - 0.5).abs(), d.boot_se)
+        summ["spearman_abs_effect_vs_se"] = round(float(r_b), 3)
+        summ["weight_ratio_max_over_min"] = round(float(w.max() / w.min()), 1)
+        # Q inherits the same weighting, so its p-value is approximate. The
+        # model-free comparison (observed sd across days vs mean within-day se)
+        # does not depend on it and agrees, which is why the conclusion stands.
 
     if len(d) > 3:
         for col in ["frac_crossing", "frac_benign", "n_faulted"]:
