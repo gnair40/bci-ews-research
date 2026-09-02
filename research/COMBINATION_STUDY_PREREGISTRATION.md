@@ -66,6 +66,35 @@ named decomposition over the **better feature sets**:
 Each keeps `decoder_guard`'s calibration, specificity-ordered attribution, and
 state machine unchanged. **Only the input to the decomposition changes.**
 
+
+### 3a. How the decomposition generalises — specified before it is built
+
+`decoder_guard`'s four components are defined for *activity* features
+specifically: total activity, channels at zero, spread of per-channel gains,
+residual shape. Fano factors and eigenvalue shares are not activity, so the
+components must be stated in their **structural** form, which is what actually
+carries over. That statement belongs here, before implementation, not in a
+commit message afterwards.
+
+| Component | Structural definition, for any non-negative feature vector |
+|---|---|
+| `level` | overall magnitude — the sum across feature dimensions |
+| `extremes` | fraction of dimensions in the far lower tail of their own healthy reference (the generalisation of "channels gone silent") |
+| `spread` | robust dispersion across dimensions of the log-profile, after the common mode is removed |
+| `profile` | Mahalanobis residual in that common-mode-removed subspace |
+
+Calibration, specificity-ordered attribution, and the state machine are unchanged.
+Working in logs and removing the common mode is retained, because that is what
+makes `spread` and `profile` invariant to a uniform change in scale — the
+property the original decomposition was built around.
+
+**Faithfulness check, run before the arms and reported with them:** the same
+generalised decomposition applied to the *original* features (per-channel mean
+activity) must approximately reproduce `decoder_guard` v1. If it does not, the
+generalisation is not a generalisation, and the arms cannot be interpreted as
+"the same decomposition over better features". This check can fail, and if it
+fails the study stops rather than continuing with a mislabelled comparison.
+
 **Three arms. The list is closed.**
 
 ---

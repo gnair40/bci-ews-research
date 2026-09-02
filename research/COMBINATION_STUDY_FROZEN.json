@@ -1,0 +1,19 @@
+{
+  "frozen_utc": "2026-09-02T21:57:20+00:00",
+  "git_commit_at_freeze": "72349644fd0a3c8cd045aab8f2d7b628b09c162a",
+  "preregistration_file": "research/COMBINATION_STUDY_PREREGISTRATION.md",
+  "preregistration_sha256": "7937a719d64f8dbd7b41d51463021977bfceac306d31846b35c675004119b12d",
+  "study": "combination study, arms C1-C3",
+  "arms_closed_list": [
+    "C1 decomposition over F1 variability",
+    "C2 decomposition over F2 covariance",
+    "C3 decomposition over F1 and F2 concatenated"
+  ],
+  "primary_metric": "session-level AUC in the early-warning window",
+  "comparator": "decoder_guard v1 only",
+  "success_criterion": "An arm must raise session-level AUC by >= 0.05 over decoder_guard v1 on BOTH participants in the same direction. An arm helping only one is a null result. A combined arm landing at +0.04 is NOT grounds for relaxing this.",
+  "faithfulness_check": "The generalised decomposition over the ORIGINAL features must approximately reproduce decoder_guard v1. If it does not, the study stops rather than reporting a mislabelled comparison.",
+  "confidence_intervals": "bootstrap over EPISODES (lag-1 r = 0.995)",
+  "combo_result_files_at_freeze": [],
+  "what_this_cannot_settle": "n = 2 and the participants disagree - in Phase 1-2, on the joint-detector prediction, and in the F3 row of the feature study. A third dataset remains worth more than any arm here."
+}
