@@ -2661,11 +2661,20 @@ originally conceived.
 
 ### But it also points at the one useful thing this system could do now
 
-Decoder error is measurable **online and without labels**, from the decoder's own
-output. If it predicts when the monitor is untrustworthy, then the monitor can
+If a session's difficulty can be recognised at the time, the monitor can
 **abstain** — say "today is a day I cannot be trusted" instead of failing
-silently. That is a smaller claim than "early warning of decoder failure", and
-unlike that claim it is supported by data I have. It is the next thing to build.
+silently. That is a smaller claim than "early warning of decoder failure".
+
+**Correction, made the same day.** I first wrote that decoder error is
+"measurable online and without labels, from the decoder's own output". That is
+wrong, and it is the kind of wrong that would have propagated into a design.
+The angular error used as P5 is measured against the *intended* direction, which
+is known here only because these are recorded task blocks with logged targets.
+In free use there is no target, so it cannot be computed at all — it is available
+during periodic assessment blocks, not continuously.
+
+So abstention rests on a question I had skipped: **is there a label-free signal
+that stands in for decoder error?** Tested next rather than assumed.
 
 ### The predictor that came out backwards
 

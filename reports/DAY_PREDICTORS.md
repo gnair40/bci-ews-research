@@ -82,12 +82,24 @@ sensitive; a monitor whose errors track the hazard cannot.
 
 ## What follows
 
-It also points at the one concrete, useful thing this system could do today.
-Decoder error is measurable **online, without labels**, from the decoder's own
-output statistics. If it predicts when the monitor is untrustworthy, the monitor
-can **abstain** — reporting "today is a day I cannot be trusted" instead of
-failing silently. A monitor that knows when to stay quiet is a substantially more
-defensible object than one that does not, and it is the next thing to build.
+It also points at something concrete this system could do: **abstain**. If a
+session's difficulty can be recognised at the time, the monitor can report
+"today is a day I cannot be trusted" instead of failing silently. A monitor that
+knows when to stay quiet is a substantially more defensible object than one that
+does not.
+
+> **Correction, 2 September.** The first version of this section said decoder
+> error is "measurable online, without labels, from the decoder's own output
+> statistics." **That is wrong.** The angular error used as P5 is measured
+> against the *intended* movement direction, which is known here only because
+> these are recorded task blocks with logged targets. During free use there is no
+> target and no intended direction, so this quantity cannot be computed. It is
+> available during the assessment blocks a clinical BCI runs periodically, not
+> continuously.
+>
+> Whether abstention is possible therefore depends on a question the first
+> version skipped: **is there a label-free signal that stands in for decoder
+> error?** That is tested in `reports/ABSTENTION.md` rather than assumed here.
 
 ## The predictor that came out backwards
 
