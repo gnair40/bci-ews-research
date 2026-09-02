@@ -2364,3 +2364,78 @@ exists to prevent.
 
 **Unchanged:** n = 2, and the participants disagree — visibly, in the F3 row. A
 third dataset is still worth more than any feature.
+
+---
+
+## 2 September 2026 — The combination study, and the finding that was hiding behind every null
+
+### The combination study: null, and the frozen criterion held
+
+Three arms, frozen at commit `7234964` before any was computed. The faithfulness
+check the study was conditional on passed exactly (Spearman ρ = 1.0000 over 6,637
+windows), so the arms genuinely test *the same decomposition over better
+features* rather than something merely similar.
+
+| Arm | T11 Δ | T5 Δ | Verdict |
+|---|---|---|---|
+| C1 decomposition over F1 | −0.034 | +0.020 | no improvement on either |
+| C2 decomposition over F2 | +0.030 | −0.124 | no improvement on either |
+| C3 over both | −0.047 | +0.017 | no improvement on either |
+
+Nothing clears +0.05 on both. **Better features and a better decomposition were
+the two ingredients this project's own results identified, and combining them
+does not close the gap either.**
+
+### The pattern behind every null
+
+Something helping one participant and hurting the other has now been recorded
+**four separate times**: Phase 1–2, the joint-detector prediction, the feature
+study's F3 row, and all three arms above. Recorded four times, it stops being a
+limitation and becomes a result worth measuring directly.
+
+So every candidate this project has evaluated on both participants was pooled and
+the question asked once, properly.
+
+| | |
+|---|---|
+| Candidates improving **both** participants | **0 of 7** |
+| Moving in the same direction at all | 1 of 7 — and that one moved *down* on both |
+| Correlation between the two columns | r = **−0.630** (p = 0.130) |
+| Best on T11 (F3, +0.078) | is the **worst** on T5 (−0.186) |
+| Best on T5 (C1, +0.020) | is negative on T11 (−0.034) |
+
+### What can and cannot be claimed, stated carefully
+
+**Can:** across seven candidates spanning four feature families and three
+decomposition arms, **none improved both participants.** That count needs no
+model and no assumption.
+
+**Cannot:** that the correlation is genuinely negative. r = −0.630 looks striking
+but p = 0.130 at n = 7, and the candidates are not fully independent — C1 and C3
+share a feature family. **The honest reading is *no evidence of positive
+transfer*, not *evidence of negative transfer*.** The distinction matters and the
+report states it in those words.
+
+### Why this reframes the whole project
+
+Each study on its own said "this candidate did not work". Together they say
+something about **the problem** rather than about any candidate:
+
+> **What improves decoder-health monitoring appears to be participant-specific.**
+
+If that holds, the target changes. A monitor would be fitted per participant and
+per array, and the question stops being *"which feature is best?"* and becomes
+*"how quickly can a monitor be calibrated for a new user?"* — a different and
+more tractable problem, and one this dataset could actually address.
+
+It also explains in one sentence why the two-participant limitation has been so
+binding throughout: **there was never a shared effect for the second participant
+to confirm.**
+
+### The objection, which stands
+
+Two participants cannot establish that generalisation fails in general; they can
+only fail to demonstrate it. A third dataset could show that T5 and T11 are
+unusually dissimilar and that transfer is ordinary. That is exactly why a third
+dataset has been the top recommendation throughout, and this analysis
+**strengthens rather than replaces** it.
