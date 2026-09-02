@@ -332,6 +332,47 @@ def _pool_t11():
     return json.loads((OUT / "pooling_loss.json").read_text())["loss_from_pooling"]
 
 
+# --------------------------------------------------------- day predictors
+
+def _pred(P: str, name: str, field: str = "spearman_rho"):
+    r = json.loads((OUT / "day_predictors_result.json").read_text())[P]
+    for x in r:
+        if x["predictor"] == name:
+            return x[field]
+    raise KeyError(name)
+
+
+@claim("P5 decoder error vs monitor AUC, T11 (rho)", -0.720, 0.02,
+       "DAY_PREDICTORS — the preregistered hit")
+def _p5_t11():
+    return _pred("T11", "P5_decoder_error")
+
+
+@claim("P5 p-value, T11 (Bonferroni threshold 0.01)", 0.0055, 0.002,
+       "DAY_PREDICTORS — clears the corrected threshold")
+def _p5_p():
+    return _pred("T11", "P5_decoder_error", "p_value")
+
+
+@claim("P5 partial rho controlling window length, T11", -0.773, 0.02,
+       "DAY_PREDICTORS — the artefact challenge fails")
+def _p5_partial():
+    return json.loads((OUT / "p5_mediation.json").read_text())["T11"][
+        "partial_rho_decoder_error_vs_auc_controlling_ew_len"]
+
+
+@claim("P4 drift came out with the WRONG sign, T11", 0.582, 0.02,
+       "DAY_PREDICTORS — sign committed in advance")
+def _p4_wrong():
+    return _pred("T11", "P4_within_day_drift")
+
+
+@claim("P1 healthy dispersion, T11 (null)", 0.203, 0.02,
+       "DAY_PREDICTORS — all five reported")
+def _p1():
+    return _pred("T11", "P1_healthy_dispersion")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

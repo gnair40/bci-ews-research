@@ -2609,3 +2609,78 @@ day 783?"** — answerable with the data already downloaded, and never asked
 because the pooled framing hid the variation entirely.
 
 Verifier now at 33 claims; all match.
+
+---
+
+## 2 September 2026 — The first preregistered positive result, and it is bad news
+
+Preregistered in `research/DAY_PREDICTOR_PREREGISTRATION.md`: five predictors,
+five signs committed in advance, Bonferroni threshold 0.01, all five reported
+whatever they showed. Report: `reports/DAY_PREDICTORS.md`.
+
+### The result
+
+**P5 — that day's frozen-decoder error — predicts the monitor's same-day AUC at
+ρ = −0.720, p = 0.0055 on T11.** Correct sign, clears the corrected threshold.
+T5 agrees in direction and size (ρ = −0.829) but at 6 days cannot clear it
+(p = 0.042). The other four predictors are null.
+
+Day 800: decoder error 42.5°, monitor AUC 0.97. Day 783: decoder error 89.3°
+(chance is 90.7°), monitor AUC 0.32.
+
+### It had to survive an obvious artefact, and did
+
+The outcome is *itself defined by decoder performance* — the AUC is measured over
+the window from fault onset to the moment decoder error crosses the deterioration
+threshold. On a day already near chance, episodes might cross immediately, or the
+crossed/not-crossed split might shift, and either would depress AUC for reasons
+unrelated to the monitor.
+
+I checked every link in that chain and none of them exists on T11: decoder error
+vs fraction crossing ρ = −0.30 (p = 0.32); vs early-warning window length
+ρ = +0.15 (p = 0.63); window length vs AUC ρ = +0.20 (p = 0.52). The partial
+correlation controlling for window length is **−0.773, p = 0.0032** — stronger
+than the raw one.
+
+### Why this is worse news than any of the nulls
+
+Every earlier negative result said *"not sensitive enough yet"*, which is the
+kind of problem more work can fix. This one says the failures are **correlated
+with the condition the monitor exists to detect**:
+
+> The monitor is least reliable exactly when it would be most needed.
+
+On the worst day measured it is *worse than chance* — its risk score ran
+backwards, reading lower during faults than during healthy operation. A monitor
+whose errors are independent of the hazard can be improved by making it more
+sensitive. A monitor whose errors track the hazard cannot.
+
+I want that recorded plainly rather than softened, because it is the single most
+consequential thing this project has found and it argues against the design as
+originally conceived.
+
+### But it also points at the one useful thing this system could do now
+
+Decoder error is measurable **online and without labels**, from the decoder's own
+output. If it predicts when the monitor is untrustworthy, then the monitor can
+**abstain** — say "today is a day I cannot be trusted" instead of failing
+silently. That is a smaller claim than "early warning of decoder failure", and
+unlike that claim it is supported by data I have. It is the next thing to build.
+
+### The predictor that came out backwards
+
+P4 (within-day drift) was predicted **negative** and came out **+0.582**. It does
+not clear the threshold so nothing is claimed, but the sign was committed in
+advance and is reported as it fell. This is the value of writing signs down: had
+I not, I could have narrated a mechanism for either direction after the fact.
+
+### Honest limits
+
+13 days, one participant confirmed. The preregistration fixed the power limit
+before looking — at n = 13, |ρ| must reach ~0.68 — so P5 at −0.720 is *the only
+size of effect this design could have found*, and the four nulls mean
+underpowered rather than absent. And it is correlational: a common cause (a
+session whose recording is simply messier) is at least as likely, and is in fact
+the mechanism that was predicted.
+
+Verifier now at 38 claims; all match.

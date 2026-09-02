@@ -41,6 +41,7 @@ works — and the reason is now measured rather than guessed.**
 | Commissioning is **cheap** | ~20 healthy windows — about **two minutes** of recording. More data adds nothing. |
 | A fit does **not** go stale | −0.012 AUC per 100 days over a 142-day span; permutation p = 0.128 |
 | But **which day** you use it on decides almost everything | Same-day AUC ranges **0.32 to 0.97** across 13 sessions; I² = 0.86 |
+| And it fails **when the decoder is already failing** | ρ = −0.720, p = 0.0055, preregistered. The monitor is least reliable when it is most needed. |
 
 ## Start here
 
@@ -53,6 +54,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/PHASE1_2_REPORT.md`](reports/PHASE1_2_REPORT.md) | The earlier phase and its negative result |
 | [`reports/CALIBRATION_CURVE.md`](reports/CALIBRATION_CURVE.md) | How much healthy data commissioning costs |
 | [`reports/STALENESS_AND_DAY_VARIANCE.md`](reports/STALENESS_AND_DAY_VARIANCE.md) | Ageing, day-to-day swing, and three near-misses |
+| [`reports/DAY_PREDICTORS.md`](reports/DAY_PREDICTORS.md) | The preregistered result, and why it is bad news |
 
 ## How the argument runs
 
@@ -91,13 +93,13 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes thirty-three headline figures from `data/processed/` and compares each
+It recomputes thirty-eight headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ## Layout
 
 ```
-scripts/     01-45, numbered in the order they must run
+scripts/     01-47, numbered in the order they must run
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs
