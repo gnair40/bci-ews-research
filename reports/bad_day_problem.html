@@ -251,14 +251,15 @@
 <header class="mast">
   <div class="kicker">
     <span>Decoder-Guard</span><span class="sep">/</span>
-    <span>Five studies, 2–3 September 2026</span><span class="sep">/</span>
+    <span>Six studies, 2–3 September 2026</span><span class="sep">/</span>
     <span>T11 &amp; T5, public iBCI recordings</span>
   </div>
   <h1>The Bad-Day Problem</h1>
   <p class="standfirst">
-    We spent a day asking five questions about a system that watches a brain–computer
-    interface for signs of failure. Four answers were useful. The fifth was
-    <em>bad news</em>, and it is the one that matters.
+    We spent a day asking six questions about a system that watches a brain–computer
+    interface for signs of failure. The fifth answer was <em>bad news</em>. The sixth
+    was an attempt to prove the fifth wrong — it survived, but it cost us our
+    explanation of <em>why</em>.
   </p>
 </header>
 
@@ -273,6 +274,7 @@
     kind of problem more work fixes. This one says the failures line up with the hazard.
     A monitor whose mistakes are unrelated to the danger can be improved by making it
     sharper. A monitor whose mistakes arrive <em>with</em> the danger cannot.
+    <strong>What we cannot say is why</strong> — see study 06.
   </p>
 </div>
 
@@ -280,7 +282,7 @@
 <p class="sub">
   These are numbered because they genuinely are a sequence: each question was chosen by
   what the one before it found. Nothing here was picked from a menu of analyses after
-  seeing results.
+  seeing results — and the last one exists purely to attack the one before it.
 </p>
 
 <div class="chain">
@@ -401,6 +403,35 @@
         both — the strongest cross-participant agreement in the whole project. The signs
         are opposite: ρ = <b>+0.681</b> on T11, ρ = <b>−0.943</b> on T5. Any rule that
         abstains correctly on one array abstains backwards on the other.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">06</div>
+    <div class="step-body">
+      <p class="q">Can we prove study 04 wrong?</p>
+      <p class="a">
+        <strong>The finding survived. The explanation did not.</strong> A fault only
+        counts as damage if it pushes error 10° above that session's own baseline —
+        and on a day already sitting at 87.5°, with chance at 90.7°, there is barely
+        any room left. If faults simply do <em>less</em> on bad days, the whole result
+        is about the ruler, not the monitor. I predicted, in writing, that this is what
+        we would find.
+      </p>
+      <div class="stat-row">
+        <span class="stat neg">ceiling is real: <b>ρ = −0.747</b></span>
+        <span class="stat">but damage → accuracy <b>+0.181</b>, p = 0.55</span>
+        <span class="stat pos">04 controlling for damage: <b>−0.794</b></span>
+      </div>
+      <p class="why">
+        <b>Two of three predictions wrong, and then a retraction.</b> Weaker faults are
+        not what breaks the monitor — controlling for damage made study 04
+        <em>stronger</em>. But chasing a contradiction on day 783 (0.4° of damage, yet
+        78% of its episodes counted as deteriorating) turned up a second variable:
+        how <em>erratic</em> the decoder's output is that day. It predicts accuracy at
+        ρ = <b>−0.720</b> — identical to study 04's number — and the two correlate at
+        <b>0.813</b>. See near-miss 04.
       </p>
     </div>
   </div>
@@ -620,6 +651,27 @@
   </div>
 </div>
 
+<div class="miss">
+  <div class="tag">Near-miss 04</div>
+  <div class="miss-body">
+    <h4>Replacing one unfounded “because” with another</h4>
+    <p>
+      Having found that the day's <em>noisiness</em> predicts the monitor's accuracy
+      exactly as well as the decoder's error does, I started writing “noise is the real
+      explanation.” It would have read as a correction — a careful researcher refining
+      their claim.
+    </p>
+    <p class="fix">
+      <b>Caught by:</b> running the partial correlation in <em>both</em> directions
+      instead of one. Decoder error controlling for noise: ρ = −0.333, p = 0.29. Noise
+      controlling for decoder error: ρ = −0.333, p = 0.29. <b>Identical.</b> That is
+      collinearity, not one explaining the other — at 13 sessions, with the two
+      predictors correlating at 0.813, this study simply cannot tell them apart.
+      So the mechanism claim from study 04 is withdrawn rather than replaced.
+    </p>
+  </div>
+</div>
+
 <div class="closing">
   <h2>Where this leaves the project</h2>
   <p class="big">
@@ -628,19 +680,26 @@
     together with the hazard it exists to detect.
   </p>
   <p>
-    That is a stronger and more defensible finding than another incremental improvement
-    would have been — but it argues against the design as originally conceived, and it is
-    reported that way rather than softened.
+    That association has now withstood three separate attempts to explain it away, and it
+    argues against the design as originally conceived. It is reported that way rather
+    than softened.
+  </p>
+  <p>
+    <strong>What we cannot say is which property.</strong> “How badly the decoder is
+    doing” and “how erratic its output is” are the same variable at 13 sessions.
+    Separating them needs days where the decoder is bad but steady, or noisy but
+    accurate — and this dataset may not contain any.
   </p>
   <div class="next">
-    <div><b>Open</b><span>What is physically different about day 800 versus day 783? Answerable with data already in hand.</span></div>
+    <div><b>Open</b><span>Are there sessions where the decoder is bad but steady, or noisy but accurate? Without them the two explanations stay welded together.</span></div>
+    <div><b>Known limit</b><span>On sessions already near chance, an injected fault moves the error metric by less than half a degree — the ground truth there is nearly degenerate.</span></div>
     <div><b>Open</b><span>Does abstention work using assessment-block error, which a clinical BCI already collects periodically?</span></div>
     <div><b>Blocked</b><span>A third participant (Card et al. 2024, T15) — the only way to test whether any of this generalises beyond two arrays.</span></div>
   </div>
 </div>
 
 <footer>
-  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 44 claims, all matching.</span>
+  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 50 claims, all matching.</span>
   <span>Public de-identified recordings. No human participants.</span>
 </footer>
 
