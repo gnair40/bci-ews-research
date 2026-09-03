@@ -1,0 +1,647 @@
+<title>The Bad-Day Problem</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#F7F8F7;
+    --panel:#FFFFFF;
+    --ink:#181D1F;
+    --ink-soft:#4A5654;
+    --ink-faint:#7C8A87;
+    --rule:#DCE2E0;
+    --rule-soft:#E9EDEC;
+    --accent:#1F6F63;
+    --accent-soft:#E4EFEC;
+    --adverse:#A8621A;
+    --adverse-soft:#F6ECE0;
+    --good:#2E7D5B;
+    --bad:#A33A2A;
+    --shadow:rgba(24,29,31,.07);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#14181A;
+      --panel:#1B2124;
+      --ink:#E8EDEB;
+      --ink-soft:#A9B6B3;
+      --ink-faint:#778582;
+      --rule:#2C3538;
+      --rule-soft:#232B2E;
+      --accent:#5FBBA9;
+      --accent-soft:#1D2E2C;
+      --adverse:#D89A4E;
+      --adverse-soft:#2C2419;
+      --good:#5CB68C;
+      --bad:#D4705C;
+      --shadow:rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#14181A;
+    --panel:#1B2124;
+    --ink:#E8EDEB;
+    --ink-soft:#A9B6B3;
+    --ink-faint:#778582;
+    --rule:#2C3538;
+    --rule-soft:#232B2E;
+    --accent:#5FBBA9;
+    --accent-soft:#1D2E2C;
+    --adverse:#D89A4E;
+    --adverse-soft:#2C2419;
+    --good:#5CB68C;
+    --bad:#D4705C;
+    --shadow:rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:16.5px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px 96px}
+
+  /* ---------- masthead ---------- */
+  header.mast{
+    padding:56px 0 34px;
+    border-bottom:2px solid var(--ink);
+    display:flex;flex-direction:column;gap:20px;
+  }
+  .kicker{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+  }
+  .kicker span.sep{color:var(--ink-faint)}
+  h1{
+    font-family:Spectral,Georgia,"Times New Roman",serif;
+    font-weight:700;font-size:clamp(2.6rem,6.2vw,4.1rem);
+    line-height:1.02;letter-spacing:-.022em;margin:0;text-wrap:balance;
+  }
+  .standfirst{
+    font-family:Spectral,Georgia,serif;font-size:clamp(1.08rem,2.1vw,1.32rem);
+    line-height:1.55;color:var(--ink-soft);max-width:60ch;margin:0;
+  }
+  .standfirst em{color:var(--ink);font-style:italic}
+
+  /* ---------- thesis ---------- */
+  .thesis{
+    margin:38px 0 0;padding:26px 30px;
+    background:var(--adverse-soft);
+    border-left:4px solid var(--adverse);
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .thesis .lab{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--adverse);
+  }
+  .thesis p{margin:0;font-family:Spectral,Georgia,serif;font-size:1.24rem;line-height:1.5}
+  .thesis p.after{font-family:"IBM Plex Sans",sans-serif;font-size:.98rem;color:var(--ink-soft);line-height:1.6}
+
+  /* ---------- section headers ---------- */
+  h2{
+    font-family:Spectral,Georgia,serif;font-weight:600;
+    font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.012em;
+    margin:64px 0 6px;text-wrap:balance;
+  }
+  h2 + .sub{color:var(--ink-faint);margin:0 0 26px;max-width:62ch;font-size:.96rem}
+
+  /* ---------- the chain ---------- */
+  .chain{display:flex;flex-direction:column;gap:0}
+  .step{
+    display:grid;grid-template-columns:64px 1fr;gap:0 26px;
+    padding:30px 0;border-top:1px solid var(--rule);
+  }
+  .step:first-child{border-top:2px solid var(--ink)}
+  .num{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;
+    color:var(--accent);padding-top:5px;letter-spacing:.04em;
+  }
+  .step-body{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .q{
+    font-family:Spectral,Georgia,serif;font-size:1.32rem;font-weight:600;
+    line-height:1.3;margin:0;text-wrap:balance;
+  }
+  .a{margin:0;color:var(--ink-soft)}
+  .a strong{color:var(--ink);font-weight:600}
+  .why{
+    margin:0;font-size:.9rem;color:var(--ink-faint);
+    padding-left:14px;border-left:2px solid var(--rule);
+  }
+  .why b{color:var(--ink-soft);font-weight:600}
+
+  .stat-row{display:flex;flex-wrap:wrap;gap:10px}
+  .stat{
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+    font-variant-numeric:tabular-nums;
+    padding:5px 11px;border:1px solid var(--rule);background:var(--panel);
+    color:var(--ink-soft);white-space:nowrap;
+  }
+  .stat b{color:var(--ink);font-weight:500}
+  .stat.pos{border-color:var(--good);color:var(--good)}
+  .stat.pos b{color:var(--good)}
+  .stat.neg{border-color:var(--adverse);color:var(--adverse)}
+  .stat.neg b{color:var(--adverse)}
+
+  /* ---------- chart ---------- */
+  .figure{
+    margin:36px 0 0;padding:26px 26px 20px;background:var(--panel);
+    border:1px solid var(--rule);box-shadow:0 1px 3px var(--shadow);
+  }
+  .figure h3{
+    font-family:"IBM Plex Sans",sans-serif;font-size:.82rem;font-weight:600;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);
+    margin:0 0 4px;
+  }
+  .figure .cap{margin:0 0 20px;font-size:.94rem;color:var(--ink-soft);max-width:66ch}
+  .chartbox{overflow-x:auto}
+  .figure figcaption{
+    margin-top:16px;padding-top:14px;border-top:1px solid var(--rule-soft);
+    font-size:.86rem;color:var(--ink-faint);max-width:70ch;
+  }
+  svg text{font-family:"IBM Plex Mono",monospace}
+
+  /* ---------- split panels ---------- */
+  .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px;margin-top:22px}
+  .card{
+    background:var(--panel);border:1px solid var(--rule);padding:22px 24px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .card h4{
+    margin:0;font-family:"IBM Plex Sans",sans-serif;font-size:.78rem;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+  }
+  .card p{margin:0;font-size:.95rem;color:var(--ink-soft)}
+  .card p.lead{font-family:Spectral,Georgia,serif;font-size:1.12rem;color:var(--ink);line-height:1.45}
+  .card.share{border-top:3px solid var(--adverse)}
+  .card.noshare{border-top:3px solid var(--accent)}
+
+  /* ---------- table ---------- */
+  .tablewrap{overflow-x:auto;margin-top:20px;border:1px solid var(--rule);background:var(--panel)}
+  table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
+  th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--rule-soft)}
+  th{
+    font-family:"IBM Plex Sans",sans-serif;font-size:.72rem;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+    border-bottom:1px solid var(--rule);
+  }
+  td.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  td.verdict-y{color:var(--adverse);font-weight:600}
+  td.verdict-n{color:var(--ink-faint)}
+
+  /* ---------- misses ---------- */
+  .miss{
+    display:grid;grid-template-columns:auto 1fr;gap:0 20px;
+    padding:22px 0;border-top:1px solid var(--rule);
+  }
+  .miss:first-of-type{border-top:2px solid var(--ink)}
+  .miss .tag{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--bad);padding-top:4px;white-space:nowrap;
+  }
+  .miss-body{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .miss-body h4{margin:0;font-family:Spectral,Georgia,serif;font-size:1.14rem;font-weight:600;line-height:1.32}
+  .miss-body p{margin:0;font-size:.94rem;color:var(--ink-soft)}
+  .miss-body p.fix{font-size:.88rem;color:var(--ink-faint)}
+  .miss-body code{
+    font-family:"IBM Plex Mono",monospace;font-size:.86em;
+    background:var(--rule-soft);padding:1px 5px;color:var(--ink-soft);
+  }
+
+  /* ---------- closing ---------- */
+  .closing{
+    margin-top:60px;padding:34px 34px 30px;border:2px solid var(--ink);
+    display:flex;flex-direction:column;gap:16px;background:var(--panel);
+  }
+  .closing h2{margin:0;font-size:1.7rem}
+  .closing p{margin:0;color:var(--ink-soft)}
+  .closing p.big{font-family:Spectral,Georgia,serif;font-size:1.2rem;color:var(--ink);line-height:1.5}
+  .next{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .next div{
+    display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:baseline;
+    font-size:.94rem;color:var(--ink-soft);
+  }
+  .next b{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--accent);white-space:nowrap;
+  }
+
+  footer{
+    margin-top:52px;padding-top:20px;border-top:1px solid var(--rule);
+    font-size:.84rem;color:var(--ink-faint);
+    display:flex;flex-wrap:wrap;gap:8px 22px;
+  }
+  footer code{font-family:"IBM Plex Mono",monospace}
+
+  a{color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media (max-width:620px){
+    .step{grid-template-columns:1fr;gap:8px}
+    .num{padding-top:0}
+    .miss{grid-template-columns:1fr;gap:8px}
+  }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="kicker">
+    <span>Decoder-Guard</span><span class="sep">/</span>
+    <span>Five studies, 2–3 September 2026</span><span class="sep">/</span>
+    <span>T11 &amp; T5, public iBCI recordings</span>
+  </div>
+  <h1>The Bad-Day Problem</h1>
+  <p class="standfirst">
+    We spent a day asking five questions about a system that watches a brain–computer
+    interface for signs of failure. Four answers were useful. The fifth was
+    <em>bad news</em>, and it is the one that matters.
+  </p>
+</header>
+
+<div class="thesis">
+  <div class="lab">What changed</div>
+  <p>
+    The monitor works well on days when the decoder is working, and fails on days
+    when the decoder is already struggling — the days it exists for.
+  </p>
+  <p class="after">
+    Every earlier negative result said <em>“not sensitive enough yet”</em>, which is the
+    kind of problem more work fixes. This one says the failures line up with the hazard.
+    A monitor whose mistakes are unrelated to the danger can be improved by making it
+    sharper. A monitor whose mistakes arrive <em>with</em> the danger cannot.
+  </p>
+</div>
+
+<h2>The chain</h2>
+<p class="sub">
+  These are numbered because they genuinely are a sequence: each question was chosen by
+  what the one before it found. Nothing here was picked from a menu of analyses after
+  seeing results.
+</p>
+
+<div class="chain">
+
+  <div class="step">
+    <div class="num">01</div>
+    <div class="step-body">
+      <p class="q">How much healthy recording does it take to set one of these up?</p>
+      <p class="a">
+        <strong>About two minutes.</strong> Twenty healthy 30-second windows gets you
+        everything the full 19-minute record gets you. More data adds nothing —
+        on both arrays it makes things very slightly worse.
+      </p>
+      <div class="stat-row">
+        <span class="stat pos">T11 &nbsp;20 windows <b>0.654</b> → all 221 <b>0.648</b></span>
+        <span class="stat pos">T5 &nbsp;20 windows <b>0.740</b> → all 211 <b>0.739</b></span>
+      </div>
+      <p class="why">
+        <b>Why it saturates so fast.</b> A session's healthy record barely varies within
+        itself — consecutive windows correlate at r = 0.995. That is the same fact that
+        wrecked detection power earlier in the project. Here it works in our favour:
+        the 221st window has nothing to say that the 20th did not.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">02</div>
+    <div class="step-body">
+      <p class="q">Once it is set up, how long does that setup stay good?</p>
+      <p class="a">
+        <strong>No measurable ageing over 142 days.</strong> Fitting the monitor on one
+        session and using it five months later costs roughly 0.017 AUC — which is
+        nothing.
+      </p>
+      <div class="stat-row">
+        <span class="stat">slope <b>−0.012</b> AUC / 100 days</span>
+        <span class="stat">95 forward day pairs, gaps <b>3–142 d</b></span>
+        <span class="stat">permutation <b>p = 0.128</b></span>
+      </div>
+      <p class="why">
+        <b>The statistic that would have been wrong.</b> The obvious test gives
+        p = 0.003 and reads as a clear result. But those 95 day pairs come from only 15
+        sessions, so they share days constantly and are nowhere near independent.
+        Shuffling <em>which calendar date belongs to which session</em> — keeping every
+        measurement, destroying only the link to elapsed time — gives p = 0.128.
+        The naive test understated by <b>43×</b>.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">03</div>
+    <div class="step-body">
+      <p class="q">If age does not matter, what does?</p>
+      <p class="a">
+        <strong>Which day you use it on — enormously.</strong> Across 13 sessions on T11
+        the monitor's accuracy runs from 0.32 to 0.97. Three days fall below chance,
+        meaning its risk score ran <em>backwards</em>: lower during faults than during
+        healthy use.
+      </p>
+      <div class="stat-row">
+        <span class="stat neg">worst day <b>0.32</b></span>
+        <span class="stat pos">best day <b>0.97</b></span>
+        <span class="stat">only <b>26%</b> is sampling noise</span>
+        <span class="stat">I² <b>0.86</b></span>
+      </div>
+      <p class="why">
+        <b>Why nobody had seen this.</b> Every earlier analysis pooled all the sessions
+        together into one number, and pooling averages this away. The spread across days
+        is larger than the entire range any feature or detector change ever moved that
+        pooled number.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">04</div>
+    <div class="step-body">
+      <p class="q">So what makes a day good or bad?</p>
+      <p class="a">
+        <strong>How well the decoder itself is doing that day.</strong> Registered in
+        advance: five candidate explanations, each with its predicted direction written
+        down before anything was computed. Four came back null. The fifth is the finding.
+      </p>
+      <div class="stat-row">
+        <span class="stat neg">ρ = <b>−0.720</b>, p = <b>0.0055</b></span>
+        <span class="stat">threshold p &lt; 0.0125 (Bonferroni)</span>
+        <span class="stat">T5 agrees: ρ = <b>−0.829</b></span>
+      </div>
+      <p class="why">
+        <b>It had to survive an obvious objection.</b> The score is itself defined using
+        decoder performance, so a bad-decoder day might depress it mechanically. Every
+        link in that chain was tested and none exists — and controlling for it makes the
+        relationship <em>stronger</em>, ρ = −0.773, p = 0.0032.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">05</div>
+    <div class="step-body">
+      <p class="q">Then can the monitor at least tell you it is having a bad day?</p>
+      <p class="a">
+        <strong>No.</strong> Four signals computed from the decoder's own output — with
+        no target, no intent, no labels of any kind — and not one of them predicts whether
+        the monitor will work that day.
+      </p>
+      <div class="stat-row">
+        <span class="stat">L1 speed variability <b>—</b></span>
+        <span class="stat">L2 reversal rate <b>—</b></span>
+        <span class="stat">L3 output autocorrelation <b>—</b></span>
+        <span class="stat">L4 mean speed <b>—</b></span>
+      </div>
+      <p class="why">
+        <b>The one that nearly worked, and why it is worse than a null.</b> Mean output
+        speed tracks decoder error on <em>both</em> arrays and clears the threshold on
+        both — the strongest cross-participant agreement in the whole project. The signs
+        are opposite: ρ = <b>+0.681</b> on T11, ρ = <b>−0.943</b> on T5. Any rule that
+        abstains correctly on one array abstains backwards on the other.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<figure class="figure">
+  <h3>The finding, in one picture</h3>
+  <p class="cap">
+    Each point is one recording session on participant T11. Horizontal: how badly the
+    decoder was doing that day, in degrees of pointing error. Vertical: how well the
+    monitor detected injected faults that day. The relationship is the wrong way round
+    for a safety system.
+  </p>
+  <div class="chartbox">
+    <svg viewBox="0 0 760 400" width="760" height="400" role="img"
+         aria-label="Scatter plot of monitor accuracy against decoder error across 13 sessions, showing a strong negative relationship.">
+      <!-- plot frame: x 30-92 deg -> 92..712 ; y 0.28-1.02 AUC -> 336..40 -->
+      <g stroke="var(--rule)" stroke-width="1">
+        <line x1="92" y1="336" x2="712" y2="336"></line>
+        <line x1="92" y1="40" x2="92" y2="336"></line>
+      </g>
+      <!-- chance line -->
+      <line x1="92" y1="248" x2="712" y2="248" stroke="var(--adverse)" stroke-width="1"
+            stroke-dasharray="5 4" opacity="0.75"></line>
+      <text x="700" y="242" text-anchor="end" font-size="11" fill="var(--adverse)">chance = 0.50</text>
+
+      <!-- y ticks -->
+      <g font-size="11" fill="var(--ink-faint)" text-anchor="end">
+        <text x="84" y="48">1.00</text>
+        <text x="84" y="148">0.75</text>
+        <text x="84" y="248">0.50</text>
+        <text x="84" y="336">0.28</text>
+      </g>
+      <g stroke="var(--rule-soft)" stroke-width="1">
+        <line x1="92" y1="48" x2="712" y2="48"></line>
+        <line x1="92" y1="148" x2="712" y2="148"></line>
+      </g>
+      <!-- x ticks -->
+      <g font-size="11" fill="var(--ink-faint)" text-anchor="middle">
+        <text x="92"  y="358">30°</text>
+        <text x="242" y="358">45°</text>
+        <text x="392" y="358">60°</text>
+        <text x="542" y="358">75°</text>
+        <text x="692" y="358">90°</text>
+      </g>
+      <text x="402" y="384" font-size="12" fill="var(--ink-soft)" text-anchor="middle">
+        decoder pointing error that day  (higher = decoder doing worse)
+      </text>
+      <text x="18" y="188" font-size="12" fill="var(--ink-soft)" text-anchor="middle"
+            transform="rotate(-90 18 188)">monitor accuracy (AUC)</text>
+
+      <!-- trend -->
+      <line x1="102" y1="72" x2="702" y2="286" stroke="var(--accent)" stroke-width="2" opacity="0.55"></line>
+
+      <!-- points: x = 92 + (err-30)*10 ; y = 336 - (auc-0.28)*400 -->
+      <g fill="var(--accent)" opacity="0.9">
+        <circle cx="128" cy="96"  r="6"></circle><!-- 658  33.6  0.879 -->
+        <circle cx="515" cy="159" r="6"></circle><!-- 672  72.3  0.722 -->
+        <circle cx="338" cy="86"  r="6"></circle><!-- 675  54.6  0.906 -->
+        <circle cx="567" cy="223" r="6"></circle><!-- 689  77.5  0.564 -->
+        <circle cx="224" cy="93"  r="6"></circle><!-- 692  43.2  0.887 -->
+        <circle cx="297" cy="266" r="6"></circle><!-- 702  50.5  0.456 -->
+        <circle cx="387" cy="166" r="6"></circle><!-- 709  59.5  0.706 -->
+        <circle cx="593" cy="226" r="6"></circle><!-- 715  80.1  0.554 -->
+        <circle cx="572" cy="189" r="6"></circle><!-- 751  78.0  0.648 -->
+        <circle cx="245" cy="174" r="6"></circle><!-- 758  45.3  0.685 -->
+        <circle cx="593" cy="255" r="6"></circle><!-- 770  80.1  0.482 -->
+      </g>
+      <!-- the two extremes, called out -->
+      <circle cx="217" cy="58" r="7.5" fill="var(--good)"></circle>
+      <text x="231" y="52" font-size="11.5" fill="var(--good)">day 800 — 0.97</text>
+      <circle cx="685" cy="320" r="7.5" fill="var(--bad)"></circle>
+      <text x="673" y="316" font-size="11.5" fill="var(--bad)" text-anchor="end">day 783 — 0.32</text>
+    </svg>
+  </div>
+  <figcaption>
+    13 sessions, days 658–800. Spearman ρ = −0.720, p = 0.0055, preregistered with the
+    direction committed in advance. Day 783's decoder error of 89.3° sits essentially at
+    the 90.7° chance level — and that is the day the monitor was at its worst.
+  </figcaption>
+</figure>
+
+<h2>Whose fault is it?</h2>
+<p class="sub">
+  Before calling this a flaw in our monitor, one more question: does every fault detector
+  fail on the same days? I predicted yes — all four, correlating above 0.7 — and wrote that
+  down first. I was wrong, and being wrong was more useful than being right.
+</p>
+
+<div class="tablewrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Detector</th>
+        <th>What it looks at</th>
+        <th>Agrees with our monitor, day by day</th>
+        <th>Shares the bad-day pattern?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>distribution_shift</td>
+        <td>the full multivariate distribution</td>
+        <td class="n">ρ = +0.835 &nbsp; p = 0.0004</td>
+        <td class="verdict-y">Yes</td>
+      </tr>
+      <tr>
+        <td>robust_dispersion</td>
+        <td>one number: spread</td>
+        <td class="n">ρ = +0.247 &nbsp; p = 0.42</td>
+        <td class="verdict-n">No</td>
+      </tr>
+      <tr>
+        <td>mean_activity</td>
+        <td>one number: total spikes</td>
+        <td class="n">ρ = −0.060 &nbsp; p = 0.84</td>
+        <td class="verdict-n">No</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="split">
+  <div class="card share">
+    <h4>The two that share it</h4>
+    <p class="lead">Both model the shape of neural activity against a healthy reference.</p>
+    <p>
+      On a day the decoder handles badly, the <em>structure</em> of the activity is
+      unusual — which is exactly what a decoder is sensitive to, and exactly what this
+      kind of monitor needs to stay stable. A monitor built on the same information the
+      decoder uses inherits the decoder's bad days.
+    </p>
+  </div>
+  <div class="card noshare">
+    <h4>The two that do not</h4>
+    <p class="lead">Both crush a window down to a single number.</p>
+    <p>
+      They have no reference structure to lose, so bad days do not hurt them. They are
+      also the detectors that cannot see most faults in the first place — which is where
+      this whole project started.
+    </p>
+  </div>
+</div>
+
+<div class="thesis" style="margin-top:26px">
+  <div class="lab">The tension, unresolved</div>
+  <p>
+    The property that makes a detector sensitive enough to be useful is the same property
+    that makes it fail when the decoder fails.
+  </p>
+  <p class="after">
+    Which means the objection is not to <em>this build</em>. It is to distribution-based
+    decoder-health monitoring as a class. Rebuilding the monitor differently while keeping
+    the same kind of healthy reference will not escape it.
+  </p>
+</div>
+
+<h2>Three things I got wrong, and how they were caught</h2>
+<p class="sub">
+  Each of these would have become a published claim. They are recorded here for the same
+  reason they are recorded in the research log: a result you cannot see the mistakes behind
+  is not a result.
+</p>
+
+<div class="miss">
+  <div class="tag">Near-miss 01</div>
+  <div class="miss-body">
+    <h4>An AUC of 0.836 that does not exist</h4>
+    <p>
+      Averaging the per-day scores by their precision gave 0.836, against a plain average
+      of 0.675. I was a paragraph from writing “the monitor is far better than every earlier
+      report said.”
+    </p>
+    <p class="fix">
+      <b>Caught by:</b> AUC is bounded between 0 and 1, so its uncertainty shrinks near the
+      edges — meaning precision-weighting silently over-weights the most extreme days.
+      Measured: ρ = −0.913 between how extreme a day was and how small its error bar was,
+      with a 31× spread in weights. The field is now named
+      <code>..._BIASED_DO_NOT_QUOTE</code>.
+    </p>
+  </div>
+</div>
+
+<div class="miss">
+  <div class="tag">Near-miss 02</div>
+  <div class="miss-body">
+    <h4>A control that measured nothing and looked like it passed</h4>
+    <p>
+      The check for whether some days simply drew easier faults compared a numeric field
+      against the text <code>"high"</code>. It was always false, so it reported 0.00 on
+      every day — which reads exactly like a clean pass.
+    </p>
+    <p class="fix">
+      <b>Caught by:</b> noticing that <em>every</em> day reported precisely zero. Fixing it
+      changed a conclusion: on T5 the day-to-day spread does track fault mix (ρ = 0.886),
+      so T5 cannot corroborate the T11 finding after all.
+    </p>
+  </div>
+</div>
+
+<div class="miss">
+  <div class="tag">Near-miss 03</div>
+  <div class="miss-body">
+    <h4>Designing on a signal that does not exist at run time</h4>
+    <p>
+      I wrote that decoder error is “measurable online, without labels.” It is not. That
+      error is measured against where the user <em>intended</em> to move, which is known
+      here only because these are recorded task blocks with logged targets. In real use
+      there is no target.
+    </p>
+    <p class="fix">
+      <b>Caught by:</b> trying to specify the abstention rule concretely and finding the
+      input unavailable. The correction is written into the report rather than edited away,
+      because it would otherwise have shaped a design.
+    </p>
+  </div>
+</div>
+
+<div class="closing">
+  <h2>Where this leaves the project</h2>
+  <p class="big">
+    The problem was never that the monitor is not sensitive enough. Its reliability is
+    governed by session-level properties it cannot observe, and its failures arrive
+    together with the hazard it exists to detect.
+  </p>
+  <p>
+    That is a stronger and more defensible finding than another incremental improvement
+    would have been — but it argues against the design as originally conceived, and it is
+    reported that way rather than softened.
+  </p>
+  <div class="next">
+    <div><b>Open</b><span>What is physically different about day 800 versus day 783? Answerable with data already in hand.</span></div>
+    <div><b>Open</b><span>Does abstention work using assessment-block error, which a clinical BCI already collects periodically?</span></div>
+    <div><b>Blocked</b><span>A third participant (Card et al. 2024, T15) — the only way to test whether any of this generalises beyond two arrays.</span></div>
+  </div>
+</div>
+
+<footer>
+  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 44 claims, all matching.</span>
+  <span>Public de-identified recordings. No human participants.</span>
+</footer>
+
+</div>

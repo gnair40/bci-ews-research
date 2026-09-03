@@ -52,6 +52,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/PHASE3_REPORT.md`](reports/PHASE3_REPORT.md) | **The whole project**, from the ground-truth problem to the bound |
 | [`reports/monitor_demo.html`](reports/monitor_demo.html) | The monitor **running** — one fault caught, one missed, one false alarm |
 | [`reports/project_guide.html`](reports/project_guide.html) | Plain-language explanation, no background assumed |
+| [`reports/bad_day_problem.html`](reports/bad_day_problem.html) | **The bad-day problem** — the five September studies and what they changed ([published](https://claude.ai/code/artifact/3626899e-5714-4a29-861a-5fab36eacf82)) |
 | [`research/research_log.md`](research/research_log.md) | Dated record of every step, every mistake, every correction |
 | [`reports/PHASE1_2_REPORT.md`](reports/PHASE1_2_REPORT.md) | The earlier phase and its negative result |
 | [`reports/CALIBRATION_CURVE.md`](reports/CALIBRATION_CURVE.md) | How much healthy data commissioning costs |

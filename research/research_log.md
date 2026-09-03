@@ -2821,3 +2821,17 @@ the failure produced a mechanism and a success would only have produced a
 confirmation.
 
 Verifier now at 44 claims; all match.
+
+### Plain-language write-up of the five studies
+
+Published as **The Bad-Day Problem** —
+<https://claude.ai/code/artifact/3626899e-5714-4a29-861a-5fab36eacf82> — and mirrored
+into the repo at `reports/bad_day_problem.html` so the record does not depend on an
+external link.
+
+It covers the five studies as the chain they actually were (each question chosen by
+what the previous one found), the P5 scatter drawn from the real per-day numbers, the
+detector-family split, and the three near-misses. The older
+`reports/project_guide.html` still holds — it explains the ground-truth argument and
+the fault injector from scratch, which has not changed — but its conclusion predates
+all of this, and the new page is where the current headline lives.
