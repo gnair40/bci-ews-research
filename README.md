@@ -43,6 +43,7 @@ works — and the reason is now measured rather than guessed.**
 | But **which day** you use it on decides almost everything | Same-day AUC ranges **0.32 to 0.97** across 13 sessions; I² = 0.86 |
 | And it fails **when the decoder is already failing** | ρ = −0.720, p = 0.0055, preregistered. The monitor is least reliable when it is most needed. |
 | It **cannot tell** when it is having a bad day | No label-free signal predicts its own reliability |
+| The failure belongs to a **class**, not this build | Shared with `distribution_shift` (ρ = 0.835), absent from `mean_activity` (ρ = −0.06) |
 
 ## Start here
 
@@ -57,6 +58,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/STALENESS_AND_DAY_VARIANCE.md`](reports/STALENESS_AND_DAY_VARIANCE.md) | Ageing, day-to-day swing, and three near-misses |
 | [`reports/DAY_PREDICTORS.md`](reports/DAY_PREDICTORS.md) | The preregistered result, and why it is bad news |
 | [`reports/ABSTENTION.md`](reports/ABSTENTION.md) | Whether the monitor can know when not to be trusted (it cannot) |
+| [`reports/DAY_EFFECT_ACROSS_DETECTORS.md`](reports/DAY_EFFECT_ACROSS_DETECTORS.md) | Whose fault the day effect is — a failed prediction that paid off |
 
 ## How the argument runs
 
@@ -95,13 +97,13 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes forty-one headline figures from `data/processed/` and compares each
+It recomputes forty-four headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ## Layout
 
 ```
-scripts/     01-48, numbered in the order they must run
+scripts/     01-49, numbered in the order they must run
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs

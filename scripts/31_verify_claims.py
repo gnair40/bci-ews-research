@@ -401,6 +401,31 @@ def _l4_s2():
     return _lf("T11", "L4_mean_speed", "stage2_vs_monitor_auc")
 
 
+# ------------------------------------------------- day effect across detectors
+
+def _de(P: str, key: str, field="rho"):
+    sfx = "" if P == "T11" else f"_{P}"
+    return json.loads((OUT / f"day_effect_detectors{sfx}.json").read_text())[key][field]
+
+
+@claim("guard vs distribution_shift per-day AUC, T11", 0.835, 0.02,
+       "DAY_EFFECT_ACROSS_DETECTORS — the family that shares it")
+def _de_ds():
+    return _de("T11", "guard_vs_distribution_shift")
+
+
+@claim("guard vs mean_activity per-day AUC, T11", -0.060, 0.02,
+       "DAY_EFFECT_ACROSS_DETECTORS — the family that does not")
+def _de_ma():
+    return _de("T11", "guard_vs_mean_activity")
+
+
+@claim("distribution_shift vs decoder error, T11", -0.670, 0.02,
+       "DAY_EFFECT_ACROSS_DETECTORS — P5 follows the same split")
+def _de_ds_err():
+    return _de("T11", "distribution_shift_vs_decoder_error")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

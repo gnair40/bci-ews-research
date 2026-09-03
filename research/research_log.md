@@ -2756,3 +2756,68 @@ with the hazard it exists to detect.** That is a structural objection to the
 design, and it is the honest headline of the project.
 
 Verifier now at 41 claims; all match.
+
+---
+
+## 3 September 2026 — My prediction was wrong, and the answer is better than either option I offered
+
+Prediction committed in the addendum to
+`research/DAY_PREDICTOR_PREREGISTRATION.md` before running. Report:
+`reports/DAY_EFFECT_ACROSS_DETECTORS.md`.
+
+### What I predicted and what happened
+
+I predicted the day effect would be **shared by all four detectors** at ρ > 0.7,
+and stated the alternative: if decoder-guard were uncorrelated with the
+baselines, the problem is a design flaw. I set up a two-way question.
+
+The answer was a third thing. The effect is shared by **exactly two** detectors:
+
+| per-day AUC vs decoder-guard, T11 | ρ | p |
+|---|---|---|
+| `distribution_shift` | **+0.835** | 0.0004 |
+| `robust_dispersion` | +0.247 | 0.42 |
+| `mean_activity` | −0.060 | 0.84 |
+
+and the P5 relationship splits the same way: `decoder_guard` −0.720,
+`distribution_shift` −0.670, `robust_dispersion` −0.368, `mean_activity` +0.220.
+
+### Why the split is the interesting part
+
+The two that share it model the **multivariate distribution** of activity against
+a healthy reference. The two that do not reduce a window to a scalar and have no
+distributional reference to lose.
+
+That hands P5 a mechanism it did not have. On a day the decoder handles badly the
+*structure* of the activity is atypical — which is what a decoder is sensitive to
+and what a distribution-based monitor depends on being stable. **A monitor built
+on the same kind of information the decoder uses inherits the decoder's bad
+days.** Counting spikes does not, because it never depended on that structure —
+but counting spikes is also the detector that cannot see most faults, which is
+where this whole project started.
+
+So the tension is now explicit and unresolved: **the property that makes a
+detector sensitive enough to be useful is the property that makes it fail when
+the decoder fails.**
+
+### The confound I cannot rule out
+
+`mean_activity` and `robust_dispersion` are also the weaker detectors. A detector
+whose per-day AUC is largely noise correlates weakly with everything, so their
+low correlations might reflect noisiness rather than a different mechanism.
+Against that, their per-day AUCs are not flat (`mean_activity` ranges 0.35–0.74).
+With 13 days I cannot separate the two readings and I am not claiming I can.
+
+### What it does to the headline
+
+Yesterday's conclusion — that the monitor's failures line up with the hazard it
+exists to detect — **stands, but should be read more narrowly**. It is an
+objection to *distribution-based* decoder-health monitoring as a class, not to
+one implementation. A future attempt cannot escape it by rebuilding decoder-guard
+differently while keeping the same kind of healthy reference.
+
+I would rather record that my prediction failed than that it succeeded, because
+the failure produced a mechanism and a success would only have produced a
+confirmation.
+
+Verifier now at 44 claims; all match.
