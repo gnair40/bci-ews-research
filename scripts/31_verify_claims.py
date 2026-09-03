@@ -426,6 +426,49 @@ def _de_ds_err():
     return _de("T11", "distribution_shift_vs_decoder_error")
 
 
+# --------------------------------------------------------- ceiling challenge
+
+def _cc(P: str, key: str, field="rho"):
+    sfx = "" if P == "T11" else f"_{P}"
+    return json.loads((OUT / f"ceiling_challenge{sfx}.json").read_text())[key][field]
+
+
+@claim("ceiling: baseline vs achieved fault damage, T11", -0.747, 0.02,
+       "CEILING_CHALLENGE — the ceiling is real")
+def _cc_ceiling():
+    return _cc("T11", "baseline_vs_damage")
+
+
+@claim("ceiling: damage vs monitor AUC, T11 (predicted +, got ~0)", 0.181, 0.02,
+       "CEILING_CHALLENGE — why the ceiling does not explain P5")
+def _cc_damage_auc():
+    return _cc("T11", "damage_vs_monitor_auc")
+
+
+@claim("P5 controlling for achieved damage, T11 (strengthens)", -0.794, 0.02,
+       "CEILING_CHALLENGE — survives the preregistered challenge")
+def _cc_p5_damage():
+    return _cc("T11", "P5_controlling_for_damage")
+
+
+@claim("trace noise vs monitor AUC, T11 (ties P5 exactly)", -0.720, 0.02,
+       "CEILING_CHALLENGE — the collinear rival")
+def _cc_noise():
+    return _cc("T11", "trace_noise_vs_monitor_auc")
+
+
+@claim("P5 controlling for trace noise, T11 (collapses)", -0.333, 0.02,
+       "CEILING_CHALLENGE — why the mechanism claim is withdrawn")
+def _cc_p5_noise():
+    return _cc("T11", "P5_controlling_for_trace_noise")
+
+
+@claim("spurious crossings vs monitor AUC, T11", -0.665, 0.02,
+       "CEILING_CHALLENGE — partly contaminated ground truth")
+def _cc_spurious():
+    return _cc("T11", "spurious_vs_monitor_auc")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

@@ -2835,3 +2835,107 @@ detector-family split, and the three near-misses. The older
 `reports/project_guide.html` still holds — it explains the ground-truth argument and
 the fault injector from scratch, which has not changed — but its conclusion predates
 all of this, and the new page is where the current headline lives.
+
+---
+
+## 3 September 2026 — I tried to break my own headline. It bent, and I had to retract half of it.
+
+Predictions committed in `research/CEILING_CHALLENGE_NOTE.md` before running,
+including that **I expected to find the confound**. Report:
+`reports/CEILING_CHALLENGE.md`.
+
+### Why I went looking
+
+Yesterday's P5 result — the monitor fails on days the decoder is already failing
+— had survived one artefact challenge. Re-reading the harness I found a second,
+more dangerous one that I had missed. An episode counts as deteriorating when its
+error exceeds **its own pre-onset baseline + 10°**. Chance on T11 is 90.7°. Day
+783's baseline is 87.5°. A fault there has about three degrees of headroom before
+the metric saturates.
+
+If faults do less measurable damage on bad days, the ground truth is weaker
+there, every detector scores lower, and P5 stops being a statement about the
+monitor and becomes one about the measuring instrument.
+
+### The ceiling is real, and it is worse than I guessed
+
+Baseline vs the damage injected faults actually achieved: **ρ = −0.747,
+p = 0.0033**. On day 665 (baseline 44.9°) a fault moves the error by +19.8°. On
+day 783 (baseline 87.5°) it moves it by **+0.4°**.
+
+That is a genuine limitation of the fault-injection corpus and it stands on its
+own, whatever it does to P5: **on high-baseline sessions the ground truth is
+nearly degenerate**, because a decoder already at chance cannot be made much
+worse in a way this metric can see.
+
+### But it does not explain P5, and two of my three predictions were wrong
+
+- damage vs decoder error, predicted negative → **−0.632, correct**
+- damage vs monitor AUC, predicted positive → **+0.181, p = 0.55, wrong**
+- P5 after controlling for damage, predicted to weaken → **strengthened**,
+  −0.720 → −0.794, p = 0.002, **wrong**
+
+Weaker faults are not what makes the monitor fail on bad days.
+
+### Then day 783 produced a contradiction I had to chase
+
+Median achieved damage +0.4°, yet **78% of its episodes counted as crossing** —
+which requires +10°. Both cannot be true unless the crossings are noise.
+
+So I measured how often the +10° threshold is cleared **in the pre-onset windows,
+where no fault exists by construction**. It runs from 0.3% on day 675 to
+**19.9% on day 783**. One pre-onset window in five clears the deterioration
+threshold with nothing wrong at all.
+
+### And that is where I had to retract
+
+That trace noise predicts monitor accuracy **exactly as well as decoder error
+does** — both ρ = −0.720, p = 0.0055 — and the two correlate with each other at
+ρ = +0.813.
+
+I started writing "trace noise is the real explanation." Then I ran the partial
+correlations both ways:
+
+| | ρ | p |
+|---|---|---|
+| decoder error → AUC, controlling for trace noise | −0.333 | 0.29 |
+| trace noise → AUC, controlling for decoder error | −0.333 | 0.29 |
+
+**Identical in both directions.** That is collinearity, not mediation. At 13 days
+with predictors correlating at 0.81 this design cannot separate them, and the
+symmetry is what stopped me claiming it could. Had I only run the first partial I
+would have published "the real cause is noise" with as much confidence as I had
+published "the real cause is decoder error" the day before — and both would have
+been the same unfounded claim pointing at different words.
+
+### What I changed
+
+- `reports/DAY_PREDICTORS.md` now carries a **partial retraction** at the top of
+  its interpretation section. The finding stands; every "because" in it is marked
+  unestablished.
+- The README headline row is reworded to state the association without the
+  mechanism.
+- The ground-truth contamination is recorded: spurious crossings correlate with
+  monitor AUC at ρ = −0.665, so part of the day-to-day spread is labels rather
+  than detection. Not all of it — controlling for it leaves −0.613, p = 0.034.
+
+### What still stands
+
+The monitor's per-day accuracy is strongly predicted by how badly the decoder is
+doing that day, and that has now survived **three** separate challenges: short
+early-warning windows, a shifted crossed/not-crossed split, and the achievable-
+damage ceiling. Day 800: 42.5°, AUC 0.97. Day 783: 89.3°, AUC 0.32. That is what
+a user would experience and it has not moved.
+
+What is gone is my explanation of why.
+
+### One honest note about provenance
+
+The ceiling and damage measures were preregistered. **The trace-noise measure was
+not** — it was added mid-study once the damage result explained nothing and the
+day-783 contradiction needed resolving. It is a control variable rather than an
+outcome, and adding a control that weakens my own finding is the conservative
+direction, but it was not in the note and the report says so rather than implying
+otherwise.
+
+Verifier now at 50 claims; all match.

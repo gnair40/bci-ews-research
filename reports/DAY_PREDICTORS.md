@@ -63,9 +63,31 @@ freedom it means little (p = 0.19).
 
 ## What it means, and it is not good news
 
+> **Partial retraction, 3 September.** The mechanism claim in this section is
+> **withdrawn**. A later challenge (`reports/CEILING_CHALLENGE.md`) found a second
+> variable — how *erratic* the decoder's output is that day — that predicts the
+> monitor's accuracy exactly as well (ρ = −0.720, identical), correlates with
+> decoder error at ρ = +0.813, and produces **identical** partial correlations in
+> both directions (−0.333, p = 0.29). That symmetry means the two are collinear,
+> not that one mediates the other: at 13 days this design **cannot say which
+> property of the day is operative**.
+>
+> The *finding* below survives — the monitor's accuracy is strongly predicted by
+> how badly the decoder is doing, and that has now withstood three separate
+> challenges. What is withdrawn is the explanation of *why*. Read every
+> "because" in this section as unestablished.
+>
+> One further caveat from the same challenge: the spurious-crossing rate — how
+> often the deterioration threshold is cleared by noise alone, with no fault
+> present — reaches 19.9% on day 783 and correlates with monitor AUC at
+> ρ = −0.665. So part of the day-to-day spread is contaminated ground truth
+> rather than detection. Not all of it: controlling for it leaves ρ = −0.613,
+> p = 0.034.
+
 The mechanism written down in advance was that a day the decoder handles badly is
-atypical in ways that also hurt the monitor. That is what the data shows, and the
-consequence is uncomfortable:
+atypical in ways that also hurt the monitor. That is consistent with the data but
+is **not** established by it, for the reason above. The consequence is
+uncomfortable either way:
 
 > **The monitor is least reliable exactly when it would be most needed.**
 
