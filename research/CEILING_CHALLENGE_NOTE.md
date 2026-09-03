@@ -68,3 +68,52 @@ as originally stated.
 
 Either way the result goes in. This note exists so that the second outcome cannot
 be presented as though the first had never been a live possibility.
+
+---
+
+# Addendum, 3 September 2026 — unambiguous episodes only
+
+**Written before running.**
+
+## The question this leaves open
+
+The ceiling challenge established that the spurious-crossing rate — how often the
++10° threshold is cleared by noise alone — reaches 19.9% on the worst day and
+correlates with monitor accuracy at ρ = −0.665. So **some** of the day-to-day
+spread is contaminated labels rather than failed detection. Controlling for it
+leaves ρ = −0.613 (p = 0.034), so not all of it.
+
+"Some but not all" is unsatisfying. There is a sharper test.
+
+## The test
+
+Keep only the faulted episodes where the fault **demonstrably did real damage** —
+achieved damage ≥ 10°, the same threshold the crossing rule uses, but measured as
+a median over all post-onset windows rather than a single smoothed excursion. On
+those episodes the ground truth is unambiguous whatever the day's noise level.
+Then recompute the per-day accuracy and re-run the decoder-error correlation.
+
+- **Day effect persists among unambiguous episodes** → it is the monitor failing,
+  not the labels. The finding hardens.
+- **Day effect vanishes** → it was contaminated ground truth, and the whole
+  bad-day result needs restating as a fact about the corpus.
+
+## Predictions, committed
+
+**I expect it to weaken substantially but not vanish** — consistent with the
+partial correlation already measured (−0.720 → −0.613 controlling for spurious
+crossings).
+
+**I also expect the worst days to lose most of their episodes**, because day 783's
+median achieved damage is +0.4°. If a day retains too few unambiguous episodes to
+score at all, **that is the result for that day and it is reported as such**, not
+worked around by lowering the threshold.
+
+## Fixed in advance
+
+| | |
+|---|---|
+| Filter | faulted episodes with achieved damage ≥ 10°; comparison group unchanged (non-crossing episodes) |
+| Minimum | a day needs ≥ 5 in each group to be scored, same as everywhere else |
+| Not permitted | lowering the 10° threshold after seeing how many days survive |
+| Reported | both participants, the retained counts per day, and the correlation on whatever days remain |
