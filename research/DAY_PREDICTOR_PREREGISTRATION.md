@@ -67,3 +67,46 @@ is worth doing.
 **Would not:** establish causation, or generalise beyond these two arrays. And
 with T5's day effect already confounded with fault mix, T5 can at best offer weak
 support here.
+
+---
+
+# Addendum, 3 September 2026 — is the day effect the monitor's fault or the data's?
+
+**Written before running, and after the P5 and abstention results.**
+
+## The question
+
+P5 showed the monitor fails on days when the decoder is already failing, and the
+abstention study showed it cannot recognise those days from its own output. Both
+were framed as objections to **this monitor**. That framing may be wrong, and the
+difference matters a great deal:
+
+- If **every** detector fails on the same days, those sessions are simply
+  uninformative — no detector of this kind could work on them — and the finding
+  is about the **data**, not about decoder-guard's design.
+- If the pattern is **specific to decoder-guard**, it is a design flaw, and a
+  differently-built monitor might not have it.
+
+## Prediction, committed in advance
+
+**I expect the pattern to be shared.** The mechanism proposed for P5 was that a
+day the decoder handles badly is atypical in ways that also hurt the monitor —
+and "atypical recording" is not a property of any one detector. If that mechanism
+is right, all four detectors should rise and fall together across days.
+
+Concretely: **per-day AUC should correlate at ρ > 0.7 between decoder-guard and
+each baseline detector**, and each baseline should show its own negative
+relationship with decoder error.
+
+If instead decoder-guard is uncorrelated with the baselines, my P5 interpretation
+is wrong and the problem is in the design.
+
+## Fixed in advance
+
+| | |
+|---|---|
+| Detectors | the three baselines already in the repo (`mean_activity`, `robust_dispersion`, `distribution_shift`) plus `decoder_guard` — no new detector is written for this |
+| Method | identical to `44_day_variance.py`: same days, same episodes, same 40-window same-day fits, only the detector changes |
+| Tests | (a) Spearman of per-day AUC, decoder-guard vs each baseline; (b) Spearman of each detector's per-day AUC vs decoder error |
+| Reported | all detectors, both participants, whatever it shows |
+| Power | unchanged: n = 13 days, \|ρ\| ≈ 0.68 to clear a corrected threshold |
