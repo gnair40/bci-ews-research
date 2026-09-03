@@ -469,6 +469,32 @@ def _cc_spurious():
     return _cc("T11", "spurious_vs_monitor_auc")
 
 
+# ------------------------------------------------------ unambiguous episodes
+
+def _ua(P: str, key: str, field=None):
+    sfx = "" if P == "T11" else f"_{P}"
+    v = json.loads((OUT / f"unambiguous{sfx}.json").read_text())[key]
+    return v[field] if field else v
+
+
+@claim("T11 days scoreable on unambiguous faults (of 13)", 7, 0,
+       "UNAMBIGUOUS_EPISODES — half the dataset disqualifies itself")
+def _ua_days():
+    return _ua("T11", "n_days_scoreable")
+
+
+@claim("bad days retain fewer unambiguous faults, T11 (rho)", -0.604, 0.02,
+       "UNAMBIGUOUS_EPISODES — the corpus is blind where it matters")
+def _ua_retained():
+    return _ua("T11", "retained_fraction_vs_decoder_error", "rho")
+
+
+@claim("P5 on unambiguous episodes only, T11 (underpowered)", -0.536, 0.02,
+       "UNAMBIGUOUS_EPISODES — inconclusive, not refuted")
+def _ua_p5():
+    return _ua("T11", "P5_unambiguous_only", "rho")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

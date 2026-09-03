@@ -2939,3 +2939,76 @@ direction, but it was not in the note and the report says so rather than implyin
 otherwise.
 
 Verifier now at 50 claims; all match.
+
+---
+
+## 3 September 2026 — The corpus is blind on exactly the days that matter
+
+Predictions committed in the addendum to `research/CEILING_CHALLENGE_NOTE.md`
+before running. Report: `reports/UNAMBIGUOUS_EPISODES.md`.
+
+### The test
+
+Keep only faulted episodes where the fault demonstrably did real damage — ≥ 10°,
+the crossing rule's own threshold — so the ground truth is unambiguous whatever
+the day's noise. Then ask whether the bad-day effect is still there.
+
+### The answer is neither yes nor no
+
+**6 of 13 T11 days cannot be scored at all**, and 5 of 6 T5 days. On day 783 — the
+worst day the monitor had, and therefore the single most important day to
+understand — **one** of twenty injected faults did damage the metric could
+unambiguously see. On day 672, **none** did. And how many episodes a day keeps is
+itself predicted by how badly the decoder is doing: ρ = −0.604, p = 0.029.
+
+> The question *"does the monitor really fail on bad days, or do the labels just
+> get noisy there?"* is **not answerable with this corpus** — not answered no, but
+> unanswerable, because the days where it matters are the days where injected
+> faults cannot produce measurable ground truth.
+
+That is a limitation of the experimental design, not of the analysis, and it is
+the most consequential thing I have found today.
+
+### What the 7 surviving days say
+
+The correlation drops to ρ = −0.536, p = 0.215. **That is not a refutation.** At
+n = 7, |ρ| would need to reach about 0.79 to clear p < 0.05 — the filtering
+removed the power along with the ambiguity, and I am not going to read a null out
+of a test that could not have found anything.
+
+Suggestive but no more: **day 702 stays bad on clean episodes**, 0.456 → 0.467
+across its 12 unambiguous ones. Pure label contamination should have rescued it.
+Day 715 improves and day 800 goes to 1.000, so the picture is genuinely mixed.
+
+My predictions scored: "weakens but does not vanish" — partly right, though at
+n = 7 losing significance is not the same as weakening. "Worst days lose most of
+their episodes" — right, and strongly.
+
+### The constructive part, which is the point
+
+This gives a concrete design fix rather than "collect more data".
+
+The performance metric is **angular error against intended direction, and it
+saturates**: chance is 90.7°, so a session already at 87.5° has nowhere left to
+go. Every fault injected onto such a session is invisible to the ground truth by
+construction. **The corpus was built with a metric that cannot see the failures it
+was built to study.**
+
+A corpus meant to study monitoring on bad days needs a performance measure with
+dynamic range at the bad end — time-to-target, path efficiency, or a decoded-
+trajectory measure would all keep resolving where angle flattens out. That is a
+specific, actionable change to the fault-injection design, and it is the strongest
+recommendation this project has produced for anyone attempting it next.
+
+### Where the day's work leaves the headline
+
+Three states now, and they should not be blurred together:
+
+1. **Established.** The monitor's per-day accuracy is strongly associated with how
+   badly the decoder is doing (ρ = −0.720), through three challenges.
+2. **Withdrawn.** Any claim about *which* property of the day causes it. Decoder
+   error and trace noise are collinear at 0.813 and indistinguishable at n = 13.
+3. **Unanswerable here.** Whether the association reflects failed detection or
+   degraded labels. The corpus cannot support the question on the relevant days.
+
+Verifier now at 53 claims; all match.

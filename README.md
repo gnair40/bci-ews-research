@@ -61,6 +61,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/ABSTENTION.md`](reports/ABSTENTION.md) | Whether the monitor can know when not to be trusted (it cannot) |
 | [`reports/DAY_EFFECT_ACROSS_DETECTORS.md`](reports/DAY_EFFECT_ACROSS_DETECTORS.md) | Whose fault the day effect is — a failed prediction that paid off |
 | [`reports/CEILING_CHALLENGE.md`](reports/CEILING_CHALLENGE.md) | Trying to break the headline — what survived, and the mechanism I retracted |
+| [`reports/UNAMBIGUOUS_EPISODES.md`](reports/UNAMBIGUOUS_EPISODES.md) | **The corpus is blind where it matters** — and the design fix that follows |
 
 ## How the argument runs
 
@@ -99,13 +100,13 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes fifty headline figures from `data/processed/` and compares each
+It recomputes fifty-three headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ## Layout
 
 ```
-scripts/     01-50, numbered in the order they must run
+scripts/     01-51, numbered in the order they must run
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs
@@ -120,6 +121,11 @@ data/        raw (gitignored) and processed outputs
   adapts. Performance is decoder output error, not task success.
 - One fault type stops being a clean test at high severity; attribution names
   only three of its four possible causes. Both are documented where they matter.
+- **The performance metric saturates.** Angular error against intended direction
+  has chance at 90.7°, so on a session already near it an injected fault is
+  invisible to the ground truth by construction. On the worst session, 1 of 20
+  faults did measurable damage; on another, none did. A corpus built to study
+  monitoring on bad days needs a measure with dynamic range at the bad end.
 
 ## Attribution
 
