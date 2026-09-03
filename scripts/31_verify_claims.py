@@ -373,6 +373,34 @@ def _p1():
     return _pred("T11", "P1_healthy_dispersion")
 
 
+# ------------------------------------------------------------- abstention
+
+def _lf(P: str, cand: str, stage: str, field="rho"):
+    r = json.loads((OUT / "label_free_result.json").read_text())[P]
+    for x in r:
+        if x["candidate"] == cand:
+            return x[stage][field]
+    raise KeyError(cand)
+
+
+@claim("L4 vs decoder error, T11 (sign reverses)", 0.681, 0.02,
+       "ABSTENTION — strongest cross-participant agreement, opposite signs")
+def _l4_t11():
+    return _lf("T11", "L4_mean_speed", "stage1_vs_decoder_error")
+
+
+@claim("L4 vs decoder error, T5 (opposite sign)", -0.943, 0.02,
+       "ABSTENTION — the reversal that makes it unusable")
+def _l4_t5():
+    return _lf("T5", "L4_mean_speed", "stage1_vs_decoder_error")
+
+
+@claim("L4 vs monitor AUC, T11 (stage 2 null)", -0.137, 0.02,
+       "ABSTENTION — nothing passes stage 2")
+def _l4_s2():
+    return _lf("T11", "L4_mean_speed", "stage2_vs_monitor_auc")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

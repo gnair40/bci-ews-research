@@ -2693,3 +2693,66 @@ session whose recording is simply messier) is at least as likely, and is in fact
 the mechanism that was predicted.
 
 Verifier now at 38 claims; all match.
+
+---
+
+## 2–3 September 2026 — Abstention: not supported, and one statistic that explains the whole project
+
+Scope fixed in `research/ABSTENTION_NOTE.md` before running, including the
+admission that **no sign was predicted** for the four candidates. Report:
+`reports/ABSTENTION.md`.
+
+### The answer is no
+
+Four label-free signals — computed from the decoded velocity stream with no
+target, no intent, no label — were tested in two stages: do they stand in for
+decoder error, and do they predict whether the monitor will work that day?
+
+**Nothing passes stage 2 on either participant.** No label-free signal predicts
+the monitor's per-day AUC, which is the only thing an abstention rule needs.
+
+The scope note said in advance that a null means *"abstention is an untested
+proposal, not a capability"*, and that is what is reported.
+
+### The statistic worth keeping
+
+L4 — mean output speed — tracks decoder error on **both** participants and clears
+the corrected threshold on **both**: ρ = +0.681 (p = 0.010) on T11 and
+ρ = −0.943 (p = 0.005) on T5.
+
+**The signs are opposite.** Faster decoded output means *worse* decoding on T11
+and *better* decoding on T5.
+
+This is the strongest cross-participant agreement anywhere in this project, and
+it is a contradiction. Any threshold that abstains correctly on one array
+abstains backwards on the other. The transfer analysis inferred
+participant-specificity from seven candidates failing to replicate; this shows it
+in a single number, with both participants individually significant and pointing
+opposite ways.
+
+It is also the clearest justification I have for refusing to predict signs for
+L1–L4. Had I guessed either sign, one of these two participants would have
+"confirmed" it, and I would have had a result.
+
+### Where the project stands after today
+
+Four studies ran today, three of which changed what I think:
+
+1. **Calibration is cheap** — 20 healthy windows, about two minutes. First
+   non-null result.
+2. **Fits do not go stale** — no measurable ageing over 142 days, once the
+   dependency between day pairs is handled properly (a naive p of 0.003 became
+   0.128).
+3. **Which day you use it on decides almost everything** — AUC 0.32 to 0.97,
+   I² = 0.86, and the low days are the days the decoder is already failing
+   (ρ = −0.720, preregistered, survives the artefact challenge).
+4. **The monitor cannot tell when to abstain** — no label-free signal predicts
+   its own reliability.
+
+Taken together these say something the earlier nulls did not. The problem is not
+that the monitor is insufficiently sensitive. It is that **its reliability is
+governed by session-level properties it cannot observe, and its failures line up
+with the hazard it exists to detect.** That is a structural objection to the
+design, and it is the honest headline of the project.
+
+Verifier now at 41 claims; all match.
