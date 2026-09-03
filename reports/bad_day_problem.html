@@ -251,30 +251,33 @@
 <header class="mast">
   <div class="kicker">
     <span>Decoder-Guard</span><span class="sep">/</span>
-    <span>Six studies, 2–3 September 2026</span><span class="sep">/</span>
+    <span>Eight studies, 2–3 September 2026</span><span class="sep">/</span>
     <span>T11 &amp; T5, public iBCI recordings</span>
   </div>
   <h1>The Bad-Day Problem</h1>
   <p class="standfirst">
-    We spent a day asking six questions about a system that watches a brain–computer
-    interface for signs of failure. The fifth answer was <em>bad news</em>. The sixth
-    was an attempt to prove the fifth wrong — it survived, but it cost us our
-    explanation of <em>why</em>.
+    We spent two days asking eight questions about a system that watches a
+    brain–computer interface for signs of failure. The fifth answer was <em>bad
+    news</em>. The last three were attempts to prove the fifth wrong. It survived all
+    of them — and cost us our explanation, our phrasing, and our confidence that the
+    experiment could answer the question at all.
   </p>
 </header>
 
 <div class="thesis">
   <div class="lab">What changed</div>
   <p>
-    The monitor works well on days when the decoder is working, and fails on days
-    when the decoder is already struggling — the days it exists for.
+    The monitor's accuracy swings from 0.32 to 0.97 depending on which session you
+    use it on — and the bad sessions are the ones where the decoder's own error is
+    high.
   </p>
   <p class="after">
     Every earlier negative result said <em>“not sensitive enough yet”</em>, which is the
-    kind of problem more work fixes. This one says the failures line up with the hazard.
-    A monitor whose mistakes are unrelated to the danger can be improved by making it
-    sharper. A monitor whose mistakes arrive <em>with</em> the danger cannot.
-    <strong>What we cannot say is why</strong> — see study 06.
+    kind of problem more work fixes. This one says the failures line up with the hazard,
+    and a monitor whose mistakes arrive <em>with</em> the danger cannot be fixed by
+    making it sharper. <strong>But we could not establish why, and one natural reading
+    is ruled out:</strong> it is <em>not</em> that the decoder has lost its signal —
+    see studies 06 through 08.
   </p>
 </div>
 
@@ -364,9 +367,11 @@
     <div class="step-body">
       <p class="q">So what makes a day good or bad?</p>
       <p class="a">
-        <strong>How well the decoder itself is doing that day.</strong> Registered in
-        advance: five candidate explanations, each with its predicted direction written
-        down before anything was computed. Four came back null. The fifth is the finding.
+        <strong>The decoder's own error that day.</strong> Registered in advance: five
+        candidate explanations, each with its predicted direction written down before
+        anything was computed. Four came back null. The fifth is the finding — though
+        what “the decoder's error” really measures turned out to be its own question,
+        in study 08.
       </p>
       <div class="stat-row">
         <span class="stat neg">ρ = <b>−0.720</b>, p = <b>0.0055</b></span>
@@ -432,6 +437,57 @@
         how <em>erratic</em> the decoder's output is that day. It predicts accuracy at
         ρ = <b>−0.720</b> — identical to study 04's number — and the two correlate at
         <b>0.813</b>. See near-miss 04.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">07</div>
+    <div class="step-body">
+      <p class="q">Is the monitor really failing, or are the labels just noisy there?</p>
+      <p class="a">
+        <strong>Neither. The experiment cannot tell us.</strong> Keeping only the faults
+        that demonstrably did real damage leaves <b>6 of 13 sessions unscoreable</b>. On
+        day 783 — the worst day the monitor had, and the single most important one to
+        understand — exactly <em>one</em> of twenty injected faults did damage the
+        metric could see. On day 672, none did.
+      </p>
+      <div class="stat-row">
+        <span class="stat neg">7 of 13 days survive the filter</span>
+        <span class="stat neg">day 783: <b>1 of 20</b> faults measurable</span>
+        <span class="stat">bad days keep fewer: <b>ρ = −0.604</b></span>
+      </div>
+      <p class="why">
+        <b>Why this is the most consequential thing here.</b> The question is not
+        answered no — it is <em>unanswerable with this corpus</em>, because the sessions
+        where it matters are exactly the sessions where an injected fault cannot produce
+        measurable ground truth. That is a flaw in the experimental design, not in the
+        analysis, and it is the clearest instruction to whoever builds the next one.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">08</div>
+    <div class="step-body">
+      <p class="q">What does “the decoder is failing” actually mean?</p>
+      <p class="a">
+        <strong>Not what we had been saying.</strong> Comparing each session's decoder
+        against <em>its own</em> chance level — rather than an absolute number — the
+        relationship disappears. Days 800 and 783 beat their own chance by almost
+        identical margins. Their monitor accuracies are <b>0.97</b> and <b>0.32</b>.
+      </p>
+      <div class="stat-row">
+        <span class="stat neg">absolute error → accuracy <b>−0.720</b></span>
+        <span class="stat">margin over own chance → accuracy <b>+0.264</b>, p = 0.38</span>
+      </div>
+      <p class="why">
+        <b>And a fact nobody had noticed.</b> Sessions differ by a factor of
+        <b>fifty</b> in how directionally varied the task was — from 0.01 to 0.68 —
+        which is why each session's own chance level ranges from 47.7° to 102.7°
+        instead of sitting near 90°. Absolute angular error therefore mixes together
+        decoder quality and what the person was asked to do that day. The phrase “the
+        decoder is failing” is retired; the association it described is not.
       </p>
     </div>
   </div>
@@ -672,6 +728,25 @@
   </div>
 </div>
 
+<div class="miss">
+  <div class="tag">Near-miss 05</div>
+  <div class="miss-body">
+    <h4>A number stored under a name that reversed its meaning</h4>
+    <p>
+      The test for “is this decoder better than chance?” returns the probability that
+      the error <em>exceeds</em> chance. I saved it as <code>prob_better_than_chance</code>.
+      A decoder 55° better than chance was recorded as <b>0.273</b> — and read as if
+      that were its odds of beating chance, it looks like a decoder that barely works.
+    </p>
+    <p class="fix">
+      <b>Caught by:</b> the numbers being impossible. Every session came out below 0.5,
+      which would mean the decoder was worse than chance everywhere — while the same
+      table showed margins of +55°. Both directions are now written out so the value
+      cannot be misread again.
+    </p>
+  </div>
+</div>
+
 <div class="closing">
   <h2>Where this leaves the project</h2>
   <p class="big">
@@ -685,21 +760,24 @@
     than softened.
   </p>
   <p>
-    <strong>What we cannot say is which property.</strong> “How badly the decoder is
-    doing” and “how erratic its output is” are the same variable at 13 sessions.
-    Separating them needs days where the decoder is bad but steady, or noisy but
-    accurate — and this dataset may not contain any.
+    <strong>What we cannot say is which property.</strong> Five session-level variables
+    now correlate with the monitor's accuracy — decoder error, output noise, spurious
+    crossings, task geometry, margin over chance — and they are tangled in each other.
+    Thirteen sessions cannot separate five entangled variables, and no further slicing
+    of thirteen numbers will change that. So this line of work stops here rather than
+    finding a sixth.
   </p>
   <div class="next">
-    <div><b>Open</b><span>Are there sessions where the decoder is bad but steady, or noisy but accurate? Without them the two explanations stay welded together.</span></div>
-    <div><b>Known limit</b><span>On sessions already near chance, an injected fault moves the error metric by less than half a degree — the ground truth there is nearly degenerate.</span></div>
+    <div><b>Next build</b><span>A recording that holds the task fixed across sessions, separating task geometry from decoder health at the source instead of unpicking them afterwards.</span></div>
+    <div><b>Next build</b><span>A performance measure with range at the bad end <em>and</em> robustness to task geometry — angular error has neither.</span></div>
+    <div><b>Known limit</b><span>On the worst sessions an injected fault moves the metric by less than half a degree. The ground truth there is nearly degenerate.</span></div>
     <div><b>Open</b><span>Does abstention work using assessment-block error, which a clinical BCI already collects periodically?</span></div>
     <div><b>Blocked</b><span>A third participant (Card et al. 2024, T15) — the only way to test whether any of this generalises beyond two arrays.</span></div>
   </div>
 </div>
 
 <footer>
-  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 50 claims, all matching.</span>
+  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 56 claims, all matching.</span>
   <span>Public de-identified recordings. No human participants.</span>
 </footer>
 
