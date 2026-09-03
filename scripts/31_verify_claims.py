@@ -495,6 +495,32 @@ def _ua_p5():
     return _ua("T11", "P5_unambiguous_only", "rho")
 
 
+# --------------------------------------------------- what decoder error means
+
+def _pdc(P: str, key: str, field="rho"):
+    sfx = "" if P == "T11" else f"_{P}"
+    return json.loads((OUT / f"per_day_chance{sfx}.json").read_text())[key][field]
+
+
+@claim("margin over own chance vs monitor AUC, T11", 0.264, 0.02,
+       "WHAT_DECODER_ERROR_MEANS — lost signal does NOT predict it")
+def _pdc_margin():
+    return _pdc("T11", "margin_vs_monitor_auc")
+
+
+@claim("directional concentration vs monitor AUC, T11", -0.516, 0.02,
+       "WHAT_DECODER_ERROR_MEANS — task geometry, not preregistered")
+def _pdc_conc():
+    return _pdc("T11", "concentration_vs_monitor_auc")
+
+
+@claim("day 800 barely beats its own chance, P(better)", 0.531, 0.01,
+       "WHAT_DECODER_ERROR_MEANS — best monitor day, weakest real signal")
+def _pdc_800():
+    d = pd.read_csv(OUT / "per_day_chance.csv")
+    return float(d[d.day == 800].prob_better_than_chance.iloc[0])
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

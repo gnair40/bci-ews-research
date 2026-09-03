@@ -3012,3 +3012,90 @@ Three states now, and they should not be blurred together:
    degraded labels. The corpus cannot support the question on the relevant days.
 
 Verifier now at 53 claims; all match.
+
+---
+
+## 3 September 2026 — Checking my own recommendation, and finding the check was broken too
+
+**Exploratory, not preregistered** — and labelled that way in the report,
+`reports/WHAT_DECODER_ERROR_MEANS.md`.
+
+### Why
+
+I had just published a recommendation: a future corpus needs a performance measure
+with dynamic range at the bad end, because angular error saturates near chance.
+That is only right **if the decoder still holds usable signal on those days**. If
+it is already at chance there is nothing for a fault to destroy and no metric
+helps. So I measured each day against its own shuffled-pairing chance level.
+
+### Two things wrong with my own check
+
+**1. A statistic whose stored name inverted it.** `mannwhitneyu` returns U₁, the
+count of pairs where x exceeds y, so U₁/(nm) is P(error **exceeds** chance). I
+stored it as `prob_better_than_chance`. A decoder 55° better than chance was
+recorded as 0.273 and would have been read as its probability of beating chance.
+Both directions are now written out so it cannot be misread again.
+
+**2. A per-day chance level that is not what it looks like.** Shuffled chance came
+out between **47.7° and 102.7°**, where a chance level should sit near 90°. The
+cause is task geometry: if a day's intended movements all point similarly,
+shuffling barely changes anything, because pointing the popular way already scores
+well.
+
+Measured: **sessions differ by a factor of fifty in directional concentration**
+(0.013 on day 675, 0.679 on day 758). That was not known before today and it
+affects every absolute error number in this project.
+
+### The finding that fell out of fixing it
+
+Absolute angular error predicts monitor accuracy at −0.720. **Margin over that
+day's own chance does not: +0.264, p = 0.38.**
+
+| | error | beats own chance by | monitor AUC |
+|---|---|---|---|
+| day 800 | 42.5° | P(better) = 0.531 | **0.974** |
+| day 783 | 89.3° | P(better) = 0.533 | **0.319** |
+
+Two days that beat their own chance by *almost identical* margins, with monitor
+accuracies of 0.97 and 0.32. Whatever separates them, **it is not how much real
+signal the decoder retains.**
+
+So the phrase I have been using — "the monitor fails when the decoder is already
+failing" — is not supported in the sense it naturally carries. What is supported
+is narrower: the monitor's accuracy tracks the day's *absolute* angular error, a
+quantity that mixes decoder quality with how directionally varied the task was.
+README amended.
+
+### Where I am stopping this line
+
+Five day-level variables now correlate with monitor accuracy at various strengths:
+absolute decoder error (−0.720), trace noise (−0.720), spurious-crossing rate
+(−0.665), directional concentration (−0.516), margin over own chance (+0.264).
+They are mutually entangled — the first two alone correlate at 0.813 — and there
+are **thirteen days**.
+
+**This design can establish that sessions differ enormously and that the
+differences track "how well things were going that day". It cannot identify which
+property is responsible, and no further re-slicing of thirteen numbers will change
+that.** Continuing would be generating explanations rather than testing them, so I
+am stopping here rather than finding a sixth variable.
+
+What would settle it: sessions that break the entanglement — a decoder inaccurate
+but steady, or noisy but accurate, or a task held at constant directional
+difficulty. None exist in this data. A prospective recording could fix the task by
+design and separate geometry from decoder health at the source.
+
+### A note on the shape of today
+
+Three of today's studies were attacks on my own results, and each one landed:
+
+1. The ceiling challenge → mechanism **withdrawn** (collinearity).
+2. The unambiguous-episode test → the question is **unanswerable** on the days
+   that matter.
+3. This one → the phrase I was using for the finding is **wrong**, and my own
+   check contained two errors before it produced anything.
+
+The association at the centre of it has survived every attack. Everything I built
+*around* that association has not.
+
+Verifier now at 56 claims; all match.

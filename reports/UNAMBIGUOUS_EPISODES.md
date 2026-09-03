@@ -75,6 +75,14 @@ My two predictions, scored honestly:
 
 ## What a future attempt should change
 
+> **Amendment, 3 September.** The recommendation below is right but was stated too
+> simply. `reports/WHAT_DECODER_ERROR_MEANS.md` found that each session's *chance
+> level* also varies — from 47.7° to 102.7° on T11 — because sessions differ by a
+> factor of fifty in how directionally varied the task was. So the saturation
+> point moves between sessions, and a replacement metric must be robust to task
+> geometry as well as having range at the bad end, or it relocates the confound
+> rather than removing it.
+
 This points at a concrete design fix rather than a vaguer "get more data".
 
 The performance metric is **angular error against the intended direction**, which

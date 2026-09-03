@@ -41,7 +41,8 @@ works — and the reason is now measured rather than guessed.**
 | Commissioning is **cheap** | ~20 healthy windows — about **two minutes** of recording. More data adds nothing. |
 | A fit does **not** go stale | −0.012 AUC per 100 days over a 142-day span; permutation p = 0.128 |
 | But **which day** you use it on decides almost everything | Same-day AUC ranges **0.32 to 0.97** across 13 sessions; I² = 0.86 |
-| And it fails **when the decoder is already failing** | ρ = −0.720, p = 0.0055, preregistered; survives three challenges. *Why* is unestablished — a collinear rival predicts identically. |
+| It tracks the day's **absolute** decoder error | ρ = −0.720, p = 0.0055, preregistered; survives three challenges |
+| But **not** the decoder having lost signal | Margin over that day's own chance: ρ = +0.264, p = 0.38. Five entangled day-variables, 13 days — which one matters is not identifiable here. |
 | It **cannot tell** when it is having a bad day | No label-free signal predicts its own reliability |
 | The failure belongs to a **class**, not this build | Shared with `distribution_shift` (ρ = 0.835), absent from `mean_activity` (ρ = −0.06) |
 
@@ -62,6 +63,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/DAY_EFFECT_ACROSS_DETECTORS.md`](reports/DAY_EFFECT_ACROSS_DETECTORS.md) | Whose fault the day effect is — a failed prediction that paid off |
 | [`reports/CEILING_CHALLENGE.md`](reports/CEILING_CHALLENGE.md) | Trying to break the headline — what survived, and the mechanism I retracted |
 | [`reports/UNAMBIGUOUS_EPISODES.md`](reports/UNAMBIGUOUS_EPISODES.md) | **The corpus is blind where it matters** — and the design fix that follows |
+| [`reports/WHAT_DECODER_ERROR_MEANS.md`](reports/WHAT_DECODER_ERROR_MEANS.md) | What "the decoder is failing" actually meant — and where this line of work stops |
 
 ## How the argument runs
 
@@ -100,13 +102,13 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes fifty-three headline figures from `data/processed/` and compares each
+It recomputes fifty-six headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ## Layout
 
 ```
-scripts/     01-51, numbered in the order they must run
+scripts/     01-52, numbered in the order they must run
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs
@@ -121,11 +123,13 @@ data/        raw (gitignored) and processed outputs
   adapts. Performance is decoder output error, not task success.
 - One fault type stops being a clean test at high severity; attribution names
   only three of its four possible causes. Both are documented where they matter.
-- **The performance metric saturates.** Angular error against intended direction
-  has chance at 90.7°, so on a session already near it an injected fault is
-  invisible to the ground truth by construction. On the worst session, 1 of 20
-  faults did measurable damage; on another, none did. A corpus built to study
-  monitoring on bad days needs a measure with dynamic range at the bad end.
+- **The performance metric saturates, and its saturation point moves.** Angular
+  error against intended direction has chance near 90°, so on a session already
+  there an injected fault is invisible to the ground truth by construction — on
+  the worst session 1 of 20 faults did measurable damage, on another none did.
+  Worse, each session's *own* chance level ranges 47.7°–102.7° because sessions
+  differ ~50× in how directionally varied the task was. A replacement metric needs
+  range at the bad end **and** robustness to task geometry.
 
 ## Attribution
 
