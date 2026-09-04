@@ -50,6 +50,7 @@ works — and the reason is now measured rather than guessed.**
 
 | Read | For |
 |---|---|
+| [`reports/CLAIMS_REGISTER.md`](reports/CLAIMS_REGISTER.md) | **Start here** — every claim, its status, and what checks it |
 | [`reports/PHASE3_REPORT.md`](reports/PHASE3_REPORT.md) | **The whole project**, from the ground-truth problem to the bound |
 | [`reports/monitor_demo.html`](reports/monitor_demo.html) | The monitor **running** — one fault caught, one missed, one false alarm |
 | [`reports/project_guide.html`](reports/project_guide.html) | Plain-language explanation, no background assumed |
@@ -116,7 +117,15 @@ against the value written in the reports. Run it before quoting any figure.
 python3 scripts/55_reproducibility_audit.py
 ```
 
-It checks that the reproduction path itself holds: every import declared, every
+```bash
+python3 scripts/56_claims_register.py
+```
+
+It regenerates the claims register and fails if anything marked ESTABLISHED
+cites a check that does not exist, or if a verifier check is cited by no claim.
+Currently 27 claims covering 64 of 64 checks.
+
+The audit checks that the reproduction path itself holds: every import declared, every
 consumed file produced by some script, no ordering inversions, and every script
 named in a document present. It found a headline figure that no committed script
 regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY_AUDIT.md).
@@ -124,7 +133,7 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-55; 31 and 55 run last, everything else in order
+scripts/     01-56; 31, 55 and 56 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs

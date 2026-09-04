@@ -3295,3 +3295,48 @@ named explicitly in `RESOLVED_BY_HAND` with their real producer, so the check is
 a clean gate rather than a permanently-failing one.
 
 Verifier still at 64 claims; all match.
+
+---
+
+## 3 September 2026 — One register, checked rather than written
+
+Tool: `56_claims_register.py`. Output: `reports/CLAIMS_REGISTER.md`.
+
+### Why
+
+Nineteen reports and a long log, holding claims in genuinely different
+conditions: some survived three attacks, three are retracted, one is
+unanswerable with this data. Spread across documents those distinctions blur —
+and the blurring always runs one way. **A withdrawn mechanism gets quoted as
+though it still stood**, especially by me, weeks later, looking for a sentence.
+
+### What it does
+
+The register is the single source of truth, and it is validated rather than
+prose:
+
+1. every claim marked ESTABLISHED must cite a check in `31_verify_claims.py`
+2. every cited check must actually exist
+3. every cited report must exist on disk
+4. any verifier check cited by **nothing** is reported as a coverage gap
+
+Check 4 is the one worth having. It asks whether the evidence base and the story
+have drifted apart — whether there are numbers being verified that no longer
+support any claim anyone is making, or claims resting on nothing.
+
+### Current state
+
+**27 claims: 13 established, 7 limitations, 3 withdrawn, 1 unanswerable, 3
+exploratory. Coverage 64 of 64 checks. PASS.**
+
+Writing it out was itself the exercise. Three findings are now marked WITHDRAWN
+with "do not quote" attached, one is marked UNANSWERABLE rather than negative,
+and three are marked EXPLORATORY because they were not preregistered — including
+the fifty-fold task-geometry variation, which is the most interesting thing found
+in two days and is *not* a preregistered result.
+
+Having to assign one of five statuses to every claim is a harder discipline than
+writing a summary, because a summary lets a sentence sit between "we found" and
+"we suspect". The register does not.
+
+Verifier at 64 claims; audit passes; register passes.
