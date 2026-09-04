@@ -65,6 +65,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/UNAMBIGUOUS_EPISODES.md`](reports/UNAMBIGUOUS_EPISODES.md) | **The corpus is blind where it matters** — and the design fix that follows |
 | [`reports/WHAT_DECODER_ERROR_MEANS.md`](reports/WHAT_DECODER_ERROR_MEANS.md) | What "the decoder is failing" actually meant — and where this line of work stops |
 | [`reports/SEVERITY_LADDER_VALIDITY.md`](reports/SEVERITY_LADDER_VALIDITY.md) | Whether "severity" means the same thing on every session (it does not) |
+| [`reports/WINDOW_OVERLAP.md`](reports/WINDOW_OVERLAP.md) | An open limitation, closed with a number |
 
 ## How the argument runs
 
@@ -103,13 +104,13 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes sixty headline figures from `data/processed/` and compares each
+It recomputes sixty-four headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ## Layout
 
 ```
-scripts/     01-53, numbered in the order they must run
+scripts/     01-54, numbered in the order they must run
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs
@@ -124,6 +125,12 @@ data/        raw (gitignored) and processed outputs
   adapts. Performance is decoder output error, not task success.
 - One fault type stops being a clean test at high severity; attribution names
   only three of its four possible causes. Both are documented where they matter.
+- **Every AUC here is understated by about 1%.** 30 s windows stepped every 5 s
+  mean six "pre-onset" windows per episode actually contain faulted data, so the
+  healthy reference is contaminated toward the fault. Measured cost: +0.0072 (T11)
+  and +0.0123 (T5) AUC recovered by a strict reference; 11 of 13 non-tied sessions
+  improved, sign test p = 0.011. The bias is conservative, as was argued when it
+  was found — it is now a number rather than an argument. No conclusion changes.
 - **Severity is only valid in aggregate.** The three fault levels were
   calibrated once, globally, and produce correctly ordered damage in just **57%**
   of session × fault-mode cells on T11 and 67% on T5 — degrading with the

@@ -553,6 +553,34 @@ def _sl_r5():
     return _sl("T5", "baseline_vs_monotone_fraction", "rho")
 
 
+# --------------------------------------------------------- window overlap
+
+@claim("contaminated windows per episode, T11 (1500/250 = 6)", 5.99, 0.05,
+       "WINDOW_OVERLAP — the geometry, confirmed")
+def _wo_count():
+    return json.loads((OUT / "window_overlap.json").read_text())[
+        "mean_contaminated_windows_per_episode"]
+
+
+@claim("AUC understated by the overlap, T11", 0.0072, 0.001,
+       "WINDOW_OVERLAP — the bias was conservative, now measured")
+def _wo_t11():
+    return json.loads((OUT / "window_overlap.json").read_text())["mean_delta"]
+
+
+@claim("AUC understated by the overlap, T5", 0.0123, 0.001,
+       "WINDOW_OVERLAP — replicates in direction and size")
+def _wo_t5():
+    return json.loads((OUT / "window_overlap_T5.json").read_text())["mean_delta"]
+
+
+@claim("sign test across both arrays, p (one-sided)", 0.0112, 0.002,
+       "WINDOW_OVERLAP — 11 of 13 non-tied days improved")
+def _wo_sign():
+    return json.loads((OUT / "window_overlap_signtest.json").read_text())[
+        "sign_test_p_one_sided"]
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

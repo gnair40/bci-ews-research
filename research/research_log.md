@@ -3175,3 +3175,61 @@ now come out of attacking my own results, which is more than the successful
 results produced.
 
 Verifier now at 60 claims; all match.
+
+---
+
+## 3 September 2026 — Closing an open item with a number instead of an argument
+
+Prediction committed in `research/WINDOW_OVERLAP_NOTE.md` before running. Report:
+`reports/WINDOW_OVERLAP.md`.
+
+### The item
+
+Windows are 30 s long stepped every 5 s, so a window that *starts* before fault
+onset still *extends* past it. Up to six such windows per episode were being
+counted as healthy while containing faulted data. I found this during the
+benchmark work, argued the bias was conservative, recorded it as a limitation,
+and left it unmeasured. It was one of two things I had explicitly deferred.
+
+An argument is not a measurement, so it was overdue.
+
+### Scored against the prediction
+
+| Predicted | Outcome |
+|---|---|
+| the strict reference **raises** AUC | ✓ both participants |
+| the effect is small | ✓ though bigger than the "few thousandths" I guessed |
+| ~6 contaminated windows per episode | ✓ **5.99** on T11, **6.00** on T5 |
+
+Mean AUC recovered: **+0.0072** (T11) and **+0.0123** (T5); largest single day
++0.032. Six of nineteen days tie *exactly*, which is why each participant's
+Wilcoxon is weak (p = 0.13, 0.125) — the ties eat the power. Since the direction
+was committed in advance the right test is a one-sided sign test across both
+arrays: **11 of 13 non-tied days improved, p = 0.011**.
+
+### What it means
+
+Every AUC in this project **understates** performance by roughly 0.7–1.2%, worst
+case about 3%. No conclusion moves — that is nowhere near the gap between the
+0.65–0.74 achieved and the ~0.99 the false-alarm budget demands.
+
+The value is not the correction, it is that **"the bias is conservative" is no
+longer an argument in this repository. It is a number.** I had been citing that
+phrase in several places on the strength of reasoning alone.
+
+### Why I did not recompute the earlier results
+
+Fixing it would shift every AUC up by under 0.01, change nothing, and invalidate
+the frozen records that every preregistration points at. Those frozen numbers are
+what was committed to in advance; replacing them for a sub-1% correction would
+trade a real methodological guarantee for a cosmetic one. The correction factor
+is documented instead, and `54_window_overlap.py` implements the strict reference
+for whoever runs the next benchmark.
+
+### Both deferred items are now closed
+
+The two things I had left explicitly open are done: the window-overlap
+quantification (here) and the severity-ladder validity check (earlier today).
+Neither changed a conclusion; both replaced an assumption with a measurement.
+
+Verifier now at 64 claims; all match.
