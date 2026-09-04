@@ -692,6 +692,36 @@ def _pmd_win():
     return _pmd("T11", "headline_auc_window_level_as_registered")
 
 
+# ------------------------------------------------------- unit of analysis
+
+def _uoa(key: str):
+    return json.loads((OUT / "unit_of_analysis.json").read_text())[key]
+
+
+@claim("sample-size inflation from pooling windows", 26.6, 0.2,
+       "UNIT_OF_ANALYSIS — measured, not assumed")
+def _uoa_infl():
+    return _uoa("sample_size_inflation")
+
+
+@claim("published statistics that were p = 0 exactly", 4, 0,
+       "UNIT_OF_ANALYSIS — the tell")
+def _uoa_zero():
+    return _uoa("n_exactly_zero_published")
+
+
+@claim("results significant as published, null when corrected", 3, 0,
+       "UNIT_OF_ANALYSIS — including one at p = 3.4e-15")
+def _uoa_flip():
+    return _uoa("n_flipped_to_null")
+
+
+@claim("largest AUC shift from the correction", 0.0545, 0.002,
+       "UNIT_OF_ANALYSIS — point estimates barely move")
+def _uoa_shift():
+    return _uoa("max_abs_auc_shift")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

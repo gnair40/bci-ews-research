@@ -71,6 +71,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/ATTRIBUTION_ACCURACY.md`](reports/ATTRIBUTION_ACCURACY.md) | When it warns, does it name the right cause? One mode: never |
 | [`reports/MODE_SEPARABILITY.md`](reports/MODE_SEPARABILITY.md) | The mode it never identifies is the easiest one to identify |
 | [`reports/PER_MODE_DETECTION.md`](reports/PER_MODE_DETECTION.md) | Is the headline carried by one easy fault mode? No — and the AUC level it is quoted at |
+| [`reports/UNIT_OF_ANALYSIS.md`](reports/UNIT_OF_ANALYSIS.md) | **Every published p-value recomputed** — three were significant and are not |
 
 ## How the argument runs
 
@@ -113,7 +114,7 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes seventy-eight headline figures from `data/processed/` and compares each
+It recomputes eighty-two headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ```bash
@@ -126,7 +127,7 @@ python3 scripts/56_claims_register.py
 
 It regenerates the claims register and fails if anything marked ESTABLISHED
 cites a check that does not exist, or if a verifier check is cited by no claim.
-Currently 32 claims covering 78 of 78 checks.
+Currently 33 claims covering 82 of 82 checks.
 
 The audit checks that the reproduction path itself holds: every import declared, every
 consumed file produced by some script, no ordering inversions, and every script
@@ -136,7 +137,7 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-59; 31, 55 and 56 run last, everything else in order
+scripts/     01-60; 31, 55 and 56 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs
@@ -156,6 +157,11 @@ data/        raw (gitignored) and processed outputs
   rule — `profile` is lit in 80% of those episodes, yet `dispersion` reads z = 16.5
   against its 1.9. Rotation is injected as norm-preserving, and `dispersion` is
   *defined* as channels spreading with the total conserved: the same signature.
+- **The p-values in `ACHIEVABILITY.md` were invalid and are corrected.** They
+  pooled windows, inflating the apparent sample size **26.6×**; four were
+  published as `p = 0`. The AUC values and verdicts stand (median shift 0.020),
+  but three results significant as published are not significant at the episode
+  level — including one published at `p = 3.4e-15` that is actually `p = 0.144`.
 - **Every AUC here is understated by about 1%.** 30 s windows stepped every 5 s
   mean six "pre-onset" windows per episode actually contain faulted data, so the
   healthy reference is contaminated toward the fault. Measured cost: +0.0072 (T11)

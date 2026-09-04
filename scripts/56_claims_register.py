@@ -235,6 +235,19 @@ CLAIMS = [
      "Implemented and scored since the guard was written, printed to stdout and "
      "captured nowhere until now."),
 
+    ("L09", LIMITATION,
+     "Every p-value in ACHIEVABILITY.md was computed by pooling windows, "
+     "inflating the apparent sample size 26.6×. Four were published as p = 0; "
+     "three results significant as published are not significant at the episode "
+     "level, including one published at p = 3.4e-15 that is actually p = 0.144.",
+     "UNIT_OF_ANALYSIS.md",
+     ["sample-size inflation from pooling windows",
+      "published statistics that were p = 0 exactly",
+      "results significant as published, null when corrected",
+      "largest AUC shift from the correction"],
+     "The AUC point estimates and verdicts stand -- median shift 0.020. The p "
+     "column does not. Corrected inline in ACHIEVABILITY.md rather than deleted."),
+
     # ------------------------------------------------------------- withdrawn
     ("W01", WITHDRAWN,
      "WITHDRAWN: that the monitor fails because the decoder has lost its "

@@ -3560,3 +3560,60 @@ healthy group (0.163 and 0.387). If the pipeline were mislabelling episodes thes
 would sit with the faults. A sanity check that passes.
 
 Verifier 78 claims, register 32, coverage 78/78, audit passes.
+
+---
+
+## 4 September 2026 — Sweeping for the error I found by accident
+
+Preregistered in `research/UNIT_OF_ANALYSIS_NOTE.md` with three predictions.
+Report: `reports/UNIT_OF_ANALYSIS.md`.
+
+### Why sweep
+
+Yesterday's per-mode work turned up, by accident, that claim C02's headline is a
+**window-level** statistic while C04 says windows within a session are not
+independent. Finding one instance of an error class by accident is not a reason
+to fix one instance.
+
+`reports/ACHIEVABILITY.md` carried a whole column of p-values built the same way,
+and the reductio was sitting in its first table: `decoder_guard` at AUC **0.491**,
+which the report's own verdict column calls *"at chance — no information"*,
+carrying **p = 0.046**.
+
+### All three predictions confirmed
+
+| predicted | outcome |
+|---|---|
+| AUC point estimates barely move (< 0.05) | median shift **0.0202**; largest **0.0545**, slightly over the bound I stated |
+| p-values become ordinary numbers | `p = 0` → < 0.001; `1.2e-303` → < 0.001; `2e-137` → 0.004 |
+| at least one significant result flips to null, candidate the 0.491 row | **three flipped**, including that row: 0.046 → **0.848** |
+
+Measured sample-size inflation: **26.6×** — 22,590 windows standing in for 850
+episodes.
+
+The starkest correction: `robust_dispersion` at the calibrate-once baseline was
+published at **p = 3.4×10⁻¹⁵** and is actually **p = 0.144**. Fifteen orders of
+magnitude, from an effect that is not there.
+
+### What this does and does not touch
+
+**Does not:** any conclusion. "0 of 48 configurations pass the gates" is a count,
+the operating-point bound is arithmetic, and the aggregation limit is itself the
+reason the correction was needed. The AUC point estimates and every verdict in
+the report stand — an AUC is descriptive and does not assume independence.
+
+**Does:** whether the supporting statistics were stated honestly. They were not.
+
+### How it is recorded
+
+Corrected **inline in `ACHIEVABILITY.md`**, at the top, with the original numbers
+left exactly as first computed and a table of what each becomes. Not deleted, not
+quietly recomputed. The corrected p-values report a **floor of < 0.001** rather
+than an exact value, because a bootstrap cannot resolve a p finer than its own
+resolution — which is the same discipline this whole correction is about, and is
+precisely what the pooled test forgot when it printed `p = 0`.
+
+One gap stated in the report: the T5 calibrate-once table is not covered, because
+`episode_scores_T5.csv` was never produced — that baseline was never run for T5.
+
+Verifier 82 claims, register 33, coverage 82/82.

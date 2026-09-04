@@ -143,7 +143,7 @@ Attribution is better than chance but not usable: 56% on T11 (chance 25%) and 52
 - **Checks:** 3 — `attribution accuracy overall, T11 (chance 0.25)`; `attribution accuracy overall, T5 (chance 0.33)`; `GAIN_DRIFT named correctly, T11`
 - **Note:** Implemented and scored since the guard was written, printed to stdout and captured nowhere until now.
 
-## LIMITATION (8)
+## LIMITATION (9)
 
 ### L01
 
@@ -200,6 +200,14 @@ A candidate feature can clear the bar on one participant and fail badly on the o
 - **Report:** [`FEATURE_STUDY_RESULT.md`](../reports/FEATURE_STUDY_RESULT.md)
 - **Checks:** 3 — `F3 spectral, T11 (cleared the bar here)`; `F3 spectral, T5 (failed badly here)`; `F0 control, T11 (current features, generic scorer)`
 - **Note:** The both-participants rule in action; this is why it exists.
+
+### L09
+
+Every p-value in ACHIEVABILITY.md was computed by pooling windows, inflating the apparent sample size 26.6×. Four were published as p = 0; three results significant as published are not significant at the episode level, including one published at p = 3.4e-15 that is actually p = 0.144.
+
+- **Report:** [`UNIT_OF_ANALYSIS.md`](../reports/UNIT_OF_ANALYSIS.md)
+- **Checks:** 4 — `sample-size inflation from pooling windows`; `published statistics that were p = 0 exactly`; `results significant as published, null when corrected`; `largest AUC shift from the correction`
+- **Note:** The AUC point estimates and verdicts stand -- median shift 0.020. The p column does not. Corrected inline in ACHIEVABILITY.md rather than deleted.
 
 ### L08
 
@@ -297,4 +305,4 @@ The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per 
 
 ---
 
-**Coverage:** 78 of 78 verifier checks are cited by a register entry.
+**Coverage:** 82 of 82 verifier checks are cited by a register entry.

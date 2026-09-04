@@ -4,6 +4,32 @@
 
 > Every threshold, state machine, dwell and hysteresis setting is stripped away. This asks only whether a single window's raw score can separate the early-warning interval from healthy recording. AUC 0.50 is chance.
 
+> ### ⚠️ Correction, 4 September 2026 — the `p` column below is invalid
+>
+> **Every p-value in this report was computed by pooling windows**, which claim
+> C04 shows are not independent within a session (lag-1 r = 0.995). Measured
+> inflation of the apparent sample size: **26.6×**. The reductio is visible in the
+> first table below — `decoder_guard` scores AUC **0.491**, which the verdict
+> column itself calls *"at chance — no information"*, yet carries **p = 0.046**.
+>
+> The **AUC values and the verdicts stand**: an AUC is a descriptive statistic and
+> does not assume independence, and recomputing at the episode level moves the
+> point estimates by a median of 0.020. The **p column does not stand.**
+> Recomputed with the episode as the unit and a bootstrap over episodes:
+>
+> | | p as published | p corrected |
+> |---|---|---|
+> | `decoder_guard`, recent normal | 0 | < 0.001 |
+> | `distribution_shift`, recent normal | 1.2e-303 | < 0.001 |
+> | `mean_activity`, recent normal | 2e-137 | 0.004 |
+> | **`decoder_guard`, calibrate once** | **0.046** | **0.848** ⚠️ |
+> | **`mean_activity`, calibrate once** | **0.0014** | **0.217** ⚠️ |
+> | **`robust_dispersion`, calibrate once** | **3.4e-15** | **0.144** ⚠️ |
+>
+> Three results were significant as published and are not significant now. The
+> numbers below are left exactly as they were first computed; the full corrected
+> table is `reports/UNIT_OF_ANALYSIS.md`.
+
 
 ## T11 — calibrate once baseline
 
