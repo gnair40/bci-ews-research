@@ -224,7 +224,12 @@ def figure_auc() -> None:
         for s in ("left", "bottom"):
             ax.spines[s].set_color(GRID)
         ax.tick_params(colors=INK2, labelsize=8.5)
-    axes[0].set_ylabel("ability to spot the fault before performance drops",
+    # Window-level, and labelled so. The bars pool every window from every
+    # episode, which is fine for a descriptive AUC and NOT fine for a p-value --
+    # see reports/UNIT_OF_ANALYSIS.md, where the pooled p-values in
+    # ACHIEVABILITY.md are corrected. No inference is attached to these bars.
+    axes[0].set_ylabel("ability to spot the fault before performance drops\n"
+                       "(window-level AUC)",
                        fontsize=9, color=INK2)
     h, lab = axes[0].get_legend_handles_labels()
     fig.legend(h, lab, loc="upper right", frameon=False, fontsize=9, ncol=2,

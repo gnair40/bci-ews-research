@@ -143,7 +143,7 @@ Attribution is better than chance but not usable: 56% on T11 (chance 25%) and 52
 - **Checks:** 3 — `attribution accuracy overall, T11 (chance 0.25)`; `attribution accuracy overall, T5 (chance 0.33)`; `GAIN_DRIFT named correctly, T11`
 - **Note:** Implemented and scored since the guard was written, printed to stdout and captured nowhere until now.
 
-## LIMITATION (9)
+## LIMITATION (10)
 
 ### L01
 
@@ -208,6 +208,14 @@ Every p-value in ACHIEVABILITY.md was computed by pooling windows, inflating the
 - **Report:** [`UNIT_OF_ANALYSIS.md`](../reports/UNIT_OF_ANALYSIS.md)
 - **Checks:** 4 — `sample-size inflation from pooling windows`; `published statistics that were p = 0 exactly`; `results significant as published, null when corrected`; `largest AUC shift from the correction`
 - **Note:** The AUC point estimates and verdicts stand -- median shift 0.020. The p column does not. Corrected inline in ACHIEVABILITY.md rather than deleted.
+
+### L10
+
+Three statistical error classes were found in this project, all by accident, all by checks written after the work they caught. They are now encoded as a linter over all 61 scripts, which passes with 0 unreviewed sites and 8 deliberate ones documented.
+
+- **Report:** [`STATISTICAL_HYGIENE.md`](../reports/STATISTICAL_HYGIENE.md)
+- **Checks:** 2 — `sample-size inflation from pooling windows`; `results significant as published, null when corrected`
+- **Note:** The linter missed its own motivating example on the first run, because the test was wrapped in a local helper. Fixed before its output was trusted -- the fourth time a checking tool here was wrong before it was useful.
 
 ### L08
 

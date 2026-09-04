@@ -72,6 +72,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/MODE_SEPARABILITY.md`](reports/MODE_SEPARABILITY.md) | The mode it never identifies is the easiest one to identify |
 | [`reports/PER_MODE_DETECTION.md`](reports/PER_MODE_DETECTION.md) | Is the headline carried by one easy fault mode? No — and the AUC level it is quoted at |
 | [`reports/UNIT_OF_ANALYSIS.md`](reports/UNIT_OF_ANALYSIS.md) | **Every published p-value recomputed** — three were significant and are not |
+| [`reports/STATISTICAL_HYGIENE.md`](reports/STATISTICAL_HYGIENE.md) | A linter for the three statistical mistakes this project actually made |
 
 ## How the argument runs
 
@@ -125,9 +126,18 @@ python3 scripts/55_reproducibility_audit.py
 python3 scripts/56_claims_register.py
 ```
 
-It regenerates the claims register and fails if anything marked ESTABLISHED
+```bash
+python3 scripts/61_statistical_hygiene.py
+```
+
+It scans every script for the three statistical error classes this project has
+actually made — inference on pooled non-independent units, a comparison that can
+never be true, and inverse-variance weighting of a bounded statistic — and fails
+on any site not explicitly reviewed.
+
+The register regenerates and fails if anything marked ESTABLISHED
 cites a check that does not exist, or if a verifier check is cited by no claim.
-Currently 33 claims covering 82 of 82 checks.
+Currently 34 claims covering 82 of 82 checks.
 
 The audit checks that the reproduction path itself holds: every import declared, every
 consumed file produced by some script, no ordering inversions, and every script
@@ -137,7 +147,7 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-60; 31, 55 and 56 run last, everything else in order
+scripts/     01-61; 31, 55, 56 and 61 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs

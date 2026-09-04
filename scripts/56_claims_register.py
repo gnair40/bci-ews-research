@@ -248,6 +248,19 @@ CLAIMS = [
      "The AUC point estimates and verdicts stand -- median shift 0.020. The p "
      "column does not. Corrected inline in ACHIEVABILITY.md rather than deleted."),
 
+    ("L10", LIMITATION,
+     "Three statistical error classes were found in this project, all by "
+     "accident, all by checks written after the work they caught. They are now "
+     "encoded as a linter over all 61 scripts, which passes with 0 unreviewed "
+     "sites and 8 deliberate ones documented.",
+     "STATISTICAL_HYGIENE.md",
+     ["sample-size inflation from pooling windows",
+      "results significant as published, null when corrected"],
+     "The linter missed its own motivating example on the first run, because "
+     "the test was wrapped in a local helper. Fixed before its output was "
+     "trusted -- the fourth time a checking tool here was wrong before it was "
+     "useful."),
+
     # ------------------------------------------------------------- withdrawn
     ("W01", WITHDRAWN,
      "WITHDRAWN: that the monitor fails because the decoder has lost its "

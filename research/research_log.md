@@ -3617,3 +3617,65 @@ One gap stated in the report: the T5 calibrate-once table is not covered, becaus
 `episode_scores_T5.csv` was never produced — that baseline was never run for T5.
 
 Verifier 82 claims, register 33, coverage 82/82.
+
+---
+
+## 4 September 2026 — Encoding my own mistakes as a linter, and it failed its first test
+
+Report: `reports/STATISTICAL_HYGIENE.md`. Tool: `61_statistical_hygiene.py`.
+
+### Why
+
+At the end of the last piece of work I noticed a pattern and said it plainly:
+three statistical error classes found in this project, **all by accident**, all
+caught by checks written after the work they caught. Noticing that and then
+carrying on waiting for the fourth would have been the wrong response to my own
+observation.
+
+So the three are now static checks:
+
+1. **Inference on pooled, non-independent units** — cost: 4 p-values published as
+   exactly `0`, sample size inflated 26.6×, three "significant" results not real.
+2. **A comparison that can never be true** — cost: a fault-mix control that
+   measured nothing and looked exactly like one that passed.
+3. **An estimator biased by its own weights** — cost: a pooled AUC inflated from
+   0.675 to 0.836.
+
+### It missed its own motivating example
+
+The first run flagged one site and **did not flag `26_achievability.py`** — the
+code the check was written for. That file wraps `mannwhitneyu` inside a local
+`auc(pos, neg)`, so the pooled variable never appears in the test's arguments.
+
+A linter that cannot find the case it was written for is worse than no linter,
+because it converts *unchecked* into *checked and clean*. Fixed by detecting local
+functions that contain a test call and treating calls to them as test calls. That
+took it from 1 site to 9, including all three known-bad lines in script 26.
+
+**This is the fourth time here that a checking tool was itself wrong before it was
+useful.** The reproducibility audit first reported 27 problems of which 1 was real;
+this one reported 1 while missing the 3 that mattered. Opposite directions, same
+mistake — and both were caught only by asking *does it find the thing I already
+know is there?* That question is now the first thing I do with any check I write.
+
+### What it found once it worked
+
+Nine sites, eight of them deliberate and now documented with reasons: the pooled
+statistics computed on purpose so the register can record what claim C02's number
+is, and the inverse-variance weights Cochran's Q requires, already labelled
+`..._BIASED_DO_NOT_QUOTE`.
+
+One real change: `23_benchmark_figures.py` pools windows for a descriptive bar
+chart with no inference attached — legitimate — but after correcting the same
+quantity elsewhere its y-axis now says **"(window-level AUC)"**, so the number is
+not mistaken for the episode-level one.
+
+### The honest limit
+
+These are the three mistakes *this project* made. A fourth class will not be
+caught until it is found some other way and added. Learning from your own errors
+only ever covers your own errors — which is an argument for the checks, not
+against them, but not an argument that the checks are sufficient.
+
+Four gates now: verifier (82 claims), reproducibility audit, claims register
+(34 claims, 82/82 coverage), statistical hygiene. All pass.
