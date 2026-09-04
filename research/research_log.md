@@ -3416,3 +3416,77 @@ failed with two KeyErrors. Caught because the verifier failed, which is what it 
 for. Restored.
 
 Register now at 29 claims, verifier at 71, coverage 71/71. Audit passes.
+
+---
+
+## 4 September 2026 — The mode it never identifies is the easiest one to identify
+
+Preregistered in `research/MODE_SEPARABILITY_NOTE.md`, prediction included.
+Report: `reports/MODE_SEPARABILITY.md`. **Exploratory** — a supervised probe using
+labels a monitor never has.
+
+### The question
+
+Attribution names `GEOMETRY_ROTATION` correctly 0% of the time. Two live
+explanations with opposite consequences: the four components throw the
+information away (fixable design problem), or the modes leave indistinguishable
+traces (the capability should be dropped, not improved).
+
+### The answer, and the prediction was met
+
+**Rotation is the most separable mode there is.** Every pair involving it sits at
+the top of the table on both participants; every pair without it sits at the
+bottom.
+
+| pair | T11 | T5 |
+|---|---|---|
+| rotation vs rate loss | **0.977** | **0.999** |
+| gain drift vs rotation | **0.920** | **0.998** |
+| dropout vs rotation | **0.857** | **1.000** |
+| gain drift vs rate loss | 0.777 | 0.586 |
+| dropout vs gain drift | 0.598 | 0.624 |
+| dropout vs rate loss | 0.574 | 0.657 |
+
+The preregistered prediction was gain drift vs rotation above 0.8; it came in at
+0.920 and 0.998, by the mechanism stated in advance — gain drift scales channels
+independently (a random per-channel pattern), rotation exchanges activity between
+specific pairs (a structured one). A signed per-channel vector sees it; the
+`dispersion` component, which discards the signs and the pairing, cannot.
+
+> **The mode the monitor gets wrong 100% of the time is the mode most easily
+> identified from the very features it is looking at.**
+
+So the attribution failure is definitively a design problem, not missing
+information. That resolves the question `ATTRIBUTION_ACCURACY.md` left open.
+
+### But the rest of the table is a real ceiling, and it matters
+
+Dropout, gain drift and rate loss separate from *each other* at only 0.57–0.78 —
+two of those three pairs barely above chance, on both participants. That is not
+fixable by better components. Those faults genuinely leave similar traces in
+per-channel activity, which they should: each reduces or rescales what channels
+report, differing mainly in which channels and by how much.
+
+So the guard's 56% attribution is **not** all mechanism failure. The honest split:
+
+- **rotation** — the guard's fault, fixable
+- **dropout / gain / rate** — the features' fault, not fixable this way
+
+I would have got this wrong in either direction without the probe. Reading only
+the 0% I would have called attribution broken; reading only the 56% I would have
+called it a ceiling. It is both, in different places.
+
+### Discipline notes
+
+The probe is an **upper bound**: it fits a discriminant per pair using the
+injected labels, so a monitor could not reach these numbers even with perfect
+components. λ was fixed at 0.1·trace/p in advance rather than tuned, and
+validation is leave-one-**session**-out because episodes from one block are not
+independent. Filed EXPLORATORY in the register as committed in advance, because a
+supervised probe departs from the one-class discipline the rest of the project
+holds to.
+
+T5 has only 3 sessions after filtering to the test split, so its near-1.0 values
+mean "clearly separable", not a precise estimate. T11's 12 sessions carry it.
+
+Verifier 74 claims, register 31 claims, coverage 74/74, audit passes.

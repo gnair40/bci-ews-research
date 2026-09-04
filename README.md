@@ -69,6 +69,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/WINDOW_OVERLAP.md`](reports/WINDOW_OVERLAP.md) | An open limitation, closed with a number |
 | [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY_AUDIT.md) | Whether any of this actually reproduces — and the claim that did not |
 | [`reports/ATTRIBUTION_ACCURACY.md`](reports/ATTRIBUTION_ACCURACY.md) | When it warns, does it name the right cause? One mode: never |
+| [`reports/MODE_SEPARABILITY.md`](reports/MODE_SEPARABILITY.md) | The mode it never identifies is the easiest one to identify |
 
 ## How the argument runs
 
@@ -111,7 +112,7 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes seventy-one headline figures from `data/processed/` and compares each
+It recomputes seventy-four headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ```bash
@@ -124,7 +125,7 @@ python3 scripts/56_claims_register.py
 
 It regenerates the claims register and fails if anything marked ESTABLISHED
 cites a check that does not exist, or if a verifier check is cited by no claim.
-Currently 29 claims covering 71 of 71 checks.
+Currently 31 claims covering 74 of 74 checks.
 
 The audit checks that the reproduction path itself holds: every import declared, every
 consumed file produced by some script, no ordering inversions, and every script
@@ -134,7 +135,7 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-57; 31, 55 and 56 run last, everything else in order
+scripts/     01-58; 31, 55 and 56 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs

@@ -298,6 +298,26 @@ CLAIMS = [
      "Reported because the signs were committed in advance; nothing is claimed "
      "from either."),
 
+    ("E04", EXPLORATORY,
+     "The information to identify GEOMETRY_ROTATION is the strongest signal in "
+     "the feature set (pairwise AUC 0.86–0.98 on T11, 1.00 on T5) — so the "
+     "attribution failure is a component-design problem, not missing information.",
+     "MODE_SEPARABILITY.md",
+     ["gain-drift vs rotation separability, T11",
+      "gain-drift vs rotation separability, T5"],
+     "A supervised probe using labels a monitor never has: an upper bound, not "
+     "monitor performance. The mode the guard always gets wrong is the easiest "
+     "one to identify."),
+
+    ("E05", EXPLORATORY,
+     "The other three modes separate from each other at only 0.57–0.78, so the "
+     "guard's 56% attribution is not all mechanism failure — there is a real "
+     "information ceiling for dropout, gain drift and rate loss.",
+     "MODE_SEPARABILITY.md",
+     ["hardest mode pair, T11 (the real ceiling)"],
+     "Rotation is the guard's fault and fixable; the other three are the "
+     "features' fault and are not fixable this way."),
+
     ("E03", EXPLORATORY,
      "The decoder-guard operating point on T11 is 50.46, giving 3.41 false "
      "alarms per hour against a 0.1/h budget.",

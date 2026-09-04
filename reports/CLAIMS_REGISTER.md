@@ -245,7 +245,7 @@ Whether the session effect is failed detection or degraded labels cannot be deci
 - **Checks:** 2 — `P5 on unambiguous episodes only, T11 (underpowered)`; `spurious crossings vs monitor AUC, T11`
 - **Note:** Not answered no — unanswerable. At n = 7, |ρ| must reach ~0.79 to clear p < 0.05, so the filtering removed the power along with the ambiguity.
 
-## EXPLORATORY (3)
+## EXPLORATORY (5)
 
 ### E01
 
@@ -263,6 +263,22 @@ Preregistered predictor P4 (within-day drift) came out with the wrong sign (+0.5
 - **Checks:** 2 — `P4 drift came out with the WRONG sign, T11`; `P1 healthy dispersion, T11 (null)`
 - **Note:** Reported because the signs were committed in advance; nothing is claimed from either.
 
+### E04
+
+The information to identify GEOMETRY_ROTATION is the strongest signal in the feature set (pairwise AUC 0.86–0.98 on T11, 1.00 on T5) — so the attribution failure is a component-design problem, not missing information.
+
+- **Report:** [`MODE_SEPARABILITY.md`](../reports/MODE_SEPARABILITY.md)
+- **Checks:** 2 — `gain-drift vs rotation separability, T11`; `gain-drift vs rotation separability, T5`
+- **Note:** A supervised probe using labels a monitor never has: an upper bound, not monitor performance. The mode the guard always gets wrong is the easiest one to identify.
+
+### E05
+
+The other three modes separate from each other at only 0.57–0.78, so the guard's 56% attribution is not all mechanism failure — there is a real information ceiling for dropout, gain drift and rate loss.
+
+- **Report:** [`MODE_SEPARABILITY.md`](../reports/MODE_SEPARABILITY.md)
+- **Checks:** 1 — `hardest mode pair, T11 (the real ceiling)`
+- **Note:** Rotation is the guard's fault and fixable; the other three are the features' fault and are not fixable this way.
+
 ### E03
 
 The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per hour against a 0.1/h budget.
@@ -273,4 +289,4 @@ The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per 
 
 ---
 
-**Coverage:** 71 of 71 verifier checks are cited by a register entry.
+**Coverage:** 74 of 74 verifier checks are cited by a register entry.

@@ -637,6 +637,31 @@ def _att_prof_lit():
         "rotation_diagnosis"]["fraction_lit"]["profile"]
 
 
+# ------------------------------------------------------- mode separability
+
+def _sep(P: str, key: str):
+    sfx = "" if P == "T11" else f"_{P}"
+    return json.loads((OUT / f"mode_separability{sfx}.json").read_text())[key]
+
+
+@claim("gain-drift vs rotation separability, T11", 0.920, 0.01,
+       "MODE_SEPARABILITY — the preregistered prediction, met")
+def _sep_key_t11():
+    return _sep("T11", "gain_drift_vs_rotation_auc")
+
+
+@claim("gain-drift vs rotation separability, T5", 0.998, 0.01,
+       "MODE_SEPARABILITY — replicates")
+def _sep_key_t5():
+    return _sep("T5", "gain_drift_vs_rotation_auc")
+
+
+@claim("hardest mode pair, T11 (the real ceiling)", 0.574, 0.01,
+       "MODE_SEPARABILITY — dropout vs rate-loss barely separates")
+def _sep_min():
+    return _sep("T11", "min_pairwise_auc")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0
