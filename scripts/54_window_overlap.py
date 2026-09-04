@@ -162,7 +162,48 @@ def main() -> int:
         res["direction_matches_prediction"] = bool(res["mean_delta"] > 0)
     print("\n" + json.dumps(res, indent=2))
     (OUT / f"window_overlap{sfx}.json").write_text(json.dumps(res, indent=2))
+
+    sign_test_across_participants()
     return 0
+
+
+def sign_test_across_participants() -> None:
+    """Combined sign test, once both participants' files exist.
+
+    Most of the Wilcoxon's power goes to ties -- six of nineteen days come out
+    exactly equal -- so the per-participant tests look weak at p = 0.13. The
+    direction was committed before running, so a one-sided sign test across both
+    arrays is the appropriate test, and it is computed HERE rather than in an
+    ad-hoc shell one-liner. It was written that way first, which left
+    31_verify_claims.py depending on a file no committed script produced; the
+    reproducibility audit caught it.
+    """
+    parts = []
+    for f in ("window_overlap.csv", "window_overlap_T5.csv"):
+        if (OUT / f).exists():
+            parts.append(pd.read_csv(OUT / f))
+    if len(parts) < 2:
+        print("\n(sign test skipped: run both participants first)")
+        return
+    d = pd.concat(parts)
+    nz = d[d.delta != 0]
+    up, n = int((nz.delta > 0).sum()), len(nz)
+    if n == 0:
+        return
+    out = {
+        "n_days_total": int(len(d)),
+        "n_tied_exactly": int((d.delta == 0).sum()),
+        "n_nonzero": n, "n_improved": up, "n_worsened": n - up,
+        "sign_test_p_one_sided":
+            round(float(stats.binomtest(up, n, 0.5, alternative="greater").pvalue), 4),
+        "sign_test_p_two_sided":
+            round(float(stats.binomtest(up, n, 0.5, alternative="two-sided").pvalue), 4),
+        "pooled_mean_delta": round(float(d.delta.mean()), 4),
+        "pooled_max_delta": round(float(d.delta.max()), 4),
+    }
+    (OUT / "window_overlap_signtest.json").write_text(json.dumps(out, indent=2))
+    print("\nsign test across both participants:")
+    print(json.dumps(out, indent=2))
 
 
 if __name__ == "__main__":

@@ -66,6 +66,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/WHAT_DECODER_ERROR_MEANS.md`](reports/WHAT_DECODER_ERROR_MEANS.md) | What "the decoder is failing" actually meant — and where this line of work stops |
 | [`reports/SEVERITY_LADDER_VALIDITY.md`](reports/SEVERITY_LADDER_VALIDITY.md) | Whether "severity" means the same thing on every session (it does not) |
 | [`reports/WINDOW_OVERLAP.md`](reports/WINDOW_OVERLAP.md) | An open limitation, closed with a number |
+| [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY_AUDIT.md) | Whether any of this actually reproduces — and the claim that did not |
 
 ## How the argument runs
 
@@ -95,7 +96,11 @@ python3 scripts/24_benchmark_matrix.py
 ```
 
 Raw data (~9 GB) is not committed; the download script verifies SHA-256
-checksums against a manifest. Scripts are numbered in dependency order.
+checksums against a manifest. Scripts are numbered in dependency order, with
+**two exceptions that run last**: `31_verify_claims.py` and
+`55_reproducibility_audit.py` both consume the output of most other scripts, so
+their numbers record when they were written rather than where they run. That is
+checked, not assumed — see below.
 
 To check that the numbers quoted in these documents still match the data they
 came from:
@@ -107,10 +112,19 @@ python3 scripts/31_verify_claims.py
 It recomputes sixty-four headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
+```bash
+python3 scripts/55_reproducibility_audit.py
+```
+
+It checks that the reproduction path itself holds: every import declared, every
+consumed file produced by some script, no ordering inversions, and every script
+named in a document present. It found a headline figure that no committed script
+regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY_AUDIT.md).
+
 ## Layout
 
 ```
-scripts/     01-54, numbered in the order they must run
+scripts/     01-55; 31 and 55 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs

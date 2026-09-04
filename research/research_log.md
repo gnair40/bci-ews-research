@@ -3233,3 +3233,65 @@ quantification (here) and the severity-ladder validity check (earlier today).
 Neither changed a conclusion; both replaced an assumption with a measurement.
 
 Verifier now at 64 claims; all match.
+
+---
+
+## 3 September 2026 — Auditing whether any of this reproduces
+
+Report: `reports/REPRODUCIBILITY_AUDIT.md`. Tool: `55_reproducibility_audit.py`.
+
+### Why
+
+Fifty-five scripts, nineteen reports, and a verifier depending on a web of
+intermediate files. The README asserted the scripts were "numbered in dependency
+order" — an assertion I had written and never checked. With everything else
+closed, the largest remaining risk in the project was that none of it runs on a
+fresh clone.
+
+### It found a claim that could not be reproduced
+
+**The combined sign test in `reports/WINDOW_OVERLAP.md` — 11 of 13 days improved,
+p = 0.011 — was computed in an ad-hoc shell one-liner earlier today.**
+`31_verify_claims.py` was checking a JSON file that no committed script
+regenerated. A fresh clone would have failed that claim, and the verifier passing
+on my machine proved nothing about it.
+
+That is exactly the failure this tool exists to catch: **a verified claim resting
+on an unreproducible file looks identical to a verified claim.** I had added it to
+the verifier the same hour I computed it, which felt rigorous and was not. The
+test now lives in `54_window_overlap.py` and produces the same numbers.
+
+### And a false statement in my own README
+
+`31_verify_claims.py` reads output from fifteen higher-numbered scripts — it
+recomputes every headline figure from whatever the pipeline produced, so its
+number records when it was written, not where it runs. "Numbered in dependency
+order" was simply untrue. Renumbering would break the script names quoted
+throughout the reports, so the README now states the two exceptions instead.
+
+### Three bugs in the audit itself, before I trusted its output
+
+A tool that reports its own artefacts as findings is worse than no tool, so these
+are in the report too:
+
+1. **f-strings parsed by regex** — `f"calibration_curve{sfx}.csv"` was captured as
+   the filename `}.csv` and reported as an orphan read by ten scripts. Fixed by
+   flattening `JoinedStr` in the AST.
+2. **Filenames held in variables** — `ckpt = OUT / f"staleness{sfx}.csv"` then
+   `to_csv(ckpt)` twenty lines later looked like a read with no write. Fixed by
+   following one level of assignment.
+3. **The audit as its own producer** — the phrase `-> write_text` inside its own
+   allowlist matched the write-call pattern, making it the recorded producer of
+   the decoder files. Fixed by excluding itself from its own scan.
+
+The first pass reported 27 problems. After fixing the tool, 1 was real.
+
+### Where it landed
+
+**PASS.** 6 imports all declared, 35 consumed files all produced, no ordering
+inversions, every script named across 53 documents present. Two files
+(`reference_decoder.npz/.json`) are reached through a function return and are
+named explicitly in `RESOLVED_BY_HAND` with their real producer, so the check is
+a clean gate rather than a permanently-failing one.
+
+Verifier still at 64 claims; all match.
