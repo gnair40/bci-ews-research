@@ -117,3 +117,43 @@ worked around by lowering the threshold.
 | Minimum | a day needs ≥ 5 in each group to be scored, same as everywhere else |
 | Not permitted | lowering the 10° threshold after seeing how many days survive |
 | Reported | both participants, the retained counts per day, and the correlation on whatever days remain |
+
+---
+
+# Addendum 2, 3 September 2026 — does the severity ladder survive per session?
+
+**Written before running.**
+
+## Why this follows
+
+The ceiling result showed achieved fault damage ranges from **+19.8°** (day 665)
+to **+0.4°** (day 783). But every benchmark in this project treats fault severity
+as a **controlled variable** with three ordered levels — `benign`, `sub`,
+`crossing` — calibrated once, globally, in `17_fault_injector.py`.
+
+If damage collapses on some sessions, those three labels do not mean the same
+thing on every day. That is a question about the internal validity of the
+corpus itself, not about any detector, and it has been implicitly assumed
+throughout.
+
+## Prediction, committed
+
+**I expect the ladder to hold on low-baseline sessions and collapse on
+high-baseline ones**, because a session with three degrees of headroom cannot
+express three ordered damage levels. Specifically:
+
+- the fraction of (session × fault mode) cells where damage is monotone in
+  severity should be **negatively** correlated with the session's baseline error;
+- day 783 and day 672 should be among the worst.
+
+If the ladder holds everywhere, the severity calibration is more robust than the
+ceiling result suggested and the corpus is in better shape than I think.
+
+## Fixed in advance
+
+| | |
+|---|---|
+| Measure | median achieved damage per (session, fault mode, severity), as in `50_ceiling_challenge.py` |
+| Monotone | median damage strictly increasing across benign → sub → crossing |
+| Minimum | ≥ 2 episodes per cell, else the cell is reported as unmeasurable rather than dropped silently |
+| Reported | the monotone fraction per session, both participants, and its correlation with baseline error |
