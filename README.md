@@ -33,7 +33,7 @@ works — and the reason is now measured rather than guessed.**
 
 | Finding | |
 |---|---|
-| The monitor detects faults **counting spikes cannot see** | AUC 0.71–0.79 where the trivial baseline sits at 0.40–0.52. Replicated on two participants. |
+| The monitor detects faults **counting spikes cannot see** | AUC 0.71–0.79 where the trivial baseline sits at 0.40–0.52. Replicated on two participants. Not carried by one easy fault mode: removing the most distinctive one moves it by 0.037 and 0.002. |
 | It does **not** mistake a task change for a fault | 15× and 70× separation |
 | It **cannot** be deployed at the specified false-alarm rate | 0 of 48 configurations pass the gates |
 | Why: **one measurement per session** | Lag-1 autocorrelation 0.995. Effective independent samples per session: 0.1 |
@@ -70,6 +70,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY_AUDIT.md) | Whether any of this actually reproduces — and the claim that did not |
 | [`reports/ATTRIBUTION_ACCURACY.md`](reports/ATTRIBUTION_ACCURACY.md) | When it warns, does it name the right cause? One mode: never |
 | [`reports/MODE_SEPARABILITY.md`](reports/MODE_SEPARABILITY.md) | The mode it never identifies is the easiest one to identify |
+| [`reports/PER_MODE_DETECTION.md`](reports/PER_MODE_DETECTION.md) | Is the headline carried by one easy fault mode? No — and the AUC level it is quoted at |
 
 ## How the argument runs
 
@@ -112,7 +113,7 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes seventy-four headline figures from `data/processed/` and compares each
+It recomputes seventy-eight headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ```bash
@@ -125,7 +126,7 @@ python3 scripts/56_claims_register.py
 
 It regenerates the claims register and fails if anything marked ESTABLISHED
 cites a check that does not exist, or if a verifier check is cited by no claim.
-Currently 31 claims covering 74 of 74 checks.
+Currently 32 claims covering 78 of 78 checks.
 
 The audit checks that the reproduction path itself holds: every import declared, every
 consumed file produced by some script, no ordering inversions, and every script
@@ -135,7 +136,7 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-58; 31, 55 and 56 run last, everything else in order
+scripts/     01-59; 31, 55 and 56 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs

@@ -21,7 +21,7 @@ apart.
 | **UNANSWERABLE** | this data cannot decide it — not the same as 'no' |
 | **EXPLORATORY** | not preregistered; hypothesis-generating only |
 
-## ESTABLISHED (14)
+## ESTABLISHED (15)
 
 ### C01
 
@@ -37,7 +37,15 @@ The monitor detects faults that counting spikes cannot see, on both participants
 
 - **Report:** [`EWS_RESULTS.md`](../reports/EWS_RESULTS.md)
 - **Checks:** 3 — `Early-warning AUC, T11 recent-normal`; `Early-warning AUC, T5 recent-normal`; `Early-warning AUC, T11 calibrate-once (should be chance)`
-- **Note:** Replicated. The calibrate-once arm is the control and lands at 0.491.
+- **Note:** Replicated. The calibrate-once arm is the control and lands at 0.491. NOTE: this number is WINDOW-level -- the verifier pools every window. The episode-level equivalent is 0.672 (T11) and 0.742 (T5). Claim C04 says windows within a session are not independent, so the point estimate stands but no interval or p-value may be built on it. See PER_MODE_DETECTION.md.
+
+### C15
+
+The detection headline is not carried by one easy fault mode: removing GEOMETRY_ROTATION moves it by 0.037 on T11 and 0.002 on T5.
+
+- **Report:** [`PER_MODE_DETECTION.md`](../reports/PER_MODE_DETECTION.md)
+- **Checks:** 4 — `headline without GEOMETRY_ROTATION, T11`; `headline without GEOMETRY_ROTATION, T5`; `episode-level headline, T11 (register C02 is window-level)`; `window-level headline reproduces the register, T11`
+- **Note:** Predicted the opposite -- that rotation carried it and removal would drop the headline to 0.60-0.65. Wrong on both counts.
 
 ### C03
 
@@ -289,4 +297,4 @@ The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per 
 
 ---
 
-**Coverage:** 74 of 74 verifier checks are cited by a register entry.
+**Coverage:** 78 of 78 verifier checks are cited by a register entry.

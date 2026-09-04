@@ -59,7 +59,16 @@ def main() -> int:
         d = pd.read_csv(path)
         d = d[d.detector == "decoder_guard"]
 
+        # TWO LEVELS, on purpose. The registered headline (claim C02) is a
+        # WINDOW-level AUC: 31_verify_claims.py concatenates every window and
+        # compares them individually. Every session-level analysis in this
+        # project instead takes one median per episode -- and claim C04 says
+        # windows within a session are not independent (lag-1 r = 0.995), so
+        # the window-level number is a descriptive statistic, not an estimate
+        # with a meaningful sample size. Both are computed here so the two are
+        # visible side by side instead of being silently different.
         healthy, faulted = [], []
+        healthy_w, faulted_w = [], []
         for _, r in d.iterrows():
             s = episode_scores(r)
             ow = int(r.onset_w)
@@ -67,24 +76,37 @@ def main() -> int:
                 continue
             if not bool(r.crossed):
                 healthy.append(float(np.median(s)))
+                healthy_w.append(s)
                 continue
             cw = int(r.crossing_w)
             if cw > ow and len(s) >= cw:
                 faulted.append((r["mode"], float(np.median(s[ow:cw]))))
+                faulted_w.append((r["mode"], s[ow:cw]))
 
         H = np.array(healthy)
         F = pd.DataFrame(faulted, columns=["mode", "score"])
         overall = auc(F.score.values, H)
 
+        Hw = np.concatenate(healthy_w) if healthy_w else np.array([])
+        by_mode_w = {}
+        for m, arr in faulted_w:
+            by_mode_w.setdefault(m, []).append(arr)
+        Ew = np.concatenate([a for _, a in faulted_w]) if faulted_w else np.array([])
+        overall_w = auc(Ew, Hw)
+
         rows = []
         for m, gg in F.groupby("mode"):
+            wl = np.concatenate(by_mode_w[m]) if m in by_mode_w else np.array([])
             rows.append({"mode": m, "n": len(gg),
-                         "auc": round(auc(gg.score.values, H), 4)})
+                         "auc": round(auc(gg.score.values, H), 4),
+                         "auc_window_level": round(auc(wl, Hw), 4),
+                         "n_windows": int(len(wl))})
         no_rot = F[F["mode"] != "GEOMETRY_ROTATION"]
         rot_only = F[F["mode"] == "GEOMETRY_ROTATION"]
 
         r = {"participant": P,
              "n_healthy": int(len(H)), "n_faulted": int(len(F)),
+             "headline_auc_window_level_as_registered": round(overall_w, 4),
              "headline_auc": round(overall, 4),
              "auc_without_rotation": round(auc(no_rot.score.values, H), 4),
              "auc_rotation_only": round(auc(rot_only.score.values, H), 4)
@@ -99,21 +121,28 @@ def main() -> int:
         results[P] = r
 
         print(f"=== {P} ===")
-        print(f"  headline AUC {r['headline_auc']:.3f}   "
+        print(f"  window-level AUC (as registered) "
+              f"{r['headline_auc_window_level_as_registered']:.3f}")
+        print(f"  episode-level AUC                {r['headline_auc']:.3f}   "
               f"({len(F)} faulted vs {len(H)} healthy episodes)")
         for row in sorted(rows, key=lambda x: -x["auc"]):
-            print(f"    {row['mode']:<20} n={row['n']:>4}   AUC {row['auc']:.3f}")
+            print(f"    {row['mode']:<20} n={row['n']:>4}   "
+                  f"episode {row['auc']:.3f}   window {row['auc_window_level']:.3f}")
         print(f"  rotation only      {r['auc_rotation_only']}")
         print(f"  WITHOUT rotation   {r['auc_without_rotation']:.3f}   "
               f"(drop {r['drop_from_removing_rotation']:+.3f})\n")
 
         md += [f"## {P}", "",
-               f"Headline **{r['headline_auc']:.3f}** over {len(F)} faulted and "
-               f"{len(H)} healthy episodes.", "",
-               "| injected fault | n | AUC |", "|---|---|---|"]
+               f"Window-level (as registered in claim C02): "
+               f"**{r['headline_auc_window_level_as_registered']:.3f}**. "
+               f"Episode-level: **{r['headline_auc']:.3f}**, over {len(F)} faulted "
+               f"and {len(H)} healthy episodes.", "",
+               "| injected fault | n episodes | AUC (episode) | AUC (window) |",
+               "|---|---|---|---|"]
         for row in sorted(rows, key=lambda x: -x["auc"]):
             bold = "**" if row["mode"] == "GEOMETRY_ROTATION" else ""
-            md.append(f"| `{row['mode']}` | {row['n']} | {bold}{row['auc']:.3f}{bold} |")
+            md.append(f"| `{row['mode']}` | {row['n']} | {bold}{row['auc']:.3f}{bold} "
+                      f"| {row['auc_window_level']:.3f} |")
         md += ["",
                f"| | AUC |", "|---|---|",
                f"| headline, all modes | **{r['headline_auc']:.3f}** |",
@@ -122,6 +151,62 @@ def main() -> int:
                "",
                f"Removing rotation moves the headline by "
                f"**{r['drop_from_removing_rotation']:+.3f}**.", ""]
+
+    t11 = results.get("T11", {})
+    t5 = results.get("T5", {})
+    md += ["## The prediction was wrong, on both counts", "",
+           "`research/PER_MODE_DETECTION_NOTE.md` predicted (1) that "
+           "`GEOMETRY_ROTATION` would have the highest per-mode AUC, above 0.8, and "
+           "(2) that removing it would drop the headline to 0.60–0.65.", "",
+           "| | predicted | T11 | T5 |", "|---|---|---|---|",
+           f"| rotation is the highest mode | yes | highest, but at "
+           f"{t11.get('auc_rotation_only', float('nan')):.3f} — **below 0.8**, and tied "
+           f"with GAIN_DRIFT (0.787) | **third**, at "
+           f"{t5.get('auc_rotation_only', float('nan')):.3f} |",
+           f"| headline without rotation | 0.60–0.65 | "
+           f"{t11.get('auc_without_rotation', float('nan')):.3f} "
+           f"(drop {t11.get('drop_from_removing_rotation', 0):+.3f}) | "
+           f"{t5.get('auc_without_rotation', float('nan')):.3f} "
+           f"(drop {t5.get('drop_from_removing_rotation', 0):+.3f}) |", "",
+           "**The headline is not carried by one easy fault mode.** Claim C02 stands "
+           "as registered. On T5 removing rotation changes it by 0.002.", "",
+           "### Why a 16σ signal does not give easy detection", "",
+           "`GEOMETRY_ROTATION` moves the `dispersion` component by **z = 16.5** "
+           "during the early-warning window, yet detects at only 0.75–0.79. That is "
+           "not a contradiction — it is the project's central finding in another "
+           "form. The risk score is the largest of four calibrated components, and "
+           "**healthy episodes produce large component values too**: that is exactly "
+           "why no configuration passes the silence gate. A fault signal sixteen "
+           "deviations from the healthy median still overlaps a healthy distribution "
+           "that is itself wide and heavy-tailed.", "",
+           "Separability and detectability are different questions. Rotation is the "
+           "most *separable* mode (`MODE_SEPARABILITY.md`, AUC 0.86–1.00 against the "
+           "other modes) and only a middling *detectable* one, because separating two "
+           "faults from each other is easier than separating a fault from healthy "
+           "recording.", "",
+           "### The modes disagree between participants, again", "",
+           "`CHANNEL_DROPOUT` is the **worst** mode on T11 (0.560) and the **best** on "
+           "T5 (0.798). This is the same disagreement `ATTRIBUTION_ACCURACY.md` found, "
+           "and it is why no per-mode claim in this project is stated as general.", "",
+           "### A sanity check that passes", "",
+           "The `NONE` control episodes — no fault injected, but they crossed the "
+           "threshold by noise — score **below** the healthy group (0.163 on T11, "
+           "0.387 on T5). If the pipeline were mislabelling episodes, these would sit "
+           "with the faults. They do not.", "",
+           "### A discrepancy this exposed, and it is real", "",
+           "The registered headline is a **window-level** AUC: `31_verify_claims.py` "
+           "concatenates every window and compares them individually. Every "
+           "session-level analysis in this project instead takes one median per "
+           "episode. Both are reported above and they differ: "
+           f"{t11.get('headline_auc_window_level_as_registered', 0):.3f} vs "
+           f"{t11.get('headline_auc', 0):.3f} on T11, and "
+           f"{t5.get('headline_auc_window_level_as_registered', 0):.3f} vs "
+           f"{t5.get('headline_auc', 0):.3f} on T5 — in opposite directions.", "",
+           "Claim **C04** says windows within a session are not independent "
+           "(lag-1 r = 0.995), so the window-level figure is a descriptive statistic "
+           "and not an estimate with a meaningful sample size. Its point value is "
+           "sound; a confidence interval or p-value built on it would not be. The "
+           "register now records that C02's number is window-level.", ""]
 
     (OUT / "per_mode_detection.json").write_text(json.dumps(results, indent=2))
     (REPORTS / "PER_MODE_DETECTION.md").write_text("\n".join(md) + "\n")

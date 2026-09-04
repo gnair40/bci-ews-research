@@ -54,3 +54,34 @@ only because of one fault mode should say so.
 Either way the numbers go into the register, because "is our headline carried by
 one easy case?" is the sort of question that only gets asked if it is written
 down first.
+
+---
+
+## Correction, appended after running — the note mislabelled its own target
+
+**This note said "session-level AUC 0.69 (T11) and 0.71 (T5)". That is wrong.**
+
+Those registered numbers are **window-level**: `31_verify_claims.py` concatenates
+every window from every episode and compares them individually. Every session-level
+analysis elsewhere in this project takes one median per episode instead.
+
+The preregistration is left as written and this correction appended, rather than
+edited in place, because silently fixing a preregistration after seeing results
+destroys the only thing it is for.
+
+The consequence for this study is small — both levels are now computed and
+reported side by side, and the window-level figure reproduces the register
+exactly (0.693 and 0.708). The consequence for the project is not: **claim C02's
+headline is a window-level statistic**, and claim C04 says windows within a
+session are not independent. The point estimate is sound; any p-value or interval
+built on it would not be. Recorded in the register.
+
+## Predictions scored
+
+| | predicted | outcome |
+|---|---|---|
+| rotation is the highest mode, above 0.8 | yes | **wrong** — highest on T11 but 0.789, and only *third* on T5 |
+| headline without rotation falls to 0.60–0.65 | yes | **wrong** — 0.636 on T11 (drop 0.037), 0.740 on T5 (drop 0.002) |
+
+Both wrong, and the study is the more useful for it: the headline is **not**
+carried by one easy fault mode, so C02 stands as registered.

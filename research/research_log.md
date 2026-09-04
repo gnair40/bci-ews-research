@@ -3490,3 +3490,73 @@ T5 has only 3 sessions after filtering to the test split, so its near-1.0 values
 mean "clearly separable", not a precise estimate. T11's 12 sessions carry it.
 
 Verifier 74 claims, register 31 claims, coverage 74/74, audit passes.
+
+---
+
+## 4 September 2026 — Is the headline carried by one easy fault mode? No, and I found a labelling error in the process
+
+Preregistered in `research/PER_MODE_DETECTION_NOTE.md` with two predictions.
+Report: `reports/PER_MODE_DETECTION.md`.
+
+### Why I asked
+
+`GEOMETRY_ROTATION` moves the `dispersion` component by **z = 16.5**. A fault
+that shifts a component by sixteen deviations is not subtle, so the headline
+detection number — registered as claim **C02** and quoted throughout — might be a
+mixture of one trivially detectable mode and three that are not. If so the honest
+claim is "the monitor detects rotation", which is materially different.
+
+### Both predictions were wrong
+
+| | predicted | T11 | T5 |
+|---|---|---|---|
+| rotation is the highest mode, above 0.8 | yes | highest, but **0.789** — and tied with GAIN_DRIFT at 0.787 | **third**, at 0.749 |
+| headline without rotation falls to 0.60–0.65 | yes | **0.636** (drop 0.037) | **0.740** (drop 0.002) |
+
+**The headline is not carried by one easy mode.** C02 stands as registered. On T5,
+removing the most distinctive fault changes it by two thousandths.
+
+### Why a 16σ signal gives only middling detection
+
+This is the project's central finding in another costume. The risk score is the
+largest of four calibrated components, and **healthy episodes produce large
+component values too** — that is precisely why nothing passes the silence gate. A
+fault sixteen deviations from the healthy median still overlaps a healthy
+distribution that is itself wide and heavy-tailed.
+
+Separability and detectability are different questions. Rotation is the most
+*separable* mode (0.86–1.00 against the other modes) and a middling *detectable*
+one, because telling two faults apart is easier than telling a fault from healthy
+recording.
+
+### The labelling error, which is the real find
+
+My own preregistration, written twenty minutes earlier, called the headline
+"session-level AUC". **It is window-level.** `31_verify_claims.py` concatenates
+every window from every episode and compares them individually; every
+session-level analysis elsewhere takes one median per episode.
+
+Both are now computed side by side. The window-level version reproduces the
+register exactly (0.693 and 0.708), which is how I confirmed the diagnosis. The
+episode-level equivalents are 0.672 and 0.742 — differing by 0.02–0.03, **in
+opposite directions** on the two participants.
+
+The consequence for this study is small. The consequence for the project is not:
+**claim C02's headline is a window-level statistic**, and claim C04 says windows
+within a session are not independent (lag-1 r = 0.995). The point estimate is
+sound; any interval or p-value built on it would not be. Now recorded in C02.
+
+I appended the correction to the preregistration rather than editing it. Silently
+fixing a preregistration after seeing results destroys the only thing it is for.
+
+### Two smaller things
+
+`CHANNEL_DROPOUT` is the **worst** mode on T11 (0.560) and the **best** on T5
+(0.798) — the same participant disagreement attribution found, and why no per-mode
+claim here is stated as general.
+
+The `NONE` controls — no fault injected, crossed by noise — score **below** the
+healthy group (0.163 and 0.387). If the pipeline were mislabelling episodes these
+would sit with the faults. A sanity check that passes.
+
+Verifier 78 claims, register 32, coverage 78/78, audit passes.

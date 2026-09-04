@@ -56,7 +56,22 @@ CLAIMS = [
      "EWS_RESULTS.md",
      ["Early-warning AUC, T11 recent-normal", "Early-warning AUC, T5 recent-normal",
       "Early-warning AUC, T11 calibrate-once (should be chance)"],
-     "Replicated. The calibrate-once arm is the control and lands at 0.491."),
+     "Replicated. The calibrate-once arm is the control and lands at 0.491. "
+     "NOTE: this number is WINDOW-level -- the verifier pools every window. The "
+     "episode-level equivalent is 0.672 (T11) and 0.742 (T5). Claim C04 says "
+     "windows within a session are not independent, so the point estimate stands "
+     "but no interval or p-value may be built on it. See PER_MODE_DETECTION.md."),
+
+    ("C15", ESTABLISHED,
+     "The detection headline is not carried by one easy fault mode: removing "
+     "GEOMETRY_ROTATION moves it by 0.037 on T11 and 0.002 on T5.",
+     "PER_MODE_DETECTION.md",
+     ["headline without GEOMETRY_ROTATION, T11",
+      "headline without GEOMETRY_ROTATION, T5",
+      "episode-level headline, T11 (register C02 is window-level)",
+      "window-level headline reproduces the register, T11"],
+     "Predicted the opposite -- that rotation carried it and removal would drop "
+     "the headline to 0.60-0.65. Wrong on both counts."),
 
     ("C03", ESTABLISHED,
      "No configuration is deployable at the specified false-alarm budget: "

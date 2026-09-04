@@ -662,6 +662,36 @@ def _sep_min():
     return _sep("T11", "min_pairwise_auc")
 
 
+# ------------------------------------------------------ per-mode detection
+
+def _pmd(P: str, key: str):
+    return json.loads((OUT / "per_mode_detection.json").read_text())[P][key]
+
+
+@claim("headline without GEOMETRY_ROTATION, T11", 0.636, 0.005,
+       "PER_MODE_DETECTION — the headline is not carried by one mode")
+def _pmd_t11():
+    return _pmd("T11", "auc_without_rotation")
+
+
+@claim("headline without GEOMETRY_ROTATION, T5", 0.740, 0.005,
+       "PER_MODE_DETECTION — removing it changes T5 by 0.002")
+def _pmd_t5():
+    return _pmd("T5", "auc_without_rotation")
+
+
+@claim("episode-level headline, T11 (register C02 is window-level)", 0.672, 0.005,
+       "PER_MODE_DETECTION — the two levels differ and both are now recorded")
+def _pmd_ep():
+    return _pmd("T11", "headline_auc")
+
+
+@claim("window-level headline reproduces the register, T11", 0.693, 0.003,
+       "PER_MODE_DETECTION — confirms what C02's number actually is")
+def _pmd_win():
+    return _pmd("T11", "headline_auc_window_level_as_registered")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0
