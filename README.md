@@ -68,6 +68,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/SEVERITY_LADDER_VALIDITY.md`](reports/SEVERITY_LADDER_VALIDITY.md) | Whether "severity" means the same thing on every session (it does not) |
 | [`reports/WINDOW_OVERLAP.md`](reports/WINDOW_OVERLAP.md) | An open limitation, closed with a number |
 | [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY_AUDIT.md) | Whether any of this actually reproduces — and the claim that did not |
+| [`reports/ATTRIBUTION_ACCURACY.md`](reports/ATTRIBUTION_ACCURACY.md) | When it warns, does it name the right cause? One mode: never |
 
 ## How the argument runs
 
@@ -110,7 +111,7 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes sixty-four headline figures from `data/processed/` and compares each
+It recomputes seventy-one headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ```bash
@@ -123,7 +124,7 @@ python3 scripts/56_claims_register.py
 
 It regenerates the claims register and fails if anything marked ESTABLISHED
 cites a check that does not exist, or if a verifier check is cited by no claim.
-Currently 27 claims covering 64 of 64 checks.
+Currently 29 claims covering 71 of 71 checks.
 
 The audit checks that the reproduction path itself holds: every import declared, every
 consumed file produced by some script, no ordering inversions, and every script
@@ -133,7 +134,7 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-56; 31, 55 and 56 run last, everything else in order
+scripts/     01-57; 31, 55 and 56 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs
@@ -146,8 +147,13 @@ data/        raw (gitignored) and processed outputs
   **This is the binding limitation.**
 - **Open-loop evaluation.** Injected faults are replayed, so no live person
   adapts. Performance is decoder output error, not task success.
-- One fault type stops being a clean test at high severity; attribution names
-  only three of its four possible causes. Both are documented where they matter.
+- One fault type stops being a clean test at high severity.
+- **Attribution names the wrong cause for one fault type, always.** Overall 56%
+  (T11) and 52% (T5) against chance of 25% and 33%, but `GEOMETRY_ROTATION` is
+  named correctly **0%** of the time on both arrays. The cause is not the ranking
+  rule — `profile` is lit in 80% of those episodes, yet `dispersion` reads z = 16.5
+  against its 1.9. Rotation is injected as norm-preserving, and `dispersion` is
+  *defined* as channels spreading with the total conserved: the same signature.
 - **Every AUC here is understated by about 1%.** 30 s windows stepped every 5 s
   mean six "pre-onset" windows per episode actually contain faulted data, so the
   healthy reference is contaminated toward the fault. Measured cost: +0.0072 (T11)

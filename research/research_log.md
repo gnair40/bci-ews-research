@@ -3340,3 +3340,79 @@ writing a summary, because a summary lets a sentence sit between "we found" and
 "we suspect". The register does not.
 
 Verifier at 64 claims; audit passes; register passes.
+
+---
+
+## 3 September 2026 — A capability the project had, scored, and threw away
+
+Report: `reports/ATTRIBUTION_ACCURACY.md`. Script: `57_attribution_accuracy.py`.
+
+### The gap
+
+The guard emits an attributed cause with every warning — "recalibrate", "an
+electrode is failing", "nothing is wrong" are different responses, and the
+docstring says as much. That capability has been implemented since the guard was
+written and **scored since `21_score_report.py` was written**, and then thrown
+away: the confusion matrix printed to stdout during a score-report run and was
+captured nowhere. No report held it, no check verified it — and the README
+carried a limitation about attribution with **no numbers behind it**.
+
+I found this by grepping the reports for "attribution" and getting zero hits.
+
+The prediction was already on record: `EXPECTED_ATTRIBUTION` in the guard maps
+each fault mode to the component it should light, with a comment saying it was
+written in advance "so attribution accuracy is scored against a stated prediction
+rather than whatever mapping happens to fit the results". It just was never
+scored into anything durable.
+
+### The result
+
+| | T11 | T5 |
+|---|---|---|
+| Overall | **56%** (chance 25%) | **52%** (chance 33%) |
+| `GAIN_DRIFT` | 99.3% | 100% |
+| `RATE_LOSS` | 87.1% | 21.2% |
+| `CHANNEL_DROPOUT` | 46.3% | 87.7% |
+| **`GEOMETRY_ROTATION`** | **0%** | **0%** |
+
+Better than chance, nowhere near usable, and one mode fails **completely on both
+arrays** — 200 episodes, not one named correctly. The two middle rows disagree
+between participants badly enough that no story about them survives.
+
+### Diagnosing the total failure, and being wrong about it
+
+I expected the specificity-ordering rule to be the culprit: `dispersion` is
+checked before `profile`, so a lit dispersion buries it. Measuring the calibrated
+components on 40 rotation episodes says otherwise:
+
+| component | median z | fraction lit |
+|---|---|---|
+| dispersion | **16.51** | 100% |
+| profile | 1.92 | 80% |
+
+`profile` **is** lit — in 80% of episodes. But dispersion is nearly nine times
+larger, and **ranked by raw magnitude alone dispersion still wins 98% of the
+time**. The rule is not what buries it.
+
+**The fault is in the components.** The guard defines `dispersion` as *"channels
+spread apart in gain, total conserved"*. `GEOMETRY_ROTATION` is injected with
+Givens rotations, which are **norm-preserving by construction** — channels
+exchange activity while the total is conserved. That is the same signature, by
+definition.
+
+So the preregistered mapping was wrong from the start. Rotation was never going to
+light `profile` more than `dispersion`, because what rotation does to the data
+*is* what `dispersion` measures. Re-ordering the rule would not fix it and neither
+would re-weighting; the components would have to be redefined to be separable.
+
+I did **not** re-tune the ordering to improve the number. The order was fixed in
+advance and the failure is reported as it fell.
+
+### A bug in the middle of this
+
+Adding the diagnosis to the script, my edit consumed the line that writes the
+JSON — so the diagnosis was computed, printed, and never saved, and the verifier
+failed with two KeyErrors. Caught because the verifier failed, which is what it is
+for. Restored.
+
+Register now at 29 claims, verifier at 71, coverage 71/71. Audit passes.

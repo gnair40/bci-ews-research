@@ -210,6 +210,16 @@ CLAIMS = [
       "F0 control, T11 (current features, generic scorer)"],
      "The both-participants rule in action; this is why it exists."),
 
+    ("C14", ESTABLISHED,
+     "Attribution is better than chance but not usable: 56% on T11 (chance 25%) "
+     "and 52% on T5 (chance 33%), with GAIN_DRIFT named correctly 99% of the time.",
+     "ATTRIBUTION_ACCURACY.md",
+     ["attribution accuracy overall, T11 (chance 0.25)",
+      "attribution accuracy overall, T5 (chance 0.33)",
+      "GAIN_DRIFT named correctly, T11"],
+     "Implemented and scored since the guard was written, printed to stdout and "
+     "captured nowhere until now."),
+
     # ------------------------------------------------------------- withdrawn
     ("W01", WITHDRAWN,
      "WITHDRAWN: that the monitor fails because the decoder has lost its "
@@ -230,6 +240,27 @@ CLAIMS = [
      ["trace noise vs monitor AUC, T11 (ties P5 exactly)",
       "P5 controlling for trace noise, T11 (collapses)"],
      "Identical partials both ways is collinearity, not mediation."),
+
+    ("L08", LIMITATION,
+     "GEOMETRY_ROTATION is attributed correctly 0% of the time, on both "
+     "participants — and the cause is the components, not the ranking rule.",
+     "ATTRIBUTION_ACCURACY.md",
+     ["GEOMETRY_ROTATION named correctly, T11", "GEOMETRY_ROTATION named correctly, T5",
+      "during rotation, dispersion z (vs profile 1.92)",
+      "during rotation, profile IS lit (fraction)"],
+     "`profile` is lit in 80% of rotation episodes but `dispersion` sits at "
+     "z = 16.5 against its 1.9; largest-wins would still pick dispersion 98% of "
+     "the time."),
+
+    ("W04", WITHDRAWN,
+     "WITHDRAWN: the preregistered mapping GEOMETRY_ROTATION -> `profile`. "
+     "Rotation is injected with norm-preserving Givens rotations, and "
+     "`dispersion` is defined as channels spreading apart with the total "
+     "conserved — the same signature by definition.",
+     "ATTRIBUTION_ACCURACY.md",
+     ["GEOMETRY_ROTATION named correctly, T11"],
+     "The mapping was wrong from the start. Re-ordering or re-weighting the rule "
+     "cannot fix it; the components would have to be redefined to be separable."),
 
     ("W03", WITHDRAWN,
      "WITHDRAWN: that weaker faults on bad sessions explain the accuracy swing. "

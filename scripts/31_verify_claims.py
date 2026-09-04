@@ -581,6 +581,62 @@ def _wo_sign():
         "sign_test_p_one_sided"]
 
 
+# ----------------------------------------------------- attribution accuracy
+
+def _att(P: str, key=None, mode=None, field=None):
+    r = json.loads((OUT / "attribution_accuracy.json").read_text())
+    if mode:
+        for row in r[P]["rows"]:
+            if row["injected_mode"] == mode:
+                return row[field]
+        raise KeyError(mode)
+    return r[P][key]
+
+
+@claim("attribution accuracy overall, T11 (chance 0.25)", 0.563, 0.01,
+       "ATTRIBUTION_ACCURACY — better than chance, far from usable")
+def _att_t11():
+    return _att("T11", "accuracy")
+
+
+@claim("attribution accuracy overall, T5 (chance 0.33)", 0.525, 0.01,
+       "ATTRIBUTION_ACCURACY — replicates in size")
+def _att_t5():
+    return _att("T5", "accuracy")
+
+
+@claim("GAIN_DRIFT named correctly, T11", 0.993, 0.01,
+       "ATTRIBUTION_ACCURACY — one mode works nearly perfectly")
+def _att_gain():
+    return _att("T11", mode="GAIN_DRIFT", field="accuracy")
+
+
+@claim("GEOMETRY_ROTATION named correctly, T11", 0.0, 0.001,
+       "ATTRIBUTION_ACCURACY — total failure, replicated")
+def _att_rot_t11():
+    return _att("T11", mode="GEOMETRY_ROTATION", field="accuracy")
+
+
+@claim("GEOMETRY_ROTATION named correctly, T5", 0.0, 0.001,
+       "ATTRIBUTION_ACCURACY — total failure, replicated")
+def _att_rot_t5():
+    return _att("T5", mode="GEOMETRY_ROTATION", field="accuracy")
+
+
+@claim("during rotation, dispersion z (vs profile 1.92)", 16.51, 0.2,
+       "ATTRIBUTION_ACCURACY — the components are not separable")
+def _att_disp_z():
+    return json.loads((OUT / "attribution_accuracy.json").read_text())[
+        "rotation_diagnosis"]["median_calibrated_z"]["dispersion"]
+
+
+@claim("during rotation, profile IS lit (fraction)", 0.80, 0.02,
+       "ATTRIBUTION_ACCURACY — so the rule is not what buries it")
+def _att_prof_lit():
+    return json.loads((OUT / "attribution_accuracy.json").read_text())[
+        "rotation_diagnosis"]["fraction_lit"]["profile"]
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

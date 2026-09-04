@@ -21,7 +21,7 @@ apart.
 | **UNANSWERABLE** | this data cannot decide it — not the same as 'no' |
 | **EXPLORATORY** | not preregistered; hypothesis-generating only |
 
-## ESTABLISHED (13)
+## ESTABLISHED (14)
 
 ### C01
 
@@ -127,7 +127,15 @@ Pooling episodes across sessions costs essentially nothing (0.003 AUC), refuting
 - **Checks:** 1 — `cost of pooling episodes across days, T11`
 - **Note:** Tested because it was attractive; reported because it was tested.
 
-## LIMITATION (7)
+### C14
+
+Attribution is better than chance but not usable: 56% on T11 (chance 25%) and 52% on T5 (chance 33%), with GAIN_DRIFT named correctly 99% of the time.
+
+- **Report:** [`ATTRIBUTION_ACCURACY.md`](../reports/ATTRIBUTION_ACCURACY.md)
+- **Checks:** 3 — `attribution accuracy overall, T11 (chance 0.25)`; `attribution accuracy overall, T5 (chance 0.33)`; `GAIN_DRIFT named correctly, T11`
+- **Note:** Implemented and scored since the guard was written, printed to stdout and captured nowhere until now.
+
+## LIMITATION (8)
 
 ### L01
 
@@ -185,7 +193,15 @@ A candidate feature can clear the bar on one participant and fail badly on the o
 - **Checks:** 3 — `F3 spectral, T11 (cleared the bar here)`; `F3 spectral, T5 (failed badly here)`; `F0 control, T11 (current features, generic scorer)`
 - **Note:** The both-participants rule in action; this is why it exists.
 
-## WITHDRAWN (3)
+### L08
+
+GEOMETRY_ROTATION is attributed correctly 0% of the time, on both participants — and the cause is the components, not the ranking rule.
+
+- **Report:** [`ATTRIBUTION_ACCURACY.md`](../reports/ATTRIBUTION_ACCURACY.md)
+- **Checks:** 4 — `GEOMETRY_ROTATION named correctly, T11`; `GEOMETRY_ROTATION named correctly, T5`; `during rotation, dispersion z (vs profile 1.92)`; `during rotation, profile IS lit (fraction)`
+- **Note:** `profile` is lit in 80% of rotation episodes but `dispersion` sits at z = 16.5 against its 1.9; largest-wins would still pick dispersion 98% of the time.
+
+## WITHDRAWN (4)
 
 ### W01
 
@@ -202,6 +218,14 @@ WITHDRAWN: any claim about WHICH property of a session causes the accuracy swing
 - **Report:** [`CEILING_CHALLENGE.md`](../reports/CEILING_CHALLENGE.md)
 - **Checks:** 2 — `trace noise vs monitor AUC, T11 (ties P5 exactly)`; `P5 controlling for trace noise, T11 (collapses)`
 - **Note:** Identical partials both ways is collinearity, not mediation.
+
+### W04
+
+WITHDRAWN: the preregistered mapping GEOMETRY_ROTATION -> `profile`. Rotation is injected with norm-preserving Givens rotations, and `dispersion` is defined as channels spreading apart with the total conserved — the same signature by definition.
+
+- **Report:** [`ATTRIBUTION_ACCURACY.md`](../reports/ATTRIBUTION_ACCURACY.md)
+- **Checks:** 1 — `GEOMETRY_ROTATION named correctly, T11`
+- **Note:** The mapping was wrong from the start. Re-ordering or re-weighting the rule cannot fix it; the components would have to be redefined to be separable.
 
 ### W03
 
@@ -249,4 +273,4 @@ The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per 
 
 ---
 
-**Coverage:** 64 of 64 verifier checks are cited by a register entry.
+**Coverage:** 71 of 71 verifier checks are cited by a register entry.
