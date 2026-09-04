@@ -521,6 +521,38 @@ def _pdc_800():
     return float(d[d.day == 800].prob_better_than_chance.iloc[0])
 
 
+# ------------------------------------------------------- severity ladder
+
+def _sl(P: str, key: str, field=None):
+    sfx = "" if P == "T11" else f"_{P}"
+    v = json.loads((OUT / f"severity_ladder{sfx}.json").read_text())[key]
+    return v[field] if field else v
+
+
+@claim("severity ladder monotone fraction, T11", 0.567, 0.01,
+       "SEVERITY_LADDER_VALIDITY — the corpus assumption, measured")
+def _sl_t11():
+    return _sl("T11", "overall_monotone_fraction")
+
+
+@claim("severity ladder monotone fraction, T5", 0.667, 0.01,
+       "SEVERITY_LADDER_VALIDITY — replicates on the second array")
+def _sl_t5():
+    return _sl("T5", "overall_monotone_fraction")
+
+
+@claim("baseline vs ladder validity, T11 (rho)", -0.677, 0.02,
+       "SEVERITY_LADDER_VALIDITY — both participants, same sign")
+def _sl_r11():
+    return _sl("T11", "baseline_vs_monotone_fraction", "rho")
+
+
+@claim("baseline vs ladder validity, T5 (rho)", -0.926, 0.02,
+       "SEVERITY_LADDER_VALIDITY — both participants, same sign")
+def _sl_r5():
+    return _sl("T5", "baseline_vs_monotone_fraction", "rho")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

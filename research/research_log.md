@@ -3099,3 +3099,79 @@ The association at the centre of it has survived every attack. Everything I buil
 *around* that association has not.
 
 Verifier now at 56 claims; all match.
+
+---
+
+## 3 September 2026 — "Severity" does not mean the same thing on every session
+
+Prediction committed in addendum 2 of `research/CEILING_CHALLENGE_NOTE.md` before
+running. Report: `reports/SEVERITY_LADDER_VALIDITY.md`.
+
+### Why I asked
+
+The ceiling result showed achieved damage running from +19.8° on one session to
++0.4° on another. But every benchmark here treats severity as a **controlled
+variable** with three ordered levels, calibrated once, globally. If damage
+collapses on some sessions, those labels do not describe three ordered things
+everywhere — and that assumption has been load-bearing since the corpus was built.
+
+### The answer, and it replicates
+
+A cell is one session × fault mode; monotone means median damage strictly
+increases benign → sub → crossing. Every cell had enough episodes; none were
+dropped.
+
+| | T11 | T5 |
+|---|---|---|
+| Monotone / measured | 34 / 60 | 16 / 24 |
+| **Monotone fraction** | **0.567** | **0.667** |
+| ρ, baseline error vs monotone fraction | **−0.677** (p = 0.0055) | **−0.926** (p = 0.0080) |
+
+**Both participants, same sign, both significant.** That has not happened before
+in this project — every previous cross-participant test either disagreed or was
+underpowered. It is the most robust finding here, and it is a finding about the
+corpus rather than about any detector.
+
+### Prediction scored
+
+**Right on the substance**: the ladder holds on low-baseline sessions (days 665,
+658, 692 are monotone in all four modes) and collapses on high-baseline ones.
+
+**Wrong on the specifics**: I named days 783 and 672 as likely worst. Day 672 is
+fine at 0.75. The two total failures are days **689 and 758** — and 758 is the
+interesting one, because its baseline is only 58.2°, mid-range, so pure headroom
+does not explain it. It has the **highest directional concentration of any
+session, 0.679**. Baseline and concentration are the same entangled pair from
+yesterday, and this study cannot separate them either. The baseline relationship
+is the one that replicates, so that is the one I state.
+
+### The fault modes disagree between participants
+
+CHANNEL_DROPOUT is the **worst** mode on T11 (0.467) and **perfect** on T5
+(1.000); RATE_LOSS is the best on T11 and the worst on T5. No claim about which
+fault type is hardest to calibrate survives both arrays, and none is made.
+
+### What it does and does not invalidate
+
+**Does not:** the headline results. "0 of 48 pass the gates", the AUC figures and
+the operating-point bound all pool across sessions and severities, and the global
+calibration does hold on average — that is what it was calibrated for.
+
+**Does:** any severity-stratified claim *within* a session. On 43% of T11 cells
+the three levels were not correctly ordered. This is an internal-validity limit
+that had been assumed away since the corpus was built, and it is now measured and
+in the README.
+
+### The second design recommendation
+
+Severity should be calibrated **per session**, against that session's own
+achievable damage range, rather than once globally. A fault labelled "crossing"
+should cross the threshold *on the session it is injected into*, which means
+measuring each session's headroom before choosing its severities instead of after.
+
+That is independent of the first recommendation (a metric with range at the bad
+end and robustness to task geometry). Two concrete, testable design changes have
+now come out of attacking my own results, which is more than the successful
+results produced.
+
+Verifier now at 60 claims; all match.
