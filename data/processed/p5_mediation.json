@@ -1,0 +1,62 @@
+{
+  "T11": {
+    "n_days": 13,
+    "decoder_error_vs_frac_crossed": {
+      "rho": -0.3,
+      "p": 0.3195
+    },
+    "frac_crossed_vs_auc": {
+      "rho": 0.234,
+      "p": 0.4419
+    },
+    "decoder_error_vs_mean_ew_len": {
+      "rho": 0.148,
+      "p": 0.6286
+    },
+    "mean_ew_len_vs_auc": {
+      "rho": 0.198,
+      "p": 0.5171
+    },
+    "decoder_error_vs_median_ew_len": {
+      "rho": 0.197,
+      "p": 0.519
+    },
+    "median_ew_len_vs_auc": {
+      "rho": 0.311,
+      "p": 0.3015
+    },
+    "partial_rho_decoder_error_vs_auc_controlling_ew_len": -0.773,
+    "partial_p": 0.0032,
+    "partial_df": 10
+  },
+  "T5": {
+    "n_days": 6,
+    "decoder_error_vs_frac_crossed": {
+      "rho": 0.551,
+      "p": 0.2574
+    },
+    "frac_crossed_vs_auc": {
+      "rho": -0.522,
+      "p": 0.2883
+    },
+    "decoder_error_vs_mean_ew_len": {
+      "rho": 0.657,
+      "p": 0.1562
+    },
+    "mean_ew_len_vs_auc": {
+      "rho": -0.657,
+      "p": 0.1562
+    },
+    "decoder_error_vs_median_ew_len": {
+      "rho": 0.232,
+      "p": 0.6584
+    },
+    "median_ew_len_vs_auc": {
+      "rho": -0.087,
+      "p": 0.8699
+    },
+    "partial_rho_decoder_error_vs_auc_controlling_ew_len": -0.698,
+    "partial_p": 0.1897,
+    "partial_df": 3
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "T11": {
+    "rows": [
+      {
+        "injected_mode": "CHANNEL_DROPOUT",
+        "n": 149,
+        "expected": "silence",
+        "n_correct": 69,
+        "accuracy": 0.463,
+        "named_dispersion": 39,
+        "named_level": 23,
+        "named_profile": 18,
+        "named_silence": 69
+      },
+      {
+        "injected_mode": "GAIN_DRIFT",
+        "n": 147,
+        "expected": "dispersion",
+        "n_correct": 146,
+        "accuracy": 0.993,
+        "named_dispersion": 146,
+        "named_level": 1,
+        "named_profile": 0,
+        "named_silence": 0
+      },
+      {
+        "injected_mode": "GEOMETRY_ROTATION",
+        "n": 148,
+        "expected": "profile",
+        "n_correct": 0,
+        "accuracy": 0.0,
+        "named_dispersion": 147,
+        "named_level": 0,
+        "named_profile": 0,
+        "named_silence": 1
+      },
+      {
+        "injected_mode": "NONE",
+        "n": 10,
+        "expected": "-",
+        "n_correct": 0,
+        "accuracy": 0.0,
+        "named_dispersion": 1,
+        "named_level": 1,
+        "named_profile": 8,
+        "named_silence": 0
+      },
+      {
+        "injected_mode": "RATE_LOSS",
+        "n": 132,
+        "expected": "level",
+        "n_correct": 115,
+        "accuracy": 0.871,
+        "named_dispersion": 8,
+        "named_level": 115,
+        "named_profile": 9,
+        "named_silence": 0
+      }
+    ],
+    "components_emitted": [
+      "dispersion",
+      "level",
+      "profile",
+      "silence"
+    ],
+    "n_components_emitted": 4,
+    "n_components_defined": 4,
+    "total": 586,
+    "correct": 330,
+    "accuracy": 0.563,
+    "chance": 0.25
+  },
+  "T5": {
+    "rows": [
+      {
+        "injected_mode": "CHANNEL_DROPOUT",
+        "n": 57,
+        "expected": "silence",
+        "n_correct": 50,
+        "accuracy": 0.877,
+        "named_dispersion": 6,
+        "named_level": 1,
+        "named_silence": 50
+      },
+      {
+        "injected_mode": "GAIN_DRIFT",
+        "n": 54,
+        "expected": "dispersion",
+        "n_correct": 54,
+        "accuracy": 1.0,
+        "named_dispersion": 54,
+        "named_level": 0,
+        "named_silence": 0
+      },
+      {
+        "injected_mode": "GEOMETRY_ROTATION",
+        "n": 52,
+        "expected": "profile",
+        "n_correct": 0,
+        "accuracy": 0.0,
+        "named_dispersion": 52,
+        "named_level": 0,
+        "named_silence": 0
+      },
+      {
+        "injected_mode": "NONE",
+        "n": 4,
+        "expected": "-",
+        "n_correct": 0,
+        "accuracy": 0.0,
+        "named_dispersion": 4,
+        "named_level": 0,
+        "named_silence": 0
+      },
+      {
+        "injected_mode": "RATE_LOSS",
+        "n": 52,
+        "expected": "level",
+        "n_correct": 11,
+        "accuracy": 0.212,
+        "named_dispersion": 41,
+        "named_level": 11,
+        "named_silence": 0
+      }
+    ],
+    "components_emitted": [
+      "dispersion",
+      "level",
+      "silence"
+    ],
+    "n_components_emitted": 3,
+    "n_components_defined": 4,
+    "total": 219,
+    "correct": 115,
+    "accuracy": 0.525,
+    "chance": 0.333
+  },
+  "rotation_diagnosis": {
+    "n_episodes": 40,
+    "median_calibrated_z": {
+      "silence": 0.0,
+      "dispersion": 16.51,
+      "level": 0.97,
+      "profile": 1.92
+    },
+    "fraction_lit": {
+      "silence": 0.125,
+      "dispersion": 1.0,
+      "level": 0.5,
+      "profile": 0.8
+    },
+    "winner_by_magnitude_alone": {
+      "dispersion": 39,
+      "profile": 1
+    }
+  }
+}

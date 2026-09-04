@@ -1,0 +1,100 @@
+{
+  "T11": {
+    "participant": "T11",
+    "n_healthy": 309,
+    "n_faulted": 541,
+    "headline_auc_window_level_as_registered": 0.6932,
+    "headline_auc": 0.6725,
+    "auc_without_rotation": 0.6357,
+    "auc_rotation_only": 0.7892,
+    "by_mode": [
+      {
+        "mode": "CHANNEL_DROPOUT",
+        "n": 119,
+        "auc": 0.5596,
+        "auc_window_level": 0.6486,
+        "n_windows": 1165
+      },
+      {
+        "mode": "GAIN_DRIFT",
+        "n": 140,
+        "auc": 0.7869,
+        "auc_window_level": 0.7886,
+        "n_windows": 1447
+      },
+      {
+        "mode": "GEOMETRY_ROTATION",
+        "n": 130,
+        "auc": 0.7892,
+        "auc_window_level": 0.7583,
+        "n_windows": 1284
+      },
+      {
+        "mode": "NONE",
+        "n": 11,
+        "auc": 0.163,
+        "auc_window_level": 0.3628,
+        "n_windows": 135
+      },
+      {
+        "mode": "RATE_LOSS",
+        "n": 141,
+        "auc": 0.5865,
+        "auc_window_level": 0.6123,
+        "n_windows": 1545
+      }
+    ],
+    "drop_from_removing_rotation": 0.0368,
+    "highest_mode": "GEOMETRY_ROTATION",
+    "prediction_1_rotation_highest_above_0.8": false
+  },
+  "T5": {
+    "participant": "T5",
+    "n_healthy": 408,
+    "n_faulted": 335,
+    "headline_auc_window_level_as_registered": 0.7075,
+    "headline_auc": 0.7423,
+    "auc_without_rotation": 0.7402,
+    "auc_rotation_only": 0.7491,
+    "by_mode": [
+      {
+        "mode": "CHANNEL_DROPOUT",
+        "n": 92,
+        "auc": 0.7985,
+        "auc_window_level": 0.7504,
+        "n_windows": 984
+      },
+      {
+        "mode": "GAIN_DRIFT",
+        "n": 86,
+        "auc": 0.771,
+        "auc_window_level": 0.7333,
+        "n_windows": 878
+      },
+      {
+        "mode": "GEOMETRY_ROTATION",
+        "n": 80,
+        "auc": 0.7491,
+        "auc_window_level": 0.7119,
+        "n_windows": 891
+      },
+      {
+        "mode": "NONE",
+        "n": 6,
+        "auc": 0.3873,
+        "auc_window_level": 0.4731,
+        "n_windows": 76
+      },
+      {
+        "mode": "RATE_LOSS",
+        "n": 71,
+        "auc": 0.6571,
+        "auc_window_level": 0.6424,
+        "n_windows": 784
+      }
+    ],
+    "drop_from_removing_rotation": 0.0021,
+    "highest_mode": "CHANNEL_DROPOUT",
+    "prediction_1_rotation_highest_above_0.8": false
+  }
+}

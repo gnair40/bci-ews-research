@@ -20,13 +20,15 @@ data/raw/*
 !data/raw/download_manifest.json
 
 # Processed/derived data — regenerable from raw data by our scripts.
-data/processed/*
-!data/processed/.gitkeep
-!data/processed/README.md
+# Processed outputs ARE tracked. They are derived from the raw data, but they
+# are also what all 82 checks in 31_verify_claims.py read -- excluding them made
+# the verifier unrunnable on a fresh clone, which defeats the point of having it.
+# ~17 MB, largest file 3.7 MB. The raw data (789 MB) stays out.
+data/processed/*.npy
 
 # Generated figures are regenerable; keep the repo light.
-reports/figures/*
-!reports/figures/.gitkeep
+# Figures ARE tracked. They are deliverables, referenced by the reports and the
+# README, and excluding them left broken image links in the GitHub view. ~2.2 MB.
 
 # Python housekeeping
 __pycache__/

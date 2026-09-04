@@ -1,0 +1,18 @@
+{
+  "participant": "T5",
+  "n_days": 6,
+  "n_barely_beats_own_chance": 0,
+  "days_barely_beating_own_chance": [],
+  "margin_vs_monitor_auc": {
+    "rho": 0.771,
+    "p": 0.0724
+  },
+  "concentration_vs_monitor_auc": {
+    "rho": -0.143,
+    "p": 0.7872
+  },
+  "concentration_vs_day_chance": {
+    "rho": -0.543,
+    "p": 0.2657
+  }
+}

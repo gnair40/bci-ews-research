@@ -1,0 +1,12 @@
+{
+  "participant": "T5",
+  "n_days": 6,
+  "mean_contaminated_windows_per_episode": 6.0,
+  "mean_delta": 0.0123,
+  "median_delta": 0.0096,
+  "max_abs_delta": 0.031,
+  "days_improved": 4,
+  "days_worsened": 0,
+  "wilcoxon_p": 0.125,
+  "direction_matches_prediction": true
+}

@@ -1,0 +1,64 @@
+{
+  "n_scripts": 61,
+  "n_unreviewed": 0,
+  "n_reviewed": 8,
+  "unreviewed": [],
+  "reviewed": [
+    {
+      "kind": "pooled_inference",
+      "line": 200,
+      "detail": "statistical test directly on ['P'], pooled at line 199",
+      "script": "23_benchmark_figures.py",
+      "reviewed_because": "A descriptive bar chart with no inference attached -- the p-value is discarded at the call site. The axis now says 'window-level AUC'."
+    },
+    {
+      "kind": "pooled_inference",
+      "line": 118,
+      "detail": "statistical test via auc() on ['E'], pooled at line 115",
+      "script": "26_achievability.py",
+      "reviewed_because": "Known and corrected: its p-values are recomputed at episode level by 60_unit_of_analysis.py and ACHIEVABILITY.md carries an inline correction."
+    },
+    {
+      "kind": "pooled_inference",
+      "line": 119,
+      "detail": "statistical test via auc() on ['L'], pooled at line 116",
+      "script": "26_achievability.py",
+      "reviewed_because": "Known and corrected: its p-values are recomputed at episode level by 60_unit_of_analysis.py and ACHIEVABILITY.md carries an inline correction."
+    },
+    {
+      "kind": "pooled_inference",
+      "line": 145,
+      "detail": "statistical test via auc() on ['H'], pooled at line 114",
+      "script": "26_achievability.py",
+      "reviewed_because": "Known and corrected: its p-values are recomputed at episode level by 60_unit_of_analysis.py and ACHIEVABILITY.md carries an inline correction."
+    },
+    {
+      "kind": "inverse_variance",
+      "line": 180,
+      "detail": "1/d.boot_se.values**2 weighting \u2014 biased for a bounded statistic such as AUC",
+      "script": "44_day_variance.py",
+      "reviewed_because": "Kept deliberately, labelled ..._BIASED_DO_NOT_QUOTE, with the bias measured in the same output. Cochran's Q needs the same weights."
+    },
+    {
+      "kind": "inverse_variance",
+      "line": 173,
+      "detail": "1/obs_sd**2 weighting \u2014 biased for a bounded statistic such as AUC",
+      "script": "44_day_variance.py",
+      "reviewed_because": "Kept deliberately, labelled ..._BIASED_DO_NOT_QUOTE, with the bias measured in the same output. Cochran's Q needs the same weights."
+    },
+    {
+      "kind": "pooled_inference",
+      "line": 95,
+      "detail": "statistical test via auc() on ['Ew'], pooled at line 94",
+      "script": "59_per_mode_detection.py",
+      "reviewed_because": "Computes the window-level AUC deliberately, beside the episode-level one, so the register can record which quantity C02 is. No p-value."
+    },
+    {
+      "kind": "pooled_inference",
+      "line": 102,
+      "detail": "statistical test via auc() on ['wl'], pooled at line 99",
+      "script": "59_per_mode_detection.py",
+      "reviewed_because": "Computes the window-level AUC deliberately, beside the episode-level one, so the register can record which quantity C02 is. No p-value."
+    }
+  ]
+}

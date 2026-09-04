@@ -1,0 +1,168 @@
+{
+  "decoder_guard": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.69,
+        "fraction_significant": 0.981,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.064,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.788,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.863,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -25.0,
+        "baseline_lead_s": -30.0,
+        "pass": true
+      }
+    },
+    "operating_point": 285.80310690685354,
+    "median_lead_s": -25.0,
+    "lead_ci95": [
+      -35.0,
+      -5.0
+    ],
+    "detection_rate": "121/586",
+    "false_alarms_per_hour": 2.0738,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": -30.0,
+      "GAIN_DRIFT": -20.0,
+      "GEOMETRY_ROTATION": -25.0
+    }
+  },
+  "distribution_shift": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.631,
+        "fraction_significant": 0.955,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.143,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.824,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.821,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -45.0,
+        "baseline_lead_s": -30.0,
+        "pass": false
+      }
+    },
+    "operating_point": 1361.1036963126903,
+    "median_lead_s": -45.0,
+    "lead_ci95": [
+      -55.0,
+      -20.0
+    ],
+    "detection_rate": "97/586",
+    "false_alarms_per_hour": 1.6294,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "RATE_LOSS": -35.0,
+      "CHANNEL_DROPOUT": -50.0,
+      "GAIN_DRIFT": -20.0,
+      "GEOMETRY_ROTATION": -52.5
+    }
+  },
+  "mean_activity": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.546,
+        "fraction_significant": 0.819,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.045,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.888,
+        "pass": false,
+        "note": "not applicable to mean_activity itself"
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.766,
+        "pass": false
+      }
+    },
+    "operating_point": 84.89268952511044,
+    "median_lead_s": -30.0,
+    "lead_ci95": [
+      -35.0,
+      -15.0
+    ],
+    "detection_rate": "105/586",
+    "false_alarms_per_hour": 2.2219,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "RATE_LOSS": -10.0,
+      "CHANNEL_DROPOUT": -30.0,
+      "GEOMETRY_ROTATION": -45.0
+    }
+  },
+  "robust_dispersion": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.559,
+        "fraction_significant": 0.909,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.136,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.634,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.769,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": 10.0,
+        "baseline_lead_s": -30.0,
+        "pass": true
+      }
+    },
+    "operating_point": 6.0,
+    "median_lead_s": 10.0,
+    "lead_ci95": [
+      5.0,
+      17.5
+    ],
+    "detection_rate": "284/586",
+    "false_alarms_per_hour": 20.3429,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "RATE_LOSS": 42.5,
+      "CHANNEL_DROPOUT": 0.0,
+      "GAIN_DRIFT": 5.0,
+      "GEOMETRY_ROTATION": 5.0,
+      "NONE": 0.0
+    }
+  }
+}

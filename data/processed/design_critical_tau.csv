@@ -1,0 +1,8 @@
+n,critical_tau,alpha_achievable,verdict
+3,1.0,False,NO VALID TEST
+6,0.733,True,unusable
+9,0.5,True,marginal
+11,0.455,True,marginal
+15,0.371,True,marginal
+21,0.305,True,usable
+29,0.256,True,usable

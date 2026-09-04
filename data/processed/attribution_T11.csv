@@ -1,0 +1,6 @@
+injected_mode,n,expected,n_correct,accuracy,named_dispersion,named_level,named_profile,named_silence
+CHANNEL_DROPOUT,149,silence,69,0.463,39,23,18,69
+GAIN_DRIFT,147,dispersion,146,0.993,146,1,0,0
+GEOMETRY_ROTATION,148,profile,0,0.0,147,0,0,1
+NONE,10,-,0,0.0,1,1,8,0
+RATE_LOSS,132,level,115,0.871,8,115,9,0
