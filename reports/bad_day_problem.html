@@ -251,16 +251,15 @@
 <header class="mast">
   <div class="kicker">
     <span>Decoder-Guard</span><span class="sep">/</span>
-    <span>Eight studies, 2–3 September 2026</span><span class="sep">/</span>
+    <span>Twenty studies, 16 August – 5 September 2026</span><span class="sep">/</span>
     <span>T11 &amp; T5, public iBCI recordings</span>
   </div>
   <h1>The Bad-Day Problem</h1>
   <p class="standfirst">
-    We spent two days asking eight questions about a system that watches a
-    brain–computer interface for signs of failure. The fifth answer was <em>bad
-    news</em>. The last three were attempts to prove the fifth wrong. It survived all
-    of them — and cost us our explanation, our phrasing, and our confidence that the
-    experiment could answer the question at all.
+    Twenty questions about a system that watches a brain–computer interface for signs
+    of failure. One answer was <em>bad news</em>; most of what followed were attempts
+    to prove it wrong. It survived every one — and cost us an explanation, a phrasing,
+    two recommendations, and three p-values that turned out not to be significant.
   </p>
 </header>
 
@@ -646,6 +645,148 @@
   </p>
 </div>
 
+<h2>Then we tried to fix it</h2>
+<p class="sub">
+  The tension above says the monitor's four crude summaries are the problem. That is a
+  testable claim with an obvious remedy, so we tested it — three times, each one
+  preregistered with its criteria fixed before the code was written.
+</p>
+
+<div class="chain">
+
+  <div class="step">
+    <div class="num">09</div>
+    <div class="step-body">
+      <p class="q">Is the information even there?</p>
+      <p class="a">
+        <strong>Yes — and it is the strongest signal in the set.</strong> Twelve
+        summaries of the <em>shape</em> of the per-channel change tell all four fault
+        types apart at 0.93–1.00, where the monitor's four scalars leave three of them
+        confusable.
+      </p>
+      <div class="stat-row">
+        <span class="stat pos">confusable trio <b>0.650 → 0.987</b></span>
+        <span class="stat">12 random raw channels: <b>0.702</b></span>
+      </div>
+      <p class="why">
+        <b>A conclusion withdrawn to get here.</b> The day before, we had published that
+        three fault types face an information ceiling. Wrong: that was the <em>linear
+        model's</em> limit. It searched for one fixed direction, but which channels a
+        fault touches is random per episode, so no fixed direction exists to find.
+        A control on 12 <em>random</em> channels reaches only 0.702, so the gain is the
+        representation, not the smaller dimension count.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">10</div>
+    <div class="step-body">
+      <p class="q">So build the sharper detector. Does it work?</p>
+      <p class="a">
+        <strong>It was worse on both axes.</strong> Detection fell on both participants,
+        where we predicted it would rise. Specificity collapsed to three times worse
+        than anything in the original 48-configuration benchmark.
+      </p>
+      <div class="stat-row">
+        <span class="stat neg">AUC <b>0.617</b> / <b>0.680</b> (was 0.672 / 0.742)</span>
+        <span class="stat neg"><b>98.5%</b> of healthy sessions trend</span>
+      </div>
+      <p class="why">
+        <b>Why, and the check that proved it.</b> The shape of the signal drifts
+        <em>on its own</em> through a healthy session — and that is the same shape that
+        marks a fault. A detector sharp enough to see one is sharp enough to see the
+        other, because they are the same quantity. Median trend 0.735 looked suspicious
+        enough to be an artefact of our own scoring, so we re-ran it unclipped:
+        <b>98.9%</b>. The drift is real.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">11</div>
+    <div class="step-body">
+      <p class="q">Does the other half of the recommendation survive?</p>
+      <p class="a">
+        <strong>No.</strong> A label-free rule using the same shape summaries names the
+        fault correctly <em>less</em> often than the crude monitor it was meant to
+        replace.
+      </p>
+      <div class="stat-row">
+        <span class="stat neg"><b>51.1%</b> / <b>39.7%</b> (monitor: 56.3% / 52.5%)</span>
+        <span class="stat neg">rotation <b>2.1%</b> vs 25% chance</span>
+      </div>
+      <p class="why">
+        <b>And the reasoning that failed was ours.</b> One summary — plain spread — is
+        raised by <em>every</em> fault, so it swamps the specific ones. We had explicitly
+        declined a fix for that, on the grounds that "all four features are equally
+        specific by construction." Wrong: we reasoned about how the <em>faults</em>
+        differ and never asked how the <em>features</em> overlap. The obvious remedy is
+        deliberately not built — one candidate was committed in advance, and a failure
+        is not a licence to keep going until something works.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="thesis" style="margin-top:26px">
+  <div class="lab">What the three of them add up to</div>
+  <p>
+    A supervised demonstration that information <em>exists</em> has now twice failed to
+    become a label-free rule that <em>uses</em> it.
+  </p>
+  <p class="after">
+    Twice is not a law. But it is two independent measurements of a gap we could
+    otherwise only argue about — and it means the earlier result should be read as
+    evidence about where the information lives, <strong>not</strong> as a design for a
+    monitor. Both halves of that recommendation are now narrowed in place rather than
+    left standing.
+  </p>
+</div>
+
+<h2>Checking our own work</h2>
+<p class="sub">
+  Three statistical errors were found here, all by accident, all by checks written after
+  the work they caught. Waiting to trip over a fourth is not a strategy, so the project
+  now audits itself.
+</p>
+
+<div class="split">
+  <div class="card share">
+    <h4>What the audits found</h4>
+    <p class="lead">Three published results were significant. They are not.</p>
+    <p>
+      Every p-value in one report had been computed by pooling windows that are not
+      independent — inflating the apparent sample size <b>26.6×</b>. Four were published
+      as exactly <code>p = 0</code>. One published at <b>p = 3.4×10⁻¹⁵</b> is really
+      <b>p = 0.144</b>. The AUCs and the verdicts stand; the p column did not, and is
+      corrected in place rather than deleted.
+    </p>
+    <p>
+      A separate audit found a headline figure that <em>no committed script could
+      regenerate</em> — a verified claim resting on an unreproducible file looks exactly
+      like a verified claim.
+    </p>
+  </div>
+  <div class="card noshare">
+    <h4>Five gates, run on every change</h4>
+    <p class="lead">93 figures recomputed from source, every time.</p>
+    <p>
+      A claim verifier that recomputes every headline number; a reproducibility audit
+      that checks the pipeline actually runs on a fresh clone; a claims register where
+      anything marked <em>established</em> must cite a check that exists; a linter for
+      the three statistical mistakes this project actually made; and a log-coverage gate
+      so a day's work cannot vanish from the record.
+    </p>
+    <p>
+      Four of those tools were <strong>themselves wrong</strong> before they were
+      useful. The linter missed the very case it was written for. The first question
+      asked of any new check is now: does it find the thing we already know is there?
+    </p>
+  </div>
+</div>
+
 <h2>Three things I got wrong, and how they were caught</h2>
 <p class="sub">
   Each of these would have become a published claim. They are recorded here for the same
@@ -755,9 +896,10 @@
     together with the hazard it exists to detect.
   </p>
   <p>
-    That association has now withstood three separate attempts to explain it away, and it
-    argues against the design as originally conceived. It is reported that way rather
-    than softened.
+    That association has withstood every attempt to explain it away, and the objection is
+    no longer an inference. We built the sharper detector the evidence pointed to,
+    committed the criteria in advance, and watched it lose on both axes. An argument
+    became a measurement.
   </p>
   <p>
     <strong>What we cannot say is which property.</strong> Five session-level variables
@@ -772,13 +914,15 @@
     <div><b>Next build</b><span>A performance measure with range at the bad end <em>and</em> robustness to task geometry — angular error has neither.</span></div>
     <div><b>Known limit</b><span>On the worst sessions an injected fault moves the metric by less than half a degree. The ground truth there is nearly degenerate.</span></div>
     <div><b>Open</b><span>Does abstention work using assessment-block error, which a clinical BCI already collects periodically?</span></div>
+    <div><b>Designed</b><span>An original experiment: a $115 camera-and-LED sensor array, degraded on purpose, to test whether this failure is a fact about cortex or about any drifting array. The neural analysis makes falsifiable predictions about it.</span></div>
     <div><b>Blocked</b><span>A third participant (Card et al. 2024, T15) — the only way to test whether any of this generalises beyond two arrays.</span></div>
   </div>
 </div>
 
 <footer>
-  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 56 claims, all matching.</span>
+  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 93 claims, all matching.</span>
   <span>Public de-identified recordings. No human participants.</span>
+  <span>Five automated gates; 5 claims withdrawn on evidence; every correction kept in place.</span>
 </footer>
 
 </div>

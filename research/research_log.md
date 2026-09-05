@@ -4017,3 +4017,34 @@ an existing entry to make this pass.*
 
 Five gates now: claim verifier, reproducibility audit, claims register,
 statistical hygiene, log coverage.
+
+### Bringing the published write-up current
+
+The repository was up to date; the published page was not. Checked rather than
+assumed, and it was **stale in a way that mattered**: it said "Eight studies" and
+"56 claims", and it still presented the invariant-features direction as a live
+recommendation — which both halves of the subsequent testing have since refuted.
+Parts of it were not merely incomplete but **wrong**, and it is the one artifact
+anyone would actually be shown.
+
+Updated: <https://claude.ai/code/artifact/3626899e-5714-4a29-861a-5fab36eacf82>,
+mirrored to `reports/bad_day_problem.html`.
+
+Added two sections rather than twelve more numbered steps, which would have made
+the page unreadable:
+
+- **"Then we tried to fix it"** — the three-beat invariant thread (the information
+  is there → the sharper detector was worse → the label-free rule was worse),
+  ending on the finding that a supervised demonstration has twice failed to become
+  a label-free rule.
+- **"Checking our own work"** — the three published results that were not
+  significant, the headline figure no script could regenerate, the five gates, and
+  the fact that four of the checking tools were themselves wrong before they were
+  useful.
+
+The closing changed from *"withstood three attempts to explain it away"* to the
+stronger and now-accurate *"the objection is no longer an inference — we built the
+sharper detector, committed the criteria in advance, and watched it lose."* Counts
+corrected to 93. The designed hardware experiment added to the open items.
+
+Title kept stable, as it should be across a redeploy.
