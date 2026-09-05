@@ -350,14 +350,28 @@ CLAIMS = [
      "monitor performance. The mode the guard always gets wrong is the easiest "
      "one to identify."),
 
-    ("E05", EXPLORATORY,
-     "The other three modes separate from each other at only 0.57–0.78, so the "
-     "guard's 56% attribution is not all mechanism failure — there is a real "
-     "information ceiling for dropout, gain drift and rate loss.",
-     "MODE_SEPARABILITY.md",
-     ["hardest mode pair, T11 (the real ceiling)"],
-     "Rotation is the guard's fault and fixable; the other three are the "
-     "features' fault and are not fixable this way."),
+    ("W05", WITHDRAWN,
+     "WITHDRAWN: that dropout, gain drift and rate loss face an information "
+     "ceiling. That was the LINEAR MODEL's limit, not the features'. With "
+     "permutation-invariant summaries the confusable trio rises from 0.650 to "
+     "0.987 on T11 and 0.623 to 0.998 on T5.",
+     "PERMUTATION_INVARIANT.md",
+     ["confusable trio, invariant features, T11",
+      "confusable trio, per-channel features, T11",
+      "control: 12 RANDOM raw channels, T11"],
+     "A linear discriminant seeks one fixed direction, but the channels each "
+     "fault touches are random per episode. A 12-random-channel control reaches "
+     "only 0.702, so the gain is representation, not dimension count."),
+
+    ("E06", EXPLORATORY,
+     "All four fault modes are near-perfectly separable from one another, so "
+     "the guard's attribution failure is entirely a design problem and not "
+     "partly an information ceiling.",
+     "PERMUTATION_INVARIANT.md",
+     ["confusable trio, invariant features, T11",
+      "rotation pairs barely moved, T11 (as predicted)"],
+     "Supervised upper bound: it says the information exists, not that a "
+     "one-class monitor could reach it."),
 
     ("E03", EXPLORATORY,
      "The decoder-guard operating point on T11 is 50.46, giving 3.41 false "

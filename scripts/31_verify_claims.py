@@ -722,6 +722,37 @@ def _uoa_shift():
     return _uoa("max_abs_auc_shift")
 
 
+# --------------------------------------------------- permutation invariance
+
+def _pinv(P: str, key: str):
+    sfx = "" if P == "T11" else f"_{P}"
+    return json.loads((OUT / f"permutation_invariant{sfx}.json").read_text())[key]
+
+
+@claim("confusable trio, invariant features, T11", 0.9871, 0.005,
+       "PERMUTATION_INVARIANT — was 0.650 with a linear discriminant")
+def _pinv_trio():
+    return _pinv("T11", "confusable_trio_mean_invariant")
+
+
+@claim("confusable trio, per-channel features, T11", 0.650, 0.005,
+       "PERMUTATION_INVARIANT — the withdrawn E05 number")
+def _pinv_trio_old():
+    return _pinv("T11", "confusable_trio_mean_per_channel")
+
+
+@claim("control: 12 RANDOM raw channels, T11", 0.7016, 0.02,
+       "PERMUTATION_INVARIANT — the gain is representation, not dimension")
+def _pinv_ctrl():
+    return _pinv("T11", "control_mean_auc")
+
+
+@claim("rotation pairs barely moved, T11 (as predicted)", 0.9682, 0.005,
+       "PERMUTATION_INVARIANT — was 0.918, already near ceiling")
+def _pinv_rot():
+    return _pinv("T11", "rotation_pairs_mean_invariant")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

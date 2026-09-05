@@ -3679,3 +3679,75 @@ against them, but not an argument that the checks are sufficient.
 
 Four gates now: verifier (82 claims), reproducibility audit, claims register
 (34 claims, 82/82 coverage), statistical hygiene. All pass.
+
+---
+
+## 4 September 2026 — I doubted a line I had already published, and it was wrong
+
+Preregistered in `research/PERMUTATION_INVARIANT_NOTE.md` with the prediction and
+its mechanism. Report: `reports/PERMUTATION_INVARIANT.md`.
+
+### What I withdrew
+
+Yesterday's separability probe concluded, and claim E05 recorded:
+
+> rotation — the guard's fault, fixable
+> dropout / gain / rate — **the features' fault, not fixable this way**
+
+Re-reading my own method rather than my own conclusion, the second line could not
+have been right. The probe fitted a **linear discriminant** — one fixed direction
+in 384-dimensional channel space — but **which channels a fault touches is drawn
+at random per episode**. `CHANNEL_DROPOUT` silences a random subset; `GAIN_DRIFT`
+scales each channel by an independent random factor. No fixed direction identifies
+either, so the model was structurally incapable of seeing them, and its failure
+said nothing at all about the information.
+
+### The result
+
+Twelve permutation-invariant summaries of the same vector, everything else
+identical:
+
+| | per-channel (384-d) | invariant (12-d) |
+|---|---|---|
+| confusable trio, T11 | 0.650 | **0.987** |
+| confusable trio, T5 | 0.623 | **0.998** |
+| worst pair anywhere, T11 | 0.574 | **0.929** |
+| rotation pairs, T11 | 0.918 | 0.968 |
+
+Prediction met on both halves: the worst pair cleared 0.75 (at 0.929), and
+rotation barely moved (+0.009, +0.001) because it was already near ceiling and
+does have a genuine fixed-direction component.
+
+### The control I nearly skipped
+
+Twelve features beating 384 has an obvious rival explanation — a 384-feature
+discriminant on ~400 episodes is heavily regularised and may just have underfit.
+The gain could be **dimensionality**, not invariance, and I would have been making
+exactly the kind of unfounded causal claim I have spent two days catching.
+
+So: same pipeline, **12 randomly chosen raw channels**, 20 draws. Confusable trio
+mean **0.702** (T11) and 0.756 (T5) — better than 384 channels, confirming the big
+model was handicapped, and nowhere near 0.987. **The gain is the representation.**
+
+### What it changes
+
+E05 withdrawn, replaced by E06:
+
+> **The information to identify all four fault modes is present and strong. The
+> guard's four scalar components are the entire limitation.**
+
+That is cleaner than what it replaces — the attribution failure is now an
+unambiguous design problem rather than part design problem, part information
+ceiling. And it produces the third concrete design recommendation of this line of
+work: attribution should be built on **permutation-invariant distributional
+summaries** of the per-channel change, not on projections onto fixed directions
+and not on scalar magnitudes like `dispersion` that discard the shape.
+
+### The habit worth naming
+
+This is the second published conclusion I have withdrawn in two days, both found
+the same way: re-reading my own *method* instead of my own *result*. The result
+looked fine both times. The method did not survive the question "could this
+possibly have detected what I concluded was absent?"
+
+Verifier 86 claims, register 35, coverage 86/86.

@@ -225,7 +225,7 @@ GEOMETRY_ROTATION is attributed correctly 0% of the time, on both participants �
 - **Checks:** 4 — `GEOMETRY_ROTATION named correctly, T11`; `GEOMETRY_ROTATION named correctly, T5`; `during rotation, dispersion z (vs profile 1.92)`; `during rotation, profile IS lit (fraction)`
 - **Note:** `profile` is lit in 80% of rotation episodes but `dispersion` sits at z = 16.5 against its 1.9; largest-wins would still pick dispersion 98% of the time.
 
-## WITHDRAWN (4)
+## WITHDRAWN (5)
 
 ### W01
 
@@ -258,6 +258,14 @@ WITHDRAWN: that weaker faults on bad sessions explain the accuracy swing. Achiev
 - **Report:** [`CEILING_CHALLENGE.md`](../reports/CEILING_CHALLENGE.md)
 - **Checks:** 1 — `ceiling: damage vs monitor AUC, T11 (predicted +, got ~0)`
 - **Note:** I predicted this confound would hold. It did not.
+
+### W05
+
+WITHDRAWN: that dropout, gain drift and rate loss face an information ceiling. That was the LINEAR MODEL's limit, not the features'. With permutation-invariant summaries the confusable trio rises from 0.650 to 0.987 on T11 and 0.623 to 0.998 on T5.
+
+- **Report:** [`PERMUTATION_INVARIANT.md`](../reports/PERMUTATION_INVARIANT.md)
+- **Checks:** 3 — `confusable trio, invariant features, T11`; `confusable trio, per-channel features, T11`; `control: 12 RANDOM raw channels, T11`
+- **Note:** A linear discriminant seeks one fixed direction, but the channels each fault touches are random per episode. A 12-random-channel control reaches only 0.702, so the gain is representation, not dimension count.
 
 ## UNANSWERABLE (1)
 
@@ -295,13 +303,13 @@ The information to identify GEOMETRY_ROTATION is the strongest signal in the fea
 - **Checks:** 2 — `gain-drift vs rotation separability, T11`; `gain-drift vs rotation separability, T5`
 - **Note:** A supervised probe using labels a monitor never has: an upper bound, not monitor performance. The mode the guard always gets wrong is the easiest one to identify.
 
-### E05
+### E06
 
-The other three modes separate from each other at only 0.57–0.78, so the guard's 56% attribution is not all mechanism failure — there is a real information ceiling for dropout, gain drift and rate loss.
+All four fault modes are near-perfectly separable from one another, so the guard's attribution failure is entirely a design problem and not partly an information ceiling.
 
-- **Report:** [`MODE_SEPARABILITY.md`](../reports/MODE_SEPARABILITY.md)
-- **Checks:** 1 — `hardest mode pair, T11 (the real ceiling)`
-- **Note:** Rotation is the guard's fault and fixable; the other three are the features' fault and are not fixable this way.
+- **Report:** [`PERMUTATION_INVARIANT.md`](../reports/PERMUTATION_INVARIANT.md)
+- **Checks:** 2 — `confusable trio, invariant features, T11`; `rotation pairs barely moved, T11 (as predicted)`
+- **Note:** Supervised upper bound: it says the information exists, not that a one-class monitor could reach it.
 
 ### E03
 
@@ -313,4 +321,8 @@ The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per 
 
 ---
 
-**Coverage:** 82 of 82 verifier checks are cited by a register entry.
+**Coverage:** 85 of 86 verifier checks are cited by a register entry.
+
+Not cited by any entry:
+
+- `hardest mode pair, T11 (the real ceiling)`

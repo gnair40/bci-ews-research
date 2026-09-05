@@ -50,6 +50,24 @@ components are defined*, not because rotation is invisible.
 
 ## The other half of the table is the real ceiling
 
+> ### ⚠️ Correction, 4 September 2026 — this section is withdrawn
+>
+> **The conclusion below is wrong.** It attributes the confusability of
+> `CHANNEL_DROPOUT`, `GAIN_DRIFT` and `RATE_LOSS` to the features. It is the
+> **model** that could not separate them: this probe fitted a *linear
+> discriminant*, which searches for one fixed direction, while the channels each
+> fault touches are drawn at random per episode — so no fixed direction exists to
+> find.
+>
+> With twelve **permutation-invariant** summaries of the same per-channel vector,
+> the confusable trio's mean AUC rises from **0.650 to 0.987** on T11 and from
+> 0.623 to 0.998 on T5. A control using 12 *random raw channels* reaches only
+> 0.702, so the gain is the representation, not the smaller dimension count.
+>
+> The corrected reading: **all four modes are separable in principle, and the
+> guard's four scalar components are the entire limitation.** See
+> `reports/PERMUTATION_INVARIANT.md`. Claim E05 is withdrawn.
+
 `CHANNEL_DROPOUT`, `GAIN_DRIFT` and `RATE_LOSS` separate from one another at
 0.57–0.78 — barely above chance for two of the three pairs, on both participants.
 That is not a component-design problem. Those three faults genuinely leave similar
