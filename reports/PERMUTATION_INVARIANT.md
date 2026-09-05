@@ -91,6 +91,21 @@ line I had already published.
 
 ## The design recommendation this produces
 
+> ### ⚠️ Correction, 5 September 2026 — this recommendation is narrowed
+>
+> The recommendation below has now been tested in both halves, label-free, and
+> **both fail**:
+>
+> - **Detection** (`reports/INVARIANT_DETECTOR.md`): AUC fell to 0.617/0.680 from
+>   0.672/0.742, and 98.5% of healthy episodes trend against a 31% best.
+> - **Attribution** (`reports/INVARIANT_ATTRIBUTION.md`): 51.1%/39.7% against the
+>   guard's 56.3%/52.5%, with rotation at 2.1%/6.1% against 25% chance.
+>
+> Corrected to what the evidence supports: **invariant summaries are evidence
+> that the information exists. They are not a demonstrated design for a
+> monitor.** The paragraph below should be read as describing where the
+> information lives, not as a recipe.
+
 An attribution scheme for these faults should be built on **permutation-invariant
 distributional summaries** of the per-channel change — sparsity, spread, tail
 shape — not on projections onto fixed channel directions, and not on scalar

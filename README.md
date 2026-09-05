@@ -75,6 +75,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/STATISTICAL_HYGIENE.md`](reports/STATISTICAL_HYGIENE.md) | A linter for the three statistical mistakes this project actually made |
 | [`reports/PERMUTATION_INVARIANT.md`](reports/PERMUTATION_INVARIANT.md) | It was the model's fault, not the features' — a published conclusion withdrawn |
 | [`reports/INVARIANT_DETECTOR.md`](reports/INVARIANT_DETECTOR.md) | Building the sharper detector the evidence pointed to — it was worse on both axes |
+| [`reports/INVARIANT_ATTRIBUTION.md`](reports/INVARIANT_ATTRIBUTION.md) | The other half fails too — and what that says about supervised probes |
 
 ## How the argument runs
 
@@ -117,7 +118,7 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes ninety headline figures from `data/processed/` and compares each
+It recomputes ninety-three headline figures from `data/processed/` and compares each
 against the value written in the reports. Run it before quoting any figure.
 
 ```bash
@@ -139,7 +140,7 @@ on any site not explicitly reviewed.
 
 The register regenerates and fails if anything marked ESTABLISHED
 cites a check that does not exist, or if a verifier check is cited by no claim.
-Currently 37 claims covering 90 of 90 checks.
+Currently 38 claims covering 93 of 93 checks.
 
 The audit checks that the reproduction path itself holds: every import declared, every
 consumed file produced by some script, no ordering inversions, and every script
@@ -149,7 +150,7 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-63; 31, 55, 56 and 61 run last, everything else in order
+scripts/     01-64; 31, 55, 56 and 61 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs

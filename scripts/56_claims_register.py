@@ -276,6 +276,23 @@ CLAIMS = [
      "variant. The trend survives unclipping, so it is not the scoring "
      "convention. Turns an inference about detector classes into a measurement."),
 
+    ("C17", ESTABLISHED,
+     "The invariant-feature recommendation fails label-free in BOTH halves: "
+     "detection (0.617/0.680 vs 0.672/0.742) and attribution (51.1%/39.7% vs "
+     "56.3%/52.5%, rotation 2.1%/6.1% against 25% chance). A supervised "
+     "demonstration that information exists has twice failed to translate into "
+     "a label-free rule that uses it.",
+     "INVARIANT_ATTRIBUTION.md",
+     ["label-free invariant attribution, T11 (worse)",
+      "label-free invariant attribution, T5 (worse)",
+      "rotation under the invariant rule, T11 (below chance)"],
+     "Both preregistered with criteria and predictions fixed first; both "
+     "predictions wrong. The attribution failure is diagnostic -- `sd` is a "
+     "generic spread measure every fault elevates, so it swamps the specific "
+     "features. That is the `profile` residual problem again, and my "
+     "preregistration explicitly declined a specificity ordering on reasoning "
+     "that was wrong."),
+
     # ------------------------------------------------------------- withdrawn
     ("W01", WITHDRAWN,
      "WITHDRAWN: that the monitor fails because the decoder has lost its "
@@ -355,6 +372,8 @@ CLAIMS = [
      "from either."),
 
     ("E04", EXPLORATORY,
+     "[NARROWED — see C17: this is evidence the information exists, NOT a "
+     "design for a monitor; both label-free halves fail] "
      "The information to identify GEOMETRY_ROTATION is the strongest signal in "
      "the feature set (pairwise AUC 0.86–0.98 on T11, 1.00 on T5) — so the "
      "attribution failure is a component-design problem, not missing information.",

@@ -3823,3 +3823,87 @@ actively refuted. The preregistration said those were different problems before
 running; the numbers now say it too.
 
 Verifier 90 claims, register 37, coverage 90/90.
+
+---
+
+## 5 September 2026 — The other half of the recommendation fails too
+
+Preregistered in `research/INVARIANT_ATTRIBUTION_NOTE.md` with the mapping, rule,
+criteria and prediction fixed before the code existed. Report:
+`reports/INVARIANT_ATTRIBUTION.md`.
+
+### Why I tested my own surviving recommendation
+
+`PERMUTATION_INVARIANT.md` recommended invariant summaries for attribution on the
+strength of a **supervised** probe. Yesterday the analogous move for detection was
+built label-free and failed on both axes. The attribution half sat exposed to the
+same risk, untested. Leaving it standing would have been inconsistent with what I
+had just demonstrated.
+
+### Both criteria failed, both predictions wrong
+
+| | required | T11 | T5 |
+|---|---|---|---|
+| overall accuracy | beat 56.3% and 52.5% | **51.1%** (−5.2 pts) | **39.7%** (−12.8 pts) |
+| rotation | beat 25% chance | **2.1%** | **6.1%** |
+
+I predicted 70–85% and rotation above 50%. It got worse on both participants.
+
+### The failure is diagnostic, and it is my reasoning that was wrong
+
+**`sd`, assigned to `GAIN_DRIFT`, wins almost everything** — 60 of 89 dropout
+episodes, 73 of 95 rotation episodes. Every fault raises the spread of the
+per-channel distribution, so a generic spread measure is elevated by all of them
+and swamps the specific features.
+
+**This is the `profile` residual problem in a new costume**, and my
+preregistration explicitly declined the fix:
+
+> *"No specificity ordering… all four features are equally specific by
+> construction."*
+
+That was wrong. I reasoned about how the **faults** differ and never asked how the
+**features** overlap. `sd` is not specific to gain drift; it is generic.
+
+Second failure, separate: on T5 `frac_severely_down` never wins once — dropout
+scores 0% and that column is empty across the whole table.
+
+### What I am deliberately not doing
+
+The fix is obvious: put a specificity ordering over the four features. **I am not
+building it.** One candidate was committed, and a failure is not a licence to keep
+going until something works. That constraint exists exactly for this moment — when
+the fix looks easy and the temptation is strongest. It is recorded as an untested
+hypothesis for a future attempt, not as a result.
+
+### The uncertainty I flagged was moot, and flagging it still paid
+
+The preregistration named `GEOMETRY_ROTATION → skew` as the assignment I was least
+sure of, with `kurtosis` as the alternative. Neither would have helped — rotation
+is named `GAIN_DRIFT` 73 times out of 95, so the binding failure is `sd`
+dominating. Because I wrote the uncertainty down first, I can **rule it out** as
+the cause instead of speculating about it now.
+
+### The pattern this completes
+
+Both halves of that recommendation have now been tested label-free. Both fail.
+
+> **A supervised demonstration that information exists has, twice, failed to
+> translate into a label-free rule that uses it.**
+
+Twice is not a law. But it is now two independent measurements of a gap I would
+otherwise only be able to argue about, and it is the sharpest methodological
+finding of this line of work. Separability under a fitted discriminant is a **weak
+guarantee** about what an unsupervised monitor can achieve.
+
+`PERMUTATION_INVARIANT.md` is corrected in place: invariant summaries are evidence
+the information **exists**, not a demonstrated **design**. E04 is annotated as
+narrowed.
+
+### Where the research stands
+
+This was the last question this dataset can answer that I could identify. Every
+remaining one — does any of it generalise, is the two-participant disagreement
+real, can an ordered rule work — needs the third participant.
+
+Verifier 93 claims, register 38, coverage 93/93.

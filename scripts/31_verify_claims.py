@@ -784,6 +784,31 @@ def _invd_raw():
     return _invd("T11", "silence_fraction_significant_unclipped")
 
 
+# -------------------------------------------------- invariant attribution
+
+def _iatt(P: str, key: str):
+    sfx = "" if P == "T11" else f"_{P}"
+    return json.loads((OUT / f"invariant_attribution{sfx}.json").read_text())[key]
+
+
+@claim("label-free invariant attribution, T11 (worse)", 0.5114, 0.005,
+       "INVARIANT_ATTRIBUTION — guard gets 56.3%")
+def _iatt_t11():
+    return _iatt("T11", "accuracy")
+
+
+@claim("label-free invariant attribution, T5 (worse)", 0.3971, 0.005,
+       "INVARIANT_ATTRIBUTION — guard gets 52.5%")
+def _iatt_t5():
+    return _iatt("T5", "accuracy")
+
+
+@claim("rotation under the invariant rule, T11 (below chance)", 0.021, 0.005,
+       "INVARIANT_ATTRIBUTION — chance is 25%")
+def _iatt_rot():
+    return _iatt("T11", "rotation_accuracy")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

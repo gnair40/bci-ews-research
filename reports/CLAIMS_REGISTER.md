@@ -21,7 +21,7 @@ apart.
 | **UNANSWERABLE** | this data cannot decide it — not the same as 'no' |
 | **EXPLORATORY** | not preregistered; hypothesis-generating only |
 
-## ESTABLISHED (16)
+## ESTABLISHED (17)
 
 ### C01
 
@@ -150,6 +150,14 @@ A one-class detector built on the shape information — the thing the evidence p
 - **Report:** [`INVARIANT_DETECTOR.md`](../reports/INVARIANT_DETECTOR.md)
 - **Checks:** 4 — `invariant one-class detector AUC, T11 (worse)`; `invariant one-class detector AUC, T5 (worse)`; `healthy episodes trending, invariant detector T11`; `same trend unclipped, T11 (not an artefact)`
 - **Note:** Preregistered with numeric criteria and a prediction that detection would improve; it fell on both participants. One candidate by design, no tuned variant. The trend survives unclipping, so it is not the scoring convention. Turns an inference about detector classes into a measurement.
+
+### C17
+
+The invariant-feature recommendation fails label-free in BOTH halves: detection (0.617/0.680 vs 0.672/0.742) and attribution (51.1%/39.7% vs 56.3%/52.5%, rotation 2.1%/6.1% against 25% chance). A supervised demonstration that information exists has twice failed to translate into a label-free rule that uses it.
+
+- **Report:** [`INVARIANT_ATTRIBUTION.md`](../reports/INVARIANT_ATTRIBUTION.md)
+- **Checks:** 3 — `label-free invariant attribution, T11 (worse)`; `label-free invariant attribution, T5 (worse)`; `rotation under the invariant rule, T11 (below chance)`
+- **Note:** Both preregistered with criteria and predictions fixed first; both predictions wrong. The attribution failure is diagnostic -- `sd` is a generic spread measure every fault elevates, so it swamps the specific features. That is the `profile` residual problem again, and my preregistration explicitly declined a specificity ordering on reasoning that was wrong.
 
 ## LIMITATION (10)
 
@@ -305,7 +313,7 @@ Preregistered predictor P4 (within-day drift) came out with the wrong sign (+0.5
 
 ### E04
 
-The information to identify GEOMETRY_ROTATION is the strongest signal in the feature set (pairwise AUC 0.86–0.98 on T11, 1.00 on T5) — so the attribution failure is a component-design problem, not missing information.
+[NARROWED — see C17: this is evidence the information exists, NOT a design for a monitor; both label-free halves fail] The information to identify GEOMETRY_ROTATION is the strongest signal in the feature set (pairwise AUC 0.86–0.98 on T11, 1.00 on T5) — so the attribution failure is a component-design problem, not missing information.
 
 - **Report:** [`MODE_SEPARABILITY.md`](../reports/MODE_SEPARABILITY.md)
 - **Checks:** 2 — `gain-drift vs rotation separability, T11`; `gain-drift vs rotation separability, T5`
@@ -329,7 +337,7 @@ The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per 
 
 ---
 
-**Coverage:** 89 of 90 verifier checks are cited by a register entry.
+**Coverage:** 92 of 93 verifier checks are cited by a register entry.
 
 Not cited by any entry:
 
