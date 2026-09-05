@@ -1,0 +1,9 @@
+participant,level,n_observations
+T11,session,15
+T11,block,29
+T11,MINDFUL window (60 s / 10 s),725
+T11,bin (20 ms),440045
+T5,session,6
+T5,block,21
+T5,MINDFUL window (60 s / 10 s),388
+T5,bin (20 ms),251974

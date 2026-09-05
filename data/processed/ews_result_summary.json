@@ -1,0 +1,49 @@
+{
+  "run_at_utc": "2026-08-26T02:03:48.721509+00:00",
+  "frozen_design_commit": "20db485a4dba20669cdb1d1786bca8f35b1aaf5d",
+  "n_amendments": 2,
+  "results": {
+    "trend_primary_block": {
+      "n": 21,
+      "tau": 0.7428571428571429,
+      "p_two_sided": 0.0001999600079984003
+    },
+    "trend_parallel_block": {
+      "n": 21,
+      "tau": -0.4190476190476191,
+      "p_two_sided": 0.006798640271945611
+    },
+    "trend_primary_session": {
+      "n": 11,
+      "tau": 0.7454545454545454,
+      "p_two_sided": 0.0011997600479904018
+    },
+    "trend_parallel_session": {
+      "n": 11,
+      "tau": -0.4909090909090909,
+      "p_two_sided": 0.04079184163167367
+    },
+    "reversibility_T5_excursion": {
+      "baseline_lo": 7.532850204160778,
+      "baseline_hi": 10.67353922971325,
+      "degraded_mean": 7.490308468199055,
+      "recovered_mean": 7.909669355180455,
+      "passed": true
+    },
+    "reversibility_T11_internal_excursion": {
+      "baseline_lo": 21.737660260977933,
+      "baseline_hi": 50.40209403612117,
+      "degraded_mean": 56.78305271845612,
+      "recovered_mean": 48.729025938407545,
+      "passed": true
+    },
+    "secondary_lead": {
+      "n_settings": 23,
+      "neural_first": 13,
+      "behaviour_first": 8,
+      "tied": 2,
+      "median_lead_days": 7.0,
+      "verdict": "neural monitoring detects earlier"
+    }
+  }
+}

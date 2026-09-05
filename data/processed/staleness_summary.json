@@ -1,0 +1,32 @@
+{
+  "T11": {
+    "n_pairs": 195,
+    "n_forward": 95,
+    "gap_min": 3,
+    "gap_max": 142,
+    "mean_delta_forward": -0.0088,
+    "median_delta_forward": -0.0035,
+    "mean_same_day_auc": 0.6783,
+    "spearman_gap_vs_delta": -0.3013,
+    "spearman_p": 0.00301,
+    "auc_lost_per_100_days": -0.0118,
+    "slope_p": 0.02475,
+    "mean_delta_backward": 0.0011,
+    "fwd_vs_back_p": 0.41141
+  },
+  "T5": {
+    "n_pairs": 36,
+    "n_forward": 15,
+    "gap_min": 2,
+    "gap_max": 28,
+    "mean_delta_forward": -0.0019,
+    "median_delta_forward": 0.0,
+    "mean_same_day_auc": 0.7992,
+    "spearman_gap_vs_delta": -0.6997,
+    "spearman_p": 0.00369,
+    "auc_lost_per_100_days": -0.0216,
+    "slope_p": 0.01532,
+    "mean_delta_backward": -0.0001,
+    "fwd_vs_back_p": 0.08808
+  }
+}

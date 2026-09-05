@@ -1,0 +1,15 @@
+{
+  "participant": "T5",
+  "n_days_total": 6,
+  "n_days_scoreable": 1,
+  "damage_threshold_deg": 10.0,
+  "P5_all_episodes": {
+    "rho": -0.829,
+    "p": 0.0416,
+    "n_days": 6
+  },
+  "retained_fraction_vs_decoder_error": {
+    "rho": -0.6,
+    "p": 0.208
+  }
+}

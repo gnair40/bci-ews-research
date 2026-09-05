@@ -1,0 +1,135 @@
+{
+  "decoder_guard": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 225,
+        "median_tau": 0.195,
+        "fraction_significant": 0.498,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.32,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.249,
+        "pass": true,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.317,
+        "pass": true
+      },
+      "G3_comparator": {
+        "median_lead_s": null,
+        "baseline_lead_s": null,
+        "pass": false
+      }
+    },
+    "operating_point": null
+  },
+  "distribution_shift": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 225,
+        "median_tau": 0.257,
+        "fraction_significant": 0.662,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.484,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.277,
+        "pass": true,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.379,
+        "pass": true
+      },
+      "G3_comparator": {
+        "median_lead_s": 80.0,
+        "baseline_lead_s": null,
+        "pass": false
+      }
+    },
+    "operating_point": 311.6907036347938,
+    "median_lead_s": 80.0,
+    "lead_ci95": null,
+    "detection_rate": "3/219",
+    "false_alarms_per_hour": 0.2254,
+    "healthy_hours_test": 13.31,
+    "by_mode_median_lead_s": {
+      "GAIN_DRIFT": 80.0
+    }
+  },
+  "mean_activity": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 225,
+        "median_tau": 0.194,
+        "fraction_significant": 0.449,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.231,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.276,
+        "pass": true,
+        "note": "not applicable to mean_activity itself"
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.293,
+        "pass": true
+      }
+    },
+    "operating_point": 67.36772520436871,
+    "median_lead_s": null,
+    "lead_ci95": null,
+    "detection_rate": "0/219",
+    "false_alarms_per_hour": 0.0,
+    "healthy_hours_test": 13.31,
+    "by_mode_median_lead_s": {}
+  },
+  "robust_dispersion": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 225,
+        "median_tau": 0.251,
+        "fraction_significant": 0.622,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.418,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.233,
+        "pass": true,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.366,
+        "pass": true
+      },
+      "G3_comparator": {
+        "median_lead_s": 115.0,
+        "baseline_lead_s": null,
+        "pass": false
+      }
+    },
+    "operating_point": 320.8308712253716,
+    "median_lead_s": 115.0,
+    "lead_ci95": null,
+    "detection_rate": "1/219",
+    "false_alarms_per_hour": 0.0751,
+    "healthy_hours_test": 13.31,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": 115.0
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "written_utc": "2026-08-28T02:13:58+00:00",
+  "window_bins": 1500,
+  "step_bins": 250,
+  "bin_s": 0.02,
+  "threshold_deg": 10.0,
+  "dwell": 3,
+  "false_alarm_budget_per_hour": 0.1,
+  "fit_blocks": [
+    "T11/day_658/block_5",
+    "T11/day_658/block_7",
+    "T11/day_665/block_6",
+    "T11/day_665/block_7"
+  ],
+  "val_blocks": [
+    "T11/day_675/block_6",
+    "T11/day_675/block_7"
+  ],
+  "test_blocks": [
+    "T11/day_672/block_19",
+    "T11/day_672/block_20",
+    "T11/day_689/block_13",
+    "T11/day_689/block_14",
+    "T11/day_692/block_6",
+    "T11/day_692/block_7",
+    "T11/day_702/block_10",
+    "T11/day_702/block_9",
+    "T11/day_709/block_6",
+    "T11/day_709/block_7",
+    "T11/day_715/block_10",
+    "T11/day_715/block_11",
+    "T11/day_727/block_8",
+    "T11/day_727/block_9",
+    "T11/day_751/block_16",
+    "T11/day_758/block_16",
+    "T11/day_758/block_18",
+    "T11/day_770/block_5",
+    "T11/day_770/block_6",
+    "T11/day_783/block_12",
+    "T11/day_783/block_14",
+    "T11/day_800/block_3",
+    "T11/day_800/block_4"
+  ],
+  "detectors": [
+    "mean_activity",
+    "robust_dispersion",
+    "distribution_shift",
+    "decoder_guard"
+  ],
+  "n_episodes_scored": 1073
+}

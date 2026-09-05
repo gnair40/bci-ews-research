@@ -1,0 +1,47 @@
+{
+  "written_utc": "2026-08-28T15:24:16+00:00",
+  "participant": "T5",
+  "window_bins": 1500,
+  "step_bins": 250,
+  "bin_s": 0.02,
+  "threshold_deg": 10.0,
+  "dwell": 3,
+  "false_alarm_budget_per_hour": 0.1,
+  "fit_blocks": [
+    "T5/day_2121/block_1",
+    "T5/day_2121/block_2",
+    "T5/day_2126/block_1",
+    "T5/day_2126/block_2",
+    "T5/day_2126/block_3"
+  ],
+  "val_blocks": [
+    "T5/day_2128/block_1",
+    "T5/day_2128/block_2",
+    "T5/day_2128/block_3",
+    "T5/day_2128/block_4"
+  ],
+  "test_blocks": [
+    "T5/day_2133/block_1",
+    "T5/day_2133/block_2",
+    "T5/day_2133/block_3",
+    "T5/day_2133/block_4",
+    "T5/day_2135/block_1",
+    "T5/day_2135/block_2",
+    "T5/day_2135/block_3",
+    "T5/day_2135/block_4",
+    "T5/day_2149/block_1",
+    "T5/day_2149/block_2",
+    "T5/day_2149/block_3",
+    "T5/day_2149/block_4"
+  ],
+  "detectors": [
+    "mean_activity",
+    "robust_dispersion",
+    "distribution_shift",
+    "decoder_guard",
+    "decoder_guard_joint"
+  ],
+  "local_rebaseline": true,
+  "causal_detrend": false,
+  "n_episodes_scored": 777
+}
