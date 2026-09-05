@@ -3751,3 +3751,75 @@ looked fine both times. The method did not survive the question "could this
 possibly have detected what I concluded was absent?"
 
 Verifier 86 claims, register 35, coverage 86/86.
+
+---
+
+## 5 September 2026 — I built the sharper detector the evidence pointed to. It was worse.
+
+Preregistered in `research/INVARIANT_DETECTOR_NOTE.md` — one candidate, numeric
+criteria, a prediction — all fixed before anything was built. Report:
+`reports/INVARIANT_DETECTOR.md`.
+
+### The reasoning that led here
+
+The permutation-invariance result showed the information distinguishing faults
+lives in the **shape of the per-channel change distribution**, which
+`decoder_guard`'s four scalars discard. The constructive move is obvious: score
+the shape instead. So I built exactly that, one-class, with the same structure as
+the guard so only the features differ, and the same twelve summaries imported
+unchanged rather than re-chosen.
+
+### Both criteria failed and my prediction was wrong in direction
+
+| | required | T11 | T5 |
+|---|---|---|---|
+| detection | beat 0.672 and 0.742 | **0.617** (−0.055) | **0.680** (−0.062) |
+| silence gate | ≤ 10% trending | **98.5%** | **98.7%** |
+
+I predicted +0.02 to +0.08 on both. It fell on both. I predicted the gate would
+still fail, which it did — but at 98.5% against a current best of 31%, about
+**three times worse than anything in the 48-configuration benchmark**.
+
+Per the preregistration: one candidate. There is no tuned variant and there will
+not be one. That constraint was written down precisely so that a failure here
+could not turn into a search.
+
+### The check that made it trustworthy
+
+Median τ of 0.735 on healthy episodes is suspiciously strong, and my `score()`
+clips at zero — which pins early windows to the floor and could **manufacture**
+the trend. So I ran the same gate on the unclipped series: **98.9%**, median τ
+**0.716**. The trend survives. The clipping did not cause it.
+
+Without that check I could not have told a finding about invariant features from
+a finding about my own scoring convention.
+
+### What it means
+
+> **The shape of the per-channel distribution drifts monotonically through a
+> healthy session — and that is the same shape that distinguishes faults.**
+
+A detector sharp enough to see the fault signature is necessarily sharp enough to
+see ordinary drift, because they are the same quantity. It also explains the
+detection loss: healthy scores climb through the session, inflating their medians
+and compressing the gap with faulted episodes. **Sharpening the detector made the
+healthy baseline noisier faster than it made the fault stand out.**
+
+### Why this is the most useful failure in the project
+
+The structural objection was previously an **inference** — four detectors, two
+sharing a failure pattern, and an argument about what they had in common. This is
+a **measurement**: I built the more sensitive detector the evidence pointed to,
+committed the criteria in advance, and watched it lose on both axes.
+
+An inference became a demonstration, and it cost one preregistered experiment.
+
+### The recommendation splits
+
+`PERMUTATION_INVARIANT.md` recommended invariant summaries for **attribution**.
+That stands — it rests on a supervised probe of telling faults apart, untouched by
+this. **It must not be extended to detection**, where the same features are now
+actively refuted. The preregistration said those were different problems before
+running; the numbers now say it too.
+
+Verifier 90 claims, register 37, coverage 90/90.

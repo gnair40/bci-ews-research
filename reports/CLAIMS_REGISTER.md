@@ -21,7 +21,7 @@ apart.
 | **UNANSWERABLE** | this data cannot decide it — not the same as 'no' |
 | **EXPLORATORY** | not preregistered; hypothesis-generating only |
 
-## ESTABLISHED (15)
+## ESTABLISHED (16)
 
 ### C01
 
@@ -142,6 +142,14 @@ Attribution is better than chance but not usable: 56% on T11 (chance 25%) and 52
 - **Report:** [`ATTRIBUTION_ACCURACY.md`](../reports/ATTRIBUTION_ACCURACY.md)
 - **Checks:** 3 — `attribution accuracy overall, T11 (chance 0.25)`; `attribution accuracy overall, T5 (chance 0.33)`; `GAIN_DRIFT named correctly, T11`
 - **Note:** Implemented and scored since the guard was written, printed to stdout and captured nowhere until now.
+
+### C16
+
+A one-class detector built on the shape information — the thing the evidence pointed to — is WORSE on both axes: AUC 0.617/0.680 against 0.672/0.742, and 98.5% of healthy episodes trending against a 31% best. The shape that distinguishes faults also drifts through healthy sessions.
+
+- **Report:** [`INVARIANT_DETECTOR.md`](../reports/INVARIANT_DETECTOR.md)
+- **Checks:** 4 — `invariant one-class detector AUC, T11 (worse)`; `invariant one-class detector AUC, T5 (worse)`; `healthy episodes trending, invariant detector T11`; `same trend unclipped, T11 (not an artefact)`
+- **Note:** Preregistered with numeric criteria and a prediction that detection would improve; it fell on both participants. One candidate by design, no tuned variant. The trend survives unclipping, so it is not the scoring convention. Turns an inference about detector classes into a measurement.
 
 ## LIMITATION (10)
 
@@ -321,7 +329,7 @@ The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per 
 
 ---
 
-**Coverage:** 85 of 86 verifier checks are cited by a register entry.
+**Coverage:** 89 of 90 verifier checks are cited by a register entry.
 
 Not cited by any entry:
 

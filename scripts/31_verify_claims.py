@@ -753,6 +753,37 @@ def _pinv_rot():
     return _pinv("T11", "rotation_pairs_mean_invariant")
 
 
+# ----------------------------------------------------- invariant detector
+
+def _invd(P: str, key: str):
+    sfx = "" if P == "T11" else f"_{P}"
+    return json.loads((OUT / f"invariant_detector{sfx}.json").read_text())[key]
+
+
+@claim("invariant one-class detector AUC, T11 (worse)", 0.6167, 0.005,
+       "INVARIANT_DETECTOR — prediction was wrong in direction")
+def _invd_t11():
+    return _invd("T11", "auc_invariant")
+
+
+@claim("invariant one-class detector AUC, T5 (worse)", 0.6804, 0.005,
+       "INVARIANT_DETECTOR — worse on both participants")
+def _invd_t5():
+    return _invd("T5", "auc_invariant")
+
+
+@claim("healthy episodes trending, invariant detector T11", 0.985, 0.005,
+       "INVARIANT_DETECTOR — 3x worse than the best of 48 configurations")
+def _invd_gate():
+    return _invd("T11", "silence_fraction_significant")
+
+
+@claim("same trend unclipped, T11 (not an artefact)", 0.989, 0.005,
+       "INVARIANT_DETECTOR — the drift is real, not the clipping convention")
+def _invd_raw():
+    return _invd("T11", "silence_fraction_significant_unclipped")
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0

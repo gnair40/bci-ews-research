@@ -261,6 +261,21 @@ CLAIMS = [
      "trusted -- the fourth time a checking tool here was wrong before it was "
      "useful."),
 
+    ("C16", ESTABLISHED,
+     "A one-class detector built on the shape information — the thing the "
+     "evidence pointed to — is WORSE on both axes: AUC 0.617/0.680 against "
+     "0.672/0.742, and 98.5% of healthy episodes trending against a 31% best. "
+     "The shape that distinguishes faults also drifts through healthy sessions.",
+     "INVARIANT_DETECTOR.md",
+     ["invariant one-class detector AUC, T11 (worse)",
+      "invariant one-class detector AUC, T5 (worse)",
+      "healthy episodes trending, invariant detector T11",
+      "same trend unclipped, T11 (not an artefact)"],
+     "Preregistered with numeric criteria and a prediction that detection would "
+     "improve; it fell on both participants. One candidate by design, no tuned "
+     "variant. The trend survives unclipping, so it is not the scoring "
+     "convention. Turns an inference about detector classes into a measurement."),
+
     # ------------------------------------------------------------- withdrawn
     ("W01", WITHDRAWN,
      "WITHDRAWN: that the monitor fails because the decoder has lost its "
