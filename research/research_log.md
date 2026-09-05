@@ -3907,3 +3907,113 @@ remaining one — does any of it generalise, is the two-participant disagreement
 real, can an ordered rule work — needs the third participant.
 
 Verifier 93 claims, register 38, coverage 93/93.
+
+---
+
+## 5 September 2026 — Designing the original data-collection component
+
+Design document: `research/ORIGINAL_DATA_COLLECTION_DESIGN.md`. **Nothing has been
+built or measured. No number in it is a result.**
+
+### The question put to me
+
+Whether the project should include original data I collect myself, rather than
+analysing a public dataset alone — and if so, what data would have a real
+scientific purpose rather than existing for its own sake.
+
+### Why the answer is yes, but not for the reason usually given
+
+Computational projects are legitimate on their own, and "you need hardware" is not
+a good argument. The good argument is specific: **this project has four documented
+gaps that archived data provably cannot close.**
+
+1. Five entangled session variables that 13 days cannot separate. Separating them
+   needs sessions where one varies while the others are held fixed — nobody
+   controlled anything in 2016.
+2. Whether injected faults resemble real degradation. Never checked, by anyone.
+3. Whether lag-1 r = 0.995 is a fact about cortex or about drifting sensor arrays
+   generally. The scope of the number that explains most of the negative results
+   is unknown.
+4. The saturating metric, where I made a recommendation I could not test.
+
+Original data earns its place only by attacking those. Anything else is
+decoration, and I said so.
+
+### The binding constraint, restated
+
+**No human participants** — Amendment 1, reaffirmed. Data collected from *oneself*
+is still human participant research under competition rules. That rules out EMG,
+EEG, consumer neuro-headsets, camera-tracked hand movement, and every "me and two
+friends" design. Every option in the document is instrumentation-only.
+
+### What was recommended
+
+A **Raspberry Pi camera viewing an LED matrix**, with N image regions as virtual
+channels and a ridge decoder predicting stimulus direction from array response —
+structurally identical to predicting cursor direction from firing rates, and
+settable to exactly 384 or 192 channels to match T11 or T5. About $115.
+
+Three studies on one rig: controlled physical degradation (A), longitudinal
+natural drift (B), and a metric-saturation sweep (C). Each corpus fault mode has a
+physical counterpart, and `GEOMETRY_ROTATION` becomes literally a rotation on a
+stepper motor.
+
+The structure that makes it worth doing: **the neural analysis makes falsifiable
+point predictions about the rig** — r ≈ 0.99 within a session, the silence gate
+fails, a sharper detector performs worse, the severity ladder degrades with
+baseline error. Those get preregistered from the neural findings and tested on
+hardware. It converts the project's largest weakness into its methodological
+centrepiece.
+
+Five designs were considered and rejected in writing, including three that would
+have been easier than the recommendation.
+
+### Two things I flagged rather than glossed
+
+**It is not neural.** The inference is about a class of signal — multichannel
+arrays with slow drift — not about cortex. That has to be defended as such and not
+dressed up as a brain simulation.
+
+**Skill gap.** Hardware is a different skill from running scripts, and a
+half-built rig producing noisy data would be worse than none. The mitigation is in
+the document: simplest version first, 16 channels, no motor, end-to-end, then
+scale.
+
+### Open, and blocking
+
+The deadline, which decides whether the six-week longitudinal study is viable at
+all. Nothing gets built before a preregistration exists.
+
+---
+
+## 5 September 2026 — An audit of the log's own date coverage
+
+Prompted by a request to confirm everything is recorded "for all dates." I checked
+rather than asserted, and found a real discrepancy.
+
+**Commits exist on 30 and 31 August with no heading carrying those dates.**
+
+The work is not missing. It is logged under headings dated *28 August* ("One
+measurement per session", "The live demonstration", "Checking that the documents
+still match the data") and *1 September* ("The feature study"), because those
+sessions ran past midnight and each heading carries the date the work began rather
+than the date its commits landed.
+
+So the record is **unreconciled, not falsified** — and the distinction matters
+enough to fix properly.
+
+**What I did not do:** re-date the existing headings so a check would pass.
+Editing a dated record after the fact to make it look tidier is the same category
+of act as editing a preregistration after seeing results.
+
+**What I did:** `scripts/65_log_coverage.py`, a fifth gate. Every date with at
+least one commit must either appear as a log heading — in either format the log
+uses, ISO or written, ranges expanded — or appear in an explicit `RECONCILED`
+table naming the heading that describes its work. Anything else fails.
+
+It currently reports 12 commit dates: 10 logged directly, 2 reconciled, 0
+unaccounted. The gate's own error message says the rule out loud: *do not re-date
+an existing entry to make this pass.*
+
+Five gates now: claim verifier, reproducibility audit, claims register,
+statistical hygiene, log coverage.

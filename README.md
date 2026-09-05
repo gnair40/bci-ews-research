@@ -76,6 +76,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/PERMUTATION_INVARIANT.md`](reports/PERMUTATION_INVARIANT.md) | It was the model's fault, not the features' — a published conclusion withdrawn |
 | [`reports/INVARIANT_DETECTOR.md`](reports/INVARIANT_DETECTOR.md) | Building the sharper detector the evidence pointed to — it was worse on both axes |
 | [`reports/INVARIANT_ATTRIBUTION.md`](reports/INVARIANT_ATTRIBUTION.md) | The other half fails too — and what that says about supervised probes |
+| [`research/ORIGINAL_DATA_COLLECTION_DESIGN.md`](research/ORIGINAL_DATA_COLLECTION_DESIGN.md) | **Design for original data collection** — options, rejections, recommendation |
 
 ## How the argument runs
 
@@ -133,7 +134,14 @@ python3 scripts/56_claims_register.py
 python3 scripts/61_statistical_hygiene.py
 ```
 
-It scans every script for the three statistical error classes this project has
+```bash
+python3 scripts/65_log_coverage.py
+```
+
+It fails if any date with commits has no research-log entry and no explicit
+reconciliation — so a day's work cannot vanish from the record silently.
+
+The hygiene linter scans every script for the three statistical error classes this project has
 actually made — inference on pooled non-independent units, a comparison that can
 never be true, and inverse-variance weighting of a bounded statistic — and fails
 on any site not explicitly reviewed.
@@ -150,7 +158,7 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-64; 31, 55, 56 and 61 run last, everything else in order
+scripts/     01-65; 31, 55, 56, 61 and 65 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs
