@@ -4048,3 +4048,73 @@ sharper detector, committed the criteria in advance, and watched it lose."* Coun
 corrected to 93. The designed hardware experiment added to the open items.
 
 Title kept stable, as it should be across a redeploy.
+
+## 6 September 2026 — A full technical and scientific audit, and one thing the repository does not contain
+
+**What I did.** Produced a complete audit of the project as a PDF —
+`reports/PROJECT_AUDIT_2026-09-06.pdf`, 54 pages — covering the repository, the
+timeline, the assistant's own activity and errors, the research design, both
+datasets, the codebase, the statistics, the failed approaches, the results, the
+reproducibility gates, scientific rigour, ISEF readiness, the original
+data-collection design, a prioritised roadmap, and a self-contained project
+memory section, plus two appendices.
+
+**How.** By inspecting primary evidence rather than reading the reports: `git
+log`, `git show`, the JSON manifests, and by re-running all five gates. All five
+pass. The claim verifier reproduced 93 of 93 headline numbers from the data
+files during the audit, so every figure quoted in the PDF was recomputed rather
+than copied.
+
+**Three second-pass corrections to my own draft.** I initially wrote that the
+project had no assembled bibliography. That was wrong — `ISEF_RESEARCH_PLAN.md`
+§D has ten formal citations with DOIs, and they are now transcribed in
+Appendix B. I also wrote "nine-day gap" for the 17–24 August silence, which is
+eight days with no commits. And I had labelled the rig predictions in the
+findings→experiment table as "committed in advance" when they are not committed
+yet; the column now says "to be preregistered before building", which is what
+§13.7 already required.
+
+**The finding that matters.** A "literature review" is cited as an existing,
+decision-shaping document in at least six files. `design_decisions.md` quotes it
+directly ("It's just MINDFUL with different statistics"). `PHASE1_2_REPORT.md`
+records a correction to it — it had T5 and T11 reversed. The research log cites
+its framing (C) as the origin of the degrading-plant-plus-compensator
+hypothesis. And `ISEF_RESEARCH_PLAN.md` §D states that the full annotated review
+"contains 25 [sources] and is in the project repository."
+
+**It is not in the repository, and no commit in the entire history ever added
+it.** Checked with `git log --all --diff-filter=A --name-only`.
+
+Two consequences, and they are different in kind. Scientifically, a reader
+cannot check the reasoning behind the project's framing, because the document
+carrying it is external to the artefact — this is the largest unrecoverable item
+in the audit, logged as U-1. For competition, the ISEF plan makes a factual
+statement about this repository's contents that the repository does not support.
+The fix is either to commit the review or to amend that sentence; leaving the
+claim as it stands is the one option that is not acceptable. Recorded as roadmap
+item R5 rather than fixed silently, because the review is not mine to produce.
+
+**Third-pass corrections for scientific accuracy.** Three numbers were stated
+loosely and are now precise: the benchmark grid is 32 T11 configurations plus 16
+T5 ones (T5 was never run with the calibrate-once baseline), not "4 × 2 × 4 × 2";
+"crossing" as a severity level (348 episodes on T11) is not the same as an
+episode that "crossed" (764 on T11), which is an outcome, and the PDF now says
+so explicitly; and "required AUC" is ambiguous between ≈0.99 at the specified
+0.1/h budget and ≈0.93 for 80% detection at a 10% false-flag rate, so both are
+now quoted with their conditions attached.
+
+**Gaps the audit records without fixing:** no unit tests, no CI, `requirements.txt`
+pins lower bounds rather than exact versions, nothing is tagged, and the AI-use
+disclosure for the ISEF form has not been written. All are in the roadmap.
+
+**One more thing, recorded because it is the same class of problem I just found
+in the ISEF plan.** The PDF is a binary. A binary in a research repository is
+exactly the sort of artefact whose provenance goes stale, so the generator lives
+in `tools/audit_report/` and the PDF is rebuilt from it. Appendix A is produced
+by running `scripts/31_verify_claims.py` at build time and parsing its output,
+so the appendix cannot drift away from the data: if a claim stops matching, the
+appendix changes, and if the check count changes the build asserts and refuses.
+The audit reports 70 documents scanned by the reproducibility gate; the
+checked-in `REPRODUCIBILITY_AUDIT.md` still says 53, which is a stale
+hand-written number beside generated output. Noted in the PDF rather than
+quietly corrected, since it is the report's own text.
