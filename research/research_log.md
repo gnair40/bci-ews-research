@@ -4118,3 +4118,50 @@ The audit reports 70 documents scanned by the reproducibility gate; the
 checked-in `REPRODUCIBILITY_AUDIT.md` still says 53, which is a stale
 hand-written number beside generated output. Noted in the PDF rather than
 quietly corrected, since it is the report's own text.
+
+## 6 September 2026 (later) — The rig procedure, written out step by step
+
+Wrote `research/RIG_PROCEDURE.md` — 944 lines, materials through analysis, at a
+level of detail somebody who has never seen the rig could follow.
+
+Three things in it depart from `ORIGINAL_DATA_COLLECTION_DESIGN.md` and are
+flagged as the researcher's call, not mine:
+
+1. **A screen instead of the WS2812 LED matrix.** The LED matrix needs precise
+   DMA timing on one GPIO pin and root privileges, and the GPIO hardware changed
+   on Pi 5. A monitor removes the electronics risk entirely and costs nothing if
+   a spare exists. The scientific claim is unaffected — the light, the optics,
+   the sensor noise and the degradation are physical either way.
+2. **A cosine-tuned brightness field, not a moving dot.** A moving dot would give
+   each image region *position* tuning; the neural channels have *direction*
+   tuning. Assigning each region a fixed preferred direction and setting its
+   brightness to 0.5*(1+cos(heading - preferred)) makes the rig a physical
+   realisation of a cosine-tuned population, so the decoding problem is identical
+   in form rather than merely analogous.
+3. **A baseline-matching gate before any fault is injected**, and the
+   autocorrelation measurement split in two.
+
+Point 3 is the one that matters. As the design stood, the experiment could
+produce an uninterpretable answer twice over. Without a baseline match, a
+difference between rig and cortex cannot distinguish "the failure is
+neural-specific" from "the rig is not a comparable system." And on the rig `r` is
+a knob — drift rate and window length are both mine to set — so predicting r=0.99
+and getting it would be worth nothing.
+
+So Stage 6 is a go/no-go gate on decoder skill relative to measured chance
+(archived: 90.7 - 54.6 = 36.1 deg on T11), and Stage 8 measures two things: the
+natural r with no imposed drift, which is non-circular, and a calibration curve
+of r against imposed drift time constant across three orders of magnitude, with
+the neural value marked on it.
+
+The gate criteria deliberately exclude r, effective sample size, detection AUC
+and silence-gate pass rate. Those are the dependent variables. Requiring the rig
+to match them at baseline would guarantee the result, which is the same error as
+picking a deterioration definition after seeing which one wins.
+
+The curve is a better experiment than the binary prediction the design doc
+proposed. It turns the answer from "monitoring failed" into "here is the
+relationship between how fast an array drifts and whether it can be monitored,
+and cortex sits here on it" — a positive result extracted from a negative one.
+
+Nothing is built. Stage 0 is the preregistration and it does not exist yet.
