@@ -1,5 +1,7 @@
 {
   "n_scripts": 67,
-  "n_problems": 0,
-  "problems": []
+  "n_problems": 1,
+  "problems": [
+    "research_log.md names script '66_load_rig.py' which does not exist"
+  ]
 }

@@ -1,8 +1,6 @@
 {
   "n_commit_dates": 14,
   "n_logged": 11,
-  "n_reconciled": 2,
-  "unaccounted": [
-    "2026-09-07"
-  ]
+  "n_reconciled": 3,
+  "unaccounted": []
 }

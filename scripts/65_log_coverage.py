@@ -49,6 +49,10 @@ RECONCILED = {
                   "'— Checking that the documents still match the data', plus "
                   "'1 September 2026 — The feature study'. Same midnight-spanning "
                   "sessions.",
+    "2026-09-07": "Logged under '6 September 2026 (evening) — Computational work "
+                  "that had to finish before any hardware'. The session ran past "
+                  "midnight UTC; the tag-preservation commit landed on the 7th. "
+                  "The heading was NOT re-dated to make this pass.",
 }
 
 
