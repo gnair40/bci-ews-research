@@ -4246,3 +4246,12 @@ has caught its own author rather than a stranger.
 **Status: 97 claims verified, all six checks passing. Nothing is built. Stage 0
 of the rig procedure is the preregistration and it still does not exist — that is
 the next thing, and it needs the three decisions in §0.1 answered first.**
+
+**Addendum — the tags could not be pushed.** `git push --tags` returns HTTP 403
+from this session while branch pushes succeed, so the credentials available here
+accept writes to the working branch and refuse `refs/tags/*`. That is an access
+boundary and it was not worked around. The eight tags exist locally, but a local
+tag dies with the container, so the definitions are now in `tools/create_tags.sh`
+where they survive. Run `bash tools/create_tags.sh && git push --tags origin`
+once from a clone with push rights. Re-running is safe; existing tags are left
+alone.
