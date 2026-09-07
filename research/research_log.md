@@ -4238,7 +4238,7 @@ was previously recoverable only from a field inside a JSON file.
 ### One thing the gates caught on me
 
 The reproducibility audit failed on my own edit: I had removed the instruction to
-write `66_load_rig.py` but left the filename in backticks inside the correction
+write the loader script but left its filename in backticks inside the correction
 note, so it read as a reference to a script that does not exist. Fixed by not
 naming it. Worth recording because it is the fourth time a gate in this project
 has caught its own author rather than a stranger.
@@ -4255,3 +4255,23 @@ tag dies with the container, so the definitions are now in `tools/create_tags.sh
 where they survive. Run `bash tools/create_tags.sh && git push --tags origin`
 once from a clone with push rights. Re-running is safe; existing tags are left
 alone.
+
+## 7 September 2026 — Two process failures of my own, recorded
+
+**One.** I committed and pushed with the reproducibility gate failing. The rule
+in this project is gates first, then commit, and it exists because of error #13
+in the audit. I ran the gate, read `PUSHED` in the same output, and did not check
+the gate's line above it. Nothing scientific is affected — the failure was a
+dangling documentation reference — but the failure mode is exactly the one
+already on the record, so it goes on the record again. Fixed in the next commit.
+
+**Two, and it is the same bug twice.** The dangling reference was inside the log
+entry *describing* that dangling reference. I wrote "I left the filename in
+backticks" — and left the filename in backticks while writing it, which is
+another reference to a script that does not exist, which is what the gate then
+caught. The sentence now names the file without backticks.
+
+This is the fifth time a gate in this project has caught its own author. That
+count is worth keeping, because it is the honest measure of how much the gates
+are doing: they are not decoration, and they are not catching hypothetical
+strangers.
