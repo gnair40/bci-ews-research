@@ -86,7 +86,29 @@ CLAIMS = [
      "AGGREGATION_LIMIT.md",
      ["Lag-1 autocorrelation of risk, T11 healthy",
       "Lag-1 autocorrelation of risk, T5 healthy"],
-     "This single fact explains most of the negative results."),
+     "This single fact explains most of the negative results. NOTE: these "
+     "figures are computed on windows that overlap by 83.3%, so part of the "
+     "value is forced by the window geometry. Claim C18 measures how much. "
+     "The conclusion is unaffected -- effective samples stay below 1 at every "
+     "spacing -- but when comparing against any system with different "
+     "windowing, including the rig, quote C18's no-overlap figures instead."),
+
+    ("C18", ESTABLISHED,
+     "The serial correlation behind C04 is a property of the signal, not of "
+     "the windowing: with adjacent windows sharing NO data it is still 0.902 "
+     "(T11) and 0.784 (T5), and effective independent samples per session "
+     "never exceeds 0.85 at any spacing.",
+     "WINDOW_SPACING.md",
+     ["lag-1 r with NO window overlap, T11 (C04 is not geometry)",
+      "lag-1 r with NO window overlap, T5",
+      "effective samples never exceeds 1, worst spacing (T5, no overlap)",
+      "overlap between adjacent windows as published (1500/250)"],
+     "Answers an objection nobody had raised: the published 0.995 is measured "
+     "on windows sharing 83.3% of their data, so a sceptic could argue the "
+     "project's central explanation is an artefact of a choice it made. It is "
+     "not. Written because the rig study compares against these numbers and "
+     "they must come from committed code -- the same failure mode as "
+     "REPRODUCIBILITY_AUDIT finding 1."),
 
     ("C05", ESTABLISHED,
      "A task change is separated from a real fault by 15× on T11.",

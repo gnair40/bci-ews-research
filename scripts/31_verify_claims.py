@@ -136,6 +136,37 @@ def _r_t11():
     return _lag1("episode_scores_local.csv")
 
 
+# --- window spacing: how much of C04 is geometry? (scripts/66) -------------
+
+def _spacing(participant: str, k: int, field: str) -> float:
+    return json.loads((OUT / "window_spacing.json").read_text())[
+        participant]["spacings"][str(k)][field]
+
+
+@claim("lag-1 r with NO window overlap, T11 (C04 is not geometry)", 0.902, 0.004,
+       "WINDOW_SPACING, RIG_PROCEDURE §0.4")
+def _sp_t11_noov():
+    return _spacing("T11", 6, "lag1_r_median")
+
+
+@claim("lag-1 r with NO window overlap, T5", 0.784, 0.006,
+       "WINDOW_SPACING, RIG_PROCEDURE §0.4")
+def _sp_t5_noov():
+    return _spacing("T5", 6, "lag1_r_median")
+
+
+@claim("effective samples never exceeds 1, worst spacing (T5, no overlap)",
+       0.85, 0.02, "WINDOW_SPACING")
+def _sp_worst_neff():
+    return _spacing("T5", 6, "n_eff")
+
+
+@claim("overlap between adjacent windows as published (1500/250)", 0.833, 0.002,
+       "WINDOW_SPACING")
+def _sp_overlap():
+    return _spacing("T11", 1, "overlap_fraction")
+
+
 @claim("Lag-1 autocorrelation of risk, T5 healthy", 0.980, 0.003,
        "AGGREGATION_LIMIT, PHASE3_REPORT §3.6")
 def _r_t5():

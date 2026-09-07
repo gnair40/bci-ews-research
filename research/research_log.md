@@ -4165,3 +4165,84 @@ relationship between how fast an array drifts and whether it can be monitored,
 and cortex sits here on it" — a positive result extracted from a negative one.
 
 Nothing is built. Stage 0 is the preregistration and it does not exist yet.
+
+## 6 September 2026 (evening) — Computational work that had to finish before any hardware
+
+Three jobs, in the order they blocked things.
+
+### 1. A number the rig procedure quotes had no committed source
+
+Yesterday's overlap check lived in a scratch file. Then I wrote
+`RIG_PROCEDURE.md` §0.4 quoting its output, and prediction P-R1 of the rig
+preregistration is stated against it. That is exactly the failure the
+reproducibility audit caught the first time it ran: a headline figure computed
+by hand, with the verifier checking a file nothing regenerates.
+
+So `scripts/66_window_spacing.py` now computes it, four checks in
+`31_verify_claims.py` guard it, and it is claim **C18** in the register.
+
+The finding itself: **the serial correlation is real, not geometry.** Claim C04's
+0.995 is measured on windows sharing 83.3% of their data, so a sceptic could say
+the project's central explanation is an artefact of a windowing choice it made.
+Decimating until adjacent windows share nothing leaves r = 0.902 (T11) and 0.784
+(T5). Effective independent samples never exceed 0.85 at any spacing, so C04's
+conclusion is untouched — but the published figure is partly geometric and must
+not be quoted against a system with different windowing. C04's register entry now
+says so and points at C18.
+
+One presentational thing I fixed: T5's every-9 row was silently absent, because
+fewer than 6 windows survive that decimation. A table that stops where the trend
+stops being convenient is a bad table even when the omission is innocent. The row
+now prints "not estimable" with the reason.
+
+### 2. The pipeline could not have accepted the rig at all
+
+`scripts/67_rig_format_check.py` fabricates a synthetic block in the deposit's
+own .mat layout and pushes it through the unmodified loader and decoder. Two
+results.
+
+**It failed on the first run, for a reason worth a build day.**
+`03_load_dataset.py` matched participant folders with `^(T\d+)(\(.*\))?$`, so a
+folder called `RIG` was invisible and the rig's recordings would have silently
+not existed — no error, just no data. Naming the rig `T99` would have needed no
+code change and would have been the wrong call: commit `7102ff6` exists
+specifically to establish that "participant" never means a recruited person, and
+labelling a cardboard box "participant T99" undoes that in the one place a judge
+is most likely to look. The pattern now admits `RIG` instead. Archived loading is
+unchanged — 54 blocks, 3,301 trials, T11 and T5 only — and malformed names are
+still rejected.
+
+**And the answer is simpler than RIG_PROCEDURE.md originally said.** It told the
+reader to write a new loader. Not needed: if the rig writes plain .mat files in
+the deposit's folder layout, the archived loader reads them with no new code at
+all. The document is corrected, with the exact field table, and with the two
+things that silently break it — `startStops` is MATLAB 1-based, and `savemat`
+drops any field whose name starts with an underscore. I hit the second one while
+writing the fixture.
+
+**On the fixture, emphatically.** It is not data. Analysing it would be the
+circularity `PROJECT_DEFINITION.md` §5.5 forbids — measuring my own equations. It
+writes to `data/_FIXTURE_NOT_DATA`, refuses to write near `data/raw_rig/`, marks
+every file, and deletes itself unless asked not to. No claim may cite it and none
+does.
+
+### 3. Two roadmap hygiene items
+
+`requirements.txt` now records the exact versions every committed result was
+produced with, beside the `>=` minimums — closing a gap the reproducibility audit
+reports about itself. And eight pivotal commits are tagged: `design-freeze`,
+`phase12-closeout`, `amendment-1`, `grader-before-monitor`, `decoder-guard`,
+`phase3-complete`, `feature-study-frozen`, `audit-2026-09-06`. The design freeze
+was previously recoverable only from a field inside a JSON file.
+
+### One thing the gates caught on me
+
+The reproducibility audit failed on my own edit: I had removed the instruction to
+write `66_load_rig.py` but left the filename in backticks inside the correction
+note, so it read as a reference to a script that does not exist. Fixed by not
+naming it. Worth recording because it is the fourth time a gate in this project
+has caught its own author rather than a stranger.
+
+**Status: 97 claims verified, all six checks passing. Nothing is built. Stage 0
+of the rig procedure is the preregistration and it still does not exist — that is
+the next thing, and it needs the three decisions in §0.1 answered first.**

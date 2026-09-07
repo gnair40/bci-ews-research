@@ -127,7 +127,13 @@ BLOCK_RE = re.compile(r"^block[_-]?(\d+)$", re.IGNORECASE)
 # 'T11(additional)' holding two extra reference tasks (personal use, random
 # targets) for the SAME participant, so the pattern allows an optional suffix
 # and the suffix is recorded separately rather than being lost.
-PARTICIPANT_RE = re.compile(r"^(T\d+)(\(.*\))?$", re.IGNORECASE)
+# Added 6 Sep 2026: the physical rig (research/RIG_PROCEDURE.md) is a third
+# data source and is NOT a person. Naming it 'T99' would have needed no code
+# change and would have been wrong -- commit 7102ff6 exists specifically to say
+# that "participant" never means a recruited human, and a folder called
+# "participant T99" walks that back. 'RIG' is admitted instead, so the
+# human/instrument distinction stays visible in the data itself.
+PARTICIPANT_RE = re.compile(r"^(T\d+|RIG\d*)(\(.*\))?$", re.IGNORECASE)
 
 
 # ---------------------------------------------------------------------------
