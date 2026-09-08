@@ -4439,3 +4439,41 @@ One thing left deliberately incomplete: MLA wants authors' full first names, and
 the source list carries only initials. I did not expand them, because inventing a
 first name is the same class of error as inventing a DOI. The bibliography says
 so in a line above the entries, so it is a known gap rather than an oversight.
+
+## 8 September 2026 (evening) — Procedures rewritten as replication steps
+
+Section C of the September plan is now 61 numbered procedures across 10 stages,
+from "open a terminal" to analysing rig data. It covers the whole computational
+arc — setup, data acquisition, tool validation, preregistration, the frozen
+analysis, ground truth, the benchmark, fourteen follow-up studies, eight audits —
+and then the physical build.
+
+**This contradicts the skeleton the same document was written to be**, and the
+researcher was told so before I wrote it. A genuinely replicable procedures
+section *is* the methodology. The summary version is one revert away if she wants
+it back; the detail belongs in the December submission regardless.
+
+**Four commands in my first draft did not work**, and the check that found them
+is worth keeping. `19_detectors.py`, `22_decoder_guard.py`,
+`32_feature_families.py` and `35_general_guard.py` have no `__main__` block —
+they are libraries the harness imports, not programs. I had written them as
+`python3 scripts/...`, which for a stranger following the document literally
+would produce silence and no explanation. Found by extracting every `python3
+scripts/*.py` command from the section with a regex and testing each target for a
+`__main__` block. All four now say plainly that they are written rather than run,
+and the distinction is stated once at the top with the four named.
+
+That check is worth repeating whenever this section changes. A procedures
+document nobody has executed is a wish, not a procedure — and this is the same
+failure class as the sign test computed in a shell one-liner, and the dangling
+`66_load_rig.py` reference from yesterday. Third instance of "a document
+referring to code that does not do what the document says."
+
+Details deliberately kept in, because a replicator gets them wrong otherwise: the
+MATLAB 1-based versus Python 0-based indexing trap; that the loader deliberately
+does no smoothing or z-scoring, because each is a scientific decision rather than
+"loading"; that chance level is measured by shuffling rather than assumed to be
+90 degrees; that the freeze needs an explicit `--confirm` so it cannot happen by
+accident; that automatic exposure on the rig is an adaptive compensator that
+would cancel the very degradation being measured; and that the Stage 9 gate
+deliberately excludes the dependent variables.
