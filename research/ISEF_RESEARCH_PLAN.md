@@ -417,8 +417,37 @@ conclusion without the student's own verification of the underlying analysis.
 ## D. Bibliography
 
 *Formal citations; these are the sources the Rationale actually draws on. At
-least five are required; the full annotated review contains 25 and is in the
-project repository.*
+least five are required.*
+
+> **Four defects found 8 September 2026, flagged rather than fixed, because
+> fixing them requires bibliographic details nobody here can verify.**
+>
+> 1. **`Ma et al., 2023`** is cited in §A ("adversarially match distributions
+>    across neuron turnover") and has **no reference in this list or anywhere in
+>    the repository.**
+> 2. **`Kuo et al., 2025`** is cited in §A ("impute degraded channels") and
+>    likewise **has no reference anywhere.**
+> 3. **`Dakos et al., 2008`** is cited in §A as a separate paper. The only Dakos
+>    in this list is V. Dakos as a **co-author on Scheffer et al. (2009)**,
+>    entry 7. There is no 2008 Dakos reference. Either the in-text citation
+>    should be dropped, or the 2008 paper added.
+> 4. **`Meisel et al., 2015`** is cited in §A. The only Meisel in this list is
+>    C. Meisel as a **co-author on Maturana et al. (2020)**, entry 5. There is no
+>    2015 Meisel reference.
+>
+> **A fifth, different problem:** the claim that iBCIs let people with paralysis
+> control computers is **uncited in both plans**. It is the foundational claim of
+> the whole rationale and it needs a canonical clinical demonstration behind it.
+>
+> **Also corrected here:** an earlier version of this note said "the full
+> annotated review contains 25 and is in the project repository." **It is not in
+> the repository and no commit ever added it** — see
+> `reports/PROJECT_AUDIT_2026-09-06.pdf` §12.3. That sentence has been removed
+> because it was a factual statement about this repository that the repository
+> does not support.
+>
+> All four dangling citations must be resolved before the December submission:
+> add the reference, or remove the in-text citation. Do not guess a DOI.
 
 1. Barrese, J. C., Rao, N., Paroo, K., Triebwasser, C., Vargas-Irwin, C.,
    Franquemont, L., & Donoghue, J. P. (2013). Failure mode analysis of

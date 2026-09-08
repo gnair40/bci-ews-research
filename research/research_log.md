@@ -4367,3 +4367,58 @@ the wording changes year to year, and nothing more.
 The plan does not mention the negative result, the specific gates, the fault
 modes, the autocorrelation finding, the day effect, or any of the seven rig
 predictions. All of those are in the December plan and in the repository.
+
+## 8 September 2026 (later) — Citations in the rationale, and four dangling ones found doing it
+
+The September rationale made factual claims and cited nothing, while ten
+references sat unreferenced at the end. Rewritten with bracketed numbers keyed to
+Section F. Every one of the ten is now cited at least once; no orphans.
+
+The mapping, so it is checkable: array degradation over years is [1] Barrese
+(78 arrays), [8] Sponheim (>6,000 datasets, nine years), [3] Hughes (five years,
+one human). That instability is measurable in the signal is [6] Pun. The field's
+corrective response is [4] Karpowicz. The early-warning framework is [7]
+Scheffer, demonstrated in human neural data by [5] Maturana. And the framework
+being contested is [10] Wilkat (no evidence before seizures), [2] Helmich (the
+clinical base is thin), [9] van der Bolt (required record length scales with how
+slowly the system responds).
+
+**On including the early-warning literature in a document meant to be
+uninformative to competitors.** It does reveal the theoretical framing the
+project started from. I included it anyway: without it five of the ten sources
+are orphans, which reads as carelessness, and the three critical papers say the
+framework is contested — which is true, is the honest framing, and points at a
+literature this project's own pilot found does not work here. The novelty is the
+constructed benchmark and the test battery, and none of that is in the document.
+Easy to cut if she disagrees.
+
+### Four dangling citations in the full ISEF plan
+
+Found while doing the mapping. Flagged in `ISEF_RESEARCH_PLAN.md` §D rather than
+fixed, because fixing them means bibliographic details I cannot verify and a
+wrong DOI is worse than a missing one.
+
+1. **Ma et al., 2023** — cited in §A, no reference anywhere in the repository.
+2. **Kuo et al., 2025** — cited in §A, no reference anywhere.
+3. **Dakos et al., 2008** — cited in §A as a separate paper. The only Dakos in
+   the bibliography is V. Dakos as a *co-author on Scheffer 2009*. No 2008
+   reference exists.
+4. **Meisel et al., 2015** — same shape. The only Meisel is C. Meisel as a
+   *co-author on Maturana 2020*.
+
+Items 3 and 4 are the more interesting pair: both look like a co-author's name
+being promoted to a first-author citation of a paper that was never in the list.
+That is an easy error to make and an easy one for a reviewer to catch.
+
+**A fifth problem, different in kind:** the claim that iBCIs let people with
+paralysis control computers is **uncited in both plans**. It is the foundational
+claim the entire rationale rests on. The September draft leans on [3] and [6],
+which are human iBCI papers and do support that such systems exist and are used
+— but a canonical clinical demonstration should be added for December.
+
+Also corrected in that flag: §D still asserted that a 25-source annotated review
+"is in the project repository." The audit established it is not and never was.
+That sentence is removed, since it was a factual statement about this repository
+that the repository does not support.
+
+None of the five may be left for the December submission.
