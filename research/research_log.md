@@ -4275,3 +4275,56 @@ This is the fifth time a gate in this project has caught its own author. That
 count is worth keeping, because it is the honest measure of how much the gates
 are doing: they are not decoration, and they are not catching hypothetical
 strangers.
+
+## 7 September 2026 (later) — Dates, and a preregistration draft
+
+**The deadline turned out to be defined.** Research plan draft **15 September
+2026**, final plan **December 2026**, regional fair **March 2027**.
+
+Working back from mid-March: data collection must stop about 22 February 2027; a
+10-week Arm B must start by 14 December 2026; construction by 23 November 2026.
+That is about **9 weeks of slack**. **D1 is resolved and Arm B is in.**
+
+Two things worth noticing about that. First, the fair is not the binding date at
+all — **15 September is**, and it is eight days away. Second,
+`ORIGINAL_DATA_COLLECTION_DESIGN.md` had made a decision turn on "the deadline"
+without ever defining which deadline, and I repeated that as D1 four times
+without noticing. Both documents now carry the actual dates, added as a dated
+resolution rather than by rewriting the original sentence.
+
+**Drafted `research/RIG_PREREGISTRATION.md`.** Seven predictions, each derived
+from a numbered claim already in the repository, each with a threshold, a
+falsification condition, and a statement of what BOTH outcomes would mean. Plus
+the Stage 6 gate, sample sizes and stopping rules fixed in advance, the analysis
+plan, an explicit scope limit, an amendment procedure, and a freeze command.
+
+Four things about it I want on the record.
+
+**It is a draft and it is not mine to freeze.** A preregistration whose
+thresholds the researcher accepted without reading is worse than none, because it
+converts a genuine test into a formality. The derivations are mechanical — every
+one cites a measured number. The thresholds are judgement calls and are marked
+for the researcher to accept or change. Changing one now is free; changing one
+after the freeze is an amendment with a public reason.
+
+**P-R1 and P-R2 are not independent, and the document says so.** Effective sample
+size is a function of r and n, so a rig satisfying P-R1 will almost certainly
+satisfy P-R2. Listing them as two predictions without saying that would inflate
+apparent support — the same error class as L09. P-R2 is kept because n_eff is the
+quantity the conclusions rest on, and the redundancy is stated in the text rather
+than left for a reader to notice.
+
+**The gate deliberately excludes the dependent variables.** Autocorrelation,
+effective sample size, detection AUC and silence-gate pass rate are not baseline
+matching criteria. Requiring the rig to match them before injection would
+guarantee every prediction and make the whole study circular — the same error as
+picking a deterioration definition after seeing which one wins, which this
+project refused once already.
+
+**P-R5 is a prediction I have now got wrong twice.** Both previous times I
+predicted the invariant-feature route would improve things and it degraded them.
+Here I predict degradation. If it improves on hardware that is the third failed
+prediction in a row, and it is recorded that way in advance.
+
+Nothing is built. The freeze needs D2 (build at all?) and D3 (channel count)
+answered first.

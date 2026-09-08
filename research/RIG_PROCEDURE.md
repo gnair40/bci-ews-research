@@ -17,14 +17,20 @@ Commands are given in full. Where a command needs explaining, it is explained.
 
 ## 0. Decisions to make before reading further
 
-### 0.1 Three decisions that are yours, not mine
+### 0.1 Decisions that are yours, not mine
 
-Nothing below can start until these are answered. They are unchanged from
-`ORIGINAL_DATA_COLLECTION_DESIGN.md` §8.
+D1 is resolved (7 September 2026). **D2 and D3 remain open and block the freeze
+in Stage 0.**
+
+> **The schedule, now that it is known.** Research plan draft **15 September
+> 2026** — eight days after this was written, and the genuinely urgent date.
+> Final plan **December 2026**. Regional fair **March 2027**. The fair is not the
+> constraint: there are about 9 weeks of slack even with the longest version of
+> the longitudinal arm.
 
 | # | Decision | Why it blocks | If undecided |
 |---|---|---|---|
-| **D1** | **Your deadline** | Stage 11 (longitudinal) needs 6–10 weeks of wall-clock time and cannot be compressed. Everything else fits in two weekends plus unattended running. | Assume Stage 11 is out and build for Stages 1–10 only. It can be added later if time appears; it cannot be added at the end. |
+| ~~**D1**~~ | ~~**Your deadline**~~ **— RESOLVED 7 Sep 2026** | Research plan draft **15 Sep 2026**, final plan **Dec 2026**, regional fair **Mar 2027**. Data collection must stop ~**22 Feb 2027**; a 10-week Arm B must start by **14 Dec 2026**; construction by **23 Nov 2026**. | **~9 weeks of slack. Arm B is IN.** No longer an open decision. |
 | **D2** | **Build hardware at all?** | Declining leaves a defensible computational project. Accepting is real work with a real failure mode (a half-built rig producing noisy data is worse than no rig). | Do not start. A partial rig is the one outcome with negative value. |
 | **D3** | **Channel count: 384, 192, or both** | 384 matches T11, the participant every day-effect finding rests on. 192 matches T5. | **Recommendation: 384.** All of C07–C10, L03 and the P5 result are T11 findings. Matching T11 makes the comparison direct. 192 can be produced afterwards by pooling adjacent regions in software, at no extra recording cost. |
 

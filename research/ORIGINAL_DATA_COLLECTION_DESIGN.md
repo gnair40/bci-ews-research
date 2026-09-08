@@ -194,12 +194,22 @@ nothing — into its methodological centrepiece.
   data end to end, and only then scale to 384 channels and add rotation.
 - **It is not neural.** Stated above; must be defended as a claim about a class of
   signal, not as a brain simulation.
-- **Timeline.** Idea B is viable only if 6+ weeks remain before the deadline. That
-  is unresolved and is the first open question.
+- **Timeline.** Idea B is viable only if 6+ weeks remain before the deadline.
+
+> **Resolved 7 September 2026.** This paragraph, and item 1 of §8, referred to
+> "the deadline" without ever saying which deadline — a real gap, since the
+> document made a decision turn on a date it never defined. The dates are:
+> research plan draft **15 September 2026**, final plan **December 2026**,
+> regional fair **March 2027**. Working back from a mid-March fair: data
+> collection must stop about **22 February 2027**; a 10-week Arm B must start by
+> **14 December 2026**; construction must begin by **23 November 2026**. That
+> leaves about **9 weeks of slack**. **Arm B is IN.** The binding date is not the
+> fair — it is the 15 September research plan.
 
 ## 8. Open decisions before any building starts
 
-1. **Deadline** — decides whether Idea B is in or out.
+1. ~~**Deadline** — decides whether Idea B is in or out.~~ **RESOLVED
+   7 September 2026: Arm B is in, with ~9 weeks of slack. See §7.**
 2. **Whether to build hardware at all** — scientifically the right call; also real
    work. Declining leaves a defensible computational project.
 3. **Channel count** — 384 (match T11), 192 (match T5), or both.
