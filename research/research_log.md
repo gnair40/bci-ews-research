@@ -4328,3 +4328,42 @@ prediction in a row, and it is recorded that way in advance.
 
 Nothing is built. The freeze needs D2 (build at all?) and D3 (channel count)
 answered first.
+
+## 8 September 2026 — The September research plan, and where the exposure actually is
+
+Wrote `research/RESEARCH_PLAN_2026-09-15.md` for the 15 September submission. The
+researcher asked for a skeleton, because other students at the school see these
+plans and she does not want the methodology handed over.
+
+**That is a legitimate concern, but the plan is not where the exposure is.** The
+repository is **public** — `visibility: public` on `gnair40/bci-ews-research`,
+checked rather than assumed. Anyone can read 45 reports, this 4,000-line log, the
+54-page audit PDF, and `RIG_PROCEDURE.md` with all seven rig predictions, the
+apparatus, and the Stage 6 gate criteria. A summarised research plan protects
+nothing while that is true.
+
+Recommended making the repository private now and public again before the March
+fair — protection while it matters, verifiability when it counts. Not done: it is
+her repository and her call, and it is a one-click toggle either way.
+
+**The principle the draft follows: vague where novel, precise where regulated.**
+Sections A, B, C and E are summarised, and each says so. **Section D, Risk and
+Safety, is complete and explicitly marked as not summarised** — a review
+committee cannot assess what it cannot see, and vagueness about safety is the one
+kind that gets a plan rejected rather than protected. The bibliography is full;
+the sources are public anyway.
+
+Two lines I put in the document itself rather than only here. First: *"Nothing in
+this document is inaccurate. Detail is omitted; nothing is misstated."* A
+summary is legitimate; a misleading plan is not, and the difference needs to be
+visible in the document rather than assumed. Second, the note that the full
+methodology goes in the December plan — which is true, and which is what makes
+the September omissions a deferral rather than a concealment.
+
+Section G (AI disclosure) is left blank at the researcher's request — she is
+writing it. I left a reminder of what the section has to cover and a note that
+the wording changes year to year, and nothing more.
+
+The plan does not mention the negative result, the specific gates, the fault
+modes, the autocorrelation finding, the day effect, or any of the seven rig
+predictions. All of those are in the December plan and in the repository.
