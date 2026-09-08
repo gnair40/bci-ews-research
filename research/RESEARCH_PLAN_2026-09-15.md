@@ -29,94 +29,67 @@
 
 ## A. Rationale
 
-Citations are given as bracketed numbers keyed to the Bibliography in Section F.
-
-### A.1 The problem
-
 Intracortical brain–computer interfaces (iBCIs) allow people with paralysis to
 control computers and communication devices directly from recorded neural
-activity [3, 6]. An implanted electrode array records signals from motor cortex,
-and software called a **decoder** converts that activity into intended movement.
+activity (Hughes et al.; Pun et al.). An implanted electrode array records
+signals from motor cortex, and software called a decoder converts that activity
+into intended movement. Their central unsolved engineering problem is not
+accuracy on the first day but reliability over months and years, because the
+recorded signal is not stationary: electrode impedance changes, individual
+recorded units are lost, and the relationship between neural activity and
+intended movement drifts. This is established across long observation periods and
+many implants — Barrese et al. analysed failure modes across seventy-eight
+arrays, Sponheim et al. characterised longevity and reliability across more than
+six thousand datasets spanning nine years, and Hughes et al. documented five
+years of array performance in a single human participant. The process is slow and
+gradual, which is exactly what makes it hard to notice, and the consequence is
+that a decoder can go on producing confident output from a signal that no longer
+matches what it was trained on. That the degradation is measurable in the signal
+itself, and not only in the user's task outcomes, was shown by Pun et al., who
+found that a statistical measure of neural instability tracks closed-loop
+performance in chronic human recordings.
 
-Their central unsolved engineering problem is not accuracy on the first day — it
-is **reliability over months and years**. The recorded signal is not stationary.
-Electrode impedance changes, individual recorded units are lost, and the
-relationship between neural activity and intended movement drifts. This is
-established across long observation periods and many arrays: Barrese et al. [1]
-analysed failure modes across 78 implanted arrays, Sponheim et al. [8]
-characterised longevity and reliability across more than six thousand datasets
-and nine years, and Hughes et al. [3] documented five years of array performance
-in a single human participant. The timescale is slow and the process is gradual,
-which is precisely what makes it hard to notice.
-
-The consequence is that a decoder can continue producing confident output from a
-signal that no longer matches what it was trained on. Pun et al. [6] showed that
-a statistical measure of neural instability tracks closed-loop task performance
-in chronic human recordings — establishing that the degradation is measurable in
-the signal itself, not only in the user's task outcomes.
-
-### A.2 What the field currently does about it
-
-The response has been almost entirely **corrective** rather than diagnostic: the
-drift is treated as a nuisance to be removed. Karpowicz et al. [4], for example,
+The field's response has been almost entirely corrective rather than diagnostic,
+treating drift as a nuisance to be removed: Karpowicz et al., for instance,
 stabilise performance by realigning the underlying latent dynamics so that a
-fixed decoder continues to work as the recording changes. The alternative in
-routine use is **recalibration** — the user stops, performs a supervised block,
-and the decoder is refitted.
+fixed decoder keeps working as the recording changes. The alternative in routine
+use is recalibration, in which the user stops, performs a supervised block, and
+the decoder is refitted — a procedure that costs the user time, requires
+supervised data, interrupts use entirely on many systems, and is at present
+scheduled by convention rather than by evidence that it is needed. The
+established framework for anticipating a transition of this kind comes from
+dynamical systems theory, where a system's recovery from small perturbations
+slows near a tipping point and its variance and autocorrelation rise accordingly
+(Scheffer et al.), a framework Maturana et al. applied to human neural data as a
+biomarker for seizure susceptibility. That framework is genuinely contested, and
+the disagreement bears directly on the present question: Wilkat et al. found no
+evidence of critical slowing down before human epileptic seizures, Helmich et al.
+argue that the clinical evidence base is thinner than it is usually presented to
+be and caution against applying the framework without first checking that its
+assumptions hold, and van der Bolt et al. show that the length of record required
+to detect such a signal scales with how slowly the system responds — a serious
+constraint for a process that unfolds over months. Taking that criticism
+seriously, rather than assuming the framework applies, is a design commitment of
+this project.
 
-Recalibration is not free. It costs the user time, requires supervised data, and
-on many systems interrupts use entirely. It is also, at present, scheduled by
-convention rather than by evidence that it is needed. A system that recalibrated
-only when it was about to become necessary would return that time to the user; a
-system that gave warning *before* failure rather than after would let the user
-act, rather than discover the problem in the middle of a task.
-
-### A.3 The framework for anticipating a decline, and why it is contested
-
-The established framework for anticipating a transition in a dynamical system is
-**early-warning signals**: as a system's recovery from small perturbations slows
-near a tipping point, its variance and its autocorrelation rise. Scheffer et al.
-[7] set out the general theory, and Maturana et al. [5] demonstrated an
-application in human neural data, using it as a biomarker for seizure
-susceptibility.
-
-**This framework is genuinely contested, and the disagreement is directly
-relevant here.** Wilkat et al. [10] found no evidence of critical slowing down
-before human epileptic seizures. Helmich et al. [2] argue that the clinical
-evidence base is thinner than it is often presented to be, and caution against
-applying the framework without first checking that its assumptions hold. Most
-directly, van der Bolt et al. [9] show that the length of record required to
-detect such a signal scales with how slowly the system responds — which matters
-a great deal for a process that unfolds over months.
-
-Taking that criticism seriously, rather than assuming the framework applies, is a
-design commitment of this project.
-
-### A.4 The gap this project addresses
-
-A substantial body of work exists on *correcting* drift [4, 6]. Considerably less
-exists on *noticing* it early enough to act on, and — more importantly — **there
-is no agreed way to test whether a system that claims to notice it actually
-works.**
-
-That second gap is the one this project targets, and it has a specific technical
-cause. In observational recordings, nobody knows when deterioration actually
-began; the onset is identified by the analyst after the fact. Any claim about how
-*early* a warning arrived therefore depends partly on that definition rather than
-on the world, and the rate of false alarms cannot be estimated at all. Yet lead
-time and false-alarm rate are the only two quantities that determine whether a
-warning system is worth deploying.
-
-Both become measurable only in a system where the experimenter controls, and
-records in advance, when the degradation begins. Building such a system, and the
-test procedure that goes with it, is the substance of this project.
-
-### A.5 Why it matters
-
-iBCIs are moving from research demonstrations toward clinical use [3, 4, 6]. A
-device whose reliability cannot be monitored is a device its user cannot fully
-trust. Knowing *when* a neural interface needs attention — and being told *why* —
-is a prerequisite for one that somebody can depend on daily.
+A substantial body of work therefore exists on correcting drift (Karpowicz et
+al.; Pun et al.), considerably less on noticing it early enough to act, and —
+more importantly — there is no agreed way to test whether a system that claims to
+notice it actually works. That second gap is what this project targets, and it
+has a specific technical cause: in observational recordings nobody knows when
+deterioration actually began, because the onset is identified by the analyst
+after the fact. Any claim about how early a warning arrived therefore depends
+partly on that definition rather than on the world, and the rate of false alarms
+cannot be estimated at all, yet lead time and false-alarm rate are the only two
+quantities that determine whether a warning system is worth deploying. Both
+become measurable only in a system where the experimenter controls, and records
+in advance, when the degradation begins; building such a system, and the test
+procedure that goes with it, is the substance of this project. The practical case
+is direct, since iBCIs are moving from research demonstrations toward clinical
+use (Hughes et al.; Karpowicz et al.; Pun et al.): a device whose reliability
+cannot be monitored is a device its user cannot fully trust, and knowing when a
+neural interface needs attention — and being told why — is a prerequisite for one
+that somebody can depend on daily.
 
 ---
 
@@ -290,44 +263,49 @@ in the December plan.*
 
 ## F. Bibliography
 
-Numbered as cited in Section A. All ten are peer-reviewed; the dataset in [6]
-is publicly archived under a CC0 licence.
+Formatted in MLA style and listed alphabetically by author. Author first names
+appear as initials where the source list carries initials; these should be
+expanded from the published papers before final submission.
 
-1. Barrese, J. C., Rao, N., Paroo, K., Triebwasser, C., Vargas-Irwin, C.,
-   Franquemont, L., & Donoghue, J. P. (2013). Failure mode analysis of
-   silicon-based intracortical microelectrode arrays in non-human primates.
-   *Journal of Neural Engineering, 10*(6), 066014.
-   https://doi.org/10.1088/1741-2560/10/6/066014
-2. Helmich, M. A., Olthof, M., Oldehinkel, A. J., Wichers, M., Bringmann, L. F.,
-   & Smit, A. C. (2024). Slow down and be critical before using early warning
-   signals in psychopathology. *Nature Reviews Psychology, 3*, 767–780.
-   https://doi.org/10.1038/s44159-024-00369-y
-3. Hughes, C. L., Flesher, S. N., Weiss, J. M., Downey, J. E., Collinger, J. L.,
-   & Gaunt, R. A. (2021). Long-term intracortical microelectrode array
-   performance in a human: A 5 year retrospective analysis. *Journal of Neural
-   Engineering, 18*(4). https://doi.org/10.1088/1741-2552/ac1add
-4. Karpowicz, B. M., et al. (2025). Stabilizing brain-computer interfaces through
-   alignment of latent dynamics. *Nature Communications, 16*.
-   https://doi.org/10.1038/s41467-025-59652-y
-5. Maturana, M. I., et al. (2020). Critical slowing down as a biomarker for
-   seizure susceptibility. *Nature Communications, 11*, 2172.
-   https://doi.org/10.1038/s41467-020-15908-3
-6. Pun, T. K., Khoshnevis, M., Hosman, T., et al. (2024). Measuring instability in
-   chronic human intracortical neural recordings towards stable, long-term
-   brain-computer interfaces. *Communications Biology, 7*.
-   https://doi.org/10.1038/s42003-024-06784-4
-   [Dataset: Dryad, CC0, https://doi.org/10.5061/dryad.n2z34tn5s]
-7. Scheffer, M., et al. (2009). Early-warning signals for critical transitions.
-   *Nature, 461*, 53–59. https://doi.org/10.1038/nature08227
-8. Sponheim, C., et al. (2021). Longevity and reliability of chronic unit
-   recordings using the Utah, intracortical multi-electrode arrays. *Journal of
-   Neural Engineering, 18*(6), 066044. https://doi.org/10.1088/1741-2552/ac3eaf
-9. van der Bolt, B., van Nes, E. H., & Scheffer, M. (2021). No warning for slow
-   transitions. *Journal of the Royal Society Interface, 18*(174), 20200935.
-   https://doi.org/10.1098/rsif.2020.0935
-10. Wilkat, T., Rings, T., & Lehnertz, K. (2019). No evidence for critical slowing
-    down prior to human epileptic seizures. *Chaos, 29*(9), 091104.
-    https://doi.org/10.1063/1.5122759
+Barrese, J. C., et al. "Failure Mode Analysis of Silicon-Based Intracortical
+Microelectrode Arrays in Non-Human Primates." *Journal of Neural Engineering*,
+vol. 10, no. 6, 2013, p. 066014, https://doi.org/10.1088/1741-2560/10/6/066014.
+
+Helmich, M. A., et al. "Slow Down and Be Critical before Using Early Warning
+Signals in Psychopathology." *Nature Reviews Psychology*, vol. 3, 2024, pp.
+767–80, https://doi.org/10.1038/s44159-024-00369-y.
+
+Hughes, C. L., et al. "Long-Term Intracortical Microelectrode Array Performance
+in a Human: A 5 Year Retrospective Analysis." *Journal of Neural Engineering*,
+vol. 18, no. 4, 2021, https://doi.org/10.1088/1741-2552/ac1add.
+
+Karpowicz, B. M., et al. "Stabilizing Brain-Computer Interfaces through Alignment
+of Latent Dynamics." *Nature Communications*, vol. 16, 2025,
+https://doi.org/10.1038/s41467-025-59652-y.
+
+Maturana, M. I., et al. "Critical Slowing Down as a Biomarker for Seizure
+Susceptibility." *Nature Communications*, vol. 11, 2020, article 2172,
+https://doi.org/10.1038/s41467-020-15908-3.
+
+Pun, T. K., et al. "Measuring Instability in Chronic Human Intracortical Neural
+Recordings towards Stable, Long-Term Brain-Computer Interfaces." *Communications
+Biology*, vol. 7, 2024, https://doi.org/10.1038/s42003-024-06784-4. Dataset:
+Dryad, CC0, https://doi.org/10.5061/dryad.n2z34tn5s.
+
+Scheffer, M., et al. "Early-Warning Signals for Critical Transitions." *Nature*,
+vol. 461, 2009, pp. 53–59, https://doi.org/10.1038/nature08227.
+
+Sponheim, C., et al. "Longevity and Reliability of Chronic Unit Recordings Using
+the Utah, Intracortical Multi-Electrode Arrays." *Journal of Neural Engineering*,
+vol. 18, no. 6, 2021, p. 066044, https://doi.org/10.1088/1741-2552/ac3eaf.
+
+van der Bolt, B., et al. "No Warning for Slow Transitions." *Journal of the Royal
+Society Interface*, vol. 18, no. 174, 2021, article 20200935,
+https://doi.org/10.1098/rsif.2020.0935.
+
+Wilkat, T., et al. "No Evidence for Critical Slowing Down prior to Human
+Epileptic Seizures." *Chaos*, vol. 29, no. 9, 2019, p. 091104,
+https://doi.org/10.1063/1.5122759.
 
 ---
 

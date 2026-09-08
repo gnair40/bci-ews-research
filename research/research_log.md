@@ -4422,3 +4422,20 @@ That sentence is removed, since it was a factual statement about this repository
 that the repository does not support.
 
 None of the five may be left for the December submission.
+
+**Rationale reformatted, same evening.** Three flowing paragraphs instead of five
+subsections, and citations switched from bracketed numbers to MLA author
+parentheticals, at the researcher's request. The bibliography is now an MLA list,
+alphabetical, and is no longer cross-referenced by number from the text — so the
+two can be edited independently.
+
+All ten sources are still cited at least once. Paragraph one is the problem
+(Hughes, Pun, Barrese, Sponheim); paragraph two is what the field does about it
+and the contested early-warning framework (Karpowicz, Scheffer, Maturana, Wilkat,
+Helmich, van der Bolt); paragraph three is the gap, the reason it exists, and why
+it matters.
+
+One thing left deliberately incomplete: MLA wants authors' full first names, and
+the source list carries only initials. I did not expand them, because inventing a
+first name is the same class of error as inventing a DOI. The bibliography says
+so in a line above the entries, so it is a known gap rather than an oversight.
