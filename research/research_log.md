@@ -4573,3 +4573,28 @@ it. Noted for the researcher rather than quietly inserted.
 
 The limits paragraph stays exactly as strong as before: not a medical device, not
 tested on a person, no clinical claim made or demonstrated.
+
+## 10 September 2026 (evening) — Was told I was underselling. I was.
+
+Two specific mistakes, both structural rather than a matter of adjectives.
+
+**I had left the novelty claim out entirely.** The impact section argued that the
+work matters without ever saying what does not currently exist. My own project
+documents already assert it: `PROJECT_DEFINITION.md` calls the five-gate battery
+"a currently-missing methodological product" and says the corpus "does not exist
+anywhere publicly," and `PHASE3_REPORT.md` calls it "a benchmark that did not
+previously exist." I was hedging claims I had already established. The section now
+names three specific absences: no public dataset of decoder degradation with known
+onset, no agreed battery a monitor has to pass, and no monitor that names which
+failure mode rather than just flagging one.
+
+**I was ending on the limitations.** Not a medical device, not tested on a person,
+no clinical claim. All true and all staying in, but a reader takes away whatever
+they read last, and ending there deflated everything above it. The limits now sit
+second to last, followed by one paragraph that states the claim exactly instead of
+hedging it into nothing.
+
+Underselling is a failure of accuracy in the same way overselling is. Nothing was
+added that is not supported: no population figures, no clinical benefit, no
+"first ever," no results. The strengthening came from stating what is already
+established and from fixing the order.

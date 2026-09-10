@@ -86,51 +86,69 @@ rely on every day.
 here because it answers a different question, and because some forms ask for it
 on its own.*
 
-Implanted brain-computer interfaces are leaving the research lab right now.
-Devices that were demonstrations a decade ago are moving toward clinical use
-(Hughes et al.; Karpowicz et al.; Pun et al.), which means they are on a path to
-being regulated products that people depend on daily rather than experiments run
-by engineers who are standing in the room. Every device on that path has to
-answer one question before it gets there: how do you know it is still working?
-For decoders, there is no good answer yet. That is the gap this project sits in,
-and it is a prerequisite for the transition rather than a refinement of it.
+**The gap is structural, not incremental.** Implanted brain-computer interfaces
+are leaving the research lab. Devices that were demonstrations a decade ago are
+moving toward clinical use (Hughes et al.; Karpowicz et al.; Pun et al.), which
+puts them on a path to being regulated products that people depend on every day
+rather than experiments run with an engineer in the room. Every device on that
+path has to answer one question first: how do you know it is still working? For
+decoders there is no accepted answer, and more importantly there is no accepted
+way to check whether a proposed answer is any good. A field cannot certify what
+it cannot measure, so this is a prerequisite for clinical translation rather than
+an improvement to it.
 
-What makes this kind of failure different is that it is invisible. A pacemaker
+**What does not currently exist, and what I am building.** Three things, and I
+want to be specific because "novel" means nothing on its own. First, there is no
+public dataset of decoder degradation where the moment of onset is known, because
+in real recordings nobody wrote it down. Without that, the two numbers that
+decide whether a warning system is worth deploying, how early it warns and how
+often it is wrong, cannot be computed at all by anyone. I am building that
+corpus. Second, there is no agreed battery a decoder-health monitor has to pass,
+so anyone can report whichever measure flatters their system. I am building that
+battery, and its first requirement is the one the field keeps skipping: be silent
+when nothing is wrong. Third, a monitor that says only "something is wrong" is
+close to useless in practice, because the right response to a dying electrode is
+not the right response to the user simply doing something different. Mine is
+built to name which, with the user changing task as an explicit category rather
+than a false alarm.
+
+**The failure mode is invisible, which is what makes it dangerous.** A pacemaker
 that stops has an obvious signature. A decoder that has drifted keeps producing
-confident output, it is just increasingly wrong, and the person using it cannot
+confident output and is just increasingly wrong, so the person using it cannot
 tell whether the interface is degrading or whether they are tired, distracted, or
-having a bad day. That ambiguity is corrosive in a way a clean failure is not,
-because it means the user cannot calibrate their own trust in the thing they rely
-on to move a cursor or to speak. Someone who cannot tell a failing device from a
-bad day either stops trusting it on days it is fine, or keeps trusting it on days
-it is not.
+having a bad day. That ambiguity does more damage than a clean failure would.
+Someone who cannot tell those apart either stops trusting the device on days it
+is fine, or keeps trusting it on days it is not, and for a device someone uses to
+move a cursor or to speak, both of those are serious. A monitor that resolves
+that ambiguity gives back something more important than convenience. It gives
+back the ability to know where you stand.
 
-If a monitor like this works, the direct benefit is time and confidence.
-Recalibration interrupts the person using the device, and right now it happens on
-a schedule instead of when there is evidence it is needed. A system that could
-say "check this one now" would cut the interruptions that were never necessary,
-catch the ones that were, and replace a guess with an answer.
+**Benchmarks are how fields move, and that is the part built to outlast me.**
+Recalibration currently runs on a schedule instead of on evidence, and a system
+that could say "check this one now" would cut interruptions that were never
+needed and catch the ones that were. But the monitor is the smaller half of this.
+The larger half is that once a shared standard exists, every competing system can
+be measured against it instead of against its own best case, and the next
+person's improvement becomes provable rather than asserted. That is how a
+research area turns into an engineering discipline. It is also the part that
+holds whatever my own monitor turns out to do, which is exactly why I built the
+grading system before I built the thing being graded.
 
-The part most likely to outlast this project is not the monitor. It is the test.
-Nobody could previously check whether a decoder-health monitor works, because
-nobody had recordings where the moment degradation started was actually known.
-Fields move when they get a standard to be measured against, and this one does
-not have one. I am building that standard alongside the monitor, so that anyone
-who builds a competing system can be held to it instead of reporting whichever
-number happens to look best. That contribution holds regardless of how my own
-monitor turns out, which is the main reason I think it is the more valuable half.
+**It may not be about brains at all.** The underlying question is what happens to
+any sensor array with many channels that drifts slowly, which is why part of my
+experiment runs on physical hardware instead of neurons. If the answer
+generalizes, it applies to monitoring the health of implanted and embedded sensor
+systems well beyond this one, and the same battery transfers with it.
 
-There is also a real chance none of this is specific to brains. The underlying
-question is what happens to any sensor array with many channels that drifts
-slowly, which is exactly why part of my experiment runs on hardware instead of
-neurons. If it generalizes, it applies to monitoring the health of implanted and
-embedded sensor systems well beyond this one.
+**The limits, stated plainly.** Nothing here is a medical device, nothing is
+tested on a person, and I am neither claiming nor demonstrating a clinical
+benefit. This is a measurement and evaluation project.
 
-The limits, so none of this is oversold. Nothing here is a medical device.
-Nothing is tested on a person. I am not claiming a clinical benefit and I have
-not demonstrated one. This is a measurement and evaluation project, and its
-honest impact is that it makes a specific safety-relevant question answerable
-that right now is not.
+Within those limits the claim is still substantial, and I would rather state it
+exactly than hedge it into nothing: a safety-relevant question that any of these
+devices will eventually have to answer is currently unanswerable, not because it
+is hard but because the data needed to answer it does not exist. I am building
+that data, and the standard that goes with it.
 
 ---
 
