@@ -4541,3 +4541,35 @@ honest and harder to attack.
 Also kept results out entirely, to match the rest of the September draft, and
 ended on the limits: not a medical device, not tested on a person, no clinical
 claim.
+
+## 10 September 2026 (later) — Rebuilt the impact argument
+
+The first version undersold it. It opened with "the honest version of who this
+helps is: not many people," which is true about today's headcount and is the
+wrong place to start an impact argument. Starting there frames the project as
+small and then spends the rest of the section digging out.
+
+Restructured to run from the transition instead. These devices are moving toward
+clinical use, every device on that path has to answer "how do you know it is
+still working," and for decoders there is no good answer yet. That makes this a
+prerequisite rather than a refinement, which is both a stronger claim and a truer
+one.
+
+The paragraph I added that does the most work is about failure being invisible. A
+pacemaker that stops has an obvious signature. A drifted decoder keeps producing
+confident output and is just increasingly wrong, so the user cannot tell a
+failing interface from being tired or distracted. Someone who cannot tell those
+apart either stops trusting the device on days it is fine or keeps trusting it on
+days it is not. That is the sharpest true thing in the section and it was missing
+entirely.
+
+**Made it stronger without making it bigger.** No new claims about population
+size, no clinical benefit asserted, no numbers added. I wanted to write that
+roughly 5.4 million people in the US live with paralysis, which is a real and
+widely cited figure, but it is not sourced anywhere in this repository and the
+rule I set two days ago about unsourced citations applies to unsourced statistics
+too. If that number goes in the December plan it needs a proper reference behind
+it. Noted for the researcher rather than quietly inserted.
+
+The limits paragraph stays exactly as strong as before: not a medical device, not
+tested on a person, no clinical claim made or demonstrated.
