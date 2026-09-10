@@ -4510,3 +4510,34 @@ that the sentence is about the bug.
 That is the sixth time a gate here has caught its own author, and the fourth
 instance of this one specific error. Rule for next time: never put a script
 filename in backticks unless the script exists.
+
+## 10 September 2026 — Added a real-world impact section
+
+Five short paragraphs, placed before Section B. On the ISEF form this folds into
+the Rationale, but it answers a different question and some forms ask for it
+separately, so I kept it on its own with a note saying so.
+
+Deliberately not written the way impact sections usually are. No claim that this
+helps millions of people. The first line says the honest thing instead: right now
+it helps a small number of research participants, and the reason it matters is
+that the number is growing and reliability has to be solved before these devices
+leave the lab.
+
+Two choices worth recording.
+
+**No numbers.** I wanted to write "a few dozen participants worldwide," which is
+probably about right, but I could not source it from anything in this repository
+and an unsourced figure in a research plan is the same mistake as an unsourced
+citation. The section describes the population qualitatively instead. If a number
+is wanted for the December plan it needs a real source behind it.
+
+**The impact I led with is not the monitor.** It is the test. The monitor might
+not work, and the section says so. What survives either way is that nobody could
+previously check whether a decoder-health monitor works, because nobody had data
+where the moment of degradation was known. Framing it that way means the impact
+claim does not depend on my own results turning out well, which is both more
+honest and harder to attack.
+
+Also kept results out entirely, to match the rest of the September draft, and
+ended on the limits: not a medical device, not tested on a person, no clinical
+claim.

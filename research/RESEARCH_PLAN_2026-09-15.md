@@ -80,6 +80,52 @@ rely on every day.
 
 ---
 
+## Real-world impact
+
+*On the official form this folds into the Rationale. I am keeping it separate
+here because it answers a different question, and because some forms ask for it
+on its own.*
+
+The honest version of who this helps, right now, is: not many people. Chronic
+implanted brain-computer interfaces exist in a small number of research
+participants worldwide. But that number is growing as these devices move toward
+clinical trials, and a problem that is annoying with ten users becomes a serious
+one with ten thousand. Reliability is the thing that has to be solved before a
+device like this leaves the lab, and it is not solved.
+
+The direct benefit is time and trust. Recalibration interrupts the person using
+the device, and right now it happens on a schedule instead of when there is
+evidence it is needed. A monitor that could say "check this one now" would mean
+fewer interruptions that were not necessary, and fewer stretches where somebody
+is fighting a decoder that quietly stopped matching their brain. Underneath that
+there is a trust problem. If you cannot tell whether your device is still working
+properly, you end up second-guessing every bad day, and you cannot tell the
+difference between the interface failing and yourself being tired.
+
+The part of this project most likely to outlast it is not the monitor. It is the
+test. Nobody could check whether a decoder-health monitor works, because nobody
+had data where the moment degradation started was actually known. I am building
+that data and the evaluation that goes with it, so that anyone who builds such a
+monitor can be measured against a fixed standard instead of reporting whichever
+number looks best. That is the part I would want another student or another lab
+to pick up and use, and it is the part that does not depend on my own monitor
+turning out well.
+
+There is also a chance the findings are not specific to brains. The underlying
+question is what happens to any sensor array with many channels that drifts
+slowly, which is why part of my experiment is built on hardware rather than
+neurons. If it generalizes, it applies to monitoring the health of sensor arrays
+more broadly. I do not know that yet, and my experiment is designed so that
+either answer is useful.
+
+Finally, the limits, so none of this is oversold. Nothing here is a medical
+device. Nothing is tested on a person. I am not claiming a clinical benefit and I
+have not shown one. This is a measurement and evaluation project, and the honest
+description of its impact is that it makes a specific claim checkable that right
+now is not.
+
+---
+
 ## B. Research question, engineering goal, and hypothesis
 
 I am keeping these as three separate statements so an engineering target does not
