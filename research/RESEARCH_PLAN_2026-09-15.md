@@ -86,6 +86,22 @@ rely on every day.
 here because it answers a different question, and because some forms ask for it
 on its own.*
 
+**The scale of the need, and the size of the bottleneck.** About 5.4 million
+Americans, roughly one in fifty, live with paralysis, and stroke and spinal cord
+injury together account for 61% of it (Armour et al.). Most of them are under 65,
+and 41.8% are unable to work. Implanted brain-computer interfaces are aimed at
+the most severely affected of that group, and in more than twenty years of the
+BrainGate trials fewer than two dozen people have received one. The bottleneck is
+not only surgical. It is that these systems do not stay working on their own.
+Across 14 BrainGate participants and 20 implanted arrays, the share of electrodes
+recording usable neural activity fell from 41% in the first three months to 34%
+in the last, and 3 of the 20 arrays stopped producing consistent decoding signals
+altogether (Hahn et al.). Keeping a decoder working through that drift means
+recalibration, and a 2026 systematic review of 58 studies found that common
+practice still requires a specialist research team to do it (Swanson et al.).
+That is the difference between a device that works in a lab with engineers in the
+room and one somebody uses at home.
+
 **The gap is structural, not incremental.** Implanted brain-computer interfaces
 are leaving the research lab. Devices that were demonstrations a decade ago are
 moving toward clinical use (Hughes et al.; Karpowicz et al.; Pun et al.), which
@@ -914,9 +930,17 @@ Formatted in MLA style and listed alphabetically by author. Author first names
 appear as initials where the source list carries initials; these should be
 expanded from the published papers before final submission.
 
+Armour, B. S., et al. "Prevalence and Causes of Paralysis—United States, 2013."
+*American Journal of Public Health*, vol. 106, no. 10, 2016, pp. 1855–57,
+https://doi.org/10.2105/AJPH.2016.303270.
+
 Barrese, J. C., et al. "Failure Mode Analysis of Silicon-Based Intracortical
 Microelectrode Arrays in Non-Human Primates." *Journal of Neural Engineering*,
 vol. 10, no. 6, 2013, p. 066014, https://doi.org/10.1088/1741-2560/10/6/066014.
+
+Hahn, N. V., et al. "Long-Term Performance of Intracortical Microelectrode Arrays
+in 14 BrainGate Clinical Trial Participants." *medRxiv*, 2 July 2025,
+https://doi.org/10.1101/2025.07.02.25330310. **Preprint, not peer reviewed.**
 
 Helmich, M. A., et al. "Slow Down and Be Critical before Using Early Warning
 Signals in Psychopathology." *Nature Reviews Psychology*, vol. 3, 2024, pp.
@@ -941,6 +965,10 @@ Dryad, CC0, https://doi.org/10.5061/dryad.n2z34tn5s.
 
 Scheffer, M., et al. "Early-Warning Signals for Critical Transitions." *Nature*,
 vol. 461, 2009, pp. 53–59, https://doi.org/10.1038/nature08227.
+
+Swanson, E., et al. "Recalibration of Implantable Brain-Computer Interfaces to
+Enable Long-Term Independent Use: A Systematic Review." *Journal of Neural
+Engineering*, vol. 23, no. 3, 2026, https://doi.org/10.1088/1741-2552/ae7694.
 
 Sponheim, C., et al. "Longevity and Reliability of Chronic Unit Recordings Using
 the Utah, Intracortical Multi-Electrode Arrays." *Journal of Neural Engineering*,

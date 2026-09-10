@@ -4598,3 +4598,43 @@ Underselling is a failure of accuracy in the same way overselling is. Nothing wa
 added that is not supported: no population figures, no clinical benefit, no
 "first ever," no results. The strengthening came from stating what is already
 established and from fixing the order.
+
+## 10 September 2026 (night) — Real numbers for the impact section
+
+Told the impact was still not big enough and that it needed statistics. It did.
+Everything I had written was qualitative, and "a small number of research
+participants" is a weaker sentence than the actual figures, which are striking.
+
+Looked them up rather than writing them from memory, because a wrong statistic in
+a research plan is worse than no statistic. Three new sources, all added to the
+bibliography.
+
+**Armour et al. 2016**, *American Journal of Public Health* 106(10):1855-57. About
+5.4 million Americans, one in fifty, live with paralysis. Stroke 33.7% and spinal
+cord injury 27.3% together are 61% of it. 72.1% are under 65 and 41.8% cannot
+work. This is the CDC-affiliated study behind the Reeve Foundation figure, based
+on a survey of more than 70,000 households.
+
+**Hahn et al. 2025**, medRxiv preprint. Twenty years of BrainGate data: 14
+participants, 20 arrays, 2,319 recording sessions. Electrode yield fell from 41%
+in the first three months to 34% in the last, and 3 of 20 arrays stopped
+producing consistent decoding signals. This is the best number in the section
+because it is human, longitudinal, and measures exactly the degradation my
+project is about. **It is a preprint and the bibliography says so.**
+
+**Swanson et al. 2026**, *Journal of Neural Engineering* 23(3). Systematic review,
+58 studies screened from 2,767. Common recalibration practice still requires a
+specialist research team.
+
+Those three together make the argument I could not make qualitatively: 5.4
+million people, fewer than two dozen implants in twenty years, and the thing
+standing between the two is partly that these systems need experts on hand to
+keep working. That is a real bottleneck with a number attached, and my project
+sits underneath it.
+
+**Caveats recorded for the researcher.** I could not reach PubMed or IOPscience
+directly, since the network proxy blocks both, so some details came from search
+result summaries rather than the papers themselves. Every figure needs checking
+against the actual paper before submission. The Hahn preprint is not peer
+reviewed. And the Swanson review is from June 2026, which is recent enough that
+its details are worth confirming.
