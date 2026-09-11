@@ -1,0 +1,134 @@
+{
+  "T11": [
+    {
+      "candidate": "L1_speed_variability",
+      "stage1_vs_decoder_error": {
+        "rho": -0.264,
+        "p": 0.3839,
+        "passes": false,
+        "n": 13
+      },
+      "stage2_vs_monitor_auc": {
+        "rho": -0.214,
+        "p": 0.4821,
+        "passes": false,
+        "n": 13
+      },
+      "passes_both_stages": false
+    },
+    {
+      "candidate": "L2_reversal_rate",
+      "stage1_vs_decoder_error": {
+        "rho": -0.401,
+        "p": 0.1744,
+        "passes": false,
+        "n": 13
+      },
+      "stage2_vs_monitor_auc": {
+        "rho": -0.165,
+        "p": 0.5905,
+        "passes": false,
+        "n": 13
+      },
+      "passes_both_stages": false
+    },
+    {
+      "candidate": "L3_output_autocorr",
+      "stage1_vs_decoder_error": {
+        "rho": 0.396,
+        "p": 0.1809,
+        "passes": false,
+        "n": 13
+      },
+      "stage2_vs_monitor_auc": {
+        "rho": 0.187,
+        "p": 0.5411,
+        "passes": false,
+        "n": 13
+      },
+      "passes_both_stages": false
+    },
+    {
+      "candidate": "L4_mean_speed",
+      "stage1_vs_decoder_error": {
+        "rho": 0.681,
+        "p": 0.0103,
+        "passes": true,
+        "n": 13
+      },
+      "stage2_vs_monitor_auc": {
+        "rho": -0.137,
+        "p": 0.6545,
+        "passes": false,
+        "n": 13
+      },
+      "passes_both_stages": false
+    }
+  ],
+  "T5": [
+    {
+      "candidate": "L1_speed_variability",
+      "stage1_vs_decoder_error": {
+        "rho": -0.2,
+        "p": 0.704,
+        "passes": false,
+        "n": 6
+      },
+      "stage2_vs_monitor_auc": {
+        "rho": -0.2,
+        "p": 0.704,
+        "passes": false,
+        "n": 6
+      },
+      "passes_both_stages": false
+    },
+    {
+      "candidate": "L2_reversal_rate",
+      "stage1_vs_decoder_error": {
+        "rho": 0.771,
+        "p": 0.0724,
+        "passes": false,
+        "n": 6
+      },
+      "stage2_vs_monitor_auc": {
+        "rho": -0.714,
+        "p": 0.1108,
+        "passes": false,
+        "n": 6
+      },
+      "passes_both_stages": false
+    },
+    {
+      "candidate": "L3_output_autocorr",
+      "stage1_vs_decoder_error": {
+        "rho": -0.771,
+        "p": 0.0724,
+        "passes": false,
+        "n": 6
+      },
+      "stage2_vs_monitor_auc": {
+        "rho": 0.714,
+        "p": 0.1108,
+        "passes": false,
+        "n": 6
+      },
+      "passes_both_stages": false
+    },
+    {
+      "candidate": "L4_mean_speed",
+      "stage1_vs_decoder_error": {
+        "rho": -0.943,
+        "p": 0.0048,
+        "passes": true,
+        "n": 6
+      },
+      "stage2_vs_monitor_auc": {
+        "rho": 0.771,
+        "p": 0.0724,
+        "passes": false,
+        "n": 6
+      },
+      "passes_both_stages": false
+    }
+  ]
+}

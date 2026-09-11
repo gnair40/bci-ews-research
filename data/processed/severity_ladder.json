@@ -1,0 +1,19 @@
+{
+  "participant": "T11",
+  "n_days": 15,
+  "n_cells": 60,
+  "n_monotone": 34,
+  "n_not_monotone": 26,
+  "n_unmeasurable": 0,
+  "overall_monotone_fraction": 0.567,
+  "baseline_vs_monotone_fraction": {
+    "rho": -0.677,
+    "p": 0.0055,
+    "n_days": 15
+  },
+  "worst_days": [
+    689,
+    758,
+    751
+  ]
+}

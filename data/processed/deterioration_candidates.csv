@@ -1,0 +1,33 @@
+participant,level,variable,method,index,location,n_before,n_after,change_point_p
+T11,block,angle_error,least-squares,21.0,day 758 blk 16,21.0,8.0,0.0002
+T11,block,angle_error,CUSUM,21.0,day 758 blk 16,21.0,8.0,
+T11,block,angle_error,rank scan,16.0,day 715 blk 10,16.0,13.0,
+T11,block,angle_error,baseline+persist,8.0,day 689 blk 13,8.0,21.0,
+T11,block,success,least-squares,21.0,day 758 blk 16,21.0,8.0,0.0002
+T11,block,success,CUSUM,18.0,day 727 blk 8,18.0,11.0,
+T11,block,success,rank scan,21.0,day 758 blk 16,21.0,8.0,
+T11,block,success,baseline+persist,12.0,day 702 blk 9,12.0,17.0,
+T11,session,angle_error,least-squares,11.0,day 758,11.0,4.0,0.0018
+T11,session,angle_error,CUSUM,11.0,day 758,11.0,4.0,
+T11,session,angle_error,rank scan,11.0,day 758,11.0,4.0,
+T11,session,angle_error,baseline+persist,8.0,day 715,8.0,7.0,
+T11,session,success,least-squares,11.0,day 758,11.0,4.0,0.0014
+T11,session,success,CUSUM,11.0,day 758,11.0,4.0,
+T11,session,success,rank scan,11.0,day 758,11.0,4.0,
+T11,session,success,baseline+persist,6.0,day 702,6.0,9.0,
+T5,block,angle_error,least-squares,9.0,day 2133 blk 1,9.0,12.0,0.059
+T5,block,angle_error,CUSUM,9.0,day 2133 blk 1,9.0,12.0,
+T5,block,angle_error,rank scan,9.0,day 2133 blk 1,9.0,12.0,
+T5,block,angle_error,baseline+persist,9.0,day 2133 blk 1,9.0,12.0,
+T5,block,success,least-squares,9.0,day 2133 blk 1,9.0,12.0,0.046
+T5,block,success,CUSUM,9.0,day 2133 blk 1,9.0,12.0,
+T5,block,success,rank scan,9.0,day 2133 blk 1,9.0,12.0,
+T5,block,success,baseline+persist,9.0,day 2133 blk 1,9.0,12.0,
+T5,session,angle_error,least-squares,3.0,day 2133,3.0,3.0,0.071
+T5,session,angle_error,CUSUM,3.0,day 2133,3.0,3.0,
+T5,session,angle_error,rank scan,3.0,day 2133,3.0,3.0,
+T5,session,angle_error,baseline+persist,,none found,,,
+T5,session,success,least-squares,3.0,day 2133,3.0,3.0,0.071
+T5,session,success,CUSUM,3.0,day 2133,3.0,3.0,
+T5,session,success,rank scan,3.0,day 2133,3.0,3.0,
+T5,session,success,baseline+persist,,none found,,,

@@ -1,0 +1,35 @@
+{
+  "dataset_doi": "10.5061/dryad.n2z34tn5s",
+  "dataset_doi_url": "https://doi.org/10.5061/dryad.n2z34tn5s",
+  "dryad_landing_page": "https://datadryad.org/dataset/doi:10.5061/dryad.n2z34tn5s",
+  "dataset_title": "Data from: Measuring instability in chronic human intracortical neural recordings towards stable, long-term brain-computer interfaces",
+  "dataset_authors": "Tsam Kiu Pun, Mona Khoshnevis, Thomas Hosman, Guy Wilson, Anastasia Kapitonava, Foram Kamdar, Jaimie Henderson, John Simeral, Carlos Vargas-Irwin, Matthew Harrison, Leigh Hochberg",
+  "dryad_version_number": "6",
+  "downloaded_at_utc": "2026-08-25T18:14:05.501070+00:00",
+  "downloaded_by_script": "scripts/01_download_dataset.py",
+  "api_base": "https://datadryad.org/api/v2",
+  "n_files": 2,
+  "total_bytes": 411954936,
+  "files": [
+    {
+      "filename": "MINDFUL_Data.zip",
+      "local_path": "data/raw/MINDFUL_Data.zip",
+      "bytes": 411951588,
+      "dryad_reported_bytes": 411951588,
+      "dryad_digest": "6d12b5dbcf9cac654ff1d0679e9753bf042b56cd5b8852eb31236b3cdecf7332",
+      "dryad_digest_type": "sha-256",
+      "verification": "sha256",
+      "source_url": "https://datadryad.org/api/v2/files/3571645/download"
+    },
+    {
+      "filename": "README.md",
+      "local_path": "data/raw/README.md",
+      "bytes": 3348,
+      "dryad_reported_bytes": 3348,
+      "dryad_digest": "00fc1f8d6852058fb4e1d745dca4e73791c8ad5af5781a361a21bcbae6cce871",
+      "dryad_digest_type": "sha-256",
+      "verification": "sha256",
+      "source_url": "https://datadryad.org/api/v2/files/3571647/download"
+    }
+  ]
+}

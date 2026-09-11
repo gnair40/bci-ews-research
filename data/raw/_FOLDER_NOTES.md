@@ -1,5 +1,10 @@
 # data/raw/ — ORIGINAL DOWNLOADED DATA. DO NOT EDIT.
 
+> **Why this file is not called README.md:** the Dryad deposit itself contains a
+> file named `README.md`. If this folder's notes were also called `README.md`,
+> downloading the deposit would silently overwrite them. Renaming removes the
+> collision entirely.
+
 Everything in this folder is a byte-for-byte copy of what was downloaded from
 Dryad DOI `10.5061/dryad.n2z34tn5s`.
 
@@ -26,9 +31,14 @@ their DOI, and `download_manifest.json` records exactly which version we used.
 
 ## Contents
 
-Currently empty apart from this file — see DATASET_README.md §7 for why the
-download has not yet run.
+After a successful download this folder holds:
 
-After a successful download you should also see `download_manifest.json`, which
-records the DOI, Dryad version number, filenames, sizes, MD5 checksums, and the
-UTC download time. **That file is the provenance record — keep it.**
+| File | What it is |
+|---|---|
+| `MINDFUL_Data.zip` | the deposit itself (~393 MB) |
+| `README.md` | **Dryad's** README, written by the dataset authors |
+| `extracted/` | unpacked contents, created by `02_inspect_dataset.py --extract` |
+| `download_manifest.json` | provenance: DOI, Dryad version, filenames, sizes, SHA-256 checksums, UTC download time |
+| `_FOLDER_NOTES.md` | this file (ours, not Dryad's) |
+
+**Keep `download_manifest.json`** — it is the provenance record.

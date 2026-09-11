@@ -1,0 +1,14 @@
+{
+  "participant": "T5",
+  "n_days": 6,
+  "n_faulted": 96,
+  "n_healthy": 138,
+  "within_day_auc_mean": 0.7975,
+  "within_day_auc_min": 0.5842,
+  "within_day_auc_max": 0.956,
+  "pooled_auc_raw": 0.7816,
+  "pooled_auc_after_per_day_normalisation": 0.7745,
+  "loss_from_pooling": 0.0159,
+  "recovered_by_normalisation": -0.0071,
+  "fraction_of_loss_recovered": -0.447
+}

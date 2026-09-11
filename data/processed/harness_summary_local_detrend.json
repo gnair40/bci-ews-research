@@ -1,0 +1,169 @@
+{
+  "decoder_guard": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.518,
+        "fraction_significant": 0.879,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.057,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.776,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.761,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -15.0,
+        "baseline_lead_s": -35.0,
+        "pass": true
+      }
+    },
+    "operating_point": 44.948961812434604,
+    "median_lead_s": -15.0,
+    "lead_ci95": [
+      -20.1,
+      -10.0
+    ],
+    "detection_rate": "145/586",
+    "false_alarms_per_hour": 3.1107,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": -30.0,
+      "GAIN_DRIFT": -15.0,
+      "GEOMETRY_ROTATION": -10.0
+    }
+  },
+  "distribution_shift": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.535,
+        "fraction_significant": 0.925,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.128,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.764,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.753,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -35.0,
+        "baseline_lead_s": -35.0,
+        "pass": false
+      }
+    },
+    "operating_point": 480.8486135893327,
+    "median_lead_s": -35.0,
+    "lead_ci95": [
+      -45.0,
+      -25.0
+    ],
+    "detection_rate": "149/586",
+    "false_alarms_per_hour": 2.4688,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "RATE_LOSS": -30.0,
+      "CHANNEL_DROPOUT": -32.5,
+      "GAIN_DRIFT": -20.0,
+      "GEOMETRY_ROTATION": -40.0,
+      "NONE": -60.0
+    }
+  },
+  "mean_activity": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.413,
+        "fraction_significant": 0.808,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.026,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.923,
+        "pass": false,
+        "note": "not applicable to mean_activity itself"
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.669,
+        "pass": false
+      }
+    },
+    "operating_point": 55.0282591729173,
+    "median_lead_s": -35.0,
+    "lead_ci95": [
+      -45.0,
+      -30.0
+    ],
+    "detection_rate": "79/586",
+    "false_alarms_per_hour": 1.8269,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": -32.5,
+      "GEOMETRY_ROTATION": -47.5,
+      "RATE_LOSS": -15.0
+    }
+  },
+  "robust_dispersion": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.403,
+        "fraction_significant": 0.887,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.109,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.587,
+        "pass": true,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.677,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -5.0,
+        "baseline_lead_s": -35.0,
+        "pass": true
+      }
+    },
+    "operating_point": 13.742802771568442,
+    "median_lead_s": -5.0,
+    "lead_ci95": [
+      -10.0,
+      0.0
+    ],
+    "detection_rate": "230/586",
+    "false_alarms_per_hour": 5.2832,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": -5.0,
+      "GAIN_DRIFT": 0.0,
+      "GEOMETRY_ROTATION": -10.0,
+      "RATE_LOSS": 5.0,
+      "NONE": -45.0
+    }
+  }
+}

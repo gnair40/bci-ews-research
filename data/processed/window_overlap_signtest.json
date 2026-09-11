@@ -1,0 +1,11 @@
+{
+  "n_days_total": 19,
+  "n_tied_exactly": 6,
+  "n_nonzero": 13,
+  "n_improved": 11,
+  "n_worsened": 2,
+  "sign_test_p_one_sided": 0.0112,
+  "sign_test_p_two_sided": 0.0225,
+  "pooled_mean_delta": 0.0088,
+  "pooled_max_delta": 0.0316
+}

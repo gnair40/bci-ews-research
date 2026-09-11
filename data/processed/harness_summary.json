@@ -1,0 +1,166 @@
+{
+  "decoder_guard": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.477,
+        "fraction_significant": 0.872,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.045,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.396,
+        "pass": true,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.742,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": 0.0,
+        "baseline_lead_s": -10.0,
+        "pass": true
+      }
+    },
+    "operating_point": 47.62382435388603,
+    "median_lead_s": 0.0,
+    "lead_ci95": [
+      -10.0,
+      0.0
+    ],
+    "detection_rate": "174/586",
+    "false_alarms_per_hour": 18.2691,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": 0.0,
+      "GAIN_DRIFT": 0.0,
+      "GEOMETRY_ROTATION": -5.0
+    }
+  },
+  "distribution_shift": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.511,
+        "fraction_significant": 0.909,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.072,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.608,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.743,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -25.0,
+        "baseline_lead_s": -10.0,
+        "pass": false
+      }
+    },
+    "operating_point": 130.96486865340793,
+    "median_lead_s": -25.0,
+    "lead_ci95": [
+      -40.0,
+      -20.0
+    ],
+    "detection_rate": "144/586",
+    "false_alarms_per_hour": 1.7775,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": -20.0,
+      "GEOMETRY_ROTATION": -35.0,
+      "GAIN_DRIFT": -20.0,
+      "RATE_LOSS": -30.0
+    }
+  },
+  "mean_activity": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.062,
+        "fraction_significant": 0.804,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.068,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 1.0,
+        "pass": false,
+        "note": "not applicable to mean_activity itself"
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.633,
+        "pass": false
+      }
+    },
+    "operating_point": 2.0,
+    "median_lead_s": -10.0,
+    "lead_ci95": [
+      -15.0,
+      0.0
+    ],
+    "detection_rate": "137/586",
+    "false_alarms_per_hour": 2.37,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "RATE_LOSS": 0.0,
+      "CHANNEL_DROPOUT": -10.0,
+      "GEOMETRY_ROTATION": -45.0
+    }
+  },
+  "robust_dispersion": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": -0.242,
+        "fraction_significant": 0.853,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.117,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.565,
+        "pass": true,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.726,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -30.0,
+        "baseline_lead_s": -10.0,
+        "pass": false
+      }
+    },
+    "operating_point": 0.75,
+    "median_lead_s": -30.0,
+    "lead_ci95": [
+      -35.0,
+      10.0
+    ],
+    "detection_rate": "16/586",
+    "false_alarms_per_hour": 0.1975,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "GAIN_DRIFT": -30.0,
+      "GEOMETRY_ROTATION": -30.0,
+      "CHANNEL_DROPOUT": -20.0
+    }
+  }
+}

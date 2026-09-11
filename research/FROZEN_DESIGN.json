@@ -1,0 +1,439 @@
+{
+  "frozen_at_utc": "2026-08-26T01:31:10.264852+00:00",
+  "frozen_by_script": "scripts/12_freeze_design.py",
+  "git_commit_at_freeze": "20db485a4dba20669cdb1d1786bca8f35b1aaf5d",
+  "git_branch": "claude/isef-research-pipeline-9zt4uq",
+  "definition_document": "research/deterioration_definition.md",
+  "evidence": "data/processed/deterioration_candidates.csv",
+  "input_hashes": {
+    "blocks.csv": "1587011aa41adfa7d8528e78a868c79dcca91186b118a854b6ca379b490fba1e",
+    "trials.csv": "734550a8d1a6250c84fe2b95af315ba311939c4fb2755b96746b5564f85d708a"
+  },
+  "design": {
+    "primary": {
+      "participant": "T11",
+      "cohort": "main",
+      "variable": "angle_error_deg",
+      "variable_summary": "median per session",
+      "locating_level": "session",
+      "analysis_level": "block",
+      "method": "single change point, exhaustive least-squares split",
+      "min_segment": 3,
+      "significance": "5000-permutation test on within-segment SSE",
+      "boundary_trial_day": 758,
+      "boundary_p_value": 0.0018,
+      "agreeing_methods": [
+        "least-squares",
+        "CUSUM",
+        "rank scan"
+      ],
+      "agreeing_variables": [
+        "angle_error_deg",
+        "percent_correct"
+      ]
+    },
+    "sensitivity": [
+      {
+        "name": "variable",
+        "change": "locate the boundary on percent_correct instead of angle error",
+        "expected_boundary_trial_day": 758
+      },
+      {
+        "name": "level",
+        "change": "run the primary analysis at session level (n=11) as well as block level (n=21)"
+      }
+    ],
+    "reversibility_tests": [
+      {
+        "name": "T5 excursion",
+        "participant": "T5",
+        "baseline_days": [
+          2121,
+          2126,
+          2128
+        ],
+        "degraded_days": [
+          2133,
+          2135
+        ],
+        "recovered_days": [
+          2149
+        ],
+        "success_criterion": "indicator at day 2149 returns to within the range spanned by days 2121-2128",
+        "failure_criterion": "indicator at day 2149 remains at or above its degraded-period level, indicating the measure tracks elapsed time or accumulated drift rather than system dynamics"
+      },
+      {
+        "name": "T11 internal excursion",
+        "participant": "T11",
+        "baseline_days": [
+          658,
+          665,
+          672,
+          675
+        ],
+        "degraded_days": [
+          727
+        ],
+        "recovered_days": [
+          751
+        ],
+        "success_criterion": "indicator at day 751 returns to within the range spanned by days 658-675",
+        "failure_criterion": "indicator at day 751 remains elevated"
+      }
+    ],
+    "secondary_outcome_neural_vs_behavioural": {
+      "question": "does the neural indicator warn earlier than simply watching performance?",
+      "rationale": "predicting a collapse that was already visible in behaviour is worth little; warning before behaviour shows anything is worth a great deal",
+      "baseline_blocks": "first 8 T11 blocks (trial days 658-675), which precede every candidate destabilization date",
+      "detection_rule": "first block exceeding baseline mean + k*SD and staying beyond it for p consecutive blocks",
+      "behavioural_signal": "median angle error per block",
+      "neural_signal": "the early-warning indicator per block",
+      "outcome": "detection_day(behaviour) - detection_day(neural), in trial days; positive means the neural indicator warned first",
+      "parameter_grid": {
+        "k": [
+          1.5,
+          2.0,
+          2.5,
+          3.0
+        ],
+        "baseline_n": [
+          4,
+          6,
+          8
+        ],
+        "persist": [
+          2,
+          3
+        ]
+      },
+      "why_a_grid": "the rule is known to be parameter-sensitive (the destabilization date moves 26 days across this grid), so the full distribution is reported rather than one setting; both signals use identical parameters at every setting, which keeps the COMPARISON fair even though either date alone is not well determined",
+      "interpretation_fixed_in_advance": {
+        "lead_positive_majority": "neural monitoring detects earlier than behavioural monitoring",
+        "lead_near_zero": "no advantage over watching performance",
+        "lead_negative": "behaviour detects first; the neural indicator adds nothing and will be reported as such"
+      }
+    },
+    "rejected_alternatives": {
+      "destabilization_as_the_event": {
+        "considered": true,
+        "rejected_because": [
+          "the destabilization IS the early-warning signal; making it the event would require a new warning before it, and the period before day 689 is flat and healthy",
+          "its date is not determined: across 24 parameter combinations the onset lands on day 689 (12/24), day 715 (10/24) or day 709 (2/24) \u2014 a 26-day spread",
+          "per-session tests sit exactly at the smallest p-value the sample size allows (0.0444), so they carry no information about effect size",
+          "it costs most of the sample: 8 blocks before day 689 or 16 before day 715, against 21 before day 758"
+        ],
+        "retained_as": "a comparator in the secondary outcome above",
+        "evidence": "data/processed/threshold_sensitivity.csv, data/processed/session_vs_baseline.csv"
+      }
+    },
+    "statistics": {
+      "trend_statistic": "Kendall's tau",
+      "null": "5000-permutation test on block order, two-sided",
+      "null_changed_from": "AR(1)-matched surrogates, which are appropriate for a long continuous autocorrelated series. The observable here is a 21-point block-level series with no temporal memory, for which permuting the block order is the correct and exact-in-spirit null. This matches the null already used in the power analysis (scripts/10), so the quoted power figures apply unchanged.",
+      "alpha": 0.05,
+      "two_sided_rationale": "a compressed basin can produce falling indicators before a transition (Titus et al. 2019), so a one-sided test would miss real signals"
+    },
+    "power_statement": {
+      "n_before_blocks": 21,
+      "smallest_detectable_tau": 0.305,
+      "power_vs_2sd_rise": 0.74,
+      "commitment": "a null result will be reported as a null, not reworked until something appears"
+    },
+    "excluded_from_analysis": [
+      "T11(additional) cohort (personal_use, random_targets) - different tasks"
+    ],
+    "still_open_after_freezing": [
+      "nothing about the event definition, the observable, or the indicators - all are fixed above",
+      "the block-level summary is computed over whole blocks, so no rolling window remains to choose"
+    ],
+    "observable_and_indicators": {
+      "decided": "2026-08-26, after freezing the event definition and before any early-warning indicator was computed on the real data",
+      "evidence": "research/observable_selection.md, data/processed/observable_candidates.csv",
+      "preprocessing": "neural features z-scored per block with a trailing 180 s rolling window, then projected onto the top 5 principal components of the baseline reference - the same pipeline validated in scripts/09 against the published result",
+      "primary_indicator": {
+        "name": "within-block robust dispersion",
+        "definition": "sum over the 5 projected dimensions of the squared median absolute deviation (MAD x 1.4826, so it estimates the same quantity as a standard deviation for Gaussian data)",
+        "tested_over": "the 21 pre-transition blocks",
+        "why_robust_not_raw_variance": "these recordings contain large noise artifacts - raw per-channel variance swings about 100-fold between blocks WITHIN the healthy baseline period, and the deposit documents this via avgOutliers and prctOutliers. Measured across the 8 healthy baseline blocks, raw projected variance has a coefficient of variation of 0.543 against 0.281 for the robust version. The robust estimator roughly halves the noise floor the indicator must beat. This was determined from BASELINE BLOCKS ONLY, before any outcome was computed."
+      },
+      "parallel_indicator": {
+        "name": "trial-to-trial robust dispersion",
+        "definition": "the same robust dispersion, applied across trials to the per-trial means of the 5-dimensional projection",
+        "rationale": "trials are separate events, so this measures spread without relying on temporal memory at all"
+      },
+      "known_limitation_recorded_in_advance": "the indicator is not flat even across the healthy baseline blocks (it runs 23.5, 21.5, 28.1, 27.3, 36.6, 36.7, 42.9, 50.3 in the robust version). Part of the noise floor is therefore systematic rather than random, and the baseline is not a perfectly stable reference. This is reported as a limitation whatever the outcome.",
+      "available_sensitivity_not_run_by_default": "excluding high-artifact bins using the deposit's own avgOutliers field, as an alternative to relying on the robust estimator",
+      "EXCLUDED_IN_ADVANCE": {
+        "indicator": "lag-1 autocorrelation (the 'slowing recovery rate' half of critical slowing down)",
+        "reason": "no observable in this dataset has a measurable recovery rate. Every purely neural candidate is essentially white from 20 ms to 5 s bins (neural PC1: 0.33 samples of memory at 20 ms, 0.69 at 5 s). The decoder output is the only candidate with memory (1.10 s), but the Methods record that decoded velocity is exponentially smoothed, and its autocorrelation matches that filter's prediction at short lags while decaying FASTER at long lags - so there is no memory beyond the filter.",
+        "why_this_matters": "an indicator built on a smoothed signal measures the smoothing window, not the system. A 25-sample moving average raises the lag-1 correlation of pure white noise from -0.002 to +0.962.",
+        "commitment": "this exclusion is recorded BEFORE the analysis. It must not be revisited after seeing the variance results."
+      },
+      "reported_regardless_of_outcome": "that no observable in this dataset supports an autocorrelation-based early-warning analysis, with the evidence in research/observable_selection.md. This is a methodological finding about what these recordings can support, and is reported whether or not the variance indicators show anything."
+    }
+  },
+  "membership": {
+    "before": {
+      "n_blocks": 21,
+      "n_sessions": 11,
+      "n_trials": 1546,
+      "trial_days": [
+        658,
+        665,
+        672,
+        675,
+        689,
+        692,
+        702,
+        709,
+        715,
+        727,
+        751
+      ],
+      "blocks": [
+        {
+          "block_id": "T11/day_658/block_5",
+          "trial_day": 658,
+          "block": 5,
+          "n_trials": 72,
+          "n_bins": 15209
+        },
+        {
+          "block_id": "T11/day_658/block_7",
+          "trial_day": 658,
+          "block": 7,
+          "n_trials": 80,
+          "n_bins": 15284
+        },
+        {
+          "block_id": "T11/day_665/block_6",
+          "trial_day": 665,
+          "block": 6,
+          "n_trials": 86,
+          "n_bins": 15160
+        },
+        {
+          "block_id": "T11/day_665/block_7",
+          "trial_day": 665,
+          "block": 7,
+          "n_trials": 78,
+          "n_bins": 15157
+        },
+        {
+          "block_id": "T11/day_672/block_19",
+          "trial_day": 672,
+          "block": 19,
+          "n_trials": 77,
+          "n_bins": 15134
+        },
+        {
+          "block_id": "T11/day_672/block_20",
+          "trial_day": 672,
+          "block": 20,
+          "n_trials": 82,
+          "n_bins": 15134
+        },
+        {
+          "block_id": "T11/day_675/block_6",
+          "trial_day": 675,
+          "block": 6,
+          "n_trials": 88,
+          "n_bins": 15133
+        },
+        {
+          "block_id": "T11/day_675/block_7",
+          "trial_day": 675,
+          "block": 7,
+          "n_trials": 79,
+          "n_bins": 15134
+        },
+        {
+          "block_id": "T11/day_689/block_13",
+          "trial_day": 689,
+          "block": 13,
+          "n_trials": 83,
+          "n_bins": 15208
+        },
+        {
+          "block_id": "T11/day_689/block_14",
+          "trial_day": 689,
+          "block": 14,
+          "n_trials": 75,
+          "n_bins": 15233
+        },
+        {
+          "block_id": "T11/day_692/block_6",
+          "trial_day": 692,
+          "block": 6,
+          "n_trials": 100,
+          "n_bins": 15133
+        },
+        {
+          "block_id": "T11/day_692/block_7",
+          "trial_day": 692,
+          "block": 7,
+          "n_trials": 106,
+          "n_bins": 15134
+        },
+        {
+          "block_id": "T11/day_702/block_9",
+          "trial_day": 702,
+          "block": 9,
+          "n_trials": 65,
+          "n_bins": 15161
+        },
+        {
+          "block_id": "T11/day_702/block_10",
+          "trial_day": 702,
+          "block": 10,
+          "n_trials": 53,
+          "n_bins": 15164
+        },
+        {
+          "block_id": "T11/day_709/block_6",
+          "trial_day": 709,
+          "block": 6,
+          "n_trials": 69,
+          "n_bins": 15162
+        },
+        {
+          "block_id": "T11/day_709/block_7",
+          "trial_day": 709,
+          "block": 7,
+          "n_trials": 62,
+          "n_bins": 15160
+        },
+        {
+          "block_id": "T11/day_715/block_10",
+          "trial_day": 715,
+          "block": 10,
+          "n_trials": 75,
+          "n_bins": 15083
+        },
+        {
+          "block_id": "T11/day_715/block_11",
+          "trial_day": 715,
+          "block": 11,
+          "n_trials": 61,
+          "n_bins": 15233
+        },
+        {
+          "block_id": "T11/day_727/block_8",
+          "trial_day": 727,
+          "block": 8,
+          "n_trials": 43,
+          "n_bins": 15210
+        },
+        {
+          "block_id": "T11/day_727/block_9",
+          "trial_day": 727,
+          "block": 9,
+          "n_trials": 42,
+          "n_bins": 15184
+        },
+        {
+          "block_id": "T11/day_751/block_16",
+          "trial_day": 751,
+          "block": 16,
+          "n_trials": 70,
+          "n_bins": 15183
+        }
+      ]
+    },
+    "after": {
+      "n_blocks": 8,
+      "n_sessions": 4,
+      "n_trials": 293,
+      "trial_days": [
+        758,
+        770,
+        783,
+        800
+      ],
+      "blocks": [
+        {
+          "block_id": "T11/day_758/block_16",
+          "trial_day": 758,
+          "block": 16,
+          "n_trials": 37,
+          "n_bins": 15161
+        },
+        {
+          "block_id": "T11/day_758/block_18",
+          "trial_day": 758,
+          "block": 18,
+          "n_trials": 33,
+          "n_bins": 15158
+        },
+        {
+          "block_id": "T11/day_770/block_5",
+          "trial_day": 770,
+          "block": 5,
+          "n_trials": 38,
+          "n_bins": 15183
+        },
+        {
+          "block_id": "T11/day_770/block_6",
+          "trial_day": 770,
+          "block": 6,
+          "n_trials": 41,
+          "n_bins": 15184
+        },
+        {
+          "block_id": "T11/day_783/block_12",
+          "trial_day": 783,
+          "block": 12,
+          "n_trials": 37,
+          "n_bins": 15186
+        },
+        {
+          "block_id": "T11/day_783/block_14",
+          "trial_day": 783,
+          "block": 14,
+          "n_trials": 35,
+          "n_bins": 15285
+        },
+        {
+          "block_id": "T11/day_800/block_3",
+          "trial_day": 800,
+          "block": 3,
+          "n_trials": 36,
+          "n_bins": 15161
+        },
+        {
+          "block_id": "T11/day_800/block_4",
+          "trial_day": 800,
+          "block": 4,
+          "n_trials": 36,
+          "n_bins": 15134
+        }
+      ]
+    }
+  },
+  "declaration": "This design was fixed before any early-warning indicator was computed on the real data. The deterioration boundary was located from behavioural performance only. No EWS result was known at the time of freezing.",
+  "amendments": [
+    {
+      "amended_at_utc": "2026-08-26T01:55:22.848977+00:00",
+      "reason": "Record the observable and indicator choice: within-block temporal variance as the primary indicator, trial-to-trial variance in parallel, and lag-1 autocorrelation excluded in advance because no observable in this dataset has a measurable recovery rate. The null is a permutation test on block order, appropriate for a 21-point series with no temporal memory. Decided before any early-warning indicator was computed on the real data.",
+      "git_commit_at_amendment": "691852f368055c1684e68d84ca4728e50aa0006e",
+      "sections_added_or_changed": [
+        "observable_and_indicators",
+        "statistics.null",
+        "still_open_after_freezing"
+      ],
+      "no_results_existed": true
+    },
+    {
+      "amended_at_utc": "2026-08-26T01:59:30.799351+00:00",
+      "reason": "Correction to amendment 1, made before any outcome was computed: the primary and parallel indicators use a ROBUST dispersion (squared median absolute deviation) rather than raw variance. Amendment 1 specified raw variance without checking it was measurable. Baseline-only diagnostics show these recordings carry large noise artifacts - raw per-channel variance swings roughly 100-fold between healthy baseline blocks - and that raw projected variance has a coefficient of variation of 0.543 across the 8 healthy baseline blocks against 0.281 for the robust version. Also records that the indicator is not flat even within the healthy baseline, which is a limitation to be reported whatever the outcome.",
+      "git_commit_at_amendment": "c552b793f433d0043cd6e38b6ba27d172a4b7fec",
+      "sections_added_or_changed": [
+        "observable_and_indicators",
+        "statistics.null",
+        "still_open_after_freezing"
+      ],
+      "note": "see the amendment reason for what changed and why",
+      "no_results_existed": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "participant": "T11",
+  "n_days": 13,
+  "n_barely_beats_own_chance": 4,
+  "days_barely_beating_own_chance": [
+    758,
+    770,
+    783,
+    800
+  ],
+  "margin_vs_monitor_auc": {
+    "rho": 0.264,
+    "p": 0.3833
+  },
+  "concentration_vs_monitor_auc": {
+    "rho": -0.516,
+    "p": 0.0707
+  },
+  "concentration_vs_day_chance": {
+    "rho": -0.253,
+    "p": 0.4048
+  }
+}

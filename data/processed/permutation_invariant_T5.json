@@ -1,0 +1,36 @@
+{
+  "participant": "T5",
+  "n_episodes": 204,
+  "n_features": 12,
+  "feature_names": [
+    "mean",
+    "sd",
+    "skew",
+    "kurtosis",
+    "p05",
+    "p25",
+    "p50",
+    "p75",
+    "p95",
+    "frac_unchanged",
+    "frac_severely_down",
+    "participation_ratio"
+  ],
+  "worst_pair_invariant": 0.9969,
+  "worst_pair_per_channel": 0.5863,
+  "confusable_trio_mean_invariant": 0.9976,
+  "confusable_trio_mean_per_channel": 0.6227,
+  "rotation_pairs_mean_invariant": 1.0,
+  "rotation_pairs_mean_per_channel": 0.9988,
+  "prediction_worst_pair_above_0.75": true,
+  "control_random_channels_same_dim": {
+    "CHANNEL_DROPOUT|GAIN_DRIFT": 0.6514,
+    "CHANNEL_DROPOUT|GEOMETRY_ROTATION": 0.9015,
+    "CHANNEL_DROPOUT|RATE_LOSS": 0.5802,
+    "GAIN_DRIFT|GEOMETRY_ROTATION": 0.8333,
+    "GAIN_DRIFT|RATE_LOSS": 0.6514,
+    "GEOMETRY_ROTATION|RATE_LOSS": 0.9188
+  },
+  "control_mean_auc": 0.7561,
+  "gain_is_representation_not_dimension": true
+}

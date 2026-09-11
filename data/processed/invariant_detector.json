@@ -1,0 +1,16 @@
+{
+  "participant": "T11",
+  "n_faulted": 404,
+  "n_healthy": 265,
+  "auc_invariant": 0.6167,
+  "auc_current_decoder_guard": 0.672,
+  "auc_change": -0.0553,
+  "beats_current": false,
+  "silence_median_tau": 0.735,
+  "silence_fraction_significant": 0.985,
+  "silence_gate_pass": false,
+  "n_healthy_episodes_tested": 265,
+  "silence_median_tau_unclipped": 0.716,
+  "silence_fraction_significant_unclipped": 0.989,
+  "clipping_explains_the_trend": false
+}

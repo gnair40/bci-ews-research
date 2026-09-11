@@ -1,0 +1,210 @@
+{
+  "decoder_guard": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.7,
+        "fraction_significant": 0.981,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.057,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.877,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.865,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -55.0,
+        "baseline_lead_s": -80.0,
+        "pass": true
+      }
+    },
+    "operating_point": 1019.4553300259765,
+    "median_lead_s": -55.0,
+    "lead_ci95": [
+      -65.0,
+      -50.0
+    ],
+    "detection_rate": "221/586",
+    "false_alarms_per_hour": 3.3576,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": -45.0,
+      "GAIN_DRIFT": -65.0,
+      "GEOMETRY_ROTATION": -57.5
+    }
+  },
+  "decoder_guard_joint": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.68,
+        "fraction_significant": 0.974,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.106,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.683,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.847,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -55.0,
+        "baseline_lead_s": -80.0,
+        "pass": true
+      }
+    },
+    "operating_point": 3432.138883855167,
+    "median_lead_s": -55.0,
+    "lead_ci95": [
+      -65.0,
+      -50.0
+    ],
+    "detection_rate": "211/586",
+    "false_alarms_per_hour": 3.6044,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "CHANNEL_DROPOUT": -45.0,
+      "GAIN_DRIFT": -85.0,
+      "GEOMETRY_ROTATION": -62.5
+    }
+  },
+  "distribution_shift": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.621,
+        "fraction_significant": 0.943,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.128,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.799,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.818,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -50.0,
+        "baseline_lead_s": -80.0,
+        "pass": true
+      }
+    },
+    "operating_point": 4201.757290998923,
+    "median_lead_s": -50.0,
+    "lead_ci95": [
+      -60.0,
+      -45.0
+    ],
+    "detection_rate": "255/586",
+    "false_alarms_per_hour": 4.6907,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "RATE_LOSS": -47.5,
+      "CHANNEL_DROPOUT": -50.0,
+      "GAIN_DRIFT": -52.5,
+      "GEOMETRY_ROTATION": -55.0
+    }
+  },
+  "mean_activity": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.55,
+        "fraction_significant": 0.796,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.026,
+        "pass": true
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 1.0,
+        "pass": false,
+        "note": "not applicable to mean_activity itself"
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.762,
+        "pass": false
+      }
+    },
+    "operating_point": 1284.6552938231323,
+    "median_lead_s": -80.0,
+    "lead_ci95": [
+      -90.0,
+      -70.0
+    ],
+    "detection_rate": "101/586",
+    "false_alarms_per_hour": 2.0244,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "RATE_LOSS": -57.5,
+      "CHANNEL_DROPOUT": -80.0,
+      "GEOMETRY_ROTATION": -110.0
+    }
+  },
+  "robust_dispersion": {
+    "gates": {
+      "G1_silence": {
+        "n_healthy_episodes": 265,
+        "median_tau": 0.574,
+        "fraction_significant": 0.921,
+        "pass": false
+      },
+      "G5_detrend": {
+        "fraction_significant_after_detrend": 0.109,
+        "pass": false
+      },
+      "G2_rate_invariance": {
+        "median_abs_rho_vs_mean_activity": 0.645,
+        "pass": false,
+        "note": ""
+      },
+      "G4_elapsed_time": {
+        "median_abs_rho_vs_time": 0.777,
+        "pass": false
+      },
+      "G3_comparator": {
+        "median_lead_s": -5.0,
+        "baseline_lead_s": -80.0,
+        "pass": true
+      }
+    },
+    "operating_point": 44.948961812434604,
+    "median_lead_s": -5.0,
+    "lead_ci95": [
+      -5.0,
+      0.0
+    ],
+    "detection_rate": "385/586",
+    "false_alarms_per_hour": 13.7759,
+    "healthy_hours_test": 20.25,
+    "by_mode_median_lead_s": {
+      "RATE_LOSS": 15.0,
+      "CHANNEL_DROPOUT": -5.0,
+      "GAIN_DRIFT": 0.0,
+      "GEOMETRY_ROTATION": -10.0,
+      "NONE": -45.0
+    }
+  }
+}
