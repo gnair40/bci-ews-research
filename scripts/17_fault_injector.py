@@ -187,7 +187,14 @@ def ramp(n_bins: int, onset_bin: int, ramp_bins: int, shape: str = "linear") -> 
     elif shape == "linear":
         f[live] = np.clip(t[live] / ramp_bins, 0.0, 1.0)
     elif shape == "exp":
-        f[live] = 1.0 - np.exp(-t[live] / ramp_bins)
+        # Clipped for the same reason the linear branch is. Found 13 Sep 2026 by
+        # mutation-testing tests/test_core_numerics.py: with `live` widened by
+        # even a few bins, the linear branch is saved by its clip but this one
+        # produced NEGATIVE pre-onset values (-0.82, -0.49, -0.22), i.e. the
+        # fault running backwards before it starts. Every episode in the corpus
+        # uses "linear", so no committed result is affected -- this closes a
+        # latent asymmetry rather than fixing a live bug.
+        f[live] = np.clip(1.0 - np.exp(-t[live] / ramp_bins), 0.0, 1.0)
     else:
         raise ValueError(f"unknown ramp shape {shape!r}")
     return f

@@ -9,6 +9,14 @@ REPO = '/home/user/bci-ews-research'
 def verifier_rows():
     out = subprocess.run([sys.executable, 'scripts/31_verify_claims.py'],
                          cwd=REPO, capture_output=True, text=True).stdout
+    # The verifier states its own total. Check the parse against that rather
+    # than against a number written here, which goes stale every time a study
+    # is added -- as it did on 13 Sep 2026 at 93 vs 97.
+    m = re.search(r'All (\d+) headline claims match', out)
+    if not m:
+        raise SystemExit('verifier did not report a passing total; '
+                         'appendix A cannot be built from a failing run')
+    expected = int(m.group(1))
     rows = []
     for ln in out.split('\n'):
         m = re.match(r'^(.*?)\s{2,}(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(ok|MISMATCH)\s*$', ln)
@@ -17,11 +25,13 @@ def verifier_rows():
             name = (name.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
                         .replace('—', '&#8212;'))
             rows.append((name, m.group(2), m.group(3)))
+    if len(rows) != expected:
+        raise SystemExit(f'parsed {len(rows)} claim rows but the verifier '
+                         f'reports {expected}; the parser has drifted')
     return rows
 
 def main():
     claims = verifier_rows()
-    assert len(claims) == 93, 'expected 93 claims, parsed %d' % len(claims)
     story = []
     story += part1.front_matter()
     story += part1.section_0()

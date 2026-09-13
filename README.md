@@ -78,6 +78,27 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/INVARIANT_ATTRIBUTION.md`](reports/INVARIANT_ATTRIBUTION.md) | The other half fails too — and what that says about supervised probes |
 | [`research/ORIGINAL_DATA_COLLECTION_DESIGN.md`](research/ORIGINAL_DATA_COLLECTION_DESIGN.md) | **Design for original data collection** — options, rejections, recommendation |
 
+## Checking the work
+
+Five gates plus a test suite. Run all of them before committing anything, never
+after, or you end up with regenerated files that disagree with the code.
+
+```
+python3 -m unittest discover -s tests   # 32 unit tests
+python3 tools/mutation_check.py         # do those tests catch anything?
+python3 scripts/31_verify_claims.py     # every headline number, recomputed
+python3 scripts/55_reproducibility_audit.py
+python3 scripts/56_claims_register.py
+python3 scripts/61_statistical_hygiene.py
+python3 scripts/65_log_coverage.py
+```
+
+`tools/mutation_check.py` is the unusual one. A test suite that passes on its
+first run has demonstrated nothing, so it reintroduces eleven bugs this project
+actually had, one at a time, and confirms the matching test fails against each.
+Every test in `tests/` is derived from a real mistake rather than written for
+coverage.
+
 ## How the argument runs
 
 1. **The original idea was tested and failed.** Early-warning-signal theory,

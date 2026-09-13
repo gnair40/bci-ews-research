@@ -4638,3 +4638,61 @@ result summaries rather than the papers themselves. Every figure needs checking
 against the actual paper before submission. The Hahn preprint is not peer
 reviewed. And the Swanson review is from June 2026, which is recent enough that
 its details are worth confirming.
+
+## 13 September 2026 — Unit tests, and the test suite catching me first
+
+Picked up the last computational item that was not blocked on someone else. Two
+findings before any code: the audit's roadmap item **R9 was stale**, and the
+audit named a gap I could actually close.
+
+**R9 was already done.** It proposed combining the better features with the
+four-component decomposition. The combination study (scripts 35 to 37, frozen at
+`7234964`) had already tested exactly that as arms C1, C2 and C3 against the same
++0.05-on-both-participants criterion. All three null: T11 −0.034 / +0.030 /
+−0.047, T5 +0.020 / −0.124 / +0.017. `COMBINATION_STUDY_RESULT.md` even says
+"that closes the last direction the results themselves suggested." My own audit
+listed as open a direction the project had already closed. Withdrawn in the
+roadmap with the numbers, rather than deleted.
+
+**The real gap was tests.** The audit said so in §6.5: correctness rests on
+output-level gates, which "does not catch a silently wrong intermediate
+function," and errors #1 and #3 are exactly what a unit test would have caught.
+There was no `tests/` directory.
+
+32 tests now, in `tests/test_core_numerics.py`. Not coverage. **Every test is
+derived from a mistake this project actually made**: the inverted Mann-Whitney
+direction, GAIN_DRIFT not conserving the mean, CHANNEL_DROPOUT drawing
+independent sets, the pre-onset guarantee, the MATLAB indexing trap, the lag-1
+and n_eff formulas behind C04 and C18, and the decoder's target.
+
+**Then the rule that has saved this project four times applied to me.** A suite
+that passes on its first run has demonstrated nothing. So `tools/mutation_check.py`
+reintroduces eleven historical bugs into the real source one at a time, runs the
+test class meant to notice, and restores the file.
+
+It caught two things about my own work.
+
+**One: a test that looked like a test.** `MatlabIndexing` checked arithmetic
+written inside the test itself, not the loader's code, so it could not have
+failed because of a loader bug. Rewritten to build a `.mat` fixture with known
+1-based indices and run the real loader over it. Two loader mutants confirm it
+now bites.
+
+**Two: a latent asymmetry in the injector.** The ramp-leak mutant was not caught,
+and the reason turned out to be interesting. The linear branch is saved by its
+`np.clip(..., 0, 1)`. The exp branch had no clip, so the same leak there produced
+**negative** pre-onset values (−0.82, −0.49, −0.22), meaning the fault running
+backwards before it starts. Every episode in the corpus uses the linear shape, so
+**no committed result is affected** and the verifier still passes 97 of 97. The
+exp branch is now clipped, the test covers both shapes and asserts
+non-negativity, and the original mutant is kept in the harness marked inert. If
+it ever starts being caught, a clip was removed.
+
+**Also fixed: the audit builder's own stale guard.** `build.py` asserted exactly
+93 claims. There are 97 now, so the audit PDF would not rebuild. Replaced the
+hardcoded number with a check against the count the verifier reports about
+itself, then mutation-tested that too: a parser dropping rows now fails with
+"parsed 50 claim rows but the verifier reports 97."
+
+All five gates pass, plus 32 tests and 11 mutants. Nothing outstanding that is
+not blocked on the researcher or on Dryad credentials.

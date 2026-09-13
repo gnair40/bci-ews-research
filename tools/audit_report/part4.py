@@ -357,14 +357,26 @@ def section_14():
          '4,050-line log. A judge will read three of them. The compressed version does not yet '
          'exist in any file.',
          'Low, and high-value', '&#8212;'],
-        ['R9', B('Combine better features WITH the four-component decomposition'),
-         'The only remaining scientific direction not ruled out. F1 and F2 ' + B('are') + ' better '
-         'features under a matched control, and ' + M('decoder_guard') + '&#8217;s advantage is the '
-         'decomposition rather than its inputs &#8212; so the untried thing is the combination. ' +
-         B('Needs its own preregistration') + ', not a change made on the strength of a post-hoc '
-         'table.',
-         'Medium', 'A preregistration'],
-    ], [0.04, 0.24, 0.38, 0.14, 0.20], fs=7.6)
+        ['R9', B('WITHDRAWN 13 Sep 2026 &#8212; already done when this was written'),
+         B('A stale roadmap item.') + ' It proposed combining the better features with the '
+         'four-component decomposition. The combination study (' + M('35') + '&#8211;' + M('37') +
+         ', frozen at ' + M('7234964') + ') had already tested exactly that, as arms C1 '
+         '(variability), C2 (covariance) and C3 (both), against the same +0.05-on-both-participants '
+         'criterion. All three are null: T11 &#8722;0.034 / +0.030 / &#8722;0.047, T5 +0.020 / '
+         '&#8722;0.124 / +0.017. ' + M('COMBINATION_STUDY_RESULT.md') + ' already said so &#8212; '
+         '&#8220;that closes the last direction the results themselves suggested.&#8221; ' +
+         B('The audit listed as open a direction the project had already closed.'),
+         '&#8212;', 'Nothing'],
+        ['R10', B('Unit tests for the core numerical functions'),
+         B('Added 13 Sep 2026, closing the gap this audit named in &#167;6.5.') + ' 32 tests in '
+         + M('tests/') + ', each derived from an error the project actually made, plus '
+         + M('tools/mutation_check.py') + ', which reintroduces 11 historical bugs one at a time '
+         'and confirms the matching test fails. Writing it surfaced a latent asymmetry: the exp '
+         'ramp branch lacked the clip the linear branch had, so a leak there would have produced '
+         'negative pre-onset values. No committed result is affected, because every episode uses '
+         'the linear shape, and the branch is now clipped.',
+         '&#8212;', 'Nothing'],
+    ], [0.055, 0.235, 0.375, 0.135, 0.20], fs=7.6)
 
     s += H2('14.3 The three most important next steps')
     s += TBL(['', 'Step', 'Why it is in the top three'], [
