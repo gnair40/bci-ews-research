@@ -4771,3 +4771,39 @@ regenerated version is kept.
 `13_auc_by_fault_mode.png`. I restored the committed one rather than churn a
 binary without knowing why it differs. Worth a look before the December
 submission.
+
+## 14 September 2026 (later) — A procedures document written as the plan, not the record
+
+Wrote `research/EXPERIMENTAL_PROCEDURES.md`: 84 numbered procedures across 11
+phases, 0 through 10.
+
+The thing that makes it different from what was already here is the tense. The
+existing documents are written after the fact and full of what went wrong. This
+one is written as the plan, the way I would have laid it out before starting.
+Phases 1 through 6 say what I will do and why, at the level somebody actually
+plans at. They do not say "and when this breaks, do that," because I did not know
+that in advance and pretending otherwise would be dishonest. The mishaps belong
+in this journal, which is where they are.
+
+Phases 7 through 10, the physical experiment, are the opposite: as detailed as I
+can make them. I have not built it yet, so every one of those procedures is
+genuinely forward looking, and anticipating failure modes there is just good
+planning rather than hindsight dressed up. They have to be good enough to follow
+at the bench without asking anyone.
+
+**The three rig programs are written out in full**, not sketched:
+`rig/stimulus.py`, `rig/capture.py` and `rig/to_mat.py`. They are in the document
+and also extracted to `rig/` so they can be run.
+
+**Tested what could be tested without hardware.** Simulated a capture, ran it
+through the real `to_mat.py`, and loaded the result with the unmodified archived
+loader. 3,000 bins and 30 trials came back, the MATLAB one-based indices
+converted correctly, trials abutted with no gap or overlap, and the heading
+recovered through the decoder's own `intended_direction()` matched what the
+stimulus logged to within float32 precision, 2e-6 degrees. My first pass called
+that a failure because I had set the tolerance at 1e-6, which is tighter than
+float32 can represent. The threshold was wrong, not the code.
+
+`rig/README.md` records what that check covers and, more usefully, what it does
+not: the camera, the display-to-camera lag, exposure and gain, and anything
+optical. Those need hardware.
