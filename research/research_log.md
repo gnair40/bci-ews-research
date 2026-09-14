@@ -4696,3 +4696,78 @@ itself, then mutation-tested that too: a parser dropping rows now fails with
 
 All five gates pass, plus 32 tests and 11 mutants. Nothing outstanding that is
 not blocked on the researcher or on Dryad credentials.
+
+## 14 September 2026 — Ran the rig pipeline for the first time, and it did not work
+
+The procedure has promised since the 6th that "the existing analysis runs
+unchanged on rig recordings," and calls that the strongest defence against the
+charge that the result was shaped to fit. **Nobody had ever executed it.**
+`67_rig_format_check.py` proved a rig file loads. It did not run one analysis
+stage. So I built a synthetic six-day rig dataset and ran the real pipeline
+against it.
+
+Three things broke, none of which the format check could have seen.
+
+**1. None of the analysis scripts can read `data/raw_rig`.** Scripts 17, 18 and
+20 called the loader with no root, so they always read `data/raw` and nothing
+else. The procedure tells the researcher to put rig recordings in
+`data/raw_rig/`, which those scripts would never have looked at. They now take
+`--raw-root`; the default is unchanged.
+
+**2. The decoder looked rig blocks up in a table of the archived data.** Script 18
+loaded the rig dataset, then read `data/processed/blocks.csv` — a cache of T11
+and T5 — and filtered rig block IDs against it. Nothing matched, `blocks` came
+out empty, and the fit died with "only 0 days; cannot split into
+train/val/test." Scripts 18 and 20 now use the tables the loader just produced.
+Verified behaviour-preserving the only way that counts: re-fitted T11 and
+compared against a backup. Train days, val days, ridge lambda, fit bins and all
+three error figures identical, **weights bit-for-bit identical**.
+
+**3. A pandas call a later version removes.** `21_score_report.py` used
+`Timestamp.utcnow()`. That warning had been firing on every archived run too,
+unread.
+
+All three would have surfaced on build day, with hardware on the bench.
+
+**Then the documented commands themselves.** Four of them were wrong, in two
+different ways: `17_fault_injector.py --participant RIG plan` puts the subcommand
+after an option belonging to the subparser, which argparse rejects, and
+`18_reference_decoder.py --participant RIG` omits the subcommand entirely.
+Nobody had run them because until today there was no rig data to run them
+against. `69_command_check.py` now hands every documented command to its own
+script's parser; 69 commands, all accepted. Mutation-tested by putting the real
+broken command back, which it catches.
+
+**One number worth recording, with a caveat.** The fixture decoder scored 4.12°
+held-out against 88.54° chance — skill of 84 degrees, against cortex's 36. That
+is the rig being far too easy, exactly as RIG_PROCEDURE §8.3 predicted, and it is
+why the Stage 6 gate exists. It says nothing about what real hardware will do,
+because the fixture is my own equations.
+
+### The damage I did, and what it exposed
+
+My first version of the command checker used `runpy`, which does not just parse a
+command — it **runs** it. It re-ran `26_achievability.py` and
+`23_benchmark_figures.py`. Regenerating `ACHIEVABILITY.md` **deleted the entire
+⚠️ correction block** recording that every p-value in that report is invalid.
+Caught only because git showed the file modified. Restored from git immediately.
+
+That is my mistake, and it exposed a real fragility underneath it. **This project's
+convention is "correct inline, never in place" — and that does not hold for a
+generated file.** The correction was hand-added to a report that a script
+rewrites. Any future re-run of the pipeline would have silently erased the
+project's own record that three published results are not significant, and
+nothing would have flagged it.
+
+The correction now lives in `26_achievability.py` and is reproduced on every run.
+An honesty note a re-run erases is not an honesty note.
+
+Regenerating also showed the committed `ACHIEVABILITY.md` was **stale**: it
+predated `decoder_guard_joint` (added in `9c1279e`) and was missing two rows. The
+new rows read 0.687 and 0.703, which match `UNIT_OF_ANALYSIS.md` exactly, so the
+regenerated version is kept.
+
+**Still to check:** `23_benchmark_figures.py` also produced a different
+`13_auc_by_fault_mode.png`. I restored the committed one rather than churn a
+binary without knowing why it differs. Worth a look before the December
+submission.

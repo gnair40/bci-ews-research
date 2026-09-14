@@ -617,6 +617,27 @@ This fabricates a synthetic block in the layout above, loads it with the
 fields are present. It must print `PASS`. **The fixture it builds is not data
 and no claim may cite it** — its only job is to prove the file format works.
 
+**Procedure 5.2b. Prove the whole pipeline runs, not just the file format.**
+```
+python3 scripts/68_rig_pipeline_dryrun.py
+```
+Procedure 5.2 checks that a rig file *loads*. This runs every analysis stage
+against a synthetic rig dataset and must print `PASS`. Running it on 14 September
+2026 found three problems the format check could not see, all of which would
+otherwise have surfaced with hardware already on the bench:
+
+- The injector, the decoder and the harness all read `data/raw` and would never
+  have looked at `data/raw_rig`, where this document tells you to put rig
+  recordings. They now take `--raw-root`, which is why every rig command below
+  carries it.
+- The decoder loaded the rig dataset and then looked its blocks up in
+  `data/processed/blocks.csv`, a cached table of the *archived* data. Nothing
+  matched, so it died with "only 0 days; cannot split into train/val/test".
+- The score report used a pandas call that a later version removes.
+
+**The fixture it builds is not data and no result may cite it.** Its only job is
+to answer "does the code run", not "what is the answer".
+
 **Procedure 5.3. Note the one change to archived code this required.**
 `scripts/03_load_dataset.py` matched participant folders with
 `^(T\d+)(\(.*\))?$`, so a folder called `RIG` was invisible to it and rig
@@ -641,7 +662,7 @@ counting up. 15000 frames is 5 minutes at 50 fps, matching a MINDFUL block
 **Procedure 6.2. Fit a decoder on the rig baseline and measure chance.**
 Use the existing script, pointed at the rig:
 ```
-python3 scripts/18_reference_decoder.py --participant RIG
+python3 scripts/18_reference_decoder.py fit --participant RIG --raw-root data/raw_rig
 ```
 It fits ridge regression, freezes the weights, and — importantly — **measures**
 the chance level by shuffled pairing rather than assuming 90°. That is the same
@@ -695,7 +716,7 @@ and must not be touched again after the gate passes.
 Use the existing injector, which already refuses to re-draw onsets without a
 recorded reason:
 ```
-python3 scripts/17_fault_injector.py --participant RIG plan
+python3 scripts/17_fault_injector.py plan --participant RIG --raw-root data/raw_rig
 ```
 This writes `data/processed/injection_plan_RIG.json` containing every episode's
 mode, rate, severity, onset frame, per-episode seed, a SHA-256 checksum of the
@@ -910,9 +931,9 @@ about how fault benchmarks are built — including this one.**
 
 **Procedure 12.1. Run the existing pipeline, unchanged.**
 ```
-python3 scripts/17_fault_injector.py --participant RIG
-python3 scripts/18_reference_decoder.py --participant RIG
-python3 scripts/20_evaluation_harness.py --participant RIG --local
+python3 scripts/17_fault_injector.py plan --participant RIG --raw-root data/raw_rig
+python3 scripts/18_reference_decoder.py fit --participant RIG --raw-root data/raw_rig
+python3 scripts/20_evaluation_harness.py run --participant RIG --raw-root data/raw_rig --local
 python3 scripts/21_score_report.py --participant RIG
 python3 scripts/24_benchmark_matrix.py
 python3 scripts/29_aggregation_limit.py

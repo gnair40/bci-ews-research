@@ -75,13 +75,54 @@ def auc(pos: np.ndarray, neg: np.ndarray) -> tuple[float, float]:
     return float(u / (len(pos) * len(neg))), float(p)
 
 
+# ---------------------------------------------------------------------------
+# THE CORRECTION THAT MUST SURVIVE REGENERATION
+# ---------------------------------------------------------------------------
+# On 4 September 2026 the p column of this report was found to be invalid, and
+# the correction was written into reports/ACHIEVABILITY.md by hand. That is the
+# project's convention -- correct inline, never in place -- but it does not hold
+# for a GENERATED file: on 14 September 2026 a re-run of this script silently
+# deleted the whole correction block, and the only reason it was noticed is that
+# git showed the file as modified.
+#
+# An honesty note that a re-run erases is not an honesty note. It lives here now,
+# so regenerating the report reproduces it.
+CORRECTION_BLOCK = """> ### \u26a0\ufe0f Correction, 4 September 2026 \u2014 the `p` column below is invalid
+>
+> **Every p-value in this report was computed by pooling windows**, which claim
+> C04 shows are not independent within a session (lag-1 r = 0.995). Measured
+> inflation of the apparent sample size: **26.6\u00d7**. The reductio is visible in the
+> first table below \u2014 `decoder_guard` scores AUC **0.491**, which the verdict
+> column itself calls *"at chance \u2014 no information"*, yet carries **p = 0.046**.
+>
+> The **AUC values and the verdicts stand**: an AUC is a descriptive statistic and
+> does not assume independence, and recomputing at the episode level moves the
+> point estimates by a median of 0.020. The **p column does not stand.**
+> Recomputed with the episode as the unit and a bootstrap over episodes:
+>
+> | | p as published | p corrected |
+> |---|---|---|
+> | `decoder_guard`, recent normal | 0 | < 0.001 |
+> | `distribution_shift`, recent normal | 1.2e-303 | < 0.001 |
+> | `mean_activity`, recent normal | 2e-137 | 0.004 |
+> | **`decoder_guard`, calibrate once** | **0.046** | **0.848** \u26a0\ufe0f |
+> | **`mean_activity`, calibrate once** | **0.0014** | **0.217** \u26a0\ufe0f |
+> | **`robust_dispersion`, calibrate once** | **3.4e-15** | **0.144** \u26a0\ufe0f |
+>
+> Three results were significant as published and are not significant now. The
+> numbers below are left exactly as they were first computed; the full corrected
+> table is `reports/UNIT_OF_ANALYSIS.md`.
+"""
+
+
 def main() -> int:
     lines = ["# Achievability: is the information there at all?\n",
              "**Reproduce:** `python3 scripts/26_achievability.py`\n",
              "> Every threshold, state machine, dwell and hysteresis setting is "
              "stripped away. This asks only whether a single window's raw score "
              "can separate the early-warning interval from healthy recording. "
-             "AUC 0.50 is chance.\n"]
+             "AUC 0.50 is chance.\n",
+             CORRECTION_BLOCK]
     A = lines.append
 
     for fname, participant, baseline in CONDITIONS:

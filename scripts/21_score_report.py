@@ -504,7 +504,10 @@ def write_markdown(summary: dict, meta: dict, participant: str, sfx: str) -> Non
     L = []
     A = L.append
     A(f"# Detector benchmark — {participant}\n")
-    A(f"**Generated:** {pd.Timestamp.utcnow().strftime('%Y-%m-%d %H:%M UTC')}  ")
+    # 14 Sep 2026: was pd.Timestamp.utcnow(), which pandas 3 deprecates and a
+    # later version removes. Found while dry-running the pipeline on a rig
+    # participant -- the warning was there on every archived run too, unread.
+    A(f"**Generated:** {pd.Timestamp.now('UTC').strftime('%Y-%m-%d %H:%M UTC')}  ")
     A(f"**Reproduce:** `python3 scripts/20_evaluation_harness.py run "
       f"--participant {participant}` then `python3 scripts/21_score_report.py "
       f"--participant {participant}`\n")

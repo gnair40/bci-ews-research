@@ -791,7 +791,7 @@ prove the file format is right before I record anything real.
 for i in $(seq 1 20); do
   python3 rig/capture.py 15000 data/raw_rig/session_001/block_$i.npy
 done
-python3 scripts/18_reference_decoder.py fit --participant RIG
+python3 scripts/18_reference_decoder.py fit --participant RIG --raw-root data/raw_rig
 ```
 
 **Procedure 75. Apply the pass/fail gate, and stop if it fails.**
@@ -810,7 +810,7 @@ system I never showed was comparable in the first place.
 
 **Procedure 76. Lock the degradation schedule, before recording.**
 ```
-python3 scripts/17_fault_injector.py plan --participant RIG
+python3 scripts/17_fault_injector.py plan --participant RIG --raw-root data/raw_rig
 git add -A && git commit -m "Lock the rig injection plan before any fault is recorded"
 ```
 
@@ -833,7 +833,7 @@ impossible to tell apart from a finding.
 
 **Procedure 80. Analyse with the same code, unchanged.**
 ```
-python3 scripts/20_evaluation_harness.py run --participant RIG
+python3 scripts/20_evaluation_harness.py run --participant RIG --raw-root data/raw_rig
 python3 scripts/21_score_report.py --participant RIG
 python3 scripts/24_benchmark_matrix.py
 python3 scripts/29_aggregation_limit.py

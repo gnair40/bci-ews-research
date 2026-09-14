@@ -114,6 +114,15 @@ MUTANTS = [
                          "    stops_py = stops_m - index_base"),
      "MatlabIndexing", False),
 
+    ("a documented rig command with the subcommand after the option -- the real "
+     "bug the dry run found on 14 Sep 2026",
+     "research/RIG_PROCEDURE.md",
+     lambda s: s.replace(
+         "python3 scripts/17_fault_injector.py plan --participant RIG "
+         "--raw-root data/raw_rig",
+         "python3 scripts/17_fault_injector.py --participant RIG plan", 1),
+     "__command_check__", False),
+
     ("angular error dropping the arccos, so it reports cosine not degrees",
      "scripts/18_reference_decoder.py",
      lambda s: s.replace("np.degrees(np.arccos(np.clip(cos, -1.0, 1.0)))",
@@ -136,10 +145,12 @@ def main() -> int:
                 missed += 1
                 continue
             target.write_text(mutated)
-            r = subprocess.run(
-                [sys.executable, "-m", "unittest",
-                 f"tests.test_core_numerics.{testclass}"],
-                cwd=REPO, capture_output=True, text=True)
+            cmd = ([sys.executable, "scripts/69_command_check.py"]
+                   if testclass == "__command_check__" else
+                   [sys.executable, "-m", "unittest",
+                    f"tests.test_core_numerics.{testclass}"])
+            r = subprocess.run(cmd, cwd=REPO, capture_output=True,
+                               text=True, timeout=900)
             caught = r.returncode != 0
         finally:
             target.write_text(backup)

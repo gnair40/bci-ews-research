@@ -85,6 +85,25 @@ THRESHOLD_GRID = np.unique(np.concatenate([
 STATES = ("NOMINAL", "WATCH", "WARN", "FAIL-LIKELY")
 
 
+# ---------------------------------------------------------------------------
+# WHERE THE RAW RECORDINGS LIVE
+# ---------------------------------------------------------------------------
+# Added 14 September 2026. This script used to call the loader with no root, so
+# it always read data/raw and nothing else. research/RIG_PROCEDURE.md tells the
+# researcher to put rig recordings in data/raw_rig/, which this script would
+# therefore never have looked at -- making the procedure's claim that "the
+# analysis pipeline runs unchanged on rig data" false. Found by trying to run
+# the pipeline end to end on a synthetic rig dataset rather than by reading it.
+#
+# The default is unchanged, so every existing result reproduces exactly.
+RAW_ROOT = None      # None means "use the loader's own default", i.e. data/raw
+
+
+def _root_kw() -> dict:
+    """Keyword args for load_dataset, so the default path stays untouched."""
+    return {} if RAW_ROOT is None else {"root": RAW_ROOT}
+
+
 def _load(name: str, path: str):
     spec = importlib.util.spec_from_file_location(name, REPO_ROOT / "scripts" / path)
     mod = importlib.util.module_from_spec(spec)
@@ -216,8 +235,11 @@ def evaluate(limit: int | None, only: str | None, participant: str = "T11",
     meta = json.loads(meta_path.read_text())
     plan, episodes = inj.load_plan(participant)
 
-    ds = loader.load_dataset(participant=participant, load_neural=True, verbose=False)
-    trials = pd.read_csv(OUT / "trials.csv")
+    ds = loader.load_dataset(**_root_kw(), participant=participant, load_neural=True, verbose=False)
+    # 14 Sep 2026: was data/processed/trials.csv, a cache of the ARCHIVED
+    # data, which contains no rows for a rig participant. Use the table the
+    # loader just produced. Identical rows for T11 and T5.
+    trials = ds.trials
 
     fit_blocks = set(meta["train_blocks"])
     val_blocks = set(meta["val_blocks"])
@@ -353,11 +375,16 @@ def main() -> int:
     r.add_argument("--limit", type=int)
     r.add_argument("--detector")
     r.add_argument("--participant", default="T11")
+    r.add_argument("--raw-root", type=Path, default=None,
+                      help="folder holding the recordings. Defaults to "
+                           "data/raw; use data/raw_rig for rig data.")
     r.add_argument("--local", action="store_true",
                    help="re-baseline each episode on its own pre-onset windows")
     r.add_argument("--detrend", action="store_true",
                    help="remove a trend fitted on pre-onset windows (prespecified)")
     a = ap.parse_args()
+    global RAW_ROOT
+    RAW_ROOT = getattr(a, "raw_root", None)
     return evaluate(a.limit, a.detector, a.participant, a.local, a.detrend)
 
 

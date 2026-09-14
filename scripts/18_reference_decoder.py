@@ -93,6 +93,25 @@ RIDGE_GRID = (1e-1, 1e0, 1e1, 1e2, 1e3, 1e4)
 MIN_TARGET_DIST = 0.02
 
 
+# ---------------------------------------------------------------------------
+# WHERE THE RAW RECORDINGS LIVE
+# ---------------------------------------------------------------------------
+# Added 14 September 2026. This script used to call the loader with no root, so
+# it always read data/raw and nothing else. research/RIG_PROCEDURE.md tells the
+# researcher to put rig recordings in data/raw_rig/, which this script would
+# therefore never have looked at -- making the procedure's claim that "the
+# analysis pipeline runs unchanged on rig data" false. Found by trying to run
+# the pipeline end to end on a synthetic rig dataset rather than by reading it.
+#
+# The default is unchanged, so every existing result reproduces exactly.
+RAW_ROOT = None      # None means "use the loader's own default", i.e. data/raw
+
+
+def _root_kw() -> dict:
+    """Keyword args for load_dataset, so the default path stays untouched."""
+    return {} if RAW_ROOT is None else {"root": RAW_ROOT}
+
+
 def load_loader():
     spec = importlib.util.spec_from_file_location(
         "loader", REPO_ROOT / "scripts" / "03_load_dataset.py")
@@ -234,9 +253,16 @@ def decode_stream(X: np.ndarray, W, mean, std) -> np.ndarray:
 def cmd_fit(participant: str = "T11") -> int:
     dec_path, meta_path = decoder_paths(participant)
     loader = load_loader()
-    ds = loader.load_dataset(participant=participant, load_neural=True, verbose=False)
-    trials = pd.read_csv(OUT_DIR / "trials.csv")
-    blocks = pd.read_csv(OUT_DIR / "blocks.csv")
+    ds = loader.load_dataset(**_root_kw(), participant=participant, load_neural=True, verbose=False)
+    # 14 Sep 2026: these used to come from data/processed/{trials,blocks}.csv,
+    # a cache of the ARCHIVED data. On a rig participant the loader would hand
+    # back a real dataset and then every block_id would be looked up in a table
+    # that did not contain it, so `blocks` came out empty and the fit died with
+    # "only 0 days; cannot split". Use the tables the loader just produced from
+    # the data actually being analysed. For T11 and T5 these are the same rows
+    # the CSVs hold, which the 97 verifier claims confirm.
+    trials = ds.trials
+    blocks = ds.blocks
     blocks = blocks[(blocks["cohort"] == "main") & (blocks["block_id"].isin(ds.neural))]
 
     cfg = DAYS.get(participant, {"train": None, "val": None})
@@ -359,8 +385,8 @@ def cmd_check() -> int:
     inj_spec.loader.exec_module(inj)
 
     loader = load_loader()
-    ds = loader.load_dataset(participant="T11", load_neural=True, verbose=False)
-    trials = pd.read_csv(OUT_DIR / "trials.csv")
+    ds = loader.load_dataset(**_root_kw(), participant="T11", load_neural=True, verbose=False)
+    trials = ds.trials
     plan, episodes = inj.load_plan()
 
     target = meta["val_blocks"][0]
@@ -446,8 +472,8 @@ def cmd_calibrate() -> int:
     spec.loader.exec_module(inj)
 
     loader = load_loader()
-    ds = loader.load_dataset(participant="T11", load_neural=True, verbose=False)
-    trials = pd.read_csv(OUT_DIR / "trials.csv")
+    ds = loader.load_dataset(**_root_kw(), participant="T11", load_neural=True, verbose=False)
+    trials = ds.trials
 
     block_ids = meta["val_blocks"]
     print("Severity calibration -- how hard must each fault hit before it matters?")
@@ -525,9 +551,14 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     f = sub.add_parser("fit", help="fit and freeze the reference decoder")
     f.add_argument("--participant", default="T11")
+    f.add_argument("--raw-root", type=Path, default=None,
+                      help="folder holding the recordings. Defaults to "
+                           "data/raw; use data/raw_rig for rig data.")
     sub.add_parser("check", help="confirm degradation moves the performance number")
     sub.add_parser("calibrate", help="find the severity at which each mode bites")
     args = ap.parse_args()
+    global RAW_ROOT
+    RAW_ROOT = getattr(args, "raw_root", None)
     if args.cmd == "fit":
         return cmd_fit(args.participant)
     if args.cmd == "check":

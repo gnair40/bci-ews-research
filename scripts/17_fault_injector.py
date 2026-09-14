@@ -380,6 +380,25 @@ def apply_episode(X: np.ndarray, ep: Episode) -> tuple[np.ndarray, dict]:
 # PLANNING
 # --------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# WHERE THE RAW RECORDINGS LIVE
+# ---------------------------------------------------------------------------
+# Added 14 September 2026. This script used to call the loader with no root, so
+# it always read data/raw and nothing else. research/RIG_PROCEDURE.md tells the
+# researcher to put rig recordings in data/raw_rig/, which this script would
+# therefore never have looked at -- making the procedure's claim that "the
+# analysis pipeline runs unchanged on rig data" false. Found by trying to run
+# the pipeline end to end on a synthetic rig dataset rather than by reading it.
+#
+# The default is unchanged, so every existing result reproduces exactly.
+RAW_ROOT = None      # None means "use the loader's own default", i.e. data/raw
+
+
+def _root_kw() -> dict:
+    """Keyword args for load_dataset, so the default path stays untouched."""
+    return {} if RAW_ROOT is None else {"root": RAW_ROOT}
+
+
 def load_loader():
     spec = importlib.util.spec_from_file_location(
         "loader", REPO_ROOT / "scripts" / "03_load_dataset.py")
@@ -412,7 +431,7 @@ def feature_groups_for(n_feats: int, neural_variable: str) -> list:
 
 def build_plan(participant: str = "T11") -> dict:
     loader = load_loader()
-    ds = loader.load_dataset(participant=participant, load_neural=True, verbose=False)
+    ds = loader.load_dataset(**_root_kw(), participant=participant, load_neural=True, verbose=False)
 
     blocks = ds.blocks
     blocks = blocks[blocks["block_id"].isin(ds.neural.keys())]
@@ -507,7 +526,7 @@ def load_plan(participant: str = "T11") -> tuple[dict, list[Episode]]:
 def cmd_verify(participant: str = "T11") -> int:
     plan, episodes = load_plan(participant)
     loader = load_loader()
-    ds = loader.load_dataset(participant=plan["participant"],
+    ds = loader.load_dataset(**_root_kw(), participant=plan["participant"],
                              load_neural=True, verbose=False)
 
     print(f"Plan: {plan['n_episodes']} episodes over {plan['n_blocks']} blocks")
@@ -656,7 +675,7 @@ def cmd_apply(episode_id: str, out: str | None, participant: str = "T11") -> int
     ep = match[0]
 
     loader = load_loader()
-    ds = loader.load_dataset(participant=plan["participant"],
+    ds = loader.load_dataset(**_root_kw(), participant=plan["participant"],
                             load_neural=True, verbose=False)
     X = ds.neural[ep.block_id]
     Y, diag = apply_episode(X, ep)
@@ -684,9 +703,15 @@ def main() -> int:
     p.add_argument("--amend", metavar="REASON",
                    help="overwrite an existing plan, recording why")
     p.add_argument("--participant", default="T11")
+    p.add_argument("--raw-root", type=Path, default=None,
+                      help="folder holding the recordings. Defaults to "
+                           "data/raw; use data/raw_rig for rig data.")
 
     v = sub.add_parser("verify", help="check the injector behaves as specified")
     v.add_argument("--participant", default="T11")
+    v.add_argument("--raw-root", type=Path, default=None,
+                      help="folder holding the recordings. Defaults to "
+                           "data/raw; use data/raw_rig for rig data.")
 
     a = sub.add_parser("apply", help="degrade one block per one episode")
     a.add_argument("--episode", required=True)
@@ -694,6 +719,8 @@ def main() -> int:
     a.add_argument("--participant", default="T11")
 
     args = ap.parse_args()
+    global RAW_ROOT
+    RAW_ROOT = getattr(args, "raw_root", None)
     if args.cmd == "plan":
         return cmd_plan(args.amend, args.participant)
     if args.cmd == "verify":

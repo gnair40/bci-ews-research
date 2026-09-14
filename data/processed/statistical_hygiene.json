@@ -1,5 +1,5 @@
 {
-  "n_scripts": 67,
+  "n_scripts": 69,
   "n_unreviewed": 0,
   "n_reviewed": 8,
   "unreviewed": [],
@@ -13,22 +13,22 @@
     },
     {
       "kind": "pooled_inference",
-      "line": 118,
-      "detail": "statistical test via auc() on ['E'], pooled at line 115",
+      "line": 159,
+      "detail": "statistical test via auc() on ['E'], pooled at line 156",
       "script": "26_achievability.py",
       "reviewed_because": "Known and corrected: its p-values are recomputed at episode level by 60_unit_of_analysis.py and ACHIEVABILITY.md carries an inline correction."
     },
     {
       "kind": "pooled_inference",
-      "line": 119,
-      "detail": "statistical test via auc() on ['L'], pooled at line 116",
+      "line": 160,
+      "detail": "statistical test via auc() on ['L'], pooled at line 157",
       "script": "26_achievability.py",
       "reviewed_because": "Known and corrected: its p-values are recomputed at episode level by 60_unit_of_analysis.py and ACHIEVABILITY.md carries an inline correction."
     },
     {
       "kind": "pooled_inference",
-      "line": 145,
-      "detail": "statistical test via auc() on ['H'], pooled at line 114",
+      "line": 186,
+      "detail": "statistical test via auc() on ['H'], pooled at line 155",
       "script": "26_achievability.py",
       "reviewed_because": "Known and corrected: its p-values are recomputed at episode level by 60_unit_of_analysis.py and ACHIEVABILITY.md carries an inline correction."
     },

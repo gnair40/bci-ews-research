@@ -50,6 +50,8 @@
 |---|---|---|---|---|
 | `decoder_guard` | **0.693** | 0 | 0.808 | information present |
 | | *by mode:* CHANNEL_DROPOUT 0.65; GAIN_DRIFT 0.79; GEOMETRY_ROTATION 0.76; NONE 0.36; RATE_LOSS 0.61 | | | |
+| `decoder_guard_joint` | **0.687** | 0 | 0.798 | information present |
+| | *by mode:* CHANNEL_DROPOUT 0.81; GAIN_DRIFT 0.76; GEOMETRY_ROTATION 0.73; NONE 0.41; RATE_LOSS 0.51 | | | |
 | `distribution_shift` | **0.666** | 1.2e-303 | 0.775 | information present |
 | | *by mode:* CHANNEL_DROPOUT 0.68; GAIN_DRIFT 0.69; GEOMETRY_ROTATION 0.57; NONE 0.44; RATE_LOSS 0.73 | | | |
 | `mean_activity` | **0.611** | 2e-137 | 0.688 | information present |
@@ -63,6 +65,8 @@
 |---|---|---|---|---|
 | `decoder_guard` | **0.707** | 0 | 0.820 | information present |
 | | *by mode:* CHANNEL_DROPOUT 0.75; GAIN_DRIFT 0.73; GEOMETRY_ROTATION 0.71; NONE 0.47; RATE_LOSS 0.64 | | | |
+| `decoder_guard_joint` | **0.703** | 0 | 0.789 | information present |
+| | *by mode:* CHANNEL_DROPOUT 0.90; GAIN_DRIFT 0.64; GEOMETRY_ROTATION 0.64; NONE 0.41; RATE_LOSS 0.62 | | | |
 | `distribution_shift` | **0.661** | 7.2e-205 | 0.778 | information present |
 | | *by mode:* CHANNEL_DROPOUT 0.72; GAIN_DRIFT 0.69; GEOMETRY_ROTATION 0.58; NONE 0.40; RATE_LOSS 0.67 | | | |
 | `mean_activity` | **0.612** | 8.5e-100 | 0.682 | information present |
