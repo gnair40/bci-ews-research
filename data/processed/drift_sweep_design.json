@@ -1,0 +1,289 @@
+{
+  "model": "Ornstein-Uhlenbeck drift plus white sensor noise, window-averaged. A DESIGN CALCULATION, NOT A MEASUREMENT.",
+  "targets_are": "fault-free no-overlap correlations from scripts/70, NOT C18's pooled 0.902/0.784",
+  "drift_to_noise_ratio": 1.0,
+  "window_s": 30.0,
+  "step_s": 5.0,
+  "windows_per_block": 55,
+  "windows_after_decimation": 10,
+  "spacing_between_kept_windows_s": 30.0,
+  "estimator_ceiling_at_this_length": 0.602217171002291,
+  "cortex": {
+    "T11": {
+      "r": 0.08473166925459166,
+      "ci95": [
+        -0.12218648676454692,
+        0.4528920921739402
+      ],
+      "n_windows": 10.0,
+      "n_episodes": 17,
+      "tau_s": 10.655348720823614,
+      "tau_ci95": [
+        NaN,
+        44.3872271485084
+      ],
+      "on_curve": true,
+      "ci_fully_on_curve": false
+    },
+    "T5": {
+      "r": 0.4353386377153755,
+      "ci95": [
+        0.27096205069540025,
+        0.5397462665610869
+      ],
+      "n_windows": 7.0,
+      "n_episodes": 15,
+      "tau_s": 42.18787004355275,
+      "tau_ci95": [
+        21.13775747203508,
+        72.16780680392468
+      ],
+      "on_curve": true,
+      "ci_fully_on_curve": true
+    }
+  },
+  "informative_band_s": [
+    4.212661507793199,
+    810.8072200764332
+  ],
+  "blocks_per_level_needed_tested": null,
+  "curve": [
+    {
+      "tau_s": 1.0,
+      "measured_r_one_block": -0.11374160805264791,
+      "asymptotic_r": 0.018370169923392177,
+      "n_eff_one_block": 12.566782082654843
+    },
+    {
+      "tau_s": 1.416378040967939,
+      "measured_r_one_block": -0.10628921920706658,
+      "asymptotic_r": 0.035561876652749194,
+      "n_eff_one_block": 12.378604387266378
+    },
+    {
+      "tau_s": 2.0061267549361768,
+      "measured_r_one_block": -0.08366937001232636,
+      "asymptotic_r": 0.027738580026958753,
+      "n_eff_one_block": 11.826182979683912
+    },
+    {
+      "tau_s": 2.841433883089871,
+      "measured_r_one_block": -0.09252087794754155,
+      "asymptotic_r": 0.07236797270529026,
+      "n_eff_one_block": 12.039074524123171
+    },
+    {
+      "tau_s": 4.024544556870755,
+      "measured_r_one_block": -0.07905418435659994,
+      "asymptotic_r": 0.05101611370382488,
+      "n_eff_one_block": 11.716804246542353
+    },
+    {
+      "tau_s": 5.700276535248784,
+      "measured_r_one_block": -0.013112107804420126,
+      "asymptotic_r": 0.13047757120208273,
+      "n_eff_one_block": 10.265726389149407
+    },
+    {
+      "tau_s": 8.073746511971182,
+      "measured_r_one_block": 0.013712872209110813,
+      "asymptotic_r": 0.18501374194880502,
+      "n_eff_one_block": 9.729452538582699
+    },
+    {
+      "tau_s": 11.435477267897472,
+      "measured_r_one_block": 0.10619267930642767,
+      "asymptotic_r": 0.2339787696363197,
+      "n_eff_one_block": 8.080032867818119
+    },
+    {
+      "tau_s": 16.196958890238022,
+      "measured_r_one_block": 0.1480678724926312,
+      "asymptotic_r": 0.3234189437006841,
+      "n_eff_one_block": 7.420572841723144
+    },
+    {
+      "tau_s": 22.941016902593578,
+      "measured_r_one_block": 0.3158151411697495,
+      "asymptotic_r": 0.43701681063357983,
+      "n_eff_one_block": 5.199703494991063
+    },
+    {
+      "tau_s": 32.49315257830788,
+      "measured_r_one_block": 0.35796339877333044,
+      "asymptotic_r": 0.5510611852699671,
+      "n_eff_one_block": 4.72793745256044
+    },
+    {
+      "tau_s": 46.02258779373603,
+      "measured_r_one_block": 0.4659441920556059,
+      "asymptotic_r": 0.6471818265714682,
+      "n_eff_one_block": 3.6430841694970635
+    },
+    {
+      "tau_s": 65.18538273956683,
+      "measured_r_one_block": 0.5207926895628916,
+      "asymptotic_r": 0.7272540716647213,
+      "n_eff_one_block": 3.151036388627321
+    },
+    {
+      "tau_s": 92.32714470441299,
+      "measured_r_one_block": 0.5944681739685659,
+      "asymptotic_r": 0.8140112310544431,
+      "n_eff_one_block": 2.5433673286941945
+    },
+    {
+      "tau_s": 130.77014034459984,
+      "measured_r_one_block": 0.6114911573095504,
+      "asymptotic_r": 0.8416925893566207,
+      "n_eff_one_block": 2.4108654951546917
+    },
+    {
+      "tau_s": 185.21995519838688,
+      "measured_r_one_block": 0.6547118275505674,
+      "asymptotic_r": 0.8999939514907432,
+      "n_eff_one_block": 2.08669670875898
+    },
+    {
+      "tau_s": 262.3414772920606,
+      "measured_r_one_block": 0.6641657669005224,
+      "asymptotic_r": 0.9270537882614903,
+      "n_eff_one_block": 2.0180335383593584
+    },
+    {
+      "tau_s": 371.57470767156366,
+      "measured_r_one_block": 0.6542630925150565,
+      "asymptotic_r": 0.9453720159714962,
+      "n_eff_one_block": 2.0899753433977835
+    },
+    {
+      "tau_s": 526.2902565250844,
+      "measured_r_one_block": 0.677611523665349,
+      "asymptotic_r": 0.9559719825378019,
+      "n_eff_one_block": 1.9217111457977871
+    },
+    {
+      "tau_s": 745.4259625175127,
+      "measured_r_one_block": 0.6774977507364842,
+      "asymptotic_r": 0.9804134456032276,
+      "n_eff_one_block": 1.922519712005129
+    },
+    {
+      "tau_s": 1055.8049644771957,
+      "measured_r_one_block": 0.7172881547738956,
+      "asymptotic_r": 0.9790388990975291,
+      "n_eff_one_block": 1.6462691158743086
+    },
+    {
+      "tau_s": 1495.4189672304344,
+      "measured_r_one_block": 0.6832456102600986,
+      "asymptotic_r": 0.9795210041176028,
+      "n_eff_one_block": 1.881807312071088
+    },
+    {
+      "tau_s": 2118.0785872321403,
+      "measured_r_one_block": 0.6768618741648522,
+      "asymptotic_r": 0.9843004255909608,
+      "n_eff_one_block": 1.9270408064831468
+    },
+    {
+      "tau_s": 3000.000000000001,
+      "measured_r_one_block": 0.7280594487222511,
+      "asymptotic_r": 0.9850662960014062,
+      "n_eff_one_block": 1.573675902636481
+    }
+  ],
+  "precision": [
+    {
+      "blocks": 5,
+      "sd_of_r_estimate": 0.14670281693901352,
+      "half_width_95": 0.2875375212004665,
+      "resolves_adjacent_levels": false,
+      "resolves_cortex_gap": false
+    },
+    {
+      "blocks": 10,
+      "sd_of_r_estimate": 0.11091645207800899,
+      "half_width_95": 0.21739624607289762,
+      "resolves_adjacent_levels": false,
+      "resolves_cortex_gap": false
+    },
+    {
+      "blocks": 20,
+      "sd_of_r_estimate": 0.07977054323396132,
+      "half_width_95": 0.1563502647385642,
+      "resolves_adjacent_levels": false,
+      "resolves_cortex_gap": true
+    },
+    {
+      "blocks": 40,
+      "sd_of_r_estimate": 0.05337643086313426,
+      "half_width_95": 0.10461780449174315,
+      "resolves_adjacent_levels": false,
+      "resolves_cortex_gap": true
+    },
+    {
+      "blocks": 80,
+      "sd_of_r_estimate": 0.03809203154735934,
+      "half_width_95": 0.0746603818328243,
+      "resolves_adjacent_levels": false,
+      "resolves_cortex_gap": true
+    }
+  ],
+  "dnr_sensitivity": [
+    {
+      "dnr": 0.3,
+      "measured_r_at_probe_tau": 0.3021129483189937
+    },
+    {
+      "dnr": 1.0,
+      "measured_r_at_probe_tau": 0.3454294079586331
+    },
+    {
+      "dnr": 3.0,
+      "measured_r_at_probe_tau": 0.2772003177412408
+    }
+  ],
+  "adjacent_level_gap": 0.10894358621692762,
+  "cortex_gap": 0.3506069684607839,
+  "half_width_fit_constant": 0.671816844875041,
+  "half_width_fit_max_resid": 0.012908105513538048,
+  "blocks_per_level_fitted": 153,
+  "levels_vs_recording_cost": [
+    {
+      "levels": 4,
+      "step_in_r": 0.2972485462769961,
+      "blocks_per_level": 21,
+      "total_blocks": 84,
+      "recording_hours": 7.0
+    },
+    {
+      "levels": 5,
+      "step_in_r": 0.18623193346529643,
+      "blocks_per_level": 53,
+      "total_blocks": 265,
+      "recording_hours": 22.083333333333332
+    },
+    {
+      "levels": 6,
+      "step_in_r": 0.1833565418291485,
+      "blocks_per_level": 54,
+      "total_blocks": 324,
+      "recording_hours": 27.0
+    },
+    {
+      "levels": 8,
+      "step_in_r": 0.10894358621692762,
+      "blocks_per_level": 153,
+      "total_blocks": 1224,
+      "recording_hours": 102.0
+    },
+    {
+      "levels": 10,
+      "step_in_r": 0.07952907723776836,
+      "blocks_per_level": 286,
+      "total_blocks": 2860,
+      "recording_hours": 238.33333333333334
+    }
+  ]
+}

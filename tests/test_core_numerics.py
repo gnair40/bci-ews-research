@@ -38,6 +38,19 @@ The mapping, test by test:
                           Off by one shifts every trial by a bin.
   Autocorrelation         claim C04/C18, the single number that explains most of
                           the project's negative results. Never had a test.
+  WindowMeansByCumsum     scripts/71 replaced a per-window slice loop with a
+                          cumulative-sum version to make the design sweep finish
+                          in reasonable time. A cumsum rewrite is exactly the
+                          kind of change that stays silently off by one window.
+  OrnsteinUhlenbeck       the drift model scripts/71 designs against. If its
+                          stationary variance or its lag-1 correlation are
+                          wrong, every sweep number derived from it is wrong and
+                          nothing downstream would notice.
+  SmallSampleBias         found on 15 September: the lag-1 estimator saturates
+                          near 0.60 at 10 points, so C18's 0.902 cannot be
+                          inverted to a drift speed. The first version of the
+                          design script produced NaN and then asserted a
+                          conclusion that depended on the NaN not existing.
   EffectiveSampleSize     the n_eff formula behind "one measurement per session".
   WindowOverlap           the geometry behind claim C18.
   IntendedDirection       the decoder's target. A silent failure here would look
@@ -66,6 +79,7 @@ sys.path.insert(0, str(REPO / "scripts"))
 inj = import_module("17_fault_injector")
 dec = import_module("18_reference_decoder")
 spacing = import_module("66_window_spacing")
+sweep = import_module("71_drift_sweep_design")
 
 
 def make_episode(mode: str, severity: float, n_bins: int = 1000,
@@ -445,3 +459,114 @@ class IntendedDirection(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+# ---------------------------------------------------------------------------
+class WindowMeansByCumsum(unittest.TestCase):
+    """The vectorised window-mean rewrite must match the obvious slow version."""
+
+    def test_matches_naive_slice_loop(self):
+        rng = np.random.default_rng(4)
+        sig = rng.normal(size=(3, sweep.BLOCK_BINS))
+        fast = sweep.windows(sig)
+        starts = np.arange(0, sweep.BLOCK_BINS - sweep.WINDOW_BINS + 1,
+                           sweep.STEP_BINS)
+        slow = np.array([[row[s:s + sweep.WINDOW_BINS].mean() for s in starts]
+                         for row in sig])
+        self.assertEqual(fast.shape, slow.shape)
+        np.testing.assert_allclose(fast, slow, atol=1e-10)
+
+    def test_window_count_matches_the_neural_geometry(self):
+        """55 windows per block, 10 after decimation -- the numbers C18 uses."""
+        w = sweep.windows(np.zeros((1, sweep.BLOCK_BINS)))
+        self.assertEqual(w.shape[1], sweep.N_WINDOWS)
+        self.assertEqual(w[:, ::sweep.DECIMATE].shape[1], sweep.N_KEPT)
+        # Decimated windows must share no bins: the spacing is the window length.
+        self.assertEqual(sweep.DECIMATE * sweep.STEP_BINS, sweep.WINDOW_BINS)
+
+
+# ---------------------------------------------------------------------------
+class OrnsteinUhlenbeck(unittest.TestCase):
+    """The drift model the sweep is designed against."""
+
+    def test_stationary_variance_is_one(self):
+        rng = np.random.default_rng(5)
+        for tau_bins in (10.0, 500.0):
+            x = sweep.ou((200, 4000), tau_bins, rng)
+            self.assertAlmostEqual(float(x.var()), 1.0, delta=0.08,
+                                   msg=f"tau_bins={tau_bins}")
+
+    def test_lag1_matches_the_analytic_value(self):
+        """For an OU sampled at unit steps, lag-1 correlation is exp(-1/tau)."""
+        rng = np.random.default_rng(6)
+        for tau_bins in (10.0, 100.0):
+            x = sweep.ou((200, 20000), tau_bins, rng)
+            got = float(np.nanmedian(sweep.lag1(x)))
+            self.assertAlmostEqual(got, float(np.exp(-1.0 / tau_bins)),
+                                   delta=0.02, msg=f"tau_bins={tau_bins}")
+
+    def test_paths_start_in_equilibrium(self):
+        """No warm-up transient: the first bin is as variable as the last."""
+        rng = np.random.default_rng(8)
+        x = sweep.ou((4000, 50), 200.0, rng)
+        self.assertAlmostEqual(float(x[:, 0].var()), float(x[:, -1].var()),
+                               delta=0.15)
+
+
+# ---------------------------------------------------------------------------
+class SmallSampleBias(unittest.TestCase):
+    """The saturation that made C18's 0.902 impossible to invert."""
+
+    def test_estimator_is_biased_low_at_ten_points(self):
+        rng = np.random.default_rng(9)
+        ceiling = sweep.estimator_ceiling(sweep.N_KEPT, rng, reps=6000)
+        # A true correlation of 0.999 must read far below itself at 10 points.
+        self.assertLess(ceiling, 0.75)
+        self.assertGreater(ceiling, 0.45)
+
+    def test_ceiling_rises_with_series_length(self):
+        """The bias is a small-sample effect, so more points must ease it."""
+        rng = np.random.default_rng(10)
+        short = sweep.estimator_ceiling(10, rng, reps=6000)
+        long = sweep.estimator_ceiling(60, rng, reps=6000)
+        self.assertGreater(long, short + 0.1)
+
+    def test_c18_pooled_value_is_above_the_ceiling(self):
+        """The finding itself: 0.902 cannot come from a stationary AR(1) at n=10.
+
+        This is what the design script tripped over. If a future change makes
+        this pass quietly, the inversion has started clamping instead of
+        refusing, and the NaN that flagged the problem would be gone.
+        """
+        rng = np.random.default_rng(12)
+        self.assertGreater(0.902, sweep.estimator_ceiling(10, rng, reps=6000))
+
+
+# ---------------------------------------------------------------------------
+class InversionRefusesOffCurve(unittest.TestCase):
+    """A target off the end of the curve must give nan, never a clamped value."""
+
+    def setUp(self):
+        self.taus = np.array([1.0, 10.0, 100.0, 1000.0])
+        self.curve = np.array([0.1, 0.3, 0.5, 0.6])
+
+    def test_above_the_ceiling_is_nan(self):
+        self.assertTrue(np.isnan(sweep.invert(self.taus, self.curve, 0.902)))
+
+    def test_below_the_floor_is_nan(self):
+        self.assertTrue(np.isnan(sweep.invert(self.taus, self.curve, -0.2)))
+
+    def test_nan_target_is_nan(self):
+        self.assertTrue(np.isnan(sweep.invert(self.taus, self.curve, np.nan)))
+
+    def test_on_curve_interpolates(self):
+        self.assertAlmostEqual(sweep.invert(self.taus, self.curve, 0.3), 10.0)
+        got = sweep.invert(self.taus, self.curve, 0.4)
+        self.assertTrue(10.0 < got < 100.0)
+
+    def test_non_monotone_input_does_not_break_interpolation(self):
+        """Simulation jitter can dent the curve; the inversion must still be sane."""
+        dented = np.array([0.1, 0.35, 0.30, 0.6])
+        got = sweep.invert(self.taus, dented, 0.32)
+        self.assertTrue(np.isfinite(got))
+        self.assertTrue(self.taus[0] <= got <= self.taus[-1])

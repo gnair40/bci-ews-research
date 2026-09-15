@@ -42,6 +42,32 @@ def gain_drift_unconserved(s: str) -> str:
 
 #  description, file, mutation, test class, expected-inert
 MUTANTS = [
+    ("window means off by one window, the classic cumulative-sum slip",
+     "scripts/71_drift_sweep_design.py",
+     lambda s: s.replace(
+         "    return (c[:, starts + WINDOW_BINS] - c[:, starts]) / WINDOW_BINS",
+         "    return (c[:, starts + WINDOW_BINS - 1] - c[:, starts]) / WINDOW_BINS"),
+     "WindowMeansByCumsum", False),
+
+    ("OU paths started at zero instead of in equilibrium, so every simulated "
+     "block carries a warm-up transient",
+     "scripts/71_drift_sweep_design.py",
+     lambda s: s.replace(
+         "    zi = (rng.normal(size=(reps, 1)) * a)",
+         "    zi = np.zeros((reps, 1))"),
+     "OrnsteinUhlenbeck", False),
+
+    ("the tau inversion clamping to the ends of the curve instead of refusing, "
+     "which is what would have hidden the NaN that exposed C18's ceiling",
+     "scripts/71_drift_sweep_design.py",
+     lambda s: s.replace(
+         "    if not np.isfinite(target) or target < mono[0] or target > mono[-1]:\n"
+         "        return float(\"nan\")",
+         "    if not np.isfinite(target):\n"
+         "        return float(\"nan\")\n"
+         "    target = min(max(target, mono[0]), mono[-1])"),
+     "InversionRefusesOffCurve", False),
+
     ("GAIN_DRIFT not mean-conserving (the +116% and +20.8% bugs)",
      "scripts/17_fault_injector.py", gain_drift_unconserved,
      "GainDriftConserved", False),

@@ -4,6 +4,16 @@
 **Status: DRAFT — NOT YET FROZEN. Nothing has been built and nothing measured.**
 **Frozen at commit:** `[[RESEARCHER — fill in after running the freeze in §10]]`
 
+> **BLOCKED — two predictions must be settled before this is frozen.**
+> P-R1 and P-R2 take their thresholds from claim C18's 0.902 and 0.784. Those
+> figures turn out to be pooled over episodes that carry a sub-threshold
+> *injected* fault ramp, not fault-free recording, and the ramp is most of what
+> raises them (`reports/AUTOCORR_BY_SEVERITY.md`). The rig's natural-drift arm
+> injects nothing, so it is the fault-free figures it has to be compared
+> against. The numbers below are **left exactly as drafted** — retargeting them
+> is a scientific decision, not an editorial one, and it is the researcher's to
+> make. See §11.
+
 ---
 
 ## 0. Read this before anything else
@@ -83,6 +93,13 @@ a study whose null result teaches nothing should not be run.
 
 - **Derived from:** claim C18. Non-overlapping neural values are **0.902** (T11)
   and **0.784** (T5); `reports/WINDOW_SPACING.md`.
+- **(!) This derivation is under question — see §11.** Those two values pool
+  fault-free episodes together with episodes carrying a sub-threshold injected
+  ramp. Fault-free alone, the same measurement gives **0.085** [−0.122, 0.453]
+  on T11 and **0.435** [0.271, 0.540] on T5
+  (`reports/AUTOCORR_BY_SEVERITY.md`). A bar of 0.70 that was meant to sit
+  "just below both" sits *above* both on the fault-free figures, which would
+  make P-R1 near-certain to fail for a reason having nothing to do with the rig.
 - **Why 0.70 and not 0.784:** 0.784 is the lower of two arrays, and a bar set at
   the minimum of an n = 2 sample is not a bar, it is a coin toss. 0.70 sits just
   below both, so the prediction fails only if the rig is clearly less
@@ -101,6 +118,10 @@ a study whose null result teaches nothing should not be run.
 > at **every** window spacing tested.
 
 - **Derived from:** claim C18. Neural values never exceed **0.85**.
+- **(!) This derivation is under question — see §11.** On fault-free episodes
+  the effective sample size is **8.4** (T11) and **2.8** (T5), not below 1. A
+  bar of "< 2" set from the pooled figures is not the bar the fault-free
+  comparison implies.
 - **Honest caveat, stated rather than hidden:** *P-R2 is not independent of
   P-R1.* Effective sample size is a function of r and n, so a rig that satisfies
   P-R1 will very probably satisfy P-R2 automatically. It is listed separately
@@ -348,3 +369,67 @@ makes every "before" in this document checkable rather than asserted.
 ## 11. Amendment log
 
 *(empty)*
+
+---
+
+## 11. Open item — the C18 derivation behind P-R1 and P-R2
+
+**Raised:** 15 September 2026, before anything was built or measured.
+
+### What happened
+
+While working out the numbers for Procedure 78, a design calculation asked which
+imposed drift speed would reproduce cortex's no-overlap autocorrelation of 0.902.
+It returned no answer. Chasing that produced two separate findings, both in
+`reports/AUTOCORR_BY_SEVERITY.md` and `reports/DRIFT_SWEEP_DESIGN.md`.
+
+**First: 0.902 is not a fault-free number.** `scripts/66_window_spacing.py`
+computes it over episodes where the injected fault never crossed threshold, and
+calls those "healthy". They are not fault-free — the set also contains episodes
+with no fault at all, outnumbered roughly 18 to 1 by episodes carrying a
+sub-threshold ramp. Every fault in this project is a monotone ramp, and a ramp
+raises lag-1 autocorrelation on its own. Split by what was actually injected, the
+no-overlap value runs 0.085 (no fault) → 0.887 (benign ramp) → 0.923 (sub
+ramp) on T11, and 0.435 → 0.656 → 0.825 on T5. The ordering is monotone in
+injected severity, which is what it would look like if the ramp were supplying
+the correlation.
+
+**Second: the estimator saturates.** At the no-overlap spacing an episode keeps
+10 windows on T11 and 7 on T5. The sample lag-1 correlation is heavily biased
+downward at that length — feed it a series whose true correlation is 0.999 and
+at 10 points it reports about 0.60. So every no-overlap figure in this project,
+C18's included, understates whatever correlation is really there. That direction
+makes the project's negative results look *weaker* than they are, so nothing
+already written becomes over-claimed by it.
+
+### What this does and does not change
+
+- **It does not overturn C04's use.** C04 governs how detector performance is
+  aggregated, and detector performance is measured on episodes that contain
+  faults. Within those episodes the windows really are dependent. Bootstrapping
+  over episodes rather than windows remains right.
+- **It does change the false-alarm side**, which is a fault-free question, and
+  the fault-free rows give more independent samples than the pooled figure
+  implies, not fewer.
+- **It changes what the rig must be compared against.** Arm B injects nothing.
+
+### The decision to make — `[[RESEARCHER]]`
+
+Three options, and this document should not be frozen until one is chosen and
+written into P-R1 and P-R2:
+
+1. **Retarget to the fault-free figures.** Honest, but the fault-free estimate
+   rests on 17 episodes (T11) and 15 (T5) with intervals wide enough to cover
+   almost anything. A threshold set from them is a threshold set from very
+   little.
+2. **Keep the pooled figures and restate what P-R1 compares.** Defensible only
+   if the rig's comparison arm also carries an injected ramp — which would mean
+   comparing the imposed-drift arm, not Arm B, and P-R1's wording has to change
+   to say so.
+3. **Drop P-R1 and P-R2 from the preregistration** and record the autocorrelation
+   as a measurement rather than a prediction, on the grounds that no honest
+   threshold can be set from an n of 2 arrays with intervals this wide.
+
+There is no option in which the numbers stay as drafted and the wording stays as
+drafted. Whichever is chosen, the reason goes in `research/research_log.md` and
+the change is an amendment under §9, dated, with this section left standing.

@@ -4843,3 +4843,78 @@ trustworthy.
 Also added a short section saying what I am not claiming, which is that a camera
 resembles a neuron. The claim is about a class of measurement problem. Better to
 state that plainly than to defend it when challenged.
+
+## 15 September 2026 — Working out Procedure 78's numbers found a mistake in C18
+
+I set out to replace the guessed numbers in Procedure 78 — "eight levels from 5 s
+to 2000 s, 10 blocks each" — with computed ones. The design script asks a simple
+question: which imposed drift speed reproduces the autocorrelation cortex shows?
+It returned `nan`. Then it printed, underneath the `nan`, the sentence "both
+participants fall inside that band, which is the thing that had to be true for
+the sweep to be worth running." A conclusion asserted on top of a missing number.
+I nearly committed it.
+
+Chasing the `nan` turned up two separate things, and the second is the one that
+matters.
+
+**First, the estimator saturates.** At the no-overlap spacing an episode keeps 10
+windows on T11 and 7 on T5. The sample lag-1 correlation is badly biased downward
+at that length: give it a series whose true correlation is 0.999 and at 10 points
+it reports about 0.60. So no drift speed, however slow, produces a measured 0.902
+— the question had no answer, and `nan` was the right output. The bug was the
+sentence after it, not the number.
+
+**Second, and worse: 0.902 is not a fault-free number.** `scripts/66` computes it
+over episodes "where the injected fault never crossed threshold," and calls those
+healthy. They are not fault-free. That pool also contains episodes with no fault
+at all, outnumbered about 18 to 1 by episodes carrying a sub-threshold ramp. Every
+fault in this project is a monotone ramp, and a ramp raises autocorrelation by
+itself. Split by what was actually injected (`scripts/70`, new):
+
+| | no fault | benign ramp | sub ramp | pooled (C18) |
+|---|---|---|---|---|
+| T11 | 0.085 | 0.887 | 0.923 | 0.902 |
+| T5 | 0.435 | 0.656 | 0.825 | 0.784 |
+
+Monotone in injected severity, which is what it looks like when the ramp is
+supplying the correlation. On T11 the fault-free value is not distinguishable
+from zero: 0.085, interval −0.122 to 0.453, on 17 episodes.
+
+I wrote in `reports/WINDOW_SPACING.md` that "the correlation is real, not
+geometry." For the pool that document measures, that is true. For fault-free data
+it is false — 0.893 with overlap, 0.085 without. I checked the geometry objection
+carefully and then never checked whether the thing I was measuring was healthy
+data, which is the assumption the whole comparison rests on. The word "healthy"
+was doing work that `not crossed` does not support, and I wrote both.
+
+**What this does and does not change.** C04's use is untouched: it governs how
+detector performance is aggregated, performance is measured on episodes that
+contain faults, and within those the windows really are dependent. Bootstrapping
+over episodes stays right. What changes is the false-alarm side, which is a
+fault-free question — healthy sessions give more independent opportunity than the
+pooled figure implies, not less. And it changes what the rig has to be compared
+against, since Arm B injects nothing.
+
+**What I did not do:** I did not retarget P-R1 and P-R2. Their thresholds come
+from 0.902 and 0.784, and a 0.70 bar meant to sit "just below both" sits above
+both on the fault-free figures. Changing them is a scientific decision and it is
+mine to make, not something to patch in while fixing a script. The preregistration
+is marked BLOCKED with the three options written out in a new §11, and the
+numbers are left exactly as drafted. Nothing gets built against P-R1 until I pick
+one.
+
+**On Procedure 78 itself**, now that it has real numbers: 10 blocks per level
+cannot resolve the curve, and eight levels is not affordable — resolving eight
+needs about 153 blocks each, roughly 102 hours of recording. Five levels at 53
+blocks is about 22 hours and is what the procedure now says. The estimator ceiling
+is the part I cannot design around, and it applies to the neural numbers in this
+project too: every no-overlap figure here understates whatever correlation is
+really there. That direction makes my negative results look weaker than they are,
+so nothing already written becomes over-claimed by it, but it needs saying.
+
+The reproducibility audit caught something I would have missed: I had numbered the
+design script 70 and the severity script 71, and 70 reads 71's output. Swapped
+them. Added 13 tests and 3 mutants covering the new numerics — the cumsum window
+rewrite, the OU generator, the estimator ceiling, and one mutant that makes the
+inversion clamp instead of refusing, which is exactly what would have hidden the
+`nan` that started all this.

@@ -266,8 +266,9 @@ build it before knowing the outcome.
 Asking "does the rig match cortex, yes or no" invites the obvious objection that
 a camera is not a brain. Procedure 78 asks a better question. Instead of
 comparing one system against one other system, I impose a drift speed I control,
-sweep it across three orders of magnitude, and measure monitorability at each
-speed.
+sweep it across the range where the measurement still responds — a bit over two
+orders of magnitude, worked out in Procedure 78 — and measure monitorability at
+each speed.
 
 That produces a curve: **how well can an array be monitored, as a function of how
 fast it drifts**, with cortex marked as a single point on it. That is much harder
@@ -306,6 +307,50 @@ from those channels, and then I degrade the system in ways I control and log.
 I am not claiming a camera resembles a neuron. The claim under test is about a
 class of measurement problem, many channels drifting slowly, and not about
 biology. That limitation is real and I state it rather than defend against it.
+
+## What I committed to before building anything
+
+The whole point of writing predictions down first is that testing five things and
+reporting the one that worked looks identical on paper to predicting one thing
+correctly. `research/RIG_PREREGISTRATION.md` is what keeps those two apart, and
+it only works if it is committed to git before the first recording exists. The
+predictions are reproduced here so that somebody reading only these procedures
+can see what I was on the hook for. **The preregistration is the authority; if
+the two ever disagree, that document wins.**
+
+| # | Prediction | Threshold | Falsified if | Measured by |
+|---|---|---|---|---|
+| P-R1 | With no imposed drift, the rig's risk signal is serially correlated like cortex is | non-overlap lag-1 r **≥ 0.70** | median r below 0.70 | `scripts/66_window_spacing.py`, unchanged |
+| P-R2 | Averaging cannot rescue the rig either | effective independent samples **< 2** at every spacing | n_eff ≥ 2 at any spacing | same |
+| P-R3 | The silence gate fails on hardware too | **> 10%** of healthy rig episodes show a significant trend | 10% or fewer | Procedure 73 |
+| P-R4 | Ladder validity degrades as the baseline drifts, on hardware too | correlation **ρ < −0.4** between baseline error and ladder validity | ρ ≥ −0.4 | Procedure 74 |
+| P-R5 | The invariant-feature route fails again | invariant detector scores **worse** than the plain one | invariant scores better | Procedure 76 |
+| P-R6 | Faults I cause but did not design are harder than the ones I invented | AUC lower by **≥ 0.03** | gap under 0.03, or the wrong way | Procedure 75 |
+| P-R7 | Natural drift resembles at least one designed fault mode | nearest-mode match **above chance (25%)** | at or below chance | Procedure 77 |
+
+Every row has a useful outcome in both directions, which is the test of whether
+this is an experiment rather than a demonstration. P-R1 confirmed means the
+negative result generalises past cortex to sensor health monitoring in general;
+P-R1 falsified means the failure is neural-specific and the next attempt needs a
+neural-specific fix. P-R7 falsified is the sharpest of the lot: it would mean
+1,850 episodes of carefully built ground truth do not resemble what actually goes
+wrong, which belongs in the write-up as a headline rather than a limitation.
+
+**P-R2 is not independent of P-R1.** Effective sample size is a function of r and
+n, so a rig that satisfies one will almost certainly satisfy the other. It is
+listed separately because it is the quantity the conclusions rest on, not because
+it is a second piece of evidence. Counting it twice would inflate apparent
+support.
+
+> **(!) P-R1 and P-R2 are not settled yet.** Both take their thresholds from
+> claim C18's figures of 0.902 and 0.784, and those turn out to be pooled over
+> episodes carrying a sub-threshold *injected* fault ramp rather than measured on
+> fault-free recording. Fault-free, the same measurement gives 0.085 on T11 and
+> 0.435 on T5. Since the rig's natural-drift arm injects nothing, the fault-free
+> figures are the ones it has to be compared against, and a 0.70 bar meant to sit
+> just below both sits above both instead. `research/RIG_PREREGISTRATION.md` §11
+> sets out the three options and the decision is mine to make before the document
+> is frozen. **Nothing gets built against P-R1 until that is resolved.**
 
 ---
 
@@ -779,13 +824,39 @@ days so thermal state and dust can change. This measurement is the non-circular
 one, because I imposed nothing.
 
 **78.** Build the calibration curve. **This is the main measurement of the
-experiment.** Impose a slow brightness drift with a known
-time constant, sweep that constant across eight levels from 5 seconds to 2000
-seconds, and record 10 healthy blocks at each. Then plot autocorrelation and
-effective sample size against drift speed, and mark where the neural value falls
+experiment.** Impose a slow brightness drift with a known time constant, sweep
+that constant, record healthy blocks at each level, then plot autocorrelation and
+effective sample size against drift speed and mark where the neural value falls
 on that curve. This turns a yes-or-no prediction into a relationship, which is a
 better experiment: it says how monitorable an array is as a function of how fast
 it drifts, with cortex marked on it.
+
+The numbers to use are **5 levels log-spaced between 4 s and 811 s, with 53
+blocks at each** — about 22 hours of recording. Run `python3
+scripts/71_drift_sweep_design.py` to regenerate them;
+`reports/DRIFT_SWEEP_DESIGN.md` shows the working.
+
+That replaces what this procedure originally said, which was eight levels from
+5 s to 2000 s at 10 blocks each. Those were guesses, and working them out
+properly found three things worth knowing before any part is bought:
+
+- **Ten blocks per level cannot resolve the curve.** At 300 s per block the
+  measured autocorrelation has a 95% half-width of about 0.22 at 10 blocks,
+  against a step between adjacent levels of about 0.11. The half-width falls
+  only as one over the square root of the block count.
+- **Eight levels is not affordable.** Resolving eight levels needs roughly 153
+  blocks each, which is about 102 hours of recording. Fewer levels means a
+  bigger step, and the cost of resolving a step falls as its square — hence 5.
+- **The measurement has a ceiling I cannot design around.** A 300-second block
+  gives 10 non-overlapping windows, and the sample autocorrelation is badly
+  biased downward at 10 points: a signal whose true correlation is 0.999 reads
+  about 0.60. No imposed drift, however slow, pushes one block above that. Any
+  value near the ceiling gets reported with the ceiling beside it.
+
+The first two are schedule problems. The third is not, and it applies to the
+neural numbers already in this project as well as to the rig — every no-overlap
+figure here understates whatever correlation is really there. That direction
+makes the negative results look weaker than they are, not stronger.
 
 **79.** Sweep baseline signal quality across about 20 brightness levels, 10 short
 blocks each, and find where angular error stops responding. Then sweep heading
