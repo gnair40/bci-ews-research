@@ -71,12 +71,49 @@ of on what actually happened, and the false alarm rate cannot be worked out at
 all. Those two numbers, how early the warning comes and how often it is wrong,
 are the only ones that decide whether a warning system is worth having. Both only
 become measurable if the person running the experiment controls when the
-degradation starts and records it in advance. Building that system, and the test
-that goes with it, is what this project is. It matters because these devices are
-moving toward real clinical use (Hughes et al.; Karpowicz et al.; Pun et al.). If
-you cannot tell whether the device is still working, you cannot fully trust it,
-and knowing when it needs attention and why is part of making one somebody can
-rely on every day.
+degradation starts and records it in advance.
+
+I am working from the recordings Pun et al. released alongside their instability
+study, archived publicly on Dryad under a CC0 license. They cover two BrainGate
+participants, T11 and T5, across 21 trial days and 3,301 cursor trials, with T11
+recorded roughly two years after implant and T5 closer to six. That is real
+chronic human data from people whose arrays had already been drifting for years,
+which is the setting the problem actually lives in rather than a simulation of
+it, and because the files are public anyone can run the same test on the same
+signal and get the same answer. What the recordings do not carry is an onset, so
+I add one. I apply degradations to the recorded neural features whose start
+times I draw and lock before any detector exists, which gives every episode a
+start time I know because I chose it, on a signal I did not invent. The
+implication is that lead time and false alarm rate stop being estimates that
+depend on an analyst's judgment call and become quantities two methods can be
+compared on directly. That is what turns decoder health monitoring from a claim
+into a measurement, and it is why I think the benchmark matters more than any
+single detector that might pass it. It also means a negative answer is worth
+having: if the warning cannot be delivered early enough to be useful, or cannot
+be delivered without crying wolf, that is a limit the field should know before
+someone ships a monitor on the assumption it works.
+
+This matters because implanted brain-computer interfaces are leaving the research
+lab (Hughes et al.; Karpowicz et al.; Pun et al.), and the people they are aimed
+at are not a small group. About 5.4 million Americans, roughly one in fifty, live
+with paralysis, 41.8% of them are unable to work, and stroke and spinal cord
+injury account for 61% of it (Armour et al.). In more than twenty years of the
+BrainGate trials, fewer than two dozen people have received an implant, and the
+bottleneck is not only surgical. Across 14 participants and 20 arrays, the share
+of electrodes recording usable activity fell from 41% in the first three months
+to 34% in the last, and 3 of the 20 arrays stopped producing consistent decoding
+signals altogether (Hahn et al.). Keeping a decoder working through that means
+recalibration, and a 2026 review of 58 studies found it still generally takes a
+specialist research team (Swanson et al.). Today that happens on a schedule,
+which means people sit through sessions they did not need and keep using a
+decoder that has already drifted between them. A warning that fired on evidence
+instead of on a calendar would give that time back and catch the failures the
+calendar misses. Underneath that is a question every regulated medical device has
+to answer before it can be one: how do you know it is still working? For decoders
+there is no accepted answer, and no accepted way to check whether a proposed
+answer is any good. A field cannot certify what it cannot measure, so this is a
+prerequisite for these devices reaching the people who need them, not a
+refinement to add afterward.
 
 ---
 
