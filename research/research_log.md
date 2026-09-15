@@ -4807,3 +4807,39 @@ float32 can represent. The threshold was wrong, not the code.
 `rig/README.md` records what that check covers and, more usefully, what it does
 not: the camera, the display-to-camera lag, exposure and gain, and anything
 optical. Those need hardware.
+
+## 15 September 2026 — I could not explain what my own experiment tests
+
+Asked what the physical procedure is actually testing, and going back to the
+document I could not point at an answer. The physical section opened with "why I
+am building it" and "the design in one sentence," which describe what gets built
+and not what gets measured. No hypothesis. No statement of what either outcome
+would mean. Eighty-four procedures and none of them said what the point was.
+
+That is worth recording as a writing failure rather than quietly patching,
+because the confusion was correct. If I cannot state what an experiment tests, I
+am not ready to present it, and a judge would find that in about one question.
+
+Rewrote the opening of the physical section around the question instead of the
+apparatus. The main question is whether the failure I found is a fact about
+brains or a fact about any sensor that drifts slowly. I cannot answer it now
+because I have two arrays in two people and no second kind of system to compare
+against. The rig is that second system, chosen to share the one property that
+might be causing the problem, many channels drifting slowly, and to share nothing
+else. Then the identical analysis runs on it. There is now a table saying what
+each possible outcome would mean, including the one where the rig cannot be made
+comparable at all.
+
+**The bigger fix: Procedure 78 is the actual experiment and I had written it as
+one more sweep.** Asking "does the rig match cortex, yes or no" invites the
+obvious objection that a camera is not a brain. Sweeping an imposed drift speed
+across three orders of magnitude and measuring monitorability at each one
+produces a curve instead, with cortex as a point on it. That is much harder to
+argue with, and it turns the negative result into something a future array can be
+evaluated against before anyone builds it. The document now says Procedure 78 is
+the centerpiece and that everything before it exists to make its measurement
+trustworthy.
+
+Also added a short section saying what I am not claiming, which is that a camera
+resembles a neuron. The claim is about a class of measurement problem. Better to
+state that plainly than to defend it when challenged.

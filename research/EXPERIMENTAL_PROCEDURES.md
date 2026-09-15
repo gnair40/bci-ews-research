@@ -230,18 +230,82 @@ files, so a figure that stops matching its source is something I find out about.
 Everything above analyzes recordings somebody else made. The rest of this
 document is the part I build.
 
-**Why I am building it.** My computational work can tell me whether a monitor
-works on these two particular electrode arrays. It cannot tell me whether what I
-found is a fact about brains or a fact about any sensor array with many channels
-that drifts slowly, because there is no second kind of array in the dataset. It
-also cannot tell me whether degradations I wrote as equations resemble real
-physical degradation, because no real fault was ever observed. A physical rig
-answers both, and it needs no human participants.
+## What this experiment tests
 
-**The design in one sentence.** A camera watches a screen showing a pattern that
-encodes a known direction; each region of the camera image acts as one channel;
-a decoder predicts the direction from those channels; and then I degrade the
-system in ways I control and log.
+**The main question: is what I found a fact about brains, or a fact about any
+sensor that drifts slowly?**
+
+My computational result rests on one measurement. Within a recording session, my
+monitor's readings barely vary independently of each other. A session that looks
+like 55 measurements behaves like roughly one measurement taken 55 times. That is
+why averaging does not help, why no decision rule rescues it, and why nothing
+passes the gates.
+
+But I found that in two electrode arrays, in two people. That is the entire
+evidence base. If somebody asks whether it is specific to cortex or just what
+happens to any drifting sensor, I cannot answer, because there is no second kind
+of system in the dataset to compare against.
+
+**So I build one.** The rig is a completely different physical system, light and
+a camera rather than neurons and electrodes, that shares the one property that
+might be causing the problem: many channels, drifting slowly. Then I run the
+identical analysis on it, with no change to any script.
+
+| If the rig behaves like this | Then the conclusion is |
+|---|---|
+| About one independent measurement per session, the same as cortex | The problem is not neurons. It is the shape of this kind of measurement problem, and the finding applies to sensor health monitoring in general. |
+| Many independent measurements per session | Something specific to cortex causes it, and the next attempt at a neural monitor needs a neural-specific fix rather than better statistics. |
+| Cannot be made comparable to cortex at all (Procedure 71) | The analogy has a limit and I found where it is. |
+
+**Both of the first two answers are useful.** That is the test of whether this is
+a real experiment rather than a demonstration, and it is why I am willing to
+build it before knowing the outcome.
+
+### The strong version of that question
+
+Asking "does the rig match cortex, yes or no" invites the obvious objection that
+a camera is not a brain. Procedure 78 asks a better question. Instead of
+comparing one system against one other system, I impose a drift speed I control,
+sweep it across three orders of magnitude, and measure monitorability at each
+speed.
+
+That produces a curve: **how well can an array be monitored, as a function of how
+fast it drifts**, with cortex marked as a single point on it. That is much harder
+to argue with than a binary comparison, and it turns a negative result into
+something usable. A future array that drifts more slowly, or a different
+windowing scheme, can be placed on the same curve and evaluated before anybody
+builds it.
+
+Procedure 78 is the centerpiece of this experiment. Everything before it exists
+to make its measurement trustworthy.
+
+## Two further questions it answers
+
+**Are my injected degradations realistic?** All 1,850 of them are equations
+applied to recorded numbers, and nobody has checked whether real degradation
+resembles them. On the rig I can cause real faults, by loosening a connector,
+smudging the lens or warming the board, where I know the start time because I
+caused it but I did not design what the fault would look like. If those do not
+resemble the ones I invented, that is a finding about how fault benchmarks get
+built, including mine. Procedure 75.
+
+**Can I separate the session variables?** In the archived data, decoder error,
+trace noise, task geometry and several other properties all move together, and I
+had to withdraw a claim because I could not tell which one mattered. On the rig I
+can hold one fixed and vary the other, which is the manipulation recorded data
+cannot offer. Procedure 79.
+
+## The design in one sentence
+
+A camera watches a screen showing a pattern that encodes a known direction, each
+region of the camera image acts as one channel, a decoder predicts the direction
+from those channels, and then I degrade the system in ways I control and log.
+
+## What I am not claiming
+
+I am not claiming a camera resembles a neuron. The claim under test is about a
+class of measurement problem, many channels drifting slowly, and not about
+biology. That limitation is real and I state it rather than defend against it.
 
 ---
 
@@ -714,7 +778,8 @@ healthy blocks across at least five separate days, powering the rig down between
 days so thermal state and dust can change. This measurement is the non-circular
 one, because I imposed nothing.
 
-**78.** Build the calibration curve. Impose a slow brightness drift with a known
+**78.** Build the calibration curve. **This is the main measurement of the
+experiment.** Impose a slow brightness drift with a known
 time constant, sweep that constant across eight levels from 5 seconds to 2000
 seconds, and record 10 healthy blocks at each. Then plot autocorrelation and
 effective sample size against drift speed, and mark where the neural value falls
