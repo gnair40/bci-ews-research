@@ -1,0 +1,92 @@
+{
+  "settings": {
+    "n": 8000,
+    "window": 1000,
+    "step": 50,
+    "smooth_sigma": 200.0,
+    "n_surrogates": 300,
+    "alpha": 0.05,
+    "seed": 0
+  },
+  "passed": true,
+  "results": {
+    "saddle_node": {
+      "label": "Saddle-node bifurcation",
+      "role": "POSITIVE control \u2014 CSD is present",
+      "indicators": {
+        "variance": {
+          "tau": 0.5507598784194528,
+          "p_two_sided": 0.006666666666666667,
+          "surrogate_tau_mean": -0.01592975346166835,
+          "surrogate_tau_sd": 0.22812667272360665,
+          "n_surrogates": 300,
+          "fired": true,
+          "expected": "rise",
+          "as_expected": true
+        },
+        "ar1": {
+          "tau": 0.5499493414387031,
+          "p_two_sided": 0.013333333333333334,
+          "surrogate_tau_mean": -0.024701789935832483,
+          "surrogate_tau_sd": 0.24021254358491773,
+          "n_surrogates": 300,
+          "fired": true,
+          "expected": "rise",
+          "as_expected": true
+        }
+      }
+    },
+    "monotonic_drift": {
+      "label": "Monotonic decline + noise",
+      "role": "NEGATIVE control \u2014 no bifurcation",
+      "indicators": {
+        "variance": {
+          "tau": -0.21965552178318135,
+          "p_two_sided": 0.42333333333333334,
+          "surrogate_tau_mean": -0.017670381627828434,
+          "surrogate_tau_sd": 0.24858114949418417,
+          "n_surrogates": 300,
+          "fired": false,
+          "expected": "flat",
+          "as_expected": true
+        },
+        "ar1": {
+          "tau": -0.2409321175278622,
+          "p_two_sided": 0.38666666666666666,
+          "surrogate_tau_mean": 0.00854238432961837,
+          "surrogate_tau_sd": 0.252791793491685,
+          "n_surrogates": 300,
+          "fired": false,
+          "expected": "flat",
+          "as_expected": true
+        }
+      }
+    },
+    "rising_noise": {
+      "label": "Rising noise, constant recovery rate",
+      "role": "NEGATIVE control \u2014 variance rises, system does not slow",
+      "indicators": {
+        "variance": {
+          "tau": 0.7213779128672746,
+          "p_two_sided": 0.0,
+          "surrogate_tau_mean": 0.016114826072272877,
+          "surrogate_tau_sd": 0.22945081171736115,
+          "n_surrogates": 300,
+          "fired": true,
+          "expected": "rise",
+          "as_expected": true
+        },
+        "ar1": {
+          "tau": -0.4074974670719352,
+          "p_two_sided": 0.13,
+          "surrogate_tau_mean": 0.012686254643701454,
+          "surrogate_tau_sd": 0.2577805504850527,
+          "n_surrogates": 300,
+          "fired": false,
+          "expected": "flat",
+          "as_expected": true
+        }
+      }
+    }
+  }
+}

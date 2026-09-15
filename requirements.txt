@@ -7,12 +7,46 @@
 # software. "Version drift" -- where a result changes because a library quietly
 # updated -- is a real and common source of irreproducible research.
 #
-# The >= means "this version or newer". Versions listed are the ones the project
-# has actually been run with (see DATASET_README.md section 10).
+# TWO KINDS OF LINE, AND THE DIFFERENCE MATTERS
+# ---------------------------------------------
+# The >= lines below say "this version or newer" and are the MINIMUM the code
+# needs. The exact versions every result in this repository was actually
+# produced with are listed underneath, and are what you should install if you
+# are trying to reproduce a number rather than just run the code.
+#
+# The reproducibility audit (scripts/55) checks that every imported package is
+# named here. It does NOT check that versions are pinned -- it says so itself --
+# so the exact list below closes that gap by hand.
 
 requests>=2.31      # downloading the dataset from Dryad's API over HTTPS
 numpy>=1.26         # fast numerical arrays; the foundation everything else uses
 pandas>=2.0         # tables with named columns (like a spreadsheet, in code)
-scipy>=1.11         # scientific computing; here specifically for reading .mat files
+scipy>=1.11         # scientific computing; .mat files, and the statistical tests
 h5py>=3.10          # reads MATLAB v7.3 files, which are secretly HDF5 files
 matplotlib>=3.8     # plotting
+
+# ---------------------------------------------------------------------------
+# EXACT VERSIONS EVERY COMMITTED RESULT WAS PRODUCED WITH
+# Recorded 6 September 2026, at commit ea6da24 (97/97 claims verified).
+# To reproduce exactly:  pip install -r requirements.txt --no-deps
+#                        then install the pinned set below.
+#
+#   Python   3.11.15
+#   requests    2.33.1
+#   numpy        2.4.6
+#   pandas       3.0.5
+#   scipy       1.17.1
+#   h5py        3.16.0
+#   matplotlib  3.11.1
+#
+# NOTE: research/procedures.md, Procedure 2, records a slightly different set
+# (pandas 3.0.5, numpy 2.4.6, scipy 1.17.1, matplotlib 3.11.1, h5py 3.16.0,
+# Python 3.11.15) captured on 25 August 2026. Those agree with the above. The
+# only package not listed there is requests, which is used solely by the
+# downloader and touches no result.
+# ---------------------------------------------------------------------------
+
+# Optional -- needed only to rebuild reports/PROJECT_AUDIT_2026-09-06.pdf.
+# Not imported by any script in scripts/, so the reproducibility audit does not
+# require it.
+# reportlab>=4.0

@@ -1,0 +1,42 @@
+{
+  "participant": "T11",
+  "n_days": 15,
+  "guard_vs_mean_activity": {
+    "rho": -0.06,
+    "p": 0.8445,
+    "n": 13,
+    "meets_predicted_0.7": false
+  },
+  "guard_vs_robust_dispersion": {
+    "rho": 0.247,
+    "p": 0.4154,
+    "n": 13,
+    "meets_predicted_0.7": false
+  },
+  "guard_vs_distribution_shift": {
+    "rho": 0.835,
+    "p": 0.0004,
+    "n": 13,
+    "meets_predicted_0.7": true
+  },
+  "mean_activity_vs_decoder_error": {
+    "rho": 0.22,
+    "p": 0.4706,
+    "n": 13
+  },
+  "robust_dispersion_vs_decoder_error": {
+    "rho": -0.368,
+    "p": 0.2159,
+    "n": 13
+  },
+  "distribution_shift_vs_decoder_error": {
+    "rho": -0.67,
+    "p": 0.0122,
+    "n": 13
+  },
+  "decoder_guard_vs_decoder_error": {
+    "rho": -0.72,
+    "p": 0.0055,
+    "n": 13
+  }
+}

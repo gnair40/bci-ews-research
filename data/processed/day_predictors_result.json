@@ -1,0 +1,101 @@
+{
+  "T11": [
+    {
+      "predictor": "P1_healthy_dispersion",
+      "predicted_sign": -1,
+      "spearman_rho": 0.203,
+      "p_value": 0.5053,
+      "n_days": 13,
+      "sign_as_predicted": false,
+      "significant_bonferroni": false,
+      "supports_mechanism": false
+    },
+    {
+      "predictor": "P2_mean_firing_rate",
+      "predicted_sign": 1,
+      "spearman_rho": -0.319,
+      "p_value": 0.2886,
+      "n_days": 13,
+      "sign_as_predicted": false,
+      "significant_bonferroni": false,
+      "supports_mechanism": false
+    },
+    {
+      "predictor": "P3_active_channels",
+      "predicted_sign": 1,
+      "spearman_rho": 0.459,
+      "p_value": 0.1145,
+      "n_days": 13,
+      "sign_as_predicted": true,
+      "significant_bonferroni": false,
+      "supports_mechanism": false
+    },
+    {
+      "predictor": "P4_within_day_drift",
+      "predicted_sign": -1,
+      "spearman_rho": 0.582,
+      "p_value": 0.0367,
+      "n_days": 13,
+      "sign_as_predicted": false,
+      "significant_bonferroni": false,
+      "supports_mechanism": false
+    },
+    {
+      "predictor": "P5_decoder_error",
+      "predicted_sign": -1,
+      "spearman_rho": -0.72,
+      "p_value": 0.0055,
+      "n_days": 13,
+      "sign_as_predicted": true,
+      "significant_bonferroni": true,
+      "supports_mechanism": true
+    }
+  ],
+  "T5": [
+    {
+      "predictor": "P1_healthy_dispersion",
+      "predicted_sign": -1,
+      "spearman_rho": -0.257,
+      "p_value": 0.6228,
+      "n_days": 6,
+      "sign_as_predicted": true,
+      "significant_bonferroni": false,
+      "supports_mechanism": false
+    },
+    {
+      "predictor": "P2_mean_firing_rate",
+      "predicted_sign": 1,
+      "spearman_rho": -0.257,
+      "p_value": 0.6228,
+      "n_days": 6,
+      "sign_as_predicted": false,
+      "significant_bonferroni": false,
+      "supports_mechanism": false
+    },
+    {
+      "predictor": "P3_active_channels",
+      "status": "not computable",
+      "predicted_sign": 1
+    },
+    {
+      "predictor": "P4_within_day_drift",
+      "predicted_sign": -1,
+      "spearman_rho": -0.314,
+      "p_value": 0.5441,
+      "n_days": 6,
+      "sign_as_predicted": true,
+      "significant_bonferroni": false,
+      "supports_mechanism": false
+    },
+    {
+      "predictor": "P5_decoder_error",
+      "predicted_sign": -1,
+      "spearman_rho": -0.829,
+      "p_value": 0.0416,
+      "n_days": 6,
+      "sign_as_predicted": true,
+      "significant_bonferroni": false,
+      "supports_mechanism": false
+    }
+  ]
+}

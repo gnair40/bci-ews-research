@@ -132,6 +132,18 @@ def participant_colors(parts) -> dict:
 # FIGURES
 # ---------------------------------------------------------------------------
 
+def main_only(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Keep only the main experimental cohort.
+
+    The deposit also contains 'T11(additional)' blocks -- a personal-use
+    (web-browsing) session and a random-target session, run as alternative
+    reference tasks. They are different tasks on different days, so mixing them
+    into a performance-over-time series would compare unlike things.
+    """
+    return df[df["cohort"] == "main"] if "cohort" in df else df
+
+
 def fig_session_timeline(blocks: pd.DataFrame, colors: dict) -> str:
     """
     When did recording sessions happen? Dot plot along the trial-day axis.
@@ -165,15 +177,24 @@ def fig_performance_over_time(trials: pd.DataFrame, colors: dict) -> str:
     """
     Does performance change across sessions?
 
-    Form choice: a measure over ordered time -> line chart, with per-session
-    points shown. Median (not mean) because angle error is bounded 0-180 and
-    can be skewed; the median is less pulled around by a few bad trials.
-    Shaded band = interquartile range, showing spread without a second axis.
+    Form choice: a measure over ordered time -> line chart. The two
+    participants are separated by roughly 1,400 trial days (T11 is on days
+    658-800, T5 on days 2121-2149), so plotting both against one shared axis
+    wastes most of the canvas on empty space and squashes the data. Small
+    multiples -- one panel per participant, each with its own x-range -- show
+    both properly. This is the standard answer to "two series that do not share
+    a scale"; the alternative, a second x-axis, is never correct.
+
+    Median rather than mean, because angle error is bounded at 0-180 and skewed;
+    the shaded band is the interquartile range, showing spread without adding
+    an axis.
     """
     if "angle_error_deg" not in trials:
         return ""
-    fig, ax = plt.subplots(figsize=(10, 4.5))
-    for p in sorted(trials["participant"].unique()):
+    parts = sorted(trials["participant"].unique())
+    fig, axes = plt.subplots(1, len(parts), figsize=(6.2 * len(parts), 4.2),
+                             squeeze=False)
+    for ax, p in zip(axes[0], parts):
         sub = trials[trials["participant"] == p]
         g = sub.groupby("trial_day")["angle_error_deg"]
         med, q1, q3 = g.median(), g.quantile(0.25), g.quantile(0.75)
@@ -182,11 +203,46 @@ def fig_performance_over_time(trials: pd.DataFrame, colors: dict) -> str:
                         linewidth=0)
         ax.plot(days, med.values, color=colors[p], linewidth=2,
                 marker="o", markersize=5, markeredgecolor="white",
-                markeredgewidth=1, label=f"{p} (median)")
-    style_axes(ax, "Angle error per session — lower is better",
-               "Trial day", "Angle error (degrees)")
-    ax.legend(frameon=False, fontsize=9, labelcolor=INK)
+                markeredgewidth=1)
+        span = int(days.max() - days.min())
+        style_axes(ax, f"{p} — {len(days)} sessions over {span} days",
+                   "Trial day", "Median angle error (degrees)")
+        ax.set_ylim(0, 180)
+        ax.set_yticks([0, 45, 90, 135, 180])
+    fig.suptitle("Angle error per session — lower is better  (band = interquartile range)",
+                 fontsize=12, color=INK, x=0.02, ha="left", y=1.06)
+    fig.tight_layout()
     return save_fig(fig, "02_performance_over_time.png")
+
+
+def fig_percent_correct(blocks: pd.DataFrame, colors: dict) -> str:
+    """
+    Block-level success rate over time.
+
+    percentCorrect is recorded once per block by the dataset authors, so it is
+    an independent check on the trial-level angle-error picture: if the two
+    disagree, one of them is being computed or interpreted wrongly.
+
+    Form choice: same small-multiples treatment, for the same reason.
+    """
+    if "percent_correct" not in blocks:
+        return ""
+    parts = sorted(blocks["participant"].unique())
+    fig, axes = plt.subplots(1, len(parts), figsize=(6.2 * len(parts), 4.2),
+                             squeeze=False)
+    for ax, p in zip(axes[0], parts):
+        sub = blocks[blocks["participant"] == p].sort_values("trial_day")
+        ax.scatter(sub["trial_day"], sub["percent_correct"], s=45,
+                   color=colors[p], edgecolor="white", linewidth=1, zorder=3)
+        g = sub.groupby("trial_day")["percent_correct"].mean()
+        ax.plot(g.index, g.values, color=colors[p], linewidth=2, alpha=0.75)
+        style_axes(ax, f"{p} — success rate per block", "Trial day",
+                   "percentCorrect (%)")
+        ax.set_ylim(0, 105)
+    fig.suptitle("Block success rate over time — higher is better",
+                 fontsize=12, color=INK, x=0.02, ha="left", y=1.06)
+    fig.tight_layout()
+    return save_fig(fig, "06_percent_correct.png")
 
 
 def fig_error_distribution(trials: pd.DataFrame, colors: dict) -> str:
@@ -211,7 +267,8 @@ def fig_error_distribution(trials: pd.DataFrame, colors: dict) -> str:
                    "Angle error (degrees)", "Trials")
         ax.set_xticks([0, 45, 90, 135, 180])
     fig.suptitle("Distribution of per-trial angle error", fontsize=12,
-                 color=INK, x=0.02, ha="left")
+                 color=INK, x=0.02, ha="left", y=1.06)
+    fig.tight_layout()
     return save_fig(fig, "03_error_distribution.png")
 
 
@@ -380,6 +437,17 @@ def build_report(ds, figs: dict, root: Path) -> str:
 
 {md_table(tasks) if len(tasks) else "_No task names recovered from task.mat._"}
 
+### Cohorts
+
+{md_table(blocks.groupby(["participant", "cohort"]).agg(
+    sessions=("trial_day", "nunique"), blocks=("block_id", "count"),
+    trials=("n_trials", "sum")).reset_index()) if "cohort" in blocks else ""}
+
+> `main` is the primary cursor-control data. The other cohorts are alternative
+> reference tasks for T11 (a personal-use web-browsing session and a
+> random-target session). The figures below use `main` only, because comparing
+> performance across different tasks over time would compare unlike things.
+
 ---
 
 ## 2. What the observational unit is — *Computed*
@@ -546,12 +614,14 @@ def main() -> int:
 
     colors = participant_colors(ds.blocks["participant"].unique())
     print("\nBuilding figures:")
+    mblocks, mtrials = main_only(ds.blocks), main_only(ds.trials)
     figs = {
-        "Recording sessions over time": fig_session_timeline(ds.blocks, colors),
-        "Angle error per session": fig_performance_over_time(ds.trials, colors),
-        "Distribution of angle error": fig_error_distribution(ds.trials, colors),
+        "Recording sessions over time": fig_session_timeline(mblocks, colors),
+        "Angle error per session": fig_performance_over_time(mtrials, colors),
+        "Distribution of angle error": fig_error_distribution(mtrials, colors),
         "Missing values": fig_missingness(ds.trials),
-        "Trials per session": fig_trials_per_session(ds.blocks, colors),
+        "Trials per session": fig_trials_per_session(mblocks, colors),
+        "Block success rate over time": fig_percent_correct(mblocks, colors),
     }
 
     args.out.parent.mkdir(parents=True, exist_ok=True)

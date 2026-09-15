@@ -1,0 +1,5 @@
+participant,draw,n_windows,minutes,auc_mean,auc_sd,repeats
+T5,contiguous,10,1.2,0.7303,0.0126,5
+T5,contiguous,20,2.1,0.7329,0.0061,5
+T5,contiguous,40,3.8,0.7398,0.0018,5
+T5,all-pooled,211,18.0,0.7388,0.0,1

@@ -1,0 +1,16 @@
+{
+  "written_utc": "2026-08-28T15:23:47+00:00",
+  "git_commit": "9c1279e3739fae0110906e1b7918a2165cb39b4e",
+  "detector": "decoder_guard_joint",
+  "spec_sha256": "6c8951249c91a5d50a53596fa7ffcdbcda275d71cac724af2fdda4bc19249413",
+  "status": "EXPLORATORY",
+  "why_exploratory": "Developed after the 48-configuration benchmark had been read. The diagnosis it answers (profile fires 40.6% during healthy vs 5.4% during faults) was measured from fault labels, so although the FIX uses no labels - the four components are modelled jointly on healthy data only - the DECISION TO MAKE that fix was informed by outcomes. That is development, not confirmation, and calling it confirmation would be false.",
+  "claim_recorded_before_results": "Modelling the four components jointly, rather than taking their maximum, will reduce the false-alarm rate at matched detection, because healthy drift has a characteristic joint signature that a max rule cannot represent.",
+  "what_would_falsify_it": "No reduction in false alarms at matched detection rate on either participant, or a silence gate no better than decoder_guard v1.",
+  "confirmatory_test_still_owed": "A third participant, or a dataset this project has not touched. T11 and T5 have both been used for development and cannot serve.",
+  "clean_out_of_sample_check_available_now": "The task-change test (scripts/25) was never used to develop anything, so running v2 through it is genuinely out of sample for that property.",
+  "results_files_at_time_of_writing": {
+    "data/processed/episode_scores_local.csv": 1787883798.9817102,
+    "data/processed/episode_scores_T5_local.csv": 1787883567.8457155
+  }
+}
