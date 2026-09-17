@@ -5,11 +5,16 @@
 > position, because the difference between it and what replaced it is itself part
 > of the research record.
 >
-> The current plan is in two files:
+> **This pointer was itself out of date and was corrected on 17 September 2026.**
+> The submission document is now
+> **`research/RESEARCH_PLAN_2026-09-15.md`**. See `research/README.md` for what
+> every document in this folder is. The two files this note originally pointed to
+> are still worth reading, in this order:
 > - **`research/PROJECT_DEFINITION.md`** — what the final product is, why, and the
->   critical comparison of four possible project framings. Read this first.
-> - **`research/ISEF_RESEARCH_PLAN.md`** — the same content mapped onto the ISEF
->   Research Plan form's structure.
+>   critical comparison of four possible project framings.
+> - **`research/ISEF_RESEARCH_PLAN.md`** — the earlier full-length draft mapped
+>   onto the form, superseded as the submission document but longer in several
+>   sections.
 >
 > **What changed and why:** the original question — *can early-warning signals
 > detect impending deterioration before performance degrades?* — was tested on the

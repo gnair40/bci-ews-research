@@ -4969,3 +4969,20 @@ done.
 The AI subsection is drafted from what actually happened rather than left blank,
 but it is marked as needing the researcher's own reading and sign-off before
 submission. A disclosure that an AI wrote about itself is not a disclosure.
+
+## 17 September 2026 — Four documents claimed to be the plan
+
+While checking what was left to do, found that `research/` holds four
+plan-shaped documents and nothing in the repository says which one is the
+submission. `research_plan.md` carried a pointer to the "current plan" that was
+written on 26 August and had been wrong since 15 September. `ISEF_RESEARCH_PLAN.md`
+still describes itself as a working draft with no note that a newer submission
+document exists.
+
+This is a real hazard rather than untidiness. The repository is public, so a
+judge can browse it, and under deadline pressure the wrong file is easy to open.
+Wrote `research/README.md` as a map of every document in the folder and corrected
+the stale pointer. Did not retire `ISEF_RESEARCH_PLAN.md`: it carries longer
+treatments of several sections than the September submission does, and whether it
+becomes the December draft or is retired is a decision to make rather than
+something to settle while cleaning up.
