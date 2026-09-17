@@ -4918,3 +4918,54 @@ them. Added 13 tests and 3 mutants covering the new numerics — the cumsum wind
 rewrite, the OU generator, the estimator ceiling, and one mutant that makes the
 inversion clamp instead of refusing, which is exactly what would have hidden the
 `nan` that started all this.
+
+## 17 September 2026 — Rewrote the research plan as a formal document
+
+Converted the whole research plan to third person. It had been written in the
+first person, which reads as a personal account rather than a research report,
+and the ISEF form wants the latter. Nothing about the substance changed; the
+voice did.
+
+**Section C was 645 lines of command-by-command tutorial, and that is the wrong
+content for the form.** The form asks Section C for the experimental design and
+the methods of data collection, at the level a reviewer reads. What was there was
+a walkthrough for somebody sitting at a keyboard who had never used a terminal.
+Both are worth having, but not in the same document.
+
+Before moving anything I checked whether it was a duplicate of
+`EXPERIMENTAL_PROCEDURES.md`, and it was not: the plan's Section C carried 51
+script commands that appear nowhere else. Deleting it would have destroyed the
+only step-by-step record of most of the computational pipeline. It moved verbatim
+to `research/REPLICATION_GUIDE.md`, kept in the first person, since it is a
+working document rather than a formal one. Section C now describes the design in
+eleven stages and points there.
+
+**Moving it broke a gate, quietly, which is the interesting part.**
+`69_command_check.py` scans documents for runnable commands and hands each to its
+own argument parser. Its document list was hardcoded to four files. After the
+move it still reported PASS — but on 19 commands instead of 69. A gate that
+passes while checking a third of what it used to check is worse than one that
+fails, because the PASS is what gets read.
+
+It also turned out the list had already gone stale before today:
+`EXPERIMENTAL_PROCEDURES.md` was written after it and never added, so its 8
+commands had never been checked at all. Replaced the hardcoded list with
+discovery over `research/*.md` and `reports/*.md` plus `README.md`. Coverage is
+now 74 commands, up from the 69 that were being checked before the move and the
+19 after it. The lesson generalises: a gate whose scope is a hand-maintained list
+will silently shrink, and nothing in this project was watching for that.
+
+**Other changes to the plan.** Materials became a numbered list, which is what
+the form's own instruction asks for. Data Analysis was expanded substantially —
+it previously described the statistical principles but never said what was
+actually being analysed, never defined the five gates, and said nothing at all
+about how the rig data would be analysed, which is half the experiment. The
+bibliography moved from MLA to APA, with years added to every in-text citation
+and the dataset now cited separately from the paper that describes it. Author
+lists are still abbreviated to the first author; APA does not allow that in a
+reference list, so expanding them is on the pre-submission checklist rather than
+done.
+
+The AI subsection is drafted from what actually happened rather than left blank,
+but it is marked as needing the researcher's own reading and sign-off before
+submission. A disclosure that an AI wrote about itself is not a disclosure.

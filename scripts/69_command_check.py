@@ -47,12 +47,22 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 
-DOCS = [
-    "research/RIG_PROCEDURE.md",
-    "research/RESEARCH_PLAN_2026-09-15.md",
-    "research/procedures.md",
-    "README.md",
-]
+def documents() -> list[str]:
+    """Every markdown document that could carry a runnable command.
+
+    This used to be a hardcoded list of four files. That list went stale without
+    anything noticing: `research/EXPERIMENTAL_PROCEDURES.md` was written after it
+    and never added, so its commands went unchecked, and moving the replication
+    steps into `research/REPLICATION_GUIDE.md` silently dropped coverage from 69
+    commands to 19. Discovering the documents instead means a new document is
+    covered the moment it exists, which is the behaviour a gate needs.
+    """
+    found = sorted(str(q.relative_to(REPO)) for q in (REPO / "research").glob("*.md"))
+    found += sorted(str(q.relative_to(REPO)) for q in (REPO / "reports").glob("*.md"))
+    return ["README.md"] + found
+
+
+DOCS = documents()
 
 # Commands carrying a placeholder rather than a real argument.
 PLACEHOLDER = re.compile(r"[\[\]<>{}]|PATH|NAME|\.\.\.")
