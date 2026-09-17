@@ -5056,3 +5056,44 @@ other raw-data scripts. Saying so rather than implying the sweep was complete.
 One inherent limit worth recording: `DATASET_EXPLORATION.md` carries a generation
 timestamp, so it can never be byte-identical across runs. Everything else in it
 now is.
+
+## 17 September 2026 — The full figure check, and one I am not deciding alone
+
+Ran `tools/figure_freshness.py --all`, which covers the five scripts that need
+`data/raw` and was the gap left open earlier. Two results.
+
+**`10_mindful_reproduction.png` is clean.** That was the one I had flagged as
+unchecked when the earlier sweep was killed mid-run. The published-baseline
+reproduction matches its script.
+
+**`09_ews_power_sweep.png` does not match, and this one is not mine to fix.**
+The committed `data/processed/ews_power_sweep.csv` was produced on a grid of
+windows 800/1600/3000/5000 crossed with smoothing sigmas 400/1000/2000. The
+script's defaults are windows 400/800/1600/3000 crossed with sigmas 100/400/1000,
+so the documented bare command produces a different grid — the fourth artifact
+found today that was made by an invocation nobody wrote down.
+
+The computation itself is sound: the six settings the two grids share agree
+exactly, to the digit, and the seeds are fixed (`default_rng(10_000 + seed)`), so
+none of this is randomness.
+
+The difference from the other three is that fixing it is a scientific choice, not
+a clerical one. Regenerating on the defaults would throw away the longest window
+(5000) and the heaviest smoothing (2000), which are the settings that speak to
+whether low power is a detector fault or a record-length limit. Changing the
+defaults to the committed grid would throw away the shortest window and the
+lightest smoothing. Both grids are defensible and they answer slightly different
+questions, so I have left the committed data untouched and recorded the exact
+invocation that reproduces it in `REPLICATION_GUIDE.md`, with the choice marked
+for me to make. The artifact is now reproducible either way; what is open is
+which grid the project keeps.
+
+**Fixed a flaw in the tool that I had predicted out loud and should have fixed
+before running it.** Redrawing a figure means running the script that draws it,
+and several of those also write into `data/processed` on the way past. The first
+version backed up only the PNGs, so it quietly rewrote those data files — a tool
+whose own docstring says it reports rather than decides has no business silently
+modifying tracked data. It now backs up and restores `data/processed` too, and
+reports which data files a redraw would have changed, since a committed data file
+that moves when its producer is rerun is the same defect as a stale figure. That
+is how the power-sweep grid surfaced at all.

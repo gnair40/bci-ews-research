@@ -33,6 +33,16 @@ alternatives do not work:
 So the only honest check is to redraw and compare, and that is too slow to gate
 every commit. It is a tool you run deliberately.
 
+IT TOUCHES MORE THAN FIGURES
+----------------------------
+Redrawing a figure means running the script that draws it, and several of those
+scripts also write CSV and JSON into data/processed on the way past. The first
+version of this tool backed up only the PNGs, so it quietly left those rewritten
+-- a tool whose docstring says it reports rather than decides has no business
+silently modifying tracked data. It now backs up and restores data/processed too,
+and reports which files the redraw would have changed, since that is a finding in
+its own right rather than a side effect to hide.
+
 A CAVEAT WORTH STATING
 ----------------------
 A mismatch means the figure and its script disagree HERE. A different matplotlib
@@ -84,10 +94,18 @@ def main() -> int:
         print("--all given but data/raw is missing; run the download first")
         return 2
 
+    PROC = REPO / "data" / "processed"
     before = {p.name: sha(p) for p in sorted(FIGS.glob("*.png"))}
+    data_before = {p.name: sha(p) for p in sorted(PROC.glob("*")) if p.is_file()}
+
     backup = Path(tempfile.mkdtemp(prefix="figfresh-"))
-    for p in FIGS.glob("*.png"):
-        shutil.copy2(p, backup / p.name)
+    (backup / "figs").mkdir()
+    (backup / "proc").mkdir()
+    for q in FIGS.glob("*.png"):
+        shutil.copy2(q, backup / "figs" / q.name)
+    for q in PROC.glob("*"):
+        if q.is_file():
+            shutil.copy2(q, backup / "proc" / q.name)
 
     ran, failed = [], []
     try:
@@ -100,11 +118,16 @@ def main() -> int:
         stale = sorted(n for n, h in after.items()
                        if n in before and before[n] != h)
         added = sorted(set(after) - set(before))
+        data_after = {p.name: sha(p) for p in sorted(PROC.glob("*")) if p.is_file()}
+        data_stale = sorted(n for n, h in data_after.items()
+                            if n in data_before and data_before[n] != h)
     finally:
-        # Always put the committed figures back. This tool reports; it does not
-        # decide to overwrite tracked artifacts.
-        for p in backup.glob("*.png"):
-            shutil.copy2(p, FIGS / p.name)
+        # Always put everything back. This tool reports; it does not decide to
+        # overwrite tracked artifacts, figures or data.
+        for q in (backup / "figs").glob("*.png"):
+            shutil.copy2(q, FIGS / q.name)
+        for q in (backup / "proc").glob("*"):
+            shutil.copy2(q, PROC / q.name)
         shutil.rmtree(backup, ignore_errors=True)
 
     print(f"redrew {len(ran)} script(s)"
@@ -122,12 +145,18 @@ def main() -> int:
             print(f"  {n}")
         print("\nRegenerate and commit, after checking the difference is a real\n"
               "staleness and not a library-version change.")
+    if data_stale:
+        print("\nredrawing also rewrote these data files (restored):")
+        for n in data_stale:
+            print(f"  {n}")
+        print("\nA committed data file that changes when its producer is rerun is\n"
+              "the same defect as a stale figure. Check each one.")
     if failed:
         print("\nA script that would not run has not been checked. That is a gap,\n"
               "not a pass.")
 
-    ok = not stale and not failed
-    print("\n" + ("PASS — every figure checked matches its script"
+    ok = not stale and not failed and not data_stale
+    print("\n" + ("PASS — every figure and data file checked matches its script"
                   if ok else "PROBLEM — see above"))
     return 0 if ok else 1
 

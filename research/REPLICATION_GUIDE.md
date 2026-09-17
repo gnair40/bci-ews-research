@@ -197,9 +197,17 @@ data would mean anything.
 
 **Procedure 15. Find out how much data the detector needs.**
 ```
-python3 scripts/07_ews_power_sweep.py
+python3 scripts/07_ews_power_sweep.py --windows 800 1600 3000 5000 --sigmas 400 1000 2000
 python3 scripts/08_record_length_check.py
 ```
+Those `--windows` and `--sigmas` values are not the script's defaults, and the
+committed `data/processed/ews_power_sweep.csv` was made with them. Running the
+command bare uses the defaults (`400 800 1600 3000` and `100 400 1000`) and
+produces a different grid, so the committed file would not come back. The six
+settings the two grids share agree exactly, so nothing here is in doubt except
+which grid to keep. **`[[RESEARCHER — decide which grid the project keeps.]]`**
+The committed one reaches a longer window (5000) and a heavier smoothing (2000);
+the defaults reach a shorter window (400) and a lighter one (100).
 The first one measures how reliably the detector finds a real effect at
 different recording lengths. The second checks whether the actual recordings are
 long enough. You should see detection go from about 0.25 up to 1.00 as the
