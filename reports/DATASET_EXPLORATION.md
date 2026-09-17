@@ -1,6 +1,6 @@
 # DATASET_EXPLORATION — what is actually in this dataset
 
-**Generated:** 2026-08-25 18:19 UTC by `scripts/04_explore_dataset.py`
+**Generated:** 2026-09-17 22:53 UTC by `scripts/04_explore_dataset.py`
 **Source:** `data/raw` (Dryad DOI 10.5061/dryad.n2z34tn5s)
 **Companion document:** `DATASET_README.md` (provenance, file structure, variable dictionary)
 
