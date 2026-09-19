@@ -34,7 +34,16 @@ So: one decision per session instead.
 | 783 | 0.388 | 111.5° | **yes** |
 | 800 | 0.441 | 95.7° | **yes** |
 
-**Correlation between the neural-only measure and performance: rho = -0.818, p = 0.0002.** The drift measure uses no performance data and no labels; it compares each session's neural covariance geometry against the first session.
+Raw correlation between the drift measure and performance: **rho = -0.818, p = 0.0002**.
+
+**That figure is inflated and must not be quoted alone.** Both series move with time, and any two series that trend together correlate whether or not one says anything about the other:
+
+| Check | Result | Verdict |
+|---|---|---|
+| Day vs drift measure | rho = -0.939, p = 0.0000 | both trend strongly |
+| Day vs performance error | rho = +0.750, p = 0.0013 | |
+| **Partial**, day regressed out of both | rho = -0.500, p = 0.0579 | **does not survive** |
+| **First differences** — does a change in drift accompany a change in error? | rho = -0.679, p = 0.0076 | survives |
 
 > **The array recovers after its first crossing, so the lead time depends on what counts as failure.** T11 crosses at day 727, comes back inside threshold, then collapses at day 758. **This is the exact problem that motivated building fault injection in the first place** — in observational data nobody recorded the onset, so the analyst picks it afterwards and the lead time moves with the choice. Both are reported below. Neither is the right answer; having to choose is the finding.
 
@@ -77,7 +86,16 @@ So: one decision per session instead.
 | 2135 | 0.620 | 76.2° | **yes** |
 | 2149 | 0.621 | 38.8° | no |
 
-**Correlation between the neural-only measure and performance: rho = -0.943, p = 0.0048.** The drift measure uses no performance data and no labels; it compares each session's neural covariance geometry against the first session.
+Raw correlation between the drift measure and performance: **rho = -0.943, p = 0.0048**.
+
+**That figure is inflated and must not be quoted alone.** Both series move with time, and any two series that trend together correlate whether or not one says anything about the other:
+
+| Check | Result | Verdict |
+|---|---|---|
+| Day vs drift measure | rho = -0.771, p = 0.0724 | both trend strongly |
+| Day vs performance error | rho = +0.829, p = 0.0416 | |
+| **Partial**, day regressed out of both | rho = -0.852, p = 0.0311 | survives |
+| **First differences** — does a change in drift accompany a change in error? | rho = +0.100, p = 0.8729 | **does not survive** |
 
 > **The array recovers after its first crossing, so the lead time depends on what counts as failure.** T5 crosses at day 2135, comes back inside threshold, then collapses at day None. **This is the exact problem that motivated building fault injection in the first place** — in observational data nobody recorded the onset, so the analyst picks it afterwards and the lead time moves with the choice. Both are reported below. Neither is the right answer; having to choose is the finding.
 
@@ -106,6 +124,31 @@ So: one decision per session instead.
 | Median lead time (T11) | **−20 s**, after the failure | **+31 days**, before it |
 | AUC needed at the budget | 0.9992 | not the binding constraint here |
 
-**On T11, warning when the drift measure falls below 0.55 fires 31 days before the failure, with no healthy session warned first.** Same neural signal, same participant, same recordings that gave −20 seconds within a session. The only thing that changed is how often the monitor is asked to decide.
+**On T11, warning when the drift measure falls below 0.55 fires 31 days before the failure, with no healthy session warned first.** Same participant, same recordings that gave −20 seconds within a session. What changed is how often the monitor is asked to decide.
+
+Two things that sentence does **not** say. It is one degradation event in one participant, so it describes what happened rather than what would happen again. And the association behind it does not survive both robustness checks on either participant — see the section below, which is the more important one.
 
 The tables also show the tradeoff has not vanished, it has moved somewhere affordable: a looser threshold buys more lead time and costs recalibrations nobody needed. That pair is reportable, which is the whole point — within a session it was not, because no threshold bought useful lead at any cost.
+
+## The robustness checks disagree, and that is the finding
+
+| | T11 | T5 |
+|---|---|---|
+| Raw rho | -0.818 | -0.943 |
+| Partial, day controlled | -0.500 (p = 0.058) | -0.852 (p = 0.031) |
+| First differences | -0.679 (p = 0.008) | +0.100 (p = 0.873) |
+| Sessions | 15 | 6 |
+
+**Neither participant passes both checks.** T11 survives first differences and falls just short on the partial; T5 is the other way round, and on differences its correlation does not merely vanish, it changes sign. At 15 sessions and 6, that is what a genuinely unsettled result looks like.
+
+So the honest statement is **not** “the drift measure predicts performance”. It is: *on two participants, a drift measure and a performance measure both decline over months; they correlate strongly while that shared trend is left in, and the association is weaker and inconsistent once it is removed.* The lead times above are a true description of what happened in T11's record. They are not yet evidence that it would happen again.
+
+## What would have to be true before this is a result
+
+1. **Preregister it.** Thresholds, failure definition and predicted lead time written down before another dataset is touched.
+2. **Settle whether the association survives controls**, on more than two participants. The partial and difference tests disagree here and neither sample can arbitrate.
+3. **Get a false-alarm rate that means something.** One degradation event on T11 cannot estimate how often this fires when nothing is wrong. That needs more participants, or the rig, where onsets are constructed — which is what the rig was built for.
+4. **Rule out the confounds.** `scripts/46_day_predictors.py` already exists to test whether a third factor moves both series.
+5. **Check it is not the baseline ageing.** The measure is relative to the first session, so anything monotone will correlate with it. A local re-baselining arm is the control.
+
+**Only the first is free.** The rest is December work, and it is a better use of the rig than the comparison it was originally built for, because it tests something that might work rather than confirming something that does not.

@@ -11,6 +11,20 @@
       "final_error_deg": 95.72055053710938,
       "spearman_rho": -0.8178571428571428,
       "spearman_p": 0.0001951365470631986,
+      "robustness": {
+        "raw_rho": -0.8178571428571428,
+        "raw_p": 0.0001951365470631986,
+        "day_vs_drift_rho": -0.9392857142857142,
+        "day_vs_drift_p": 2.0945801936685522e-07,
+        "day_vs_error_rho": 0.7499999999999999,
+        "day_vs_error_p": 0.0012808984509355362,
+        "partial_rho": -0.49960908314358865,
+        "partial_p": 0.057925886207865936,
+        "diff_rho": -0.6791208791208792,
+        "diff_p": 0.00756225703114548,
+        "survives_partial": false,
+        "survives_differences": true
+      },
       "by_failure_definition": {
         "first": {
           "failure_session_index": 9,
@@ -224,6 +238,20 @@
       "final_error_deg": 38.83126258850098,
       "spearman_rho": -0.942857142857143,
       "spearman_p": 0.004804664723032055,
+      "robustness": {
+        "raw_rho": -0.942857142857143,
+        "raw_p": 0.004804664723032055,
+        "day_vs_drift_rho": -0.7714285714285715,
+        "day_vs_drift_p": 0.07239650145772594,
+        "day_vs_error_rho": 0.8285714285714287,
+        "day_vs_error_p": 0.04156268221574335,
+        "partial_rho": -0.8523863560616161,
+        "partial_p": 0.03107644682058492,
+        "diff_rho": 0.09999999999999999,
+        "diff_p": 0.8728885715695384,
+        "survives_partial": true,
+        "survives_differences": false
+      },
       "by_failure_definition": {
         "first": {
           "failure_session_index": 4,

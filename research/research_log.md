@@ -5337,3 +5337,60 @@ within-session limit is neural-specific. Testing the session-level monitor is a
 better use of it, because constructed onsets are exactly what the false-alarm
 rate needs and there is only one degradation event on T11 to learn from. That is
 a December decision, not one to make while writing it up.
+
+## 19 September 2026 — Audited my own session-level result and found three errors
+
+Asked to re-check everything rather than re-run the gates. The gates all passed
+before this and all pass after, which is the point: none of what follows was
+detectable by them.
+
+**Error 1: I described the drift measure wrongly, twice, in the same sentence.**
+The report said the measure "uses no performance data and no labels; it compares
+each session's neural covariance geometry against the first session." Reading
+`scripts/05_check_decoder_stability.py`, `cosine_to_first_session` is nothing of
+the kind. It fits a linear map from the neural features to `cursorVel` in every
+block and compares the *fitted weights* across sessions. Not covariance
+geometry — fitted decoder weights. And not neural-only — it uses the decoder's
+own output stream.
+
+It is still free of task labels and performance measures, and both its inputs
+are logged automatically during ordinary use, so the deployability claim
+survives. But "neural-only" was load-bearing in how I presented this and it was
+wrong.
+
+**Error 2, and the one that matters: I never ran the control I had flagged.**
+I wrote "both curves move with time; that the neural measure leads performance
+is consistent with a common cause" into the limitations and then quoted
+rho = −0.818 as though that had been dealt with. It had not. Running it:
+
+| | T11 | T5 |
+|---|---|---|
+| Raw rho | −0.818 | −0.943 |
+| Day vs drift measure | −0.939 | −0.771 |
+| Day vs error | +0.750 | +0.829 |
+| **Partial, day controlled** | **−0.500 (p = 0.058)** | −0.852 (p = 0.031) |
+| **First differences** | −0.679 (p = 0.008) | **+0.100 (p = 0.873)** |
+
+**Neither participant passes both checks.** T11 survives first differences and
+falls short on the partial; T5 is the reverse, and on differences its
+correlation changes sign. The raw numbers are inflated by the shared time trend,
+exactly as the limitation I wrote had warned, and I quoted them anyway.
+
+The 31-day lead time is still a true description of what happened in T11's
+record. It is not evidence the same thing would happen again, and the report now
+says so in the sentence immediately after the claim rather than in a limitations
+section at the bottom.
+
+**Error 3: one of my own patches silently deleted a section.** An earlier edit
+replaced a span of the report builder that ran from the per-participant loop to
+the file write, which swallowed the entire "what would have to be true before
+this is a result" section. The report shipped without its limitations list and I
+did not notice, because the script still ran and the gates still passed. Restored
+and extended.
+
+The pattern across all three: **the gates check that numbers match their
+sources, that commands run, and that claims are registered. None of them checks
+whether a sentence describing a number is true.** That gap has now cost this
+project a mislabelled C18, a "healthy" episode set that was not healthy, and
+now a drift measure described as something it is not. Worth remembering when
+the temptation is to trust a green board.

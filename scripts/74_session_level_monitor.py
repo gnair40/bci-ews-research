@@ -25,6 +25,27 @@ At that rate the arithmetic inverts. T11 has 15 sessions across 142 days and T5
 has 6 across 28 days, and -- unlike windows five seconds apart -- sessions days
 apart really are close to independent.
 
+WHAT THE DRIFT MEASURE ACTUALLY IS
+----------------------------------
+`cosine_to_first_session` comes from scripts/05_check_decoder_stability.py. In
+every block it fits a linear map from the recorded neural features (`nctx`, plus
+`spikePower`) to `cursorVel`, then reports the cosine similarity between that
+session's fitted weights and the first session's.
+
+Two corrections to how this was first described here, both of which matter:
+
+  * It is **not** "neural covariance geometry". It is a comparison of fitted
+    decoder weights. Those are different objects and the first description was
+    simply wrong.
+  * It is **not** neural-only. It uses `cursorVel`, the decoder's own output.
+
+It IS free of task labels and of performance measures -- it never touches
+`angleError`, `trialSuccess` or the intended target -- and both of its inputs are
+logged automatically during ordinary use. So it could run without asking the
+user to do anything, which is the property that matters for deployment. But
+"neural-only" was the wrong word and it was load-bearing, so it is corrected
+here rather than quietly dropped.
+
 WHAT THIS IS AND IS NOT
 -----------------------
 **This is exploratory and was not preregistered.** Everything else in this
@@ -108,7 +129,43 @@ def analyse(s: pd.DataFrame) -> dict:
     fail_thresh = base_err * FAIL_MULTIPLE
     failed = s.median_error_deg > fail_thresh
 
-    rho, pval = stats.spearmanr(s.cosine_to_first_session, s.median_error_deg)
+    c = s.cosine_to_first_session.to_numpy()
+    e = s.median_error_deg.to_numpy()
+    day = s.trial_day.to_numpy(dtype=float)
+    rho, pval = stats.spearmanr(c, e)
+
+    # Both series move with time, and two series that both trend will correlate
+    # whether or not one tells you anything about the other. So the raw number
+    # above is not evidence on its own. Two standard checks:
+    #
+    #   partial      rank correlation with the day trend regressed out of both
+    #   differences  does a CHANGE in drift go with a CHANGE in error?
+    #
+    # Neither is decisive at n = 15, and they do not have to agree. Reporting
+    # both, including when they disagree, is the point.
+    def _rank(x):
+        return stats.rankdata(x)
+
+    def _resid(x, ctrl):
+        return x - np.polyval(np.polyfit(ctrl, x, 1), ctrl)
+
+    rc = _rank(day)
+    pr, pp = stats.pearsonr(_resid(_rank(c), rc), _resid(_rank(e), rc))
+    dr, dp = stats.spearmanr(np.diff(c), np.diff(e))
+    trend_c = stats.spearmanr(day, c)
+    trend_e = stats.spearmanr(day, e)
+
+    robustness = {
+        "raw_rho": float(rho), "raw_p": float(pval),
+        "day_vs_drift_rho": float(trend_c.statistic),
+        "day_vs_drift_p": float(trend_c.pvalue),
+        "day_vs_error_rho": float(trend_e.statistic),
+        "day_vs_error_p": float(trend_e.pvalue),
+        "partial_rho": float(pr), "partial_p": float(pp),
+        "diff_rho": float(dr), "diff_p": float(dp),
+        "survives_partial": bool(pp < 0.05),
+        "survives_differences": bool(dp < 0.05 and dr < 0),
+    }
 
     defs = {}
     for how in FAILURE_DEFS:
@@ -150,6 +207,7 @@ def analyse(s: pd.DataFrame) -> dict:
         "recovers_after_first_crossing": recovers,
         "final_error_deg": float(s.median_error_deg.iloc[-1]),
         "spearman_rho": float(rho), "spearman_p": float(pval),
+        "robustness": robustness,
         "by_failure_definition": defs,
         "series": s[["trial_day", "cosine_to_first_session",
                      "median_error_deg"]].to_dict("records"),
@@ -204,10 +262,25 @@ def main() -> int:
             A(f"| {row['trial_day']} | {row['cosine_to_first_session']:.3f} | "
               f"{row['median_error_deg']:.1f}° | {'**yes**' if over else 'no'} |")
         A("")
-        A(f"**Correlation between the neural-only measure and performance: "
-          f"rho = {r['spearman_rho']:+.3f}, p = {r['spearman_p']:.4f}.** The drift "
-          f"measure uses no performance data and no labels; it compares each "
-          f"session's neural covariance geometry against the first session.\n")
+        rb = r["robustness"]
+        A(f"Raw correlation between the drift measure and performance: "
+          f"**rho = {r['spearman_rho']:+.3f}, p = {r['spearman_p']:.4f}**.\n")
+        A("**That figure is inflated and must not be quoted alone.** Both series "
+          "move with time, and any two series that trend together correlate "
+          "whether or not one says anything about the other:\n")
+        A("| Check | Result | Verdict |")
+        A("|---|---|---|")
+        A(f"| Day vs drift measure | rho = {rb['day_vs_drift_rho']:+.3f}, "
+          f"p = {rb['day_vs_drift_p']:.4f} | both trend strongly |")
+        A(f"| Day vs performance error | rho = {rb['day_vs_error_rho']:+.3f}, "
+          f"p = {rb['day_vs_error_p']:.4f} | |")
+        A(f"| **Partial**, day regressed out of both | "
+          f"rho = {rb['partial_rho']:+.3f}, p = {rb['partial_p']:.4f} | "
+          f"{'survives' if rb['survives_partial'] else '**does not survive**'} |")
+        A(f"| **First differences** — does a change in drift accompany a change "
+          f"in error? | rho = {rb['diff_rho']:+.3f}, p = {rb['diff_p']:.4f} | "
+          f"{'survives' if rb['survives_differences'] else '**does not survive**'} |")
+        A("")
 
         if r["recovers_after_first_crossing"]:
             d = r["by_failure_definition"]
@@ -262,14 +335,67 @@ def main() -> int:
         how, o = best
         A(f"**On T11, warning when the drift measure falls below "
           f"{o['warn_fraction']:.2f} fires {o['lead_days']} days before the "
-          f"failure, with no healthy session warned first.** Same neural signal, "
-          f"same participant, same recordings that gave −20 seconds within a "
-          f"session. The only thing that changed is how often the monitor is "
-          f"asked to decide.\n")
+          f"failure, with no healthy session warned first.** Same participant, "
+          f"same recordings that gave −20 seconds within a session. What "
+          f"changed is how often the monitor is asked to decide.\n")
+        A("Two things that sentence does **not** say. It is one degradation "
+          "event in one participant, so it describes what happened rather than "
+          "what would happen again. And the association behind it does not "
+          "survive both robustness checks on either participant — see the "
+          "section below, which is the more important one.\n")
     A("The tables also show the tradeoff has not vanished, it has moved somewhere "
       "affordable: a looser threshold buys more lead time and costs recalibrations "
       "nobody needed. That pair is reportable, which is the whole point — within "
       "a session it was not, because no threshold bought useful lead at any cost.\n")
+
+    A("## The robustness checks disagree, and that is the finding\n")
+    rr = {k: v["robustness"] for k, v in result["participants"].items()}
+    if "T11" in rr and "T5" in rr:
+        A("| | T11 | T5 |")
+        A("|---|---|---|")
+        A(f"| Raw rho | {rr['T11']['raw_rho']:+.3f} | {rr['T5']['raw_rho']:+.3f} |")
+        A(f"| Partial, day controlled | {rr['T11']['partial_rho']:+.3f} "
+          f"(p = {rr['T11']['partial_p']:.3f}) | {rr['T5']['partial_rho']:+.3f} "
+          f"(p = {rr['T5']['partial_p']:.3f}) |")
+        A(f"| First differences | {rr['T11']['diff_rho']:+.3f} "
+          f"(p = {rr['T11']['diff_p']:.3f}) | {rr['T5']['diff_rho']:+.3f} "
+          f"(p = {rr['T5']['diff_p']:.3f}) |")
+        A(f"| Sessions | {result['participants']['T11']['n_sessions']} | "
+          f"{result['participants']['T5']['n_sessions']} |")
+        A("")
+        A("**Neither participant passes both checks.** T11 survives first "
+          "differences and falls just short on the partial; T5 is the other way "
+          "round, and on differences its correlation does not merely vanish, it "
+          "changes sign. At 15 sessions and 6, that is what a genuinely "
+          "unsettled result looks like.\n")
+    A("So the honest statement is **not** \u201cthe drift measure predicts "
+      "performance\u201d. It is: *on two participants, a drift measure and a "
+      "performance measure both decline over months; they correlate strongly "
+      "while that shared trend is left in, and the association is weaker and "
+      "inconsistent once it is removed.* The lead times above are a true "
+      "description of what happened in T11's record. They are not yet evidence "
+      "that it would happen again.\n")
+
+    A("## What would have to be true before this is a result\n")
+    A("1. **Preregister it.** Thresholds, failure definition and predicted lead "
+      "time written down before another dataset is touched.")
+    A("2. **Settle whether the association survives controls**, on more than two "
+      "participants. The partial and difference tests disagree here and neither "
+      "sample can arbitrate.")
+    A("3. **Get a false-alarm rate that means something.** One degradation event "
+      "on T11 cannot estimate how often this fires when nothing is wrong. That "
+      "needs more participants, or the rig, where onsets are constructed — which "
+      "is what the rig was built for.")
+    A("4. **Rule out the confounds.** `scripts/46_day_predictors.py` already "
+      "exists to test whether a third factor moves both series.")
+    A("5. **Check it is not the baseline ageing.** The measure is relative to "
+      "the first session, so anything monotone will correlate with it. A local "
+      "re-baselining arm is the control.")
+    A("")
+    A("**Only the first is free.** The rest is December work, and it is a better "
+      "use of the rig than the comparison it was originally built for, because "
+      "it tests something that might work rather than confirming something that "
+      "does not.")
 
     (REPORTS / "SESSION_LEVEL_MONITOR.md").write_text("\n".join(L))
     print("\n".join(L[2:]).replace("**", ""))
