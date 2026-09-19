@@ -5156,3 +5156,69 @@ systems comparable for the first time.
 
 The command checker earned its keep again: it failed the moment the manual
 referenced `scripts/73_monitorability_certificate.py` before that file existed.
+
+## 19 September 2026 — Auditing the build manual found four broken commands and a silent gap
+
+Went back over `research/BUILD_MANUAL.md` asking whether a person following it
+would ever have to write code. The answer was yes, a lot, and auditing that
+turned up worse.
+
+**The command checker was only looking at half the project.**
+`69_command_check.py` scanned for `python3 scripts/...` and ignored
+`python3 rig/...` entirely. Widening it found **four documented commands that
+simply do not work**:
+
+- `rig/capture.py 500 rig/test_block.npy` — positional arguments that
+  `capture.py` has never accepted. In `RIG_PROCEDURE.md`.
+- `rig/capture.py 15000 data/raw_rig/...` — same mistake, in two documents.
+- `rig/to_mat.py --block ... --stimlog ...` — missing the required `--session`
+  and `--blocknum`. In `EXPERIMENTAL_PROCEDURES.md`.
+- `rig/to_mat.py --npy ... --stim ... --out ...` — none of those three flags
+  exist. **I wrote that one two days ago**, in the build manual, in the
+  calibration step.
+
+A reader following any of those would have stopped dead. Widening the checker
+needed a second mechanism: `rig/stimulus.py` and `rig/capture.py` parse their
+arguments at import time and have no `main()`, and they import `pygame` and
+`picamera2`, which do not exist off the Pi. Those are stubbed and the module is
+executed with `parse_args` patched to stop it the moment it succeeds.
+
+**A worse one, found by asking whether B-9 could actually run.** B-9 is the main
+cross-system comparison — the whole reason the rig exists. It says to run
+`scripts/66_window_spacing.py`. That script had `SOURCES` hardcoded to T11 and
+T5, so a rig participant could be recorded, injected, decoded and scored, and
+the script would report nothing about it **while still printing PASS**, because
+it found the two files it was told to look for. `scripts/70` had the same list.
+Both now discover any participant that has been through the harness. Outputs are
+byte-identical for T11 and T5, so it is a pure refactor.
+
+That is the second hardcoded-list failure in three days, after the command
+checker silently shrank from 69 commands to 19 on the 17th. The pattern is
+worth stating plainly: **a gate whose scope is a hand-maintained list will go
+stale, and it will keep printing PASS while it does.**
+
+**Then wrote the five programs the manual had been assuming.** The manual said
+things like "run the stimulus in one window and the capture in another" and
+"cross-correlate on your own computer", which describe work rather than provide
+it. Now written and tested:
+
+- `rig/run_block.py` — one block end to end, logging every setting to
+  `rig/blocklog.csv`. The command to type most.
+- `rig/bench.py` — the bench checks as subcommands: `darkframe`, `lag`,
+  `dither`, `margin`, each printing PASS or FAIL with what to do about it.
+- `rig/run_batch.py` — 265 blocks unattended from a plan file, skipping any
+  already recorded so an interrupted run resumes.
+- `rig/motor.py` — the stage rotation in real degrees.
+- `rig/logtemp.py` — temperature, so warmth and drift stay separable.
+
+Also added imposed drift to `rig/stimulus.py`: an Ornstein-Uhlenbeck brightness
+wander with a controllable time constant, which B-14 needs and which did not
+exist. The realised gain is written to the frame log rather than reconstructed.
+
+Tested `bench.py` against a synthetic block with a deliberate 3-frame lag: it
+recovered exactly 3. `dither` passed. `margin` correctly FAILED on a block built
+too easy, and printed the right fix. `run_batch.py --make-sweep-plan` produces
+265 blocks and 22.1 hours, matching `scripts/71_drift_sweep_design.py`.
+
+`research/RIG_CODE.md` is the index, with the fallback table and the full source
+of every program inline, so a lost file can be retyped.

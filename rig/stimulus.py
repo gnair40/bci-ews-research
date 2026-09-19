@@ -66,6 +66,14 @@ ap.add_argument("--depth", type=float, default=0.00211)   # direction modulation
 # ^ calibrated in reports/RIG_DIGITAL_TWIN.md to match T11's margin over chance.
 ap.add_argument("--seed", type=int, default=20260826)
 ap.add_argument("--concentration", type=float, default=0.0)  # 0 = all directions
+# --- imposed drift, for the sweep in B-14 -----------------------------------
+# The whole screen's brightness wanders slowly, as an Ornstein-Uhlenbeck process
+# with time constant --drift-tau seconds: a random walk that is pulled back
+# toward its mean, which is how you write "drifts slowly but does not wander
+# off". This is the controlled degradation the calibration curve sweeps, so the
+# realised path is written to the frame log and is not reconstructed afterwards.
+ap.add_argument("--drift-tau", type=float, default=0.0)    # seconds; 0 = none
+ap.add_argument("--drift-depth", type=float, default=0.0)  # fractional swing
 ap.add_argument("--out", default="rig/stim_log.csv")
 a = ap.parse_args()
 
@@ -87,7 +95,7 @@ clock = pygame.time.Clock()
 
 log = open(a.out, "w", newline="")
 w = csv.writer(log)
-w.writerow(["frame", "t_unix", "heading_rad", "trial"])
+w.writerow(["frame", "t_unix", "heading_rad", "trial", "drift_gain"])
 # The true heading is logged every frame. It is the ground truth for the whole
 # experiment, so it is recorded as it is drawn rather than reconstructed later.
 
@@ -110,12 +118,27 @@ def expand(vals):
     g = vals.reshape(a.rows, a.cols).T              # -> (cols, rows)
     return np.repeat(np.repeat(g, a.patch, 0), a.patch, 1)
 
+# One OU step per frame. a is how much of the previous value survives; s_ou is
+# the kick that keeps the stationary spread at 1 regardless of tau.
+if a.drift_tau > 0 and a.drift_depth > 0:
+    tau_frames = a.drift_tau * a.fps
+    ou_a = math.exp(-1.0 / tau_frames)
+    ou_s = math.sqrt(1 - ou_a * ou_a)
+    ou_x = rng.normal()
+else:
+    ou_a = ou_s = ou_x = 0.0
+
 heading, trial = draw_heading(), 0
 try:
     for f in range(a.frames):
         if f % a.hold == 0:
             heading, trial = draw_heading(), f // a.hold
-        b = (a.base + a.depth * np.cos(heading - PREF)) * a.brightness
+        if a.drift_tau > 0 and a.drift_depth > 0:
+            ou_x = ou_a * ou_x + ou_s * rng.normal()
+            gain = max(0.0, 1.0 + a.drift_depth * ou_x)
+        else:
+            gain = 1.0
+        b = (a.base + a.depth * np.cos(heading - PREF)) * a.brightness * gain
         t = np.clip(b, 0, 1) * 255.0
         lo = np.floor(t)
         px = expand(lo) + (DITHER < expand(t - lo))
@@ -123,7 +146,7 @@ try:
         frame[:, :, 0] = v; frame[:, :, 1] = v; frame[:, :, 2] = v
         pygame.surfarray.blit_array(screen, frame)
         pygame.display.flip()
-        w.writerow([f, time.time(), heading, trial])
+        w.writerow([f, time.time(), heading, trial, gain])
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 raise KeyboardInterrupt

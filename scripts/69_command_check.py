@@ -64,12 +64,82 @@ def documents() -> list[str]:
 
 DOCS = documents()
 
-# Commands carrying a placeholder rather than a real argument.
-PLACEHOLDER = re.compile(r"[\[\]<>{}]|PATH|NAME|\.\.\.")
+# Commands carrying a placeholder rather than a real argument. `$` covers a
+# shell variable such as the `$i` of a documented `for` loop: that is a template
+# by construction, and the loop around it is what a reader actually runs.
+PLACEHOLDER = re.compile(r"[\[\]<>{}$]|PATH|NAME|\.\.\.")
 
 
 class _Parsed(Exception):
     """Raised once argparse has accepted the arguments."""
+
+
+# Modules that exist only on the Raspberry Pi. Stubbing them lets the argument
+# parsing of rig/*.py be checked on a machine with no camera and no display,
+# which is where this check actually runs. The stub never gets used for anything
+# else: parse_args raises before the first hardware call.
+HARDWARE_ONLY = ("pygame", "pygame.surfarray", "picamera2")
+
+
+class _Stub:
+    def __getattr__(self, _):
+        return _Stub()
+
+    def __call__(self, *a, **k):
+        return _Stub()
+
+
+def _stub_hardware() -> dict:
+    saved = {}
+    for name in HARDWARE_ONLY:
+        saved[name] = sys.modules.get(name)
+        sys.modules[name] = _Stub()
+    return saved
+
+
+def _unstub(saved: dict) -> None:
+    for name, mod in saved.items():
+        if mod is None:
+            sys.modules.pop(name, None)
+        else:
+            sys.modules[name] = mod
+
+
+def _check_module_level(rel: str, parts: list[str]) -> tuple[bool, str]:
+    """For a script that parses its arguments at import time and has no main().
+
+    rig/stimulus.py and rig/capture.py are written that way -- argparse runs as
+    the file is read, then the program starts. So the only way to test whether
+    they accept a command is to set argv, arrange for parse_args to stop the
+    program the moment it succeeds, and then import the file fresh.
+    """
+    real = argparse.ArgumentParser.parse_args
+
+    def stop(self, *a, **k):
+        real(self, *a, **k)
+        raise _Parsed
+
+    saved_argv = sys.argv
+    saved_mods = _stub_hardware()
+    argparse.ArgumentParser.parse_args = stop
+    try:
+        sys.argv = parts
+        spec = importlib.util.spec_from_file_location("_cmdcheck_tmp", REPO / rel)
+        mod = importlib.util.module_from_spec(spec)
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            spec.loader.exec_module(mod)
+        return True, "module never called parse_args"
+    except _Parsed:
+        return True, ""
+    except SystemExit as e:
+        return False, f"argparse rejected it (exit {e.code})"
+    except Exception as e:
+        return False, f"{type(e).__name__}: {e}"[:100]
+    finally:
+        argparse.ArgumentParser.parse_args = real
+        sys.argv = saved_argv
+        _unstub(saved_mods)
+        sys.modules.pop("_cmdcheck_tmp", None)
 
 
 _MODULES: dict[str, object] = {}
@@ -111,6 +181,9 @@ def check(cmd: str) -> tuple[bool, str]:
             return False, f"script takes no arguments but was given {extra}"
         return True, ""
 
+    if "def main(" not in src:
+        return _check_module_level(rel, parts)
+
     try:
         mod = _module(rel)
     except Exception as e:
@@ -149,7 +222,11 @@ def main() -> int:
         p = REPO / doc
         if not p.exists():
             continue
-        for c in re.findall(r"python3 (scripts/\S+\.py[^\n`]*)", p.read_text()):
+        # `rig/` is included as well as `scripts/`. It was omitted at first, and
+        # that omission hid a broken command in the build manual: a documented
+        # invocation of rig/to_mat.py used --npy/--stim/--out, none of which that
+        # program accepts. A reader would have been stopped dead by it.
+        for c in re.findall(r"python3 ((?:scripts|rig)/\S+\.py[^\n`]*)", p.read_text()):
             # Strip shell continuations and chaining: a documented line like
             # "python3 scripts/61_x.py && \" is one command plus shell syntax.
             c = re.split(r"\s*(?:&&|\|\||;|\|)\s*", c.strip())[0]

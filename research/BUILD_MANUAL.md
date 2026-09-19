@@ -162,6 +162,23 @@ python3 scripts/68_rig_pipeline_dryrun.py
 
 If it does not print PASS, stop and fix that before recording anything.
 
+## 1.2 You do not have to write any code
+
+Every program the physical work needs is already written and in the repository.
+`research/RIG_CODE.md` is the index: what each one is for, the exact commands for
+a typical session, a fallback table for when something misbehaves, and the full
+source of every file inline in case one is ever lost.
+
+The one command you will type most:
+
+```
+python3 rig/run_block.py --session 1 --blocknum 1
+```
+
+That records one block end to end — stimulus, camera, conversion — and appends
+every setting used to `rig/blocklog.csv`. Add `--dry-run` to see what it would
+do without any hardware attached.
+
 ---
 
 # PART 2 — Gates to clear before spending any money
@@ -418,30 +435,21 @@ way round. Check the screen is showing something before blaming the camera.
 
 ## B-2 — Is the box actually light-tight?
 
-With the screen **off** and the lid closed, capture a frame and look at its
-brightness.
+With the screen **off** and the lid closed:
 
 ```
-cd ~/bci-ews-research
-python3 -c "
-from picamera2 import Picamera2; import numpy as np, time
-c=Picamera2(); c.configure(c.create_video_configuration(main={'size':(48,32),'format':'RGB888'}))
-c.set_controls({'AeEnable':False,'AwbEnable':False,'ExposureTime':8000,'AnalogueGain':2.0})
-c.start(); time.sleep(2)
-a=c.capture_array('main')[:,:,1].astype(float); c.stop()
-print('mean',a.mean(),'max',a.max(),'sd',a.std())"
+python3 rig/bench.py darkframe
 ```
 
-**Pass:** mean below about 2 counts and max below about 5.
+**Pass:** it prints PASS — mean below about 2 counts and max below about 5.
 
-**If it is higher:** find the leak. Turn the room lights on and off while
-watching the mean; if it changes, light is getting in. Re-tape the cable hole,
-the lid, and the screen bezel, in that order of likelihood.
+**If it fails** it tells you what to do. In short: re-tape the cable hole, then
+the lid, then the screen bezel, in that order of likelihood. Turn the room
+lights on and off while re-running; if the mean changes, light is getting in.
 
-**Fallback if you cannot get below 5:** record a dark frame at the start of
-every session and subtract it. **Write this down as a deviation** — it changes
-what the recorded numbers mean, and a subtracted offset is not the same as no
-offset when you are measuring drift.
+**Fallback if you cannot seal it:** the command saves `rig/darkframe.npy`.
+Subtract it from every recording, and **write that down as a deviation** — a
+subtracted offset is not the same as no offset when you are measuring drift.
 
 ---
 
@@ -491,22 +499,29 @@ This is the test most likely to be skipped and most likely to matter. If the
 camera lags the screen, every frame is labelled with the wrong heading and the
 decoder will look broken for a reason that has nothing to do with the rig.
 
-Run both for 3000 frames. Then, on your own computer, cross-correlate the true
-heading against a channel's brightness at several lags and find which lag
-maximises the match.
+Record one block, then:
 
-**Pass:** the best lag is stable across repeats and smaller than about 3 frames.
+```
+python3 rig/bench.py lag --cap rig/cap_s1_b1.npy --stim rig/stim_s1_b1.csv
+```
 
-**Fallback:** if the lag is stable but larger, shift the capture by that many
-frames in `rig/to_mat.py` and **write the shift and how you measured it into the
-log.** A fixed, measured, documented offset is fine. An unmeasured one is fatal.
+It prints a table of agreement against shift and names the best lag. It finds
+the answer from the signal itself — the predicted tuning of every channel is
+known from the logged heading, so the lag is whichever shift makes prediction
+and measurement agree best. No clocks involved.
 
-**If the lag is not stable:** the two programs are drifting apart. Reduce both
-to 25 fps and repeat. If it is still unstable, fall back to B-5b.
+**Pass:** the best lag is within 3 frames.
 
-**B-5b, the robust alternative:** abandon frame-level alignment. Hold each
-heading for 5 seconds instead of 2 (`--hold 250`), and analyse only the middle
-3 seconds of each hold. Costs trials, removes the timing problem entirely.
+**If it is larger but stable:** repeat on two more blocks. If they agree, pass
+it to every future recording as `--lag <seconds>` and record it in the log. A
+fixed, measured, documented offset is fine. An unmeasured one is fatal.
+
+**If it is not stable between blocks:** drop both programs to 25 fps and repeat.
+
+**B-5b, the robust alternative:** abandon frame-level alignment entirely. Hold
+each heading for 5 seconds instead of 2 (`--hold 250`) and analyse only the
+middle 3 seconds of each hold. It costs trials and removes the timing problem
+completely.
 
 ---
 
@@ -518,39 +533,26 @@ spatial dithering — mixing two adjacent levels within a patch — and this tes
 checks the camera can actually see the result. **If this fails, nothing after it
 means anything.**
 
-Record 2000 frames with the stimulus running, then check whether channel
-brightness tracks the heading at all:
+Record one block, then:
 
 ```
-python3 -c "
-import numpy as np, pandas as pd
-X=np.load('/tmp/cap_test.npy'); s=pd.read_csv('/tmp/stim_test.csv')
-h=s.heading_rad.values[:len(X)]
-P=np.load('rig/preferred_directions.npy')
-pred=np.cos(h[:,None]-P[None,:])
-r=[np.corrcoef(pred[:,i],X[:,i])[0,1] for i in range(X.shape[1])]
-print('median per-channel correlation with predicted tuning:', np.nanmedian(r))"
+python3 rig/bench.py dither --cap rig/cap_s1_b1.npy --stim rig/stim_s1_b1.csv
 ```
 
-**Pass:** median correlation clearly above 0, around 0.05 or more. It will be
-small — that is the point of the calibration — but it must be positive and
-consistent across channels.
+**Pass:** the median per-channel correlation with the predicted tuning is
+clearly positive, and it is positive for nearly every channel. The number will
+be **small** — that is the point of the calibration — but it must be consistent.
 
-**If it is indistinguishable from zero:** the modulation is being lost. In order
-of likelihood:
-1. The screen is applying its own processing — dynamic contrast, temporal
-   dithering of its own, or a power-saving dimmer. **Turn every enhancement
-   off.** This is the most common cause.
-2. The camera's exposure is too short to average the dither. Raise
-   `--exposure` to 16000 and retry.
-3. The screen is genuinely 6-bit with internal dithering, as many cheap panels
-   are. Try a different screen.
+**If it fails**, the command lists the fixes in order of likelihood. In short:
+the screen is applying its own processing (turn off dynamic contrast, every
+"enhancement", and every power-saving dimmer); then try `--exposure 16000`;
+then try a different screen, since many cheap panels are really 6-bit with
+their own internal dithering.
 
-**Fallback if no screen works:** raise `--depth` by a factor of 4 (to about
-0.0084) and **re-run `scripts/72_rig_digital_twin.py` with that value to find
-out what operating point you are now at.** You will no longer be matched to
-cortex, and every comparison must state the mismatch. That is a real cost, so
-try the three fixes above first.
+**Last-resort fallback:** raise `--depth` fourfold and **re-run
+`python3 scripts/72_rig_digital_twin.py` at the new value** to find out what
+operating point you are now at. You will no longer be matched to cortex, and
+every comparison must say so. Try the three fixes above first.
 
 ---
 
@@ -565,8 +567,8 @@ Record one full 5-minute block, convert it, fit the decoder, and read off the
 error and the measured chance level:
 
 ```
-python3 rig/to_mat.py --npy /tmp/cap_test.npy --stim /tmp/stim_test.csv --out data/raw/RIG1/day_1/Block_01
-python3 scripts/18_reference_decoder.py fit --participant RIG1
+python3 rig/run_block.py --session 1 --blocknum 1
+python3 rig/bench.py margin --cap rig/cap_s1_b1.npy --stim rig/stim_s1_b1.csv
 ```
 
 **Pass:** the margin (chance minus error) is within about 6° of **36.1°**, which

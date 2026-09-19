@@ -739,11 +739,14 @@ they only answer whether the code runs.
 **66.** Record 20 healthy blocks with nothing degraded, 15000 frames each:
 ```
 for i in $(seq 1 20); do
-  python3 rig/capture.py --frames 15000 --out rig/s1_b$i.npy
-  python3 rig/to_mat.py --block rig/s1_b$i.npy --stimlog rig/stim_log.csv \
-    --session 1 --blocknum $i --lag 0.0
+  python3 rig/run_block.py --session 1 --blocknum $i --lag 0.0
 done
 ```
+`run_block.py` starts the stimulus, starts the capture, waits for both, converts
+the result, and appends the settings to `rig/blocklog.csv`. Doing those four
+steps by hand twenty times is how a typo gets into a dataset. The loop above
+originally called `capture.py` and `to_mat.py` directly and got the arguments
+wrong in both places.
 
 **67.** Fit the decoder on the rig baseline and measure its chance level:
 ```

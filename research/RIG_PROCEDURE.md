@@ -507,7 +507,7 @@ count is one channel in the neural data.
 **Procedure 3.6. Test the whole loop, briefly.**
 Start `stimulus.py` on the screen, then on the Pi:
 ```
-python3 rig/capture.py 500 rig/test_block.npy
+python3 rig/capture.py --frames 500 --out rig/test_block.npy
 ```
 Then check the data is alive:
 ```
@@ -652,7 +652,7 @@ wrong call: commit `7102ff6` exists specifically to establish that
 **Procedure 6.1. Record 20 healthy blocks with no fault of any kind.**
 ```
 for i in $(seq 1 20); do
-  python3 rig/capture.py 15000 data/raw_rig/session_001/block_$i.npy
+  python3 rig/run_block.py --session 1 --blocknum $i
 done
 ```
 `for i in $(seq 1 20); do ... done` repeats a command twenty times, with `i`

@@ -56,7 +56,31 @@ REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "data" / "processed"
 REPORTS = REPO / "reports"
 
-SOURCES = [("episode_scores_local.csv", "T11"), ("episode_scores_T5_local.csv", "T5")]
+def episode_sources() -> list[tuple[str, str]]:
+    """Every participant that has been through the harness, as (file, label).
+
+    This used to be a hardcoded pair, T11 and T5. That meant a rig participant
+    could be recorded, injected, decoded and scored, and this script would
+    silently report nothing about it -- while still printing PASS, because it
+    found the two files it was told to look for. The main cross-system
+    comparison of the whole project (Procedure B-9 in the build manual) runs
+    through here, so the failure would have been both silent and central.
+
+    The same hardcoded-list problem was found in scripts/69_command_check.py on
+    17 September, where a stale list shrank the check from 69 commands to 19
+    without failing. A gate whose scope is maintained by hand will go stale.
+    """
+    found = []
+    for p in sorted(OUT.glob("episode_scores*_local.csv")):
+        stem = p.stem                       # episode_scores[_<PARTICIPANT>]_local
+        mid = stem[len("episode_scores"):-len("_local")].strip("_")
+        found.append((p.name, mid or "T11"))
+    # T11 and T5 first, so existing reports keep their familiar order.
+    order = {"T11": 0, "T5": 1}
+    return sorted(found, key=lambda q: (order.get(q[1], 2), q[1]))
+
+
+SOURCES = episode_sources()
 
 WINDOW_BINS = 1500          # must match scripts/20_evaluation_harness.py
 STEP_BINS = 250             # must match scripts/20_evaluation_harness.py

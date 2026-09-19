@@ -619,7 +619,7 @@ prove the file format is right before I record anything real.
 **Procedure 74. Record the healthy baseline and fit the model.**
 ```
 for i in $(seq 1 20); do
-  python3 rig/capture.py 15000 data/raw_rig/session_001/block_$i.npy
+  python3 rig/run_block.py --session 1 --blocknum $i
 done
 python3 scripts/18_reference_decoder.py fit --participant RIG --raw-root data/raw_rig
 ```
