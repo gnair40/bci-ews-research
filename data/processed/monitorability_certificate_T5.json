@@ -1,0 +1,32 @@
+{
+  "participant": "T5",
+  "detector": "decoder_guard",
+  "false_alarm_budget_per_hour": 0.1,
+  "independence": {
+    "source": "fault-free episodes (scripts/70)",
+    "lag1": 0.4353386377153755,
+    "ci95": [
+      0.27096205069540025,
+      0.5397462665610869
+    ],
+    "n_windows": 7.0,
+    "n_eff": 2.7537958166330427,
+    "n_episodes": 15
+  },
+  "estimator_ceiling": 0.4446051077214647,
+  "median_lead_s": -35.0,
+  "lead_ci95": null,
+  "false_alarms_per_hour": 0.2254,
+  "detection_rate": "6/219",
+  "operating_point": 60.01263249735894,
+  "gates_passed": 2,
+  "gates_total": 5,
+  "gate_detail": {
+    "G1_silence": false,
+    "G2_rate_invariance": false,
+    "G3_comparator": true,
+    "G4_elapsed_time": false,
+    "G5_detrend": true
+  },
+  "monitorable": false
+}

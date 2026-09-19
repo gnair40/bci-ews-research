@@ -11,6 +11,7 @@ it makes it easy to open the wrong one, so this is the map.
 |---|---|
 | **`RESEARCH_PLAN_2026-09-15.md`** | **The September 2026 ISEF submission.** Third person, aligned to page 2 of ISEF Form 1A. This is the one that goes to the SRC. |
 | `EXPERIMENTAL_PROCEDURES.md` | The procedures, by phase, in the researcher's own voice. Phases 1–6 are the computational work at plan level; phases 7–10 are the physical build in full detail, because that part still has to be done. |
+| **`BUILD_MANUAL.md`** | **The complete build-and-test manual for the physical rig**, from unboxing a Raspberry Pi to the finished instrument. Written to be followed with no prior hardware experience and no further help. Start at Part 0. |
 | `REPLICATION_GUIDE.md` | Command-by-command instructions for every computational stage. Was Section C of the research plan until 17 September 2026, when it was moved out so the plan could be read at the level a reviewer reads. |
 
 ## The preregistrations

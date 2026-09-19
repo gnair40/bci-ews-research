@@ -5097,3 +5097,62 @@ modifying tracked data. It now backs up and restores `data/processed` too, and
 reports which data files a redraw would have changed, since a committed data file
 that moves when its producer is rerun is the same defect as a stale figure. That
 is how the power-sweep grid surfaced at all.
+
+## 19 September 2026 — Simulated the rig, and it would not have worked
+
+Built `scripts/72_rig_digital_twin.py`: the whole optical chain in software —
+screen, blur, vignette, photon and read noise, region averaging — so the
+questions Arm B depends on could be asked before any part was ordered. Three
+findings, each of which would otherwise have surfaced only with hardware on the
+bench, and two of which would have wasted the build.
+
+**The rig as specified was far too easy.** At 100% modulation depth with 20×20 =
+400 pixels averaged per channel, it decodes direction to **0.0°** of error
+against an 89° chance level. Cortex sits at 54.6° against 90.7°. Two things
+follow and both are fatal: a comparison between a perfect decoder and one barely
+above chance measures difficulty rather than neurons, which is the one thing Arm
+B exists to rule out; and no fault can move an error already at zero, so there
+would have been no severity ladder either. I would have built it, recorded for
+weeks, and got an uninterpretable answer.
+
+The fix costs nothing: modulation depth 0.00211 instead of 0.5, and 4 pixels per
+channel instead of 400. That lands at 54.2° against 89.5°, a margin of 35.3°
+against cortex's 36.1°. Matching the margin over each system's *own* measured
+chance is the right target, because the two chance levels are different numbers.
+
+A wrong turn worth recording: the obvious fix, adding independent noise to each
+patch, barely works. 384 channels average independent noise away — at a noise
+level of 32 the rig still decoded to 14°. What limits a real neural population
+is variability *shared* across channels, which no amount of averaging removes.
+
+**The screen physically cannot display the calibrated stimulus.** The depth asks
+each patch to swing by about half of one brightness level, 126.96 to 128.03 out
+of 255, and a display emits whole levels only. The `int()` in `rig/stimulus.py`
+would have discarded the entire signal and the rig would have recorded nothing
+but noise. `rig/stimulus.py` now dithers spatially against a fixed mask: 1600
+screen pixels per patch give 1/1600-level resolution, and the camera's optics
+average over the patch. Verified to track a target mean to 0.01 of a level.
+
+**Faults have to be applied in the light path, not to the recorded numbers.** An
+earlier version of the model dimmed the captured values and reported that an ND
+filter had no effect on decoding. It does not, applied there — the decoder
+standardises each channel, so a pure rescale vanishes. Dimming actual light
+costs photons and therefore costs signal-to-noise. With the fault applied before
+the sensor noise, all four modes give monotone ladders, +12.6° to +36.0°.
+
+**Wrote `research/BUILD_MANUAL.md`**, 900 lines, assuming no hardware
+experience: the impact case with its assumptions stated rather than asserted, a
+table tying every computational finding to the physical test it motivates, five
+gates to clear before spending money, the build step by step, fourteen bench
+tests each with a written fallback, and a contingency tree so that an unexpected
+result never ends in a stop.
+
+**Wrote `scripts/73_monitorability_certificate.py`**, the instrument's readout:
+independent samples per session, lead time, false-alarm rate, gates passed, and
+a verdict conditional on a stated budget. Run on T11 it returns NOT MONITORABLE
+at 0.1 false alarms/hour — 2 of 5 gates, lead time −20 s, 3.4 false alarms an
+hour. The same command will run on rig recordings, which is what makes the two
+systems comparable for the first time.
+
+The command checker earned its keep again: it failed the moment the manual
+referenced `scripts/73_monitorability_certificate.py` before that file existed.
