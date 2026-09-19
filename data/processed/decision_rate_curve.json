@@ -1,0 +1,176 @@
+{
+  "what_this_is": "The decision-rate curve on archived data, and why it cannot be settled there.",
+  "false_flag_rate": 0.1,
+  "participants": {
+    "T11": {
+      "curve": [
+        {
+          "k_windows_per_decision": 1,
+          "decisions_per_hour": 720.0,
+          "decisions_per_episode": 55,
+          "detection": 0.8507853403141361,
+          "ci95": [
+            0.6256544502617801,
+            0.9869109947643979
+          ],
+          "n_positive": 764,
+          "n_fault_free": 29
+        },
+        {
+          "k_windows_per_decision": 2,
+          "decisions_per_hour": 360.0,
+          "decisions_per_episode": 27,
+          "detection": 0.8507853403141361,
+          "ci95": [
+            0.6217277486910995,
+            0.9869109947643979
+          ],
+          "n_positive": 764,
+          "n_fault_free": 29
+        },
+        {
+          "k_windows_per_decision": 3,
+          "decisions_per_hour": 240.0,
+          "decisions_per_episode": 18,
+          "detection": 0.8507853403141361,
+          "ci95": [
+            0.6282722513089005,
+            0.9869437172774868
+          ],
+          "n_positive": 764,
+          "n_fault_free": 29
+        },
+        {
+          "k_windows_per_decision": 6,
+          "decisions_per_hour": 120.0,
+          "decisions_per_episode": 9,
+          "detection": 0.8638743455497382,
+          "ci95": [
+            0.6583769633507853,
+            0.9882198952879581
+          ],
+          "n_positive": 764,
+          "n_fault_free": 29
+        },
+        {
+          "k_windows_per_decision": 11,
+          "decisions_per_hour": 65.45454545454545,
+          "decisions_per_episode": 5,
+          "detection": 0.9162303664921466,
+          "ci95": [
+            0.7460405759162303,
+            0.9908376963350786
+          ],
+          "n_positive": 764,
+          "n_fault_free": 29
+        },
+        {
+          "k_windows_per_decision": 27,
+          "decisions_per_hour": 26.666666666666668,
+          "decisions_per_episode": 2,
+          "detection": 0.9633507853403142,
+          "ci95": [
+            0.7905431937172774,
+            0.9908376963350786
+          ],
+          "n_positive": 764,
+          "n_fault_free": 29
+        },
+        {
+          "k_windows_per_decision": 55,
+          "decisions_per_hour": 13.090909090909092,
+          "decisions_per_episode": 1,
+          "detection": 0.9659685863874345,
+          "ci95": [
+            0.7997382198952879,
+            0.9882198952879581
+          ],
+          "n_positive": 764,
+          "n_fault_free": 29
+        }
+      ],
+      "n_fault_free_episodes": 29,
+      "direction": "rises",
+      "change": 0.11518324607329844
+    },
+    "T5": {
+      "curve": [
+        {
+          "k_windows_per_decision": 1,
+          "decisions_per_hour": 720.0,
+          "decisions_per_episode": 42,
+          "detection": 0.8644986449864499,
+          "ci95": [
+            0.6693766937669376,
+            0.9376693766937669
+          ],
+          "n_positive": 369,
+          "n_fault_free": 21
+        },
+        {
+          "k_windows_per_decision": 2,
+          "decisions_per_hour": 360.0,
+          "decisions_per_episode": 21,
+          "detection": 0.8617886178861789,
+          "ci95": [
+            0.6910569105691057,
+            0.943089430894309
+          ],
+          "n_positive": 369,
+          "n_fault_free": 21
+        },
+        {
+          "k_windows_per_decision": 3,
+          "decisions_per_hour": 240.0,
+          "decisions_per_episode": 14,
+          "detection": 0.8536585365853658,
+          "ci95": [
+            0.7073170731707317,
+            0.9512195121951219
+          ],
+          "n_positive": 369,
+          "n_fault_free": 21
+        },
+        {
+          "k_windows_per_decision": 6,
+          "decisions_per_hour": 120.0,
+          "decisions_per_episode": 7,
+          "detection": 0.8617886178861789,
+          "ci95": [
+            0.6747967479674797,
+            0.959349593495935
+          ],
+          "n_positive": 369,
+          "n_fault_free": 21
+        },
+        {
+          "k_windows_per_decision": 11,
+          "decisions_per_hour": 65.45454545454545,
+          "decisions_per_episode": 3,
+          "detection": 0.7831978319783198,
+          "ci95": [
+            0.7154471544715447,
+            0.9105691056910569
+          ],
+          "n_positive": 369,
+          "n_fault_free": 21
+        },
+        {
+          "k_windows_per_decision": 27,
+          "decisions_per_hour": 26.666666666666668,
+          "decisions_per_episode": 1,
+          "detection": 0.6829268292682927,
+          "ci95": [
+            0.42276422764227645,
+            0.7560975609756098
+          ],
+          "n_positive": 369,
+          "n_fault_free": 21
+        }
+      ],
+      "n_fault_free_episodes": 21,
+      "direction": "falls",
+      "change": -0.18157181571815717
+    }
+  }
+}

@@ -758,52 +758,102 @@ argument for why the rig had to be built rather than simulated.
 
 ---
 
-## B-14 — The session-level monitor study *(the centrepiece)*
+## B-14 — The decision-rate curve *(the centrepiece)*
 
-**This replaces the drift sweep.** The reasoning is in
-`reports/SESSION_MONITOR_DESIGN.md`: the drift sweep answers whether the
-within-session limit is neural-specific, and that is no longer the open
-question. The open question is whether a session-level monitor can reach 0.933,
-and at what false-flag rate.
+**What this produces: a curve that does not exist for any system, measured
+entirely on data this project collects.**
 
-**The schedule, computed rather than guessed:**
+### The question
+
+`reports/OPERATING_POINT_BOUND.md` found that the monitor failed for a reason
+unrelated to the detector: a budget of 0.1 false alarms per hour was applied to a
+system deciding **720 times an hour**, demanding a per-decision false-positive
+rate of 0.00014.
+
+That implies something more general than a fix. **Deciding less often should make
+monitoring easier for two compounding reasons** — a looser per-decision budget,
+and more evidence behind each decision. If that holds, there is a *decision-rate
+law* for health monitoring of any drifting many-channel sensor: **detection
+achievable at a fixed false-flag rate, as a function of how often you decide.**
+
+### Why the archived data raised this and cannot answer it
+
+`reports/DECISION_RATE_CURVE.md` measures the curve on Pun et al.'s recordings.
+Two things stop it settling anything:
+
+| | T11 | T5 |
+|---|---|---|
+| Direction of the curve | **rises** (+11.5%) | **falls** (−18.2%) |
+| Detection at 720 decisions/hour | 85.1% (CI 62.6–98.7%) | 86.4% (CI 66.9–93.8%) |
+| Fault-free episodes behind the threshold | **29** | **21** |
+
+A law that points one way in one array and the other way in the next is not a
+law. And at a 10% false-flag rate the threshold is the 90th percentile of 29
+episodes — **two or three episodes in the tail.** The intervals show what that
+costs.
+
+**This is the specification for a measurement, not a dead end.**
+
+### One campaign gives the whole curve
+
+**The decision rate is an analysis choice, not a recording choice.** A session
+recorded once can be scored at every decision rate afterwards. So this does not
+need an arm per rate. It needs enough fault-free sessions to put a trustworthy
+threshold on the tail, and the entire curve falls out of the same recordings.
+
+### The schedule
 
 | | Value |
 |---|---|
-| Healthy sessions | **101** |
+| Healthy sessions | **101 minimum** — this is a floor, not a target |
 | Sessions with a constructed degradation | **101** |
-| Total | **202**, about **17 hours** |
-| Session-level AUC measured to | ±0.036 |
-| Binding constraint | false-flag rate |
+| Total | **202, about 17 hours** |
+| Scored at | every decision rate from 720/hour down to 1 per session |
 
-Healthy sessions run unattended overnight:
+**Record more healthy sessions than 101 if time allows**, and record them first.
+The binding constraint is the tail of the fault-free distribution, so healthy
+recording is what buys precision. 200 healthy sessions costs another 8 hours
+unattended and roughly halves the width of the threshold's interval.
 
 ```
 python3 rig/run_batch.py --make-sweep-plan rig/plans/healthy.txt --levels 0 --blocks 101
 python3 rig/run_batch.py --plan rig/plans/healthy.txt
 ```
 
-Degrading sessions impose a slow drift whose onset is **drawn and written down
-before the session starts**. That is the whole point, and it is exactly what the
-archived data does not have.
+Degrading sessions impose a drift whose **onset is drawn and written down before
+the session starts.** That is what the archived data does not have and cannot be
+given retrospectively.
 
-Then score **one decision per session** and report the pair that matters:
+Then score the same recordings at every decision rate:
 
 ```
-python3 scripts/73_monitorability_certificate.py --participant RIG1
+python3 scripts/76_decision_rate_curve.py
 ```
 
-**Both outcomes are worth having.** Reaching 0.93 means a monitor that flags
-sessions for recalibration with a measured false-flag rate — the first such
-measurement in existence. Falling short means the target is out of reach for
-this detector class, measured rather than asserted, and the shortfall becomes a
-number the next person can aim at.
+### What each outcome means
 
-**What this must not become.** Relaxing a target after failing to meet it is how
-a success gets manufactured. The argument is *not* that 0.1 per hour was too
-strict — that figure is unchanged. It is that a per-hour alarm budget and a
-per-five-second decision rate are different quantities, and the original design
-conflated them.
+| If the rig's curve… | Then |
+|---|---|
+| **Rises**, as T11's does | Deciding less often genuinely helps. The curve is a design rule: *check this often, and no more.* Applies to any drifting many-channel sensor, not just implants. |
+| **Falls**, as T5's does | Pooling windows destroys more than it buys, and the right move is the opposite of what this analysis suggests. |
+| **Is flat** | The failure is in the detector, not the sampling — which sends the next attempt somewhere completely different from where this project would have sent it. |
+
+**All three are publishable, and the project cannot currently predict which one
+it will get.** That is the test of whether this is an experiment rather than a
+demonstration.
+
+### Why this is your data and not a re-analysis
+
+| | Archived data | This campaign |
+|---|---|---|
+| Fault-free sessions | 29 / 21 | **101+** |
+| Onsets | never recorded; chosen afterwards | **drawn before each session** |
+| Who collected it | Pun et al., 2024 | **this project** |
+| Can it settle the curve? | **no** | yes |
+
+The archived data asked the question. **The answer comes from recordings made
+here**, and it is a design curve for a whole class of sensor, not a fact about
+two people's implants.
 
 ---
 

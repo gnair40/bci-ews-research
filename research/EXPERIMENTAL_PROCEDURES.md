@@ -348,7 +348,8 @@ the two ever disagree, that document wins.**
 | P-R5 | The invariant-feature route fails again | invariant detector scores **worse** than the plain one | invariant scores better | Procedure 76 |
 | P-R6 | Faults I cause but did not design are harder than the ones I invented | AUC lower by **≥ 0.03** | gap under 0.03, or the wrong way | Procedure 75 |
 | P-R7 | Natural drift resembles at least one designed fault mode | nearest-mode match **above chance (25%)** | at or below chance | Procedure 77 |
-| **P-R8** | **A session-level monitor clears the archived shortfall** | **session-level AUC > 0.80** (archived: 0.673, 0.742; target: 0.933) | AUC at or below 0.80 | **B-14, the new centrepiece** |
+| **P-R10** | **The decision-rate law: deciding less often helps** | detection **≥10 points higher** at 1 decision/session than at 720/hour | the rise is under 10 points, flat, or negative | **B-14, the centrepiece** |
+| **P-R8** | A session-level monitor clears the archived shortfall | session-level AUC > 0.80 (archived: 0.673, 0.742; target: 0.933) | AUC at or below 0.80 | B-14, secondary |
 | **P-R9** | **The false-flag rate becomes measurable at all** | **relative SE under 35%** over 101 healthy sessions | fewer than ~100 usable sessions, or SE above 35% | **B-14** |
 
 Every row has a useful outcome in both directions, which is the test of whether

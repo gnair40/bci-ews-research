@@ -154,6 +154,39 @@ a study whose null result teaches nothing should not be run.
   reported as one finding with two parts, never counted as two pieces of
   evidence.
 
+### P-R10 — The decision-rate law: deciding less often helps
+
+> Scored on the rig's own recordings at a **10% false-flag rate**, detection
+> will be **higher at 1 decision per session than at 720 decisions per hour**,
+> by at least **10 percentage points**.
+
+- **This is now the primary prediction of Arm B**, added 19 September 2026 as
+  part of Amendment 2. `reports/DECISION_RATE_CURVE.md` has the reasoning.
+- **Derived from:** the archived curve, which **disagrees between participants**
+  — it rises +11.5% on T11 and falls −18.2% on T5, on 29 and 21 fault-free
+  episodes, with confidence intervals spanning 62% to 99%. The direction is
+  genuinely unknown, which is what makes this worth predicting rather than
+  reporting.
+- **Why 10 points:** slightly below T11's observed +11.5%, so the prediction is
+  not a restatement of it, and far above the noise floor 101 fault-free sessions
+  will give. `[[RESEARCHER: accept or change]]`
+- **Falsified if:** the rise is under 10 points, flat, or negative.
+- **If confirmed:** there is a decision-rate law, and it is a design rule for
+  any many-channel sensor that drifts slowly — *check this often, and no more*.
+  This is the strongest outcome available to this project.
+- **If falsified with a FLAT curve:** the failure is in the detector rather than
+  the sampling rate, which sends the next attempt somewhere completely different
+  from where this project's analysis would have sent it. Equally publishable.
+- **If falsified with a FALLING curve**, as T5's does: pooling windows destroys
+  more information than it buys, and the correct design move is the opposite of
+  the one this project's analysis suggests. **That is the outcome that would
+  most change what a reader does**, which is why the curve has to be measured
+  rather than argued for.
+- **Measured by:** `scripts/76_decision_rate_curve.py`, on the B-14 campaign.
+- **Note on power:** the binding constraint is the tail of the fault-free
+  distribution, not the number of faulted sessions. 101 healthy sessions is a
+  floor; more healthy recording is the only thing that tightens the threshold.
+
 ### P-R8 — A session-level monitor clears the archived shortfall
 
 > On the rig, scoring **one decision per session**, the session-level AUC of
@@ -559,6 +592,14 @@ analysis found no problem with any of them.
 ## 13. Amendment 2 — the session-level study replaces the drift sweep
 
 **Decided:** 19 September 2026, before anything was built or measured.
+
+**Amendment 2 was extended on the same day.** Its first version made the
+session-level AUC (P-R8) the centrepiece, which still measured this project's
+monitor against a target derived from Pun et al.'s data. P-R10 replaces it as
+the primary prediction: the decision-rate curve is a measurement of a
+*relationship*, made on recordings collected here, and it produces a design rule
+rather than a verdict on one monitor. P-R8 and P-R9 remain, as secondary
+readouts from the same campaign.
 
 Arm B was designed to ask whether this project's negative result is specific to
 cortex or general to any slowly drifting sensor array. Three findings from the

@@ -5538,3 +5538,64 @@ unchanged and still run; the drift sweep survives as optional arm B-15.
 The 0.1-per-hour budget is unchanged. What changes is how many decisions it is
 divided among — a different quantity the original design conflated with it, and
 the reports say so in those words wherever the new number appears.
+
+## 19 September 2026 — Reassessed again: the rig should measure a curve, not confirm a number
+
+Pushed on two things: that there has to be real physical validation, and that
+the project must produce its own data rather than re-analysing somebody else's.
+Both were fair, and the design I had written that morning only half answered
+them.
+
+**What was wrong with it.** B-14 as first written recorded 202 rig sessions — so
+it *was* the project's own data — but it used them to test whether the monitor
+clears a **target of 0.933 derived from Pun et al.'s recordings**. The rig data
+would have been confirmatory. The interesting number would still have come from
+somebody else's dataset.
+
+**What the rig should measure instead.** The audit found the monitor failed
+because a per-hour alarm budget was divided among 720 decisions an hour. That
+implies something more general than a fix for one monitor: **deciding less often
+should make monitoring easier for two compounding reasons** — a looser
+per-decision budget, and more evidence behind each decision. If that holds there
+is a *decision-rate law* for any drifting many-channel sensor: detection at a
+fixed false-flag rate, as a function of how often you decide. **No such curve
+exists for any system.**
+
+`scripts/76_decision_rate_curve.py` measures it on the archived data, and the
+result is the best possible argument for building the rig:
+
+| | T11 | T5 |
+|---|---|---|
+| Direction | **rises** (+11.5%) | **falls** (−18.2%) |
+| Detection at 720 decisions/hour | 85.1% (CI 62.6–98.7%) | 86.4% (CI 66.9–93.8%) |
+| Fault-free episodes behind the threshold | 29 | 21 |
+
+The two participants **disagree about which way the curve goes**, and the
+intervals span 62% to 99% because a 10% false-flag threshold is the 90th
+percentile of 29 episodes — two or three in the tail. The archived data raised
+this question and demonstrably cannot answer it.
+
+**A bug in my own first attempt, worth recording.** I initially scored "one
+decision per session" as the first window of the session rather than an
+aggregate over all 55. That is not a slower decision rate, it is throwing away
+54/55 of the evidence, and it produced a fake collapse to 12.6% and 4.6% that I
+briefly took for a finding. The real formulation couples both effects: at
+spacing k you make fewer decisions AND each pools the k windows since the last.
+
+**The efficiency that makes this affordable.** The decision rate is an *analysis*
+choice, not a recording choice. A session recorded once can be scored at every
+rate afterwards, so one campaign yields the entire curve rather than one point
+per arm.
+
+Made P-R10 the primary prediction of Arm B: detection at least 10 points higher
+at one decision per session than at 720 an hour. P-R8 and P-R9 survive as
+secondary readouts of the same recordings. All three possible outcomes are
+publishable and the project genuinely cannot predict which it will get — a
+falling curve, as T5's is, would mean the correct design move is the opposite of
+the one this analysis suggests, which is the outcome that would most change what
+a reader does.
+
+The binding constraint is the tail of the fault-free distribution, so 101 healthy
+sessions is a **floor** and healthy recording is the only thing that buys
+precision. That is now stated in the manual rather than left as a target to hit
+and stop.
