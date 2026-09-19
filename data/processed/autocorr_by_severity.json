@@ -1,0 +1,377 @@
+{
+  "window_bins": 1500,
+  "step_bins": 250,
+  "what_this_is": "C18's no-overlap autocorrelation split by whether a fault was injected, plus a small-sample bias calibration of the lag-1 estimator.",
+  "participants": {
+    "T11": {
+      "n_episodes_not_crossed": 309,
+      "by_severity": {
+        "1": {
+          "none": {
+            "n_episodes": 17,
+            "n_windows_median": 55.0,
+            "lag1_r_median": 0.8926950087497002,
+            "ci95": [
+              0.8418357640790496,
+              0.9294851697734703
+            ],
+            "n_eff": 3.1181857042382943,
+            "overlap_fraction": 0.8333333333333334
+          },
+          "benign": {
+            "n_episodes": 132,
+            "n_windows_median": 55.0,
+            "lag1_r_median": 0.9928083452962417,
+            "ci95": [
+              0.9918679140355737,
+              0.9935016317853798
+            ],
+            "n_eff": 0.19848421933816485,
+            "overlap_fraction": 0.8333333333333334
+          },
+          "sub": {
+            "n_episodes": 102,
+            "n_windows_median": 55.0,
+            "lag1_r_median": 0.996846089061693,
+            "ci95": [
+              0.9963794665395486,
+              0.9972575954542309
+            ],
+            "n_eff": 0.08686954019996285,
+            "overlap_fraction": 0.8333333333333334
+          }
+        },
+        "3": {
+          "none": {
+            "n_episodes": 17,
+            "n_windows_median": 19.0,
+            "lag1_r_median": 0.6148841424262375,
+            "ci95": [
+              0.41351346364171265,
+              0.7622865714213917
+            ],
+            "n_eff": 4.53109984900091,
+            "overlap_fraction": 0.5
+          },
+          "benign": {
+            "n_episodes": 132,
+            "n_windows_median": 19.0,
+            "lag1_r_median": 0.9572257174057854,
+            "ci95": [
+              0.9502182145046956,
+              0.9638776022723823
+            ],
+            "n_eff": 0.415236404295407,
+            "overlap_fraction": 0.5
+          },
+          "sub": {
+            "n_episodes": 102,
+            "n_windows_median": 19.0,
+            "lag1_r_median": 0.9768763835750677,
+            "ci95": [
+              0.974133456422042,
+              0.9811017675670757
+            ],
+            "n_eff": 0.22224389735446037,
+            "overlap_fraction": 0.5
+          }
+        },
+        "6": {
+          "none": {
+            "n_episodes": 17,
+            "n_windows_median": 10.0,
+            "lag1_r_median": 0.08473166925459166,
+            "ci95": [
+              -0.12218648676454692,
+              0.4528920921739402
+            ],
+            "n_eff": 8.43773955059655,
+            "overlap_fraction": 0.0
+          },
+          "benign": {
+            "n_episodes": 132,
+            "n_windows_median": 10.0,
+            "lag1_r_median": 0.8865862625358786,
+            "ci95": [
+              0.8604690933218113,
+              0.9092856947060294
+            ],
+            "n_eff": 0.6011585036757074,
+            "overlap_fraction": 0.0
+          },
+          "sub": {
+            "n_episodes": 102,
+            "n_windows_median": 10.0,
+            "lag1_r_median": 0.9227772473601347,
+            "ci95": [
+              0.9059472083137645,
+              0.9321304115817073
+            ],
+            "n_eff": 0.40162089886328667,
+            "overlap_fraction": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "1": {
+          "ALL": {
+            "n_episodes": 309,
+            "n_windows_median": 55.0,
+            "lag1_r_median": 0.9946057074530829,
+            "ci95": [
+              0.9940261652848672,
+              0.9949742924507808
+            ],
+            "n_eff": 0.14874422998582623,
+            "overlap_fraction": 0.8333333333333334
+          }
+        },
+        "3": {
+          "ALL": {
+            "n_episodes": 309,
+            "n_windows_median": 19.0,
+            "lag1_r_median": 0.9635292721569313,
+            "ci95": [
+              0.9595506511843512,
+              0.9692880747456128
+            ],
+            "n_eff": 0.35290730769554995,
+            "overlap_fraction": 0.5
+          }
+        },
+        "6": {
+          "ALL": {
+            "n_episodes": 309,
+            "n_windows_median": 10.0,
+            "lag1_r_median": 0.9019649791159334,
+            "ci95": [
+              0.8899654626216783,
+              0.9126003743805561
+            ],
+            "n_eff": 0.5154407255681173,
+            "overlap_fraction": 0.0
+          }
+        }
+      },
+      "bias_correction": {
+        "series_length": 10,
+        "estimator_ceiling": 0.615887644195602,
+        "identifiable": true,
+        "rho_point": 0.25234334736964587,
+        "rho_ci95": [
+          0.00592722356471317,
+          0.7641464747808179
+        ],
+        "rho_lower_bound_only": null,
+        "n_eff_bias_corrected": 5.97006127912678
+      },
+      "silence_gate_by_severity": {
+        "none": {
+          "n_episodes": 17,
+          "fraction_significant": 0.7647058823529411,
+          "passes_gate": false
+        },
+        "benign": {
+          "n_episodes": 132,
+          "fraction_significant": 0.9848484848484849,
+          "passes_gate": false
+        },
+        "sub": {
+          "n_episodes": 102,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        },
+        "ALL": {
+          "n_episodes": 309,
+          "fraction_significant": 0.9805825242718447,
+          "passes_gate": false
+        }
+      }
+    },
+    "T5": {
+      "n_episodes_not_crossed": 408,
+      "by_severity": {
+        "1": {
+          "none": {
+            "n_episodes": 15,
+            "n_windows_median": 42.0,
+            "lag1_r_median": 0.8941057609882525,
+            "ci95": [
+              0.8615220499255763,
+              0.9111695761300629
+            ],
+            "n_eff": 2.3481043826047374,
+            "overlap_fraction": 0.8333333333333334
+          },
+          "benign": {
+            "n_episodes": 153,
+            "n_windows_median": 42.0,
+            "lag1_r_median": 0.9558332207153207,
+            "ci95": [
+              0.9516800967487334,
+              0.9606156932281056
+            ],
+            "n_eff": 0.9484472961749189,
+            "overlap_fraction": 0.8333333333333334
+          },
+          "sub": {
+            "n_episodes": 149,
+            "n_windows_median": 43.0,
+            "lag1_r_median": 0.9860980487008616,
+            "ci95": [
+              0.9842174082815888,
+              0.9870459287054361
+            ],
+            "n_eff": 0.30098408598405874,
+            "overlap_fraction": 0.8333333333333334
+          }
+        },
+        "3": {
+          "none": {
+            "n_episodes": 15,
+            "n_windows_median": 14.0,
+            "lag1_r_median": 0.7054256847823268,
+            "ci95": [
+              0.6205516105182859,
+              0.775845061579812
+            ],
+            "n_eff": 2.4181882856852828,
+            "overlap_fraction": 0.5
+          },
+          "benign": {
+            "n_episodes": 153,
+            "n_windows_median": 14.0,
+            "lag1_r_median": 0.8502094673988921,
+            "ci95": [
+              0.8367766735101598,
+              0.8664779142014786
+            ],
+            "n_eff": 1.1334216440712856,
+            "overlap_fraction": 0.5
+          },
+          "sub": {
+            "n_episodes": 149,
+            "n_windows_median": 15.0,
+            "lag1_r_median": 0.9348254025030351,
+            "ci95": [
+              0.9272910385469798,
+              0.9398308569357854
+            ],
+            "n_eff": 0.505275029565847,
+            "overlap_fraction": 0.5
+          }
+        },
+        "6": {
+          "none": {
+            "n_episodes": 15,
+            "n_windows_median": 7.0,
+            "lag1_r_median": 0.4353386377153755,
+            "ci95": [
+              0.27096205069540025,
+              0.5397462665610869
+            ],
+            "n_eff": 2.7537958166330427,
+            "overlap_fraction": 0.0
+          },
+          "benign": {
+            "n_episodes": 153,
+            "n_windows_median": 7.0,
+            "lag1_r_median": 0.6559691768257957,
+            "ci95": [
+              0.6015016273204217,
+              0.6771547267113462
+            ],
+            "n_eff": 1.454263639638245,
+            "overlap_fraction": 0.0
+          },
+          "sub": {
+            "n_episodes": 149,
+            "n_windows_median": 8.0,
+            "lag1_r_median": 0.824689474118537,
+            "ci95": [
+              0.8026337886730193,
+              0.8370404700935276
+            ],
+            "n_eff": 0.7686152778018353,
+            "overlap_fraction": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "1": {
+          "ALL": {
+            "n_episodes": 408,
+            "n_windows_median": 42.0,
+            "lag1_r_median": 0.9800718798493452,
+            "ci95": [
+              0.9767380767002433,
+              0.9827964138941772
+            ],
+            "n_eff": 0.4227023548211717,
+            "overlap_fraction": 0.8333333333333334
+          }
+        },
+        "3": {
+          "ALL": {
+            "n_episodes": 408,
+            "n_windows_median": 14.0,
+            "lag1_r_median": 0.9167547745620179,
+            "ci95": [
+              0.9100314922177044,
+              0.9269606415265337
+            ],
+            "n_eff": 0.6080241309940405,
+            "overlap_fraction": 0.5
+          }
+        },
+        "6": {
+          "ALL": {
+            "n_episodes": 408,
+            "n_windows_median": 7.0,
+            "lag1_r_median": 0.7844173111055717,
+            "ci95": [
+              0.7590361590240327,
+              0.8026337886730193
+            ],
+            "n_eff": 0.8456983760855907,
+            "overlap_fraction": 0.0
+          }
+        }
+      },
+      "bias_correction": {
+        "series_length": 7,
+        "estimator_ceiling": 0.46440845935213493,
+        "identifiable": false,
+        "rho_point": NaN,
+        "rho_ci95": [
+          0.6648043852898142,
+          NaN
+        ],
+        "rho_lower_bound_only": 0.6648043852898142,
+        "n_eff_bias_corrected": NaN
+      },
+      "silence_gate_by_severity": {
+        "none": {
+          "n_episodes": 15,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        },
+        "benign": {
+          "n_episodes": 153,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        },
+        "sub": {
+          "n_episodes": 149,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        },
+        "ALL": {
+          "n_episodes": 408,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "T11": {
+    "observed_spearman": -0.3013,
+    "n_permutations": 20000,
+    "permutation_p": 0.12839,
+    "null_spearman_sd": 0.1943,
+    "naive_spearman_p": 0.00301
+  },
+  "T5": {
+    "observed_spearman": -0.6997,
+    "n_permutations": 20000,
+    "permutation_p": 0.0804,
+    "null_spearman_sd": 0.3648,
+    "naive_spearman_p": 0.00369
+  }
+}

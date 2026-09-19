@@ -1,0 +1,12 @@
+{
+  "participant": "T11",
+  "n_episodes": 395,
+  "n_sessions": 12,
+  "n_channels": 384,
+  "lambda_frac": 0.1,
+  "median_pairwise_auc": 0.8172,
+  "min_pairwise_auc": 0.5745,
+  "max_pairwise_auc": 0.977,
+  "gain_drift_vs_rotation_auc": 0.9195,
+  "prediction_met_auc_above_0.8": true
+}

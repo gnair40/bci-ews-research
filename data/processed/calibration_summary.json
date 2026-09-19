@@ -1,0 +1,16 @@
+{
+  "T11": {
+    "auc_at_20_scattered": 0.6535,
+    "auc_at_20_contiguous": 0.6652,
+    "auc_pooled": 0.6476,
+    "range_from_20_up": 0.007499999999999951,
+    "gain_from_20_to_all": -0.0059
+  },
+  "T5": {
+    "auc_at_20_scattered": 0.7396,
+    "auc_at_20_contiguous": 0.7329,
+    "auc_pooled": 0.7388,
+    "range_from_20_up": 0.0013999999999999568,
+    "gain_from_20_to_all": -0.0008
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "participant": "T11",
+  "n_days": 13,
+  "mean_contaminated_windows_per_episode": 5.99,
+  "mean_delta": 0.0072,
+  "median_delta": 0.0037,
+  "max_abs_delta": 0.0316,
+  "days_improved": 7,
+  "days_worsened": 2,
+  "wilcoxon_p": 0.1289,
+  "direction_matches_prediction": true
+}

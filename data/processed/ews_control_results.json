@@ -1,0 +1,92 @@
+{
+  "settings": {
+    "n": 8000,
+    "window": 1000,
+    "step": 50,
+    "smooth_sigma": 200.0,
+    "n_surrogates": 500,
+    "alpha": 0.05,
+    "seed": 0
+  },
+  "passed": true,
+  "results": {
+    "saddle_node": {
+      "label": "Saddle-node bifurcation",
+      "role": "POSITIVE control \u2014 CSD is present",
+      "indicators": {
+        "variance": {
+          "tau": 0.5507598784194528,
+          "p_two_sided": 0.01,
+          "surrogate_tau_mean": -0.01843566362715299,
+          "surrogate_tau_sd": 0.2341548084147321,
+          "n_surrogates": 500,
+          "fired": true,
+          "expected": "rise",
+          "as_expected": true
+        },
+        "ar1": {
+          "tau": 0.5499493414387031,
+          "p_two_sided": 0.01,
+          "surrogate_tau_mean": -0.006074569402228974,
+          "surrogate_tau_sd": 0.24605037235698865,
+          "n_surrogates": 500,
+          "fired": true,
+          "expected": "rise",
+          "as_expected": true
+        }
+      }
+    },
+    "monotonic_drift": {
+      "label": "Monotonic decline + noise",
+      "role": "NEGATIVE control \u2014 no bifurcation",
+      "indicators": {
+        "variance": {
+          "tau": -0.21965552178318135,
+          "p_two_sided": 0.406,
+          "surrogate_tau_mean": 0.014186828774062814,
+          "surrogate_tau_sd": 0.24779429505811248,
+          "n_surrogates": 500,
+          "fired": false,
+          "expected": "flat",
+          "as_expected": true
+        },
+        "ar1": {
+          "tau": -0.2409321175278622,
+          "p_two_sided": 0.356,
+          "surrogate_tau_mean": 0.009895035460992909,
+          "surrogate_tau_sd": 0.2504559663797623,
+          "n_surrogates": 500,
+          "fired": false,
+          "expected": "flat",
+          "as_expected": true
+        }
+      }
+    },
+    "rising_noise": {
+      "label": "Rising noise, constant recovery rate",
+      "role": "NEGATIVE control \u2014 variance rises, system does not slow",
+      "indicators": {
+        "variance": {
+          "tau": 0.7213779128672746,
+          "p_two_sided": 0.0,
+          "surrogate_tau_mean": -0.006681661600810535,
+          "surrogate_tau_sd": 0.2380281490618149,
+          "n_surrogates": 500,
+          "fired": true,
+          "expected": "rise",
+          "as_expected": true
+        },
+        "ar1": {
+          "tau": -0.4074974670719352,
+          "p_two_sided": 0.086,
+          "surrogate_tau_mean": 0.011715906788247212,
+          "surrogate_tau_sd": 0.24580953115738916,
+          "n_surrogates": 500,
+          "fired": false,
+          "expected": "flat",
+          "as_expected": true
+        }
+      }
+    }
+  }
+}

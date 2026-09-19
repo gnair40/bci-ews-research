@@ -1,0 +1,54 @@
+{
+  "participant": "T5",
+  "n_days": 6,
+  "damage_vs_decoder_error": {
+    "rho": -0.143,
+    "p": 0.7872,
+    "n": 6
+  },
+  "damage_vs_monitor_auc": {
+    "rho": 0.486,
+    "p": 0.3287,
+    "n": 6
+  },
+  "baseline_vs_damage": {
+    "rho": 0.029,
+    "p": 0.9572,
+    "n": 6
+  },
+  "spurious_vs_decoder_error": {
+    "rho": 0.406,
+    "p": 0.4247,
+    "n": 6
+  },
+  "spurious_vs_monitor_auc": {
+    "rho": -0.377,
+    "p": 0.4615,
+    "n": 6
+  },
+  "trace_noise_vs_monitor_auc": {
+    "rho": -0.6,
+    "p": 0.208,
+    "n": 6
+  },
+  "P5_raw": {
+    "rho": -0.829,
+    "p": 0.0416
+  },
+  "P5_controlling_for_damage": {
+    "rho": -0.878,
+    "p": 0.0505,
+    "df": 3
+  },
+  "P5_controlling_for_spurious": {
+    "rho": -0.798,
+    "p": 0.1056,
+    "df": 3
+  },
+  "P5_controlling_for_trace_noise": {
+    "rho": -0.748,
+    "p": 0.1456,
+    "df": 3
+  },
+  "P5_survives_the_challenge": false
+}
