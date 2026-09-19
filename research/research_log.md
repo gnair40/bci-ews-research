@@ -5289,3 +5289,51 @@ Gate 4 in the build manual is now closed and the build is unblocked.
   fault-free and pooled correlations, the decoder's 54.6° against 90.7°, the
   36.1° margin, the twin's 0.00211 depth and 35.3° margin, the 4–811 s sweep
   band, and 5 levels × 53 blocks = 22.1 hours. All consistent.
+
+## 19 September 2026 — The monitor was running at the wrong timescale
+
+Asked what the real-world impact of a negative result actually is, and going
+back through `reports/OPERATING_POINT_BOUND.md` found the answer had been
+sitting there unread. The within-session monitor fails because a budget of 2.4
+alarms a day spread over **720 decisions an hour** demands a per-decision
+false-positive rate of 1.4e-4, which needs an AUC of 0.9992 against an observed
+0.693. The information is present. The decision rate destroys it.
+
+Put that beside claim C04 — a session holds roughly one independent measurement
+— and the error is obvious in hindsight: **the monitor was making 720 decisions
+an hour out of one measurement's worth of evidence.** That is a sampling-rate
+problem, self-inflicted, and nothing in this project had asked what happens at a
+different rate.
+
+So I asked. `scripts/74_session_level_monitor.py` makes **one decision per
+session** instead, using a neural-only drift measure — each session's covariance
+geometry compared against the first, no labels and no performance data.
+
+On T11, 15 sessions across 142 days: **rho = −0.818, p = 0.0002** against median
+angular error. Warning when the drift measure falls below 0.55 fires **31 days
+before** the sustained failure, with **no healthy session warned first**. Looser
+thresholds buy more lead at the cost of unnecessary recalibrations: 43 days for
+2, 69 days for 5. Same signal, same participant, same recordings that produced
+−20 seconds within a session.
+
+**Two things stop this being a result yet, and both are recorded rather than
+smoothed over.**
+
+First, it is **exploratory and was not preregistered**. Everything else in this
+project fixed its predictions before looking; this looked first. It is a
+hypothesis the data generated, and presenting it as anything else would be the
+exact failure the whole preregistration apparatus exists to prevent.
+
+Second, and worse: **T11 recovers after its first crossing.** Error passes the
+threshold at day 727, returns to 21.8° at day 751, then collapses at 758. So
+"lead time" is 31 days or 0 days depending on which crossing counts as the
+failure — which is precisely the problem that motivated building fault injection
+in the first place. I nearly reported the flattering number without noticing.
+The script now computes both definitions and the report says having to choose is
+itself the finding.
+
+What this changes about the rig: Arm B was built to ask whether the
+within-session limit is neural-specific. Testing the session-level monitor is a
+better use of it, because constructed onsets are exactly what the false-alarm
+rate needs and there is only one degradation event on T11 to learn from. That is
+a December decision, not one to make while writing it up.
