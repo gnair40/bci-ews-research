@@ -7,6 +7,19 @@ activity is one channel in the neural data.
 Exposure and white balance are FIXED. The automatic versions are compensators:
 leave them on and the camera quietly cancels out the very degradation I am
 trying to measure.
+
+PIXELS PER CHANNEL IS THE SECOND CALIBRATION SETTING
+----------------------------------------------------
+Averaging N pixels into one channel divides that channel's noise by sqrt(N). The
+first version of this file captured 480x320 and averaged 20x20 = 400 pixels per
+channel, which made every channel twenty times quieter than a single pixel and
+was half the reason the simulated rig decoded perfectly (see
+scripts/72_rig_digital_twin.py and reports/RIG_DIGITAL_TWIN.md).
+
+The defaults below capture 48x32 so that each channel is a 2x2 = 4 pixel block.
+Together with the small modulation depth in stimulus.py this puts the rig at the
+neural operating point. Raising the capture size back up will quietly make the
+rig too good again.
 """
 import argparse, time
 import numpy as np
@@ -15,8 +28,8 @@ from picamera2 import Picamera2
 ap = argparse.ArgumentParser()
 ap.add_argument("--cols", type=int, default=24)
 ap.add_argument("--rows", type=int, default=16)
-ap.add_argument("--width", type=int, default=480)    # 480/24 = 20 px per region
-ap.add_argument("--height", type=int, default=320)   # 320/16 = 20 px per region
+ap.add_argument("--width", type=int, default=48)     # 48/24 = 2 px per side
+ap.add_argument("--height", type=int, default=32)    # 32/16 = 2 px per side -> 4 px/channel
 ap.add_argument("--fps", type=int, default=50)
 ap.add_argument("--frames", type=int, default=15000)
 ap.add_argument("--exposure", type=int, default=8000)   # microseconds

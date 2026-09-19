@@ -1,0 +1,235 @@
+{
+  "what_this_is": "A DIGITAL TWIN. Design expectations, not measurements.",
+  "geometry": {
+    "cols": 24,
+    "rows": 16,
+    "channels": 384,
+    "px_per_channel": 4,
+    "fps": 50,
+    "block_frames": 15000
+  },
+  "sensor_model": {
+    "k_shot": 1.0,
+    "read_noise_counts": 2.0,
+    "blur_sigma_px": 1.2,
+    "vignette": 0.25,
+    "base_level": 0.5
+  },
+  "neural_target": {
+    "T11": {
+      "error_deg": 54.554,
+      "chance_deg": 90.692
+    },
+    "T5": {
+      "error_deg": 52.8,
+      "chance_deg": 84.941
+    }
+  },
+  "test1_original_design": {
+    "modulation_depth": 0.5,
+    "median_angular_error_deg": 0.26069966767956965,
+    "measured_chance_deg": 89.25576816623483,
+    "margin_deg": 88.99506849855526,
+    "neural_margin_T11_deg": 36.13799999999999,
+    "too_easy": true
+  },
+  "test1b_calibration": {
+    "modulation_depth": 0.002114417319273541,
+    "modulation_in_8bit_counts": 0.539176416414753,
+    "px_per_channel": 4,
+    "calibrated_error_deg": 54.18393854332864,
+    "calibrated_chance_deg": 89.46407639697568,
+    "calibrated_margin_deg": 35.28013785364705,
+    "target_margin_deg": 36.13799999999999,
+    "matched": true,
+    "search_trace": [
+      {
+        "depth": 0.015811388300841896,
+        "error_deg": 8.423939925305561,
+        "chance_deg": 89.56119089403462,
+        "margin_deg": 81.13725096872906
+      },
+      {
+        "depth": 0.0028117066259517455,
+        "error_deg": 44.72621484141084,
+        "chance_deg": 89.77602589698324,
+        "margin_deg": 45.049811055572405
+      },
+      {
+        "depth": 0.0011856868528308277,
+        "error_deg": 71.82216567306801,
+        "chance_deg": 89.84120224660464,
+        "margin_deg": 18.019036573536624
+      },
+      {
+        "depth": 0.0018258706362741886,
+        "error_deg": 59.69807879026487,
+        "chance_deg": 89.79979042145797,
+        "margin_deg": 30.101711631193098
+      },
+      {
+        "depth": 0.002265791818800409,
+        "error_deg": 52.02597894070735,
+        "chance_deg": 89.487157199407,
+        "margin_deg": 37.46117825869965
+      },
+      {
+        "depth": 0.002033972160541524,
+        "error_deg": 56.66941544627701,
+        "chance_deg": 89.5417331670364,
+        "margin_deg": 32.87231772075939
+      },
+      {
+        "depth": 0.002146755105041741,
+        "error_deg": 52.972251682563396,
+        "chance_deg": 89.37459030116158,
+        "margin_deg": 36.40233861859818
+      },
+      {
+        "depth": 0.00208960286158765,
+        "error_deg": 54.908705510387556,
+        "chance_deg": 90.43480594293554,
+        "margin_deg": 35.526100432547985
+      },
+      {
+        "depth": 0.0021179862158718405,
+        "error_deg": 53.560192659686734,
+        "chance_deg": 89.77374635879518,
+        "margin_deg": 36.213553699108445
+      },
+      {
+        "depth": 0.0021037466714148344,
+        "error_deg": 54.691586676172946,
+        "chance_deg": 89.48863029588088,
+        "margin_deg": 34.797043619707935
+      },
+      {
+        "depth": 0.002110854436417368,
+        "error_deg": 54.50223731113581,
+        "chance_deg": 89.77462767379711,
+        "margin_deg": 35.272390362661305
+      }
+    ]
+  },
+  "test2_healthy_autocorrelation": {
+    "n_blocks": 10,
+    "windows_per_block": 55,
+    "lag1_no_overlap_median": 0.007822942102084257,
+    "n_eff_median": 10.006614013865224
+  },
+  "test3_fault_modes": {
+    "RATE_LOSS": {
+      "ladder": [
+        {
+          "severity": 0.0,
+          "median_error_deg": 54.68469556263737,
+          "median_risk": 0.034022871404886246
+        },
+        {
+          "severity": 0.25,
+          "median_error_deg": 67.27313076348366,
+          "median_risk": 4.232110977172852
+        },
+        {
+          "severity": 0.5,
+          "median_error_deg": 67.10334096485732,
+          "median_risk": 8.46410083770752
+        },
+        {
+          "severity": 1.0,
+          "median_error_deg": 67.2870298027317,
+          "median_risk": 16.93638801574707
+        }
+      ],
+      "error_rises_with_severity": true,
+      "error_rise_deg": 12.602334240094322,
+      "risk_rises_with_severity": true,
+      "risk_above_healthy_at_full": true
+    },
+    "CHANNEL_DROPOUT": {
+      "ladder": [
+        {
+          "severity": 0.0,
+          "median_error_deg": 54.68469556263737,
+          "median_risk": 0.034022871404886246
+        },
+        {
+          "severity": 0.25,
+          "median_error_deg": 58.01253295116571,
+          "median_risk": 0.03416196256875992
+        },
+        {
+          "severity": 0.5,
+          "median_error_deg": 61.12788548544599,
+          "median_risk": 0.033887747675180435
+        },
+        {
+          "severity": 1.0,
+          "median_error_deg": 69.13660255955728,
+          "median_risk": 0.033789996057748795
+        }
+      ],
+      "error_rises_with_severity": true,
+      "error_rise_deg": 14.451906996919902,
+      "risk_rises_with_severity": false,
+      "risk_above_healthy_at_full": false
+    },
+    "GAIN_DRIFT": {
+      "ladder": [
+        {
+          "severity": 0.0,
+          "median_error_deg": 54.68469556263737,
+          "median_risk": 0.034022871404886246
+        },
+        {
+          "severity": 0.25,
+          "median_error_deg": 72.06148635434158,
+          "median_risk": 2.478365182876587
+        },
+        {
+          "severity": 0.5,
+          "median_error_deg": 83.7949320748154,
+          "median_risk": 5.0253729820251465
+        },
+        {
+          "severity": 1.0,
+          "median_error_deg": 89.69795037884408,
+          "median_risk": 9.967974662780762
+        }
+      ],
+      "error_rises_with_severity": true,
+      "error_rise_deg": 35.01325481620671,
+      "risk_rises_with_severity": true,
+      "risk_above_healthy_at_full": true
+    },
+    "GEOMETRY_ROTATION": {
+      "ladder": [
+        {
+          "severity": 0.0,
+          "median_error_deg": 54.68469556263737,
+          "median_risk": 0.034022871404886246
+        },
+        {
+          "severity": 0.25,
+          "median_error_deg": 88.0566643969896,
+          "median_risk": 0.5639859437942505
+        },
+        {
+          "severity": 0.5,
+          "median_error_deg": 90.60481615973438,
+          "median_risk": 0.8079264163970947
+        },
+        {
+          "severity": 1.0,
+          "median_error_deg": 90.64700953500639,
+          "median_risk": 1.3821609020233154
+        }
+      ],
+      "error_rises_with_severity": true,
+      "error_rise_deg": 35.96231397236902,
+      "risk_rises_with_severity": true,
+      "risk_above_healthy_at_full": true
+    }
+  },
+  "healthy_median_risk": 0.03147083893418312
+}
