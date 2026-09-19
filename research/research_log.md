@@ -5479,3 +5479,62 @@ The rule I am adopting: **a document that tells you what to do gets corrected; a
 document that records what was done gets annotated.** Three days of audit have
 produced a lot of corrections, and without that line the project would quietly
 lose its own history.
+
+## 19 September 2026 — Redesigned Arm B around what the audit found
+
+The physical plan still reflected the question the project had before the audit.
+Asked what the rig should now measure, and the answer was already in the
+repository, unread. `reports/OPERATING_POINT_BOUND.md` — written weeks ago —
+ends with this:
+
+> *"A deployed decoder-health monitor does not need to re-decide every 5
+> seconds. 'Should this session be flagged for a recalibration check?' is a
+> once-per-session question, and at that rate the same detector faces a
+> per-decision false-positive budget four orders of magnitude looser."*
+
+It even computed the consequence: a session-level AUC of **0.933** flags 80% of
+degrading sessions while wrongly flagging 10% of healthy ones. The monitor
+reaches **0.673** (T11) and **0.742** (T5). That is a gap of about 0.2, and
+nothing downstream had acted on it. The rig was still being designed to ask
+whether the *within-session* limit is neural-specific.
+
+Three audit findings together make that the wrong thing to spend the recording
+time on:
+
+1. The failure is located and quantified — a gap to close, not a wall.
+2. **The false-flag rate cannot be estimated from the archived data at all.**
+   Fault-free it rests on 17 and 15 episodes, about 1.4 hours, against a budget
+   of 0.1 per hour.
+3. The negative result is real without the rig: the silence gate fails on
+   fault-free episodes too, 76.5% and 100% against a 10% bar.
+
+So Arm B's centrepiece is now the **session-level monitor study**, and
+`scripts/75_session_monitor_design.py` computes its schedule rather than guessing
+it: **101 healthy sessions and 101 with a constructed degradation, about 17
+hours**, giving a session-level AUC to ±0.036 and a 10% false-flag rate to within
+about a third of itself. The binding constraint is the false-flag rate, not the
+AUC — worth knowing, because it means healthy recording time is what the study
+is actually short of.
+
+**A trap I nearly walked into.** The easiest comparison — proving the rig beats
+0.673 — needs only 12 sessions per arm. I had that as the headline until I
+looked at what it means: nobody doubts the rig can beat 0.673, and a study
+powered only for that answers nothing. The report now says so explicitly and the
+schedule is driven by precision and the false-flag rate instead.
+
+**The argument for building the rig is now much better than the one it was built
+on.** It is not "a camera might behave like a brain". It is: *the number this
+project's conclusion rests on cannot be measured on any existing dataset,
+because measuring it needs two hundred fault-free sessions and no participant
+can sit through that. A box with a camera in it can run unattended for a
+fortnight.*
+
+Added P-R8 (session-level AUC above 0.80 — a bar the archived data fails, and
+well short of the 0.933 that would license claiming success) and P-R9 (the
+false-flag rate becomes estimable at all) as Amendment 2. P-R1 to P-R7 are
+unchanged and still run; the drift sweep survives as optional arm B-15.
+
+**What this is not.** It is not relaxing the target after failing to meet it.
+The 0.1-per-hour budget is unchanged. What changes is how many decisions it is
+divided among — a different quantity the original design conflated with it, and
+the reports say so in those words wherever the new number appears.

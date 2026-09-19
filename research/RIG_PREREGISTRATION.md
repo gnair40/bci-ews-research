@@ -154,6 +154,48 @@ a study whose null result teaches nothing should not be run.
   reported as one finding with two parts, never counted as two pieces of
   evidence.
 
+### P-R8 — A session-level monitor clears the archived shortfall
+
+> On the rig, scoring **one decision per session**, the session-level AUC of
+> `decoder_guard` will exceed **0.80** — above the 0.673 (T11) and 0.742 (T5)
+> measured on the archived data, and below the 0.933 the design target requires.
+
+- **Added 19 September 2026 as Amendment 2**, and it is now the centrepiece of
+  Arm B. See `reports/SESSION_MONITOR_DESIGN.md` for why the drift sweep was
+  demoted to make room.
+- **Derived from:** `reports/OPERATING_POINT_BOUND.md`. Flagging 80% of
+  degrading sessions while wrongly flagging 10% of healthy ones needs a
+  session-level AUC of **0.933**. The archived monitor reaches 0.673 and 0.742.
+- **Why 0.80, and why that is not a manufactured success:** 0.80 is a bar the
+  archived data **fails**, so confirming it is a real result rather than a
+  restatement. It is also well short of 0.933, so confirming it does **not**
+  license claiming the monitor works. The interesting outcomes are all three:
+  below 0.74 means the rig is worse than cortex and the analogy is in trouble;
+  0.80 to 0.93 means the gap is narrowed but not closed; above 0.93 means a
+  deployable monitor, which would be the strongest result this project could
+  produce. `[[RESEARCHER: accept or change]]`
+- **Falsified if:** session-level AUC is at or below 0.80.
+- **Measured by:** `scripts/73_monitorability_certificate.py`, on 101 healthy
+  and 101 constructed-degradation sessions — the schedule computed in
+  `scripts/75_session_monitor_design.py`.
+
+### P-R9 — The false-flag rate is finally measurable
+
+> Over **101 healthy rig sessions**, the false-flag rate at the operating point
+> chosen for P-R8 will be estimable with a relative standard error under 35%.
+
+- **This is a prediction about the measurement, not about the system**, which is
+  unusual and deliberate. The false-flag rate is half of what decides whether a
+  monitor is worth deploying, and on the archived data it **cannot be estimated
+  at all**: restricted to genuinely fault-free episodes there are 17 and 15 of
+  them, about 1.4 hours, against a budget of 0.1 per hour.
+- **Falsified if:** fewer than about 100 usable healthy sessions are obtained,
+  or the estimate's relative standard error exceeds 35%.
+- **If confirmed:** this is the first measured false-flag rate for decoder-health
+  monitoring with constructed ground truth. That is the contribution that
+  outlasts whatever P-R8 returns.
+- **Measured by:** the same recordings as P-R8.
+
 ### P-R3 — The silence gate fails on the rig too
 
 > More than **10%** of healthy rig episodes will show a significant trend in the
@@ -511,3 +553,32 @@ evidential weight.
 
 P-R3 through P-R7 are untouched. None of them derives from C18, and §11's
 analysis found no problem with any of them.
+
+---
+
+## 13. Amendment 2 — the session-level study replaces the drift sweep
+
+**Decided:** 19 September 2026, before anything was built or measured.
+
+Arm B was designed to ask whether this project's negative result is specific to
+cortex or general to any slowly drifting sensor array. Three findings from the
+September audit made that the wrong question to spend twenty-two hours of
+recording on:
+
+1. **The failure was located.** `reports/OPERATING_POINT_BOUND.md` shows a
+   per-hour alarm budget divided among 720 decisions an hour demands a per-window
+   AUC of 0.9992. Asked once per session the same detector needs 0.933, and
+   reaches 0.673 and 0.742. That is a gap to close, not a wall.
+2. **The false-flag rate cannot be measured on archived data at all** — 17 and
+   15 fault-free episodes, about 1.4 hours.
+3. **The negative result is real without the rig.** The silence gate fails on
+   fault-free episodes too, 76.5% and 100% against a 10% bar, so a camera
+   failing the same way would confirm something already established.
+
+P-R1 through P-R7 are unchanged and still run; the drift sweep survives as an
+optional arm (B-15). What changes is which measurement the recording time is
+spent on first, and P-R8 and P-R9 are the predictions for it.
+
+**What this amendment does not do.** It does not relax the 0.1-per-hour budget.
+That figure is unchanged. What changes is how many decisions it is divided
+among, which is a different quantity that the original design conflated with it.

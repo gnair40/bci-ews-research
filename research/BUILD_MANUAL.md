@@ -15,8 +15,13 @@ Read Part 0 and Part 1 before buying anything.
 
 ## 0.1 The device, in one sentence
 
-**A benchtop instrument that measures whether a multichannel sensor array can
-be health-monitored at all — and if so, at what cost in false alarms.**
+**A session-level decoder-health monitor, and the benchtop instrument that
+measures how good it is.**
+
+The monitor answers one question, once per session: *should this session be
+flagged for a recalibration check?* The instrument measures the two numbers about
+that monitor which cannot currently be measured anywhere — how often it catches a
+degrading session, and how often it wrongly flags a healthy one.
 
 Feed it a recording from any many-channel sensor. It returns three numbers and a
 verdict:
@@ -41,11 +46,35 @@ was **specificity**: the risk signal is never quiet during healthy operation, so
 any threshold low enough to catch a fault early also fires constantly when
 nothing is wrong.
 
-A negative result of that kind is not a failure to build something. It is a
-**measured limit**, and a measured limit is exactly what an instrument exists to
-report. Building a monitor and claiming it works would contradict this
-project's own evidence. Building the instrument that tells you whether a monitor
-*can* work, and what it would cost, is the thing the evidence actually supports.
+**Then the arithmetic behind that failure was worked out, and it changed the
+problem.** A budget of 0.1 false alarms per hour, divided among **720 decisions
+an hour**, demands a per-decision false-positive rate of 0.00014 — needing a
+per-window AUC of **0.9992** against an observed 0.693. Put that beside the
+finding that a faulted session holds roughly **one independent measurement**: the
+monitor was making 720 decisions an hour out of one measurement's worth of
+evidence.
+
+That is a sampling-rate problem, not a detector problem, and it was
+self-inflicted. Asked **once per session** instead, the same detector needs an
+AUC of **0.933** to flag 80% of degrading sessions while wrongly flagging 10% of
+healthy ones. It currently reaches **0.673** (T11) and **0.742** (T5).
+
+**That is the difference between "this cannot work" and "this needs to be about
+this much better", and only the second is something to build.**
+
+### The number nobody can currently measure
+
+The false-flag rate is half of what decides whether such a monitor is worth
+deploying, and **it cannot be estimated from the archived data at all.**
+Restricted to genuinely fault-free episodes that data offers **17 and 15
+episodes — about 1.4 hours.** Measuring a 10% false-flag rate to within a third
+of itself takes about **101 healthy sessions, 8.4 hours**; measuring 2% takes
+45 hours.
+
+No BCI participant can sit through two hundred sessions so somebody can estimate
+a false-alarm rate. **A box with a camera in it can run unattended for a
+fortnight.** That is the argument for building this, and it is a far better one
+than the argument it was originally built on.
 
 This matters for the engineering category specifically. The deliverable is a
 working physical device with a specification, a calibration procedure, a
@@ -132,6 +161,8 @@ building this?", the answer is a row of it.
 | 8 | Monitorability depends on drift speed, and the sweep needs 5 levels × 53 blocks ≈ 22 h | `reports/DRIFT_SWEEP_DESIGN.md` | What does the curve actually look like? | **B-14**: the drift sweep |
 | 9 | **The rig as originally specified decodes perfectly (0.0° vs 89° chance) and no fault can move it** | `reports/RIG_DIGITAL_TWIN.md` | — | **Fixed before building.** Calibration is now B-7 |
 | 10 | **The calibrated stimulus asks for half a brightness level, which a screen cannot emit** | `reports/RIG_DIGITAL_TWIN.md`, `rig/stimulus.py` | Does spatial dithering deliver it on real hardware? | **B-6**: measure the dither with the camera |
+| 11 | **The budget was applied at 720 decisions/hour, demanding AUC 0.9992. Once per session it needs 0.933; the monitor reaches 0.673–0.742** | `reports/OPERATING_POINT_BOUND.md` | Can a session-level monitor close that gap? | **B-14**: the session-level monitor study — now the centrepiece |
+| 12 | **The false-flag rate cannot be estimated from archived data: 17 and 15 fault-free episodes, ~1.4 hours** | `reports/AUTOCORR_BY_SEVERITY.md` | What is it actually? | **B-14**: 101 healthy sessions, which no participant could sit through |
 
 Rows 9 and 10 are the two that would have wasted the most time. Both were caught
 by simulating the rig in `scripts/72_rig_digital_twin.py` instead of building
@@ -727,14 +758,61 @@ argument for why the rig had to be built rather than simulated.
 
 ---
 
-## B-14 — The drift sweep
+## B-14 — The session-level monitor study *(the centrepiece)*
 
-**5 levels log-spaced between 4 s and 811 s, 53 blocks each**, about 22 hours of
-recording. These numbers come from `scripts/71_drift_sweep_design.py`; they are
-not guesses, and the eight levels at ten blocks originally written into the plan
-would have needed about 102 hours and could not have resolved the curve.
+**This replaces the drift sweep.** The reasoning is in
+`reports/SESSION_MONITOR_DESIGN.md`: the drift sweep answers whether the
+within-session limit is neural-specific, and that is no longer the open
+question. The open question is whether a session-level monitor can reach 0.933,
+and at what false-flag rate.
 
-Run it last. It is the longest and it depends on everything above being settled.
+**The schedule, computed rather than guessed:**
+
+| | Value |
+|---|---|
+| Healthy sessions | **101** |
+| Sessions with a constructed degradation | **101** |
+| Total | **202**, about **17 hours** |
+| Session-level AUC measured to | ±0.036 |
+| Binding constraint | false-flag rate |
+
+Healthy sessions run unattended overnight:
+
+```
+python3 rig/run_batch.py --make-sweep-plan rig/plans/healthy.txt --levels 0 --blocks 101
+python3 rig/run_batch.py --plan rig/plans/healthy.txt
+```
+
+Degrading sessions impose a slow drift whose onset is **drawn and written down
+before the session starts**. That is the whole point, and it is exactly what the
+archived data does not have.
+
+Then score **one decision per session** and report the pair that matters:
+
+```
+python3 scripts/73_monitorability_certificate.py --participant RIG1
+```
+
+**Both outcomes are worth having.** Reaching 0.93 means a monitor that flags
+sessions for recalibration with a measured false-flag rate — the first such
+measurement in existence. Falling short means the target is out of reach for
+this detector class, measured rather than asserted, and the shortfall becomes a
+number the next person can aim at.
+
+**What this must not become.** Relaxing a target after failing to meet it is how
+a success gets manufactured. The argument is *not* that 0.1 per hour was too
+strict — that figure is unchanged. It is that a per-hour alarm budget and a
+per-five-second decision rate are different quantities, and the original design
+conflated them.
+
+---
+
+## B-15 — The drift sweep *(optional, only if time allows)*
+
+The old centrepiece, kept because it is still a good question: 5 levels
+log-spaced between 4 s and 811 s, 53 blocks each, about 22 hours
+(`reports/DRIFT_SWEEP_DESIGN.md`). Run it only after B-14 is complete. **If time
+is short, cut this and not B-14.**
 
 ---
 

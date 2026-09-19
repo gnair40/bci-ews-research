@@ -286,8 +286,20 @@ something usable. A future array that drifts more slowly, or a different
 windowing scheme, can be placed on the same curve and evaluated before anybody
 builds it.
 
-Procedure 78 is the centerpiece of this experiment. Everything before it exists
-to make its measurement trustworthy.
+Procedure 78 was the centrepiece of this experiment. **It is not any more.**
+
+The September audit found that the false-alarm budget had been applied at 720
+decisions an hour, which demanded a per-window AUC of 0.9992 against an observed
+0.693. Asked once per session the same detector needs 0.933 and reaches 0.673 to
+0.742 — a gap to close rather than a wall. It also found that the false-flag
+rate cannot be estimated from the archived data at all: 17 and 15 fault-free
+episodes, about 1.4 hours.
+
+So the recording time goes first to the **session-level monitor study** (B-14 in
+`research/BUILD_MANUAL.md`, predictions P-R8 and P-R9): 101 healthy sessions and
+101 with a constructed degradation, about 17 hours. The drift sweep survives as
+an optional arm. Everything before it still exists to make its measurement
+trustworthy; what changed is which measurement comes first.
 
 ## Two further questions it answers
 
@@ -336,6 +348,8 @@ the two ever disagree, that document wins.**
 | P-R5 | The invariant-feature route fails again | invariant detector scores **worse** than the plain one | invariant scores better | Procedure 76 |
 | P-R6 | Faults I cause but did not design are harder than the ones I invented | AUC lower by **≥ 0.03** | gap under 0.03, or the wrong way | Procedure 75 |
 | P-R7 | Natural drift resembles at least one designed fault mode | nearest-mode match **above chance (25%)** | at or below chance | Procedure 77 |
+| **P-R8** | **A session-level monitor clears the archived shortfall** | **session-level AUC > 0.80** (archived: 0.673, 0.742; target: 0.933) | AUC at or below 0.80 | **B-14, the new centrepiece** |
+| **P-R9** | **The false-flag rate becomes measurable at all** | **relative SE under 35%** over 101 healthy sessions | fewer than ~100 usable sessions, or SE above 35% | **B-14** |
 
 Every row has a useful outcome in both directions, which is the test of whether
 this is an experiment rather than a demonstration. P-R1 confirmed means the
