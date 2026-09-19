@@ -55,6 +55,27 @@ Bootstrap is over episodes, 5000 resamples. `ALL not-crossed` is the row `script
 - **The rig comparison is aimed at the wrong number.** The natural-drift arm of the rig study has no injected fault, so it must be compared against the fault-free rows, not against 0.902 and 0.784. Predictions **P-R1** and **P-R2** in `research/RIG_PREREGISTRATION.md` originally took their thresholds from the pooled numbers and were **retargeted to the fault-free figures on 19 September 2026** (Amendment 1, §12). P-R1 is now a band spanning both participants' fault-free intervals; P-R2 was rewritten to test the fault-driven RISE in correlation, which is large on both participants and measured on hundreds of episodes rather than seventeen. P-R3 to P-R7 never depended on these figures.
 - **Every no-overlap number in this project is biased low**, because the estimator is biased low at 7 to 10 points. That direction makes the project's negative results look weaker than they are, not stronger, so nothing already published becomes over-claimed by it.
 
+## Does the headline negative result survive this?
+
+The silence gate is the binding one — it disqualified all 48 configurations and it is what makes this project's result negative. It asks what fraction of *healthy* episodes show a significant trend in the risk signal, and fails above 10%. `scripts/21` defines healthy as `not crossed`, which is the same mixed pool. **A rising risk score during a fault ramp is the detector working, not a silence failure**, so if the gate only failed because of that, the whole negative result would be an artefact.
+
+| Participant | Episodes scored | Fraction showing a trend | Gate |
+|---|---|---|---|
+| T11 — **fault-free only** | 17 | **0.765** | FAIL |
+| T11 — benign ramp | 132 | **0.985** | FAIL |
+| T11 — sub ramp | 102 | **1.000** | FAIL |
+| T11 — all not-crossed *(what the gate uses)* | 309 | **0.981** | FAIL |
+| T5 — **fault-free only** | 15 | **1.000** | FAIL |
+| T5 — benign ramp | 153 | **1.000** | FAIL |
+| T5 — sub ramp | 149 | **1.000** | FAIL |
+| T5 — all not-crossed *(what the gate uses)* | 408 | **1.000** | FAIL |
+
+**It survives.** On genuinely fault-free episodes the gate still fails, and not marginally: **76.5%** of T11's and **100.0%** of T5's show a significant trend against a bar of 10%. The monitor is not quiet when nothing is wrong, and that was never an artefact of the mislabel.
+
+**But the published figure is inflated by it.** The 98.1% quoted for T11 is the mixed pool; fault-free it is 76.5%. Those two numbers are not interchangeable and the smaller one is the honest one to quote about healthy operation.
+
+**The false-alarm rate has the same problem and cannot be fixed the same way.** It is also measured on the not-crossed pool, so alarms raised during sub-threshold ramps are counted as false. Restricting it to fault-free episodes leaves 17 and 15 episodes — about 1.4 hours — and a budget of 0.1 alarms per hour cannot be estimated from that. **Constructed onsets on the rig are the only way to measure it properly**, which is a better argument for building the rig than the one it was originally built for.
+
 ## Limits of this check
 
 - The fault-free group is small: 17 episodes on T11 and 15 on T5, one per block. The confidence intervals are correspondingly wide and the point estimates should not be quoted without them.

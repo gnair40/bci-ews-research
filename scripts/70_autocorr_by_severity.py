@@ -54,6 +54,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "data" / "processed"
@@ -169,6 +170,47 @@ def invert(curve: np.ndarray, observed: float) -> float:
     return float(np.interp(observed, curve, RHO_GRID))
 
 
+def silence_by_severity(sub: pd.DataFrame) -> dict:
+    """The silence gate, recomputed on each severity level separately.
+
+    WHY THIS MATTERS MORE THAN THE AUTOCORRELATION ABOVE
+    ----------------------------------------------------
+    The silence gate is the binding one: it disqualified all 48 configurations,
+    and it is what makes the project's headline result negative. It asks what
+    fraction of HEALTHY episodes show a significant trend in the risk signal,
+    and it fails if more than 10% do.
+
+    But scripts/21 defines healthy as `not crossed`, and that set is roughly 18
+    to 1 sub-threshold fault ramps. A rising risk score during a fault ramp is
+    the detector working, not a silence failure. So the gate has been scored,
+    in part, by penalising correct behaviour -- and if it only failed because of
+    that, the entire negative result would be an artefact of a mislabel.
+
+    It is not. The numbers are below and the gate fails on genuinely fault-free
+    episodes too. But the published figure IS inflated by the mislabel, and the
+    two should not be quoted interchangeably.
+    """
+    out = {}
+    for lv, g in [("none", sub[sub.severity == "none"]),
+                  ("benign", sub[sub.severity == "benign"]),
+                  ("sub", sub[sub.severity == "sub"]),
+                  ("ALL", sub)]:
+        ps = []
+        for _, r in g.iterrows():
+            y = np.fromstring(r.scores, sep=",")
+            if len(y) < 8:
+                continue
+            t, pv = stats.kendalltau(np.arange(len(y)), y)
+            if np.isfinite(t):
+                ps.append(pv)
+        if not ps:
+            continue
+        frac = float(np.mean(np.asarray(ps) < 0.05))
+        out[lv] = {"n_episodes": len(ps), "fraction_significant": frac,
+                   "passes_gate": bool(frac <= 0.10)}
+    return out
+
+
 def main() -> int:
     rng = np.random.default_rng(SEED)
     result: dict = {
@@ -258,6 +300,7 @@ def main() -> int:
             corr["n_eff_bias_corrected"] = n_eff(n, rp) if np.isfinite(rp) else float("nan")
             pres["bias_correction"] = corr
 
+        pres["silence_gate_by_severity"] = silence_by_severity(sub)
         result["participants"][pname] = pres
 
     A("")
@@ -349,6 +392,52 @@ def main() -> int:
       "nothing already published becomes over-claimed by it.")
 
     A("")
+    A("## Does the headline negative result survive this?\n")
+    A("The silence gate is the binding one — it disqualified all 48 "
+      "configurations and it is what makes this project's result negative. It "
+      "asks what fraction of *healthy* episodes show a significant trend in the "
+      "risk signal, and fails above 10%. `scripts/21` defines healthy as "
+      "`not crossed`, which is the same mixed pool. **A rising risk score during "
+      "a fault ramp is the detector working, not a silence failure**, so if the "
+      "gate only failed because of that, the whole negative result would be an "
+      "artefact.\n")
+    A("| Participant | Episodes scored | Fraction showing a trend | Gate |")
+    A("|---|---|---|---|")
+    for pname in ("T11", "T5"):
+        sg = got.get(pname, {}).get("silence_gate_by_severity", {})
+        for lv, label in [("none", "**fault-free only**"),
+                          ("benign", "benign ramp"), ("sub", "sub ramp"),
+                          ("ALL", "all not-crossed *(what the gate uses)*")]:
+            if lv not in sg:
+                continue
+            d = sg[lv]
+            A(f"| {pname} — {label} | {d['n_episodes']} | "
+              f"**{d['fraction_significant']:.3f}** | "
+              f"{'pass' if d['passes_gate'] else 'FAIL'} |")
+    A("")
+    ff = {q: got.get(q, {}).get("silence_gate_by_severity", {}).get("none", {})
+          for q in ("T11", "T5")}
+    if ff.get("T11") and ff.get("T5"):
+        A(f"**It survives.** On genuinely fault-free episodes the gate still "
+          f"fails, and not marginally: **{ff['T11']['fraction_significant']:.1%}** "
+          f"of T11's and **{ff['T5']['fraction_significant']:.1%}** of T5's show "
+          f"a significant trend against a bar of 10%. The monitor is not quiet "
+          f"when nothing is wrong, and that was never an artefact of the "
+          f"mislabel.\n")
+        A(f"**But the published figure is inflated by it.** The 98.1% quoted for "
+          f"T11 is the mixed pool; fault-free it is "
+          f"{ff['T11']['fraction_significant']:.1%}. Those two numbers are not "
+          f"interchangeable and the smaller one is the honest one to quote about "
+          f"healthy operation.\n")
+    A("**The false-alarm rate has the same problem and cannot be fixed the same "
+      "way.** It is also measured on the not-crossed pool, so alarms raised "
+      "during sub-threshold ramps are counted as false. Restricting it to "
+      "fault-free episodes leaves 17 and 15 episodes — about 1.4 hours — and a "
+      "budget of 0.1 alarms per hour cannot be estimated from that. "
+      "**Constructed onsets on the rig are the only way to measure it properly**, "
+      "which is a better argument for building the rig than the one it was "
+      "originally built for.\n")
+
     A("## Limits of this check\n")
     A("- The fault-free group is small: 17 episodes on T11 and 15 on T5, one per "
       "block. The confidence intervals are correspondingly wide and the point "

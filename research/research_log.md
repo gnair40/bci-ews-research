@@ -5394,3 +5394,60 @@ whether a sentence describing a number is true.** That gap has now cost this
 project a mislabelled C18, a "healthy" episode set that was not healthy, and
 now a drift measure described as something it is not. Worth remembering when
 the temptation is to trust a green board.
+
+## 19 September 2026 — Re-audited the rest of the repository, and nearly lost the headline result
+
+Applied the same method to everything else: read what the code does, then check
+whether the sentence describing it is true. Two findings, one of them the
+biggest of the project.
+
+**C04 was wrong as stated, and C04 is the most load-bearing claim here.** It
+read: *"A session contains roughly one independent measurement: lag-1
+autocorrelation 0.995 (T11) and 0.980 (T5)."* Its note said effective samples
+"stay below 1 at every spacing". Both are the same defect I corrected in C18 in
+September and then never traced back to C04. That pool is about 18 to 1
+sub-threshold fault ramps. Fault-free at the same spacing: **0.893 and 0.894,
+for 3.12 and 2.35 effective samples** — not below 1, and not "roughly one
+measurement".
+
+Where the claim is *used* it still holds: C04 justifies bootstrapping over
+episodes when scoring detector performance, and detector performance is measured
+on faulted episodes where the windows genuinely are dependent. The scope of the
+sentence was wrong, not the arithmetic. Both C04 and C18 now say which pool they
+describe, and the amendment is on the claim rather than buried.
+
+**Then the one that could have unravelled everything.** Following the same
+mislabel into `scripts/21`, the silence gate — the binding gate, the one that
+disqualified all 48 configurations and makes this project's result negative — is
+computed on `healthy_test = test[~test.crossed]`. That is the same mixed pool.
+**A rising risk score during a fault ramp is the detector working, not a silence
+failure.** If the gate had only failed because of that, the entire negative
+result would have been an artefact of a word.
+
+It is not. On genuinely fault-free episodes:
+
+| | fault-free | all not-crossed (what the gate uses) | bar |
+|---|---|---|---|
+| T11 | **76.5%** | 98.1% | 10% |
+| T5 | **100%** | 100% | 10% |
+
+The gate fails either way, and not marginally. **The headline negative result
+stands.** But the published 98.1% is inflated by the mislabel and the honest
+figure for healthy operation is 76.5%; the two are not interchangeable and I
+have been quoting the wrong one.
+
+The false-alarm rate has the same problem and **cannot be fixed the same way**.
+It is also measured on the not-crossed pool, so alarms during sub-threshold
+ramps count as false. Restricting to fault-free leaves 17 and 15 episodes, about
+1.4 hours, and a 0.1-per-hour budget is not estimable from that. Constructed
+onsets on the rig are the only way to measure it — which is a better argument
+for building the rig than the one it was built for.
+
+Added the severity-split silence gate to `scripts/70` so this is committed code
+rather than a one-off, and it runs every time that script does.
+
+**The lesson is the same one as this morning, now three findings deep.** The
+gates verify that numbers match their sources. They cannot verify that a
+sentence about a number is true, and every significant error in this project has
+been of that second kind: "healthy" meaning not-crossed, "neural covariance
+geometry" meaning fitted decoder weights, "a session" meaning a faulted session.

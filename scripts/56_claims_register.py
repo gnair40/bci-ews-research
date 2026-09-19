@@ -81,23 +81,36 @@ CLAIMS = [
      "The binding gate is silence, not detection."),
 
     ("C04", ESTABLISHED,
-     "A session contains roughly one independent measurement: lag-1 "
-     "autocorrelation of the risk signal is 0.995 (T11) and 0.980 (T5).",
+     "A FAULTED session contains roughly one independent measurement: lag-1 "
+     "autocorrelation of the risk signal is 0.995 (T11) and 0.980 (T5) over "
+     "episodes carrying a sub-threshold injected fault.",
      "AGGREGATION_LIMIT.md",
      ["Lag-1 autocorrelation of risk, T11 healthy",
       "Lag-1 autocorrelation of risk, T5 healthy"],
-     "This single fact explains most of the negative results. NOTE: these "
-     "figures are computed on windows that overlap by 83.3%, so part of the "
-     "value is forced by the window geometry. Claim C18 measures how much. "
-     "The conclusion is unaffected -- effective samples stay below 1 at every "
-     "spacing -- but when comparing against any system with different "
-     "windowing, including the rig, quote C18's no-overlap figures instead."),
+     "AMENDED 19 September 2026. As first written this claim said 'a session', "
+     "unqualified, and its note said effective samples 'stay below 1 at every "
+     "spacing'. Both were wrong, for the same reason C18 was wrong: the pool "
+     "is dominated about 18 to 1 by episodes carrying a sub-threshold injected "
+     "fault, and every fault here is a monotone ramp, which raises "
+     "autocorrelation by itself. Split by what was actually injected "
+     "(reports/AUTOCORR_BY_SEVERITY.md), FAULT-FREE sessions give 0.893 (T11) "
+     "and 0.894 (T5) at this spacing, for 3.12 and 2.35 effective samples -- "
+     "not below 1, and not 'roughly one measurement'. "
+     "WHERE THE CLAIM IS USED IT STILL HOLDS: C04 justifies bootstrapping over "
+     "episodes rather than windows when scoring detector performance, and "
+     "detector performance is measured on faulted episodes, where the windows "
+     "genuinely are dependent. What was wrong was the scope of the sentence, "
+     "not the arithmetic. Two further notes: these figures are computed on "
+     "windows overlapping by 83.3%, so part of the value is geometry (C18), "
+     "and the fault-free false-alarm side is the part this correction "
+     "changes."),
 
     ("C18", ESTABLISHED,
-     "The serial correlation behind C04 is a property of the signal, not of "
-     "the windowing: with adjacent windows sharing NO data it is still 0.902 "
-     "(T11) and 0.784 (T5), and effective independent samples per session "
-     "never exceeds 0.85 at any spacing.",
+     "Over episodes carrying a sub-threshold injected fault, the serial "
+     "correlation behind C04 survives removing all window overlap: 0.902 "
+     "(T11) and 0.784 (T5), with effective independent samples never above "
+     "0.85. FAULT-FREE it does NOT survive -- 0.893 collapses to 0.085 on T11 "
+     "-- so for healthy recording the correlation IS mostly geometry.",
      "WINDOW_SPACING.md",
      ["lag-1 r with NO window overlap, T11 (C04 is not geometry)",
       "lag-1 r with NO window overlap, T5",

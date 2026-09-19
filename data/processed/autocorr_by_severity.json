@@ -164,6 +164,28 @@
         ],
         "rho_lower_bound_only": null,
         "n_eff_bias_corrected": 5.97006127912678
+      },
+      "silence_gate_by_severity": {
+        "none": {
+          "n_episodes": 17,
+          "fraction_significant": 0.7647058823529411,
+          "passes_gate": false
+        },
+        "benign": {
+          "n_episodes": 132,
+          "fraction_significant": 0.9848484848484849,
+          "passes_gate": false
+        },
+        "sub": {
+          "n_episodes": 102,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        },
+        "ALL": {
+          "n_episodes": 309,
+          "fraction_significant": 0.9805825242718447,
+          "passes_gate": false
+        }
       }
     },
     "T5": {
@@ -327,6 +349,28 @@
         ],
         "rho_lower_bound_only": 0.6648043852898142,
         "n_eff_bias_corrected": NaN
+      },
+      "silence_gate_by_severity": {
+        "none": {
+          "n_episodes": 15,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        },
+        "benign": {
+          "n_episodes": 153,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        },
+        "sub": {
+          "n_episodes": 149,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        },
+        "ALL": {
+          "n_episodes": 408,
+          "fraction_significant": 1.0,
+          "passes_gate": false
+        }
       }
     }
   }
