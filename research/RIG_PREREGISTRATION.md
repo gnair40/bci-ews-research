@@ -4,15 +4,13 @@
 **Status: DRAFT — NOT YET FROZEN. Nothing has been built and nothing measured.**
 **Frozen at commit:** `[[RESEARCHER — fill in after running the freeze in §10]]`
 
-> **BLOCKED — two predictions must be settled before this is frozen.**
-> P-R1 and P-R2 take their thresholds from claim C18's 0.902 and 0.784. Those
-> figures turn out to be pooled over episodes that carry a sub-threshold
-> *injected* fault ramp, not fault-free recording, and the ramp is most of what
-> raises them (`reports/AUTOCORR_BY_SEVERITY.md`). The rig's natural-drift arm
-> injects nothing, so it is the fault-free figures it has to be compared
-> against. The numbers below are **left exactly as drafted** — retargeting them
-> is a scientific decision, not an editorial one, and it is the researcher's to
-> make. See §11.
+> **AMENDED 19 September 2026 — P-R1 and P-R2 retargeted; no longer blocked.**
+> Both took their thresholds from claim C18's pooled 0.902 and 0.784, which
+> turned out to be raised by the sub-threshold fault ramp injected into those
+> episodes rather than measured on fault-free recording
+> (`reports/AUTOCORR_BY_SEVERITY.md`). The researcher chose option 1 of §11:
+> retarget to the fault-free figures. The amendment is §12, the original wording
+> is preserved there, and §11 is left standing as the record of why.
 
 ---
 
@@ -85,51 +83,75 @@ threshold, states what would falsify it, and states what each outcome would mean
 **No prediction below has an outcome that is uninformative.** That is deliberate:
 a study whose null result teaches nothing should not be run.
 
-### P-R1 — Serial correlation is a property of drifting arrays, not of cortex
+### P-R1 — The rig's quiet-state serial correlation looks like cortex's
 
-> With **no imposed drift**, the rig's lag-1 autocorrelation of the
-> `decoder_guard` risk signal, measured on **non-overlapping** windows, will be
-> **≥ 0.70**.
+> With **no imposed drift and no injected fault**, the rig's lag-1
+> autocorrelation of the `decoder_guard` risk signal, measured on
+> **non-overlapping** windows at a matched window count, will fall between
+> **−0.12 and +0.54**.
 
-- **Derived from:** claim C18. Non-overlapping neural values are **0.902** (T11)
-  and **0.784** (T5); `reports/WINDOW_SPACING.md`.
-- **(!) This derivation is under question — see §11.** Those two values pool
-  fault-free episodes together with episodes carrying a sub-threshold injected
-  ramp. Fault-free alone, the same measurement gives **0.085** [−0.122, 0.453]
-  on T11 and **0.435** [0.271, 0.540] on T5
-  (`reports/AUTOCORR_BY_SEVERITY.md`). A bar of 0.70 that was meant to sit
-  "just below both" sits *above* both on the fault-free figures, which would
-  make P-R1 near-certain to fail for a reason having nothing to do with the rig.
-- **Why 0.70 and not 0.784:** 0.784 is the lower of two arrays, and a bar set at
-  the minimum of an n = 2 sample is not a bar, it is a coin toss. 0.70 sits just
-  below both, so the prediction fails only if the rig is clearly less
-  autocorrelated than either real array. `[[RESEARCHER: accept or change]]`
-- **Falsified if:** median non-overlap r < 0.70.
-- **If confirmed:** the negative result generalises beyond cortex, to
-  sensor-array health monitoring in general. This is the stronger outcome.
-- **If falsified:** the failure is neural-specific, and the next BCI attempt
-  needs neural-specific fixes rather than better statistics.
+- **Derived from:** the **fault-free** rows of `reports/AUTOCORR_BY_SEVERITY.md`.
+  T11 gives **0.085** [−0.122, +0.453] on 17 episodes of 10 windows; T5 gives
+  **0.435** [+0.271, +0.540] on 15 episodes of 7 windows. The band is the union
+  of those two intervals.
+- **Why a band and not a floor:** the two participants disagree by 0.35 and
+  their intervals barely overlap, so there is no single value to predict. A band
+  spanning both is the honest form. **This was previously a one-sided bar of
+  ≥ 0.70, which the fault-free figures sit well below** — as written it would
+  have failed for a reason having nothing to do with the rig.
+- **Stated weakness, because it matters:** this band covers about a third of the
+  possible range of a correlation, so confirming it is weak evidence. It rules
+  out the two outcomes that would matter most — a rig pinned near zero, or one
+  pinned near its ceiling — and little else. **P-R2 is the sharp prediction; this
+  one is a sanity bound.** `[[RESEARCHER: accept or change]]`
+- **Matched window count is part of the prediction, not a detail.** The lag-1
+  estimator is biased low at short series and the bias depends on the length, so
+  a rig block must yield 9–10 decimated windows to be comparable to T11 at all.
+  Build manual step B-8.
+- **Falsified if:** the median fault-free non-overlap r falls outside
+  [−0.12, +0.54].
+- **If confirmed:** the rig's quiet state is not distinguishable from cortex's,
+  so it is a fair platform for the comparisons that follow.
+- **If falsified:** the rig is not comparable to cortex in its quiet state, and
+  every later comparison must be reported with that caveat attached rather than
+  quietly ignored.
 - **Measured by:** `scripts/66_window_spacing.py`, unchanged, at the every-6th
   spacing.
 
-### P-R2 — Aggregation cannot rescue the rig either
+### P-R2 — A monotone fault raises serial correlation on hardware too
 
-> Effective independent samples per rig session, `n(1−r)/(1+r)`, will be **< 2**
-> at **every** window spacing tested.
+> On the rig, episodes carrying a **sub-threshold injected fault** will show a
+> non-overlap lag-1 autocorrelation **at least 0.20 higher** than fault-free
+> episodes from the same rig.
 
-- **Derived from:** claim C18. Neural values never exceed **0.85**.
-- **(!) This derivation is under question — see §11.** On fault-free episodes
-  the effective sample size is **8.4** (T11) and **2.8** (T5), not below 1. A
-  bar of "< 2" set from the pooled figures is not the bar the fault-free
-  comparison implies.
-- **Honest caveat, stated rather than hidden:** *P-R2 is not independent of
-  P-R1.* Effective sample size is a function of r and n, so a rig that satisfies
-  P-R1 will very probably satisfy P-R2 automatically. It is listed separately
-  because it is the quantity the project's conclusions actually rest on, **not
-  because it is a second piece of evidence.** Two predictions that are one
-  prediction wearing two hats would inflate apparent support, which is precisely
-  the error class already logged as L09.
-- **Falsified if:** n_eff ≥ 2 at any spacing.
+- **Derived from:** the severity split in `reports/AUTOCORR_BY_SEVERITY.md`. On
+  cortex the rise from fault-free to sub-threshold is **+0.838** on T11
+  (0.085 → 0.923) and **+0.390** on T5 (0.435 → 0.825). The bar of 0.20 sits
+  below the smaller of the two, deliberately, so the prediction is not a
+  restatement of the cortical numbers. `[[RESEARCHER: accept or change]]`
+- **This replaces the original P-R2 entirely, and in the opposite direction.**
+  The original predicted effective independent samples **below 2**, derived from
+  C18's pooled figures. Fault-free cortex gives **8.44** (T11) and **2.75**
+  (T5), so that bar was not merely mis-set, it was pointed the wrong way. The
+  original text is preserved in §12.
+- **Why this is now the sharp prediction:** it tests the mechanism rather than
+  the number. Every fault in this project is a monotone ramp, and a ramp raises
+  lag-1 autocorrelation on its own. If the same rise appears in a camera, the
+  effect belongs to monotone degradation in any many-channel drifting sensor
+  and not to neurons — which is precisely what Arm B exists to establish.
+- **Falsified if:** the rise is under 0.20, absent, or negative.
+- **If confirmed:** the mechanism behind C04 and C18 is general, and the
+  project's central limit is a fact about this class of measurement problem
+  rather than about cortex. **This is the stronger outcome.**
+- **If falsified:** the ramp-driven correlation is neural-specific, which makes
+  it a property of the brain worth studying in its own right and means the
+  fault-injection benchmark does not transfer between domains.
+- **Measured by:** `scripts/70_autocorr_by_severity.py`, unchanged, which splits
+  by injected severity and now discovers any participant the harness has scored.
+- **Not independent of P-R1**, and deliberately so: both read the same quantity.
+  P-R1 bounds the quiet state, P-R2 tests what a fault does to it. They are
+  reported as one finding with two parts, never counted as two pieces of
+  evidence.
 
 ### P-R3 — The silence gate fails on the rig too
 
@@ -433,3 +455,58 @@ written into P-R1 and P-R2:
 There is no option in which the numbers stay as drafted and the wording stays as
 drafted. Whichever is chosen, the reason goes in `research/research_log.md` and
 the change is an amendment under §9, dated, with this section left standing.
+
+---
+
+## 12. Amendment 1 — P-R1 and P-R2 retargeted to the fault-free figures
+
+**Decided:** 19 September 2026, by the researcher, before anything was built or
+measured.
+**Option taken:** §11 option 1, retarget to the fault-free figures.
+
+### What the original predictions said
+
+> **P-R1 (original).** With no imposed drift, the rig's lag-1 autocorrelation of
+> the `decoder_guard` risk signal, measured on non-overlapping windows, will be
+> **≥ 0.70**. *Derived from claim C18: non-overlapping neural values are 0.902
+> (T11) and 0.784 (T5). Chosen as 0.70 because it "sits just below both".*
+
+> **P-R2 (original).** Effective independent samples per rig session,
+> `n(1−r)/(1+r)`, will be **< 2** at every window spacing tested. *Derived from
+> claim C18: neural values never exceed 0.85.*
+
+### Why they had to change
+
+Both derive from figures computed over episodes where the injected fault never
+crossed threshold — a set that `scripts/66` calls "healthy" but which is roughly
+18 to 1 sub-threshold fault ramps to genuinely fault-free episodes. Every fault
+in this project is a monotone ramp, and a ramp raises lag-1 autocorrelation by
+itself. Split by what was actually injected:
+
+| | no fault | benign ramp | sub ramp | pooled (C18) |
+|---|---|---|---|---|
+| T11 | **0.085** | 0.887 | 0.923 | 0.902 |
+| T5 | **0.435** | 0.656 | 0.825 | 0.784 |
+
+The rig's natural-drift arm injects nothing, so the fault-free column is what it
+must be compared against. A bar of 0.70 meant to sit "just below both" sits
+**above** both. P-R2 was worse: fault-free effective samples are 8.44 and 2.75,
+so a bar of "below 2" was pointing the wrong way.
+
+### What the option costs, stated rather than buried
+
+The fault-free estimates rest on **17 episodes on T11 and 15 on T5**, with
+intervals wide enough that T11's covers almost the whole plausible range. A
+threshold set from them is a threshold set from very little, and P-R1 is
+correspondingly weak — it is a sanity bound, not a test.
+
+That cost is why P-R2 was rewritten to test the *mechanism* instead of the
+level. The rise from fault-free to faulted is large on both participants
+(+0.838 and +0.390), in the same direction, and measured on hundreds of episodes
+rather than seventeen. It is the part of this amendment that carries the
+evidential weight.
+
+### What did not change
+
+P-R3 through P-R7 are untouched. None of them derives from C18, and §11's
+analysis found no problem with any of them.

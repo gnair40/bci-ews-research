@@ -320,8 +320,8 @@ the two ever disagree, that document wins.**
 
 | # | Prediction | Threshold | Falsified if | Measured by |
 |---|---|---|---|---|
-| P-R1 | With no imposed drift, the rig's risk signal is serially correlated like cortex is | non-overlap lag-1 r **≥ 0.70** | median r below 0.70 | `scripts/66_window_spacing.py`, unchanged |
-| P-R2 | Averaging cannot rescue the rig either | effective independent samples **< 2** at every spacing | n_eff ≥ 2 at any spacing | same |
+| P-R1 | With no fault and no imposed drift, the rig's quiet-state serial correlation looks like cortex's | non-overlap lag-1 r **between −0.12 and +0.54** | median r outside that band | `scripts/66_window_spacing.py`, unchanged |
+| P-R2 | A monotone fault raises serial correlation on hardware too | faulted r exceeds fault-free r by **≥ 0.20** | the rise is under 0.20, absent or negative | `scripts/70_autocorr_by_severity.py` |
 | P-R3 | The silence gate fails on hardware too | **> 10%** of healthy rig episodes show a significant trend | 10% or fewer | Procedure 73 |
 | P-R4 | Ladder validity degrades as the baseline drifts, on hardware too | correlation **ρ < −0.4** between baseline error and ladder validity | ρ ≥ −0.4 | Procedure 74 |
 | P-R5 | The invariant-feature route fails again | invariant detector scores **worse** than the plain one | invariant scores better | Procedure 76 |
@@ -336,21 +336,24 @@ neural-specific fix. P-R7 falsified is the sharpest of the lot: it would mean
 1,850 episodes of carefully built ground truth do not resemble what actually goes
 wrong, which belongs in the write-up as a headline rather than a limitation.
 
-**P-R2 is not independent of P-R1.** Effective sample size is a function of r and
-n, so a rig that satisfies one will almost certainly satisfy the other. It is
-listed separately because it is the quantity the conclusions rest on, not because
-it is a second piece of evidence. Counting it twice would inflate apparent
-support.
+**P-R2 is not independent of P-R1**, and deliberately so: both read the same
+quantity. P-R1 bounds the quiet state, P-R2 tests what a fault does to it. They
+are reported as one finding with two parts and never counted as two pieces of
+evidence. P-R1 is a wide band and therefore weak — it rules out a rig pinned at
+zero or at its ceiling and little else. **P-R2 carries the evidential weight**,
+because the fault-driven rise is large (+0.838 on T11, +0.390 on T5), in the
+same direction on both participants, and measured on hundreds of episodes
+rather than the seventeen behind the fault-free level.
 
-> **(!) P-R1 and P-R2 are not settled yet.** Both take their thresholds from
-> claim C18's figures of 0.902 and 0.784, and those turn out to be pooled over
-> episodes carrying a sub-threshold *injected* fault ramp rather than measured on
-> fault-free recording. Fault-free, the same measurement gives 0.085 on T11 and
-> 0.435 on T5. Since the rig's natural-drift arm injects nothing, the fault-free
-> figures are the ones it has to be compared against, and a 0.70 bar meant to sit
-> just below both sits above both instead. `research/RIG_PREREGISTRATION.md` §11
-> sets out the three options and the decision is mine to make before the document
-> is frozen. **Nothing gets built against P-R1 until that is resolved.**
+> **P-R1 and P-R2 were retargeted on 19 September 2026.** Both originally took
+> their thresholds from claim C18's pooled 0.902 and 0.784, which turned out to
+> be raised by the sub-threshold fault ramp injected into those episodes rather
+> than measured on fault-free recording. Fault-free, the same measurement gives
+> 0.085 on T11 and 0.435 on T5, so the old bar of 0.70 sat *above* both and
+> P-R2's "fewer than 2 independent samples" pointed the wrong way entirely
+> (fault-free gives 8.44 and 2.75). The amendment, with the original wording
+> preserved, is `research/RIG_PREREGISTRATION.md` §12. The rows above are the
+> amended versions.
 
 ---
 

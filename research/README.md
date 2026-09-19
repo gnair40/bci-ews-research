@@ -23,7 +23,7 @@ edited silently.
 
 | File | Governs |
 |---|---|
-| `RIG_PREREGISTRATION.md` | The physical rig study. **DRAFT, not frozen** — and currently BLOCKED on an open decision recorded in its §11. |
+| `RIG_PREREGISTRATION.md` | The physical rig study. **DRAFT, not frozen.** P-R1 and P-R2 were retargeted to the fault-free figures on 19 September 2026 (Amendment 1, §12); §11 records why. |
 | `FEATURE_STUDY_PREREGISTRATION.md` | The feature-family study. |
 | `COMBINATION_STUDY_PREREGISTRATION.md` | The detector-combination study. |
 | `DAY_PREDICTOR_PREREGISTRATION.md` | The day-effect predictor study. |

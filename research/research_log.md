@@ -5222,3 +5222,70 @@ too easy, and printed the right fix. `run_batch.py --make-sweep-plan` produces
 
 `research/RIG_CODE.md` is the index, with the fallback table and the full source
 of every program inline, so a lost file can be retyped.
+
+## 19 September 2026 — Decision: retarget P-R1 and P-R2 to the fault-free figures
+
+Took option 1 of `RIG_PREREGISTRATION.md` §11. Both predictions had derived
+their thresholds from claim C18's pooled 0.902 and 0.784, which turned out to be
+raised by the sub-threshold fault ramp injected into those episodes rather than
+measured on fault-free recording. Written up as Amendment 1, §12, with the
+original wording preserved rather than overwritten.
+
+**P-R1** was "non-overlap lag-1 r ≥ 0.70", chosen to sit "just below both"
+participants. On the fault-free figures — 0.085 on T11 and 0.435 on T5 — it sits
+*above* both. It is now a band, −0.12 to +0.54, being the union of the two
+participants' 95% intervals.
+
+I am not pretending that is a strong prediction. The band covers about a third
+of the range a correlation can take, and it rests on 17 episodes on T11 and 15
+on T5 with intervals wide enough that T11's covers nearly everything plausible.
+It rules out a rig pinned at zero or pinned at its estimator ceiling, and very
+little else. Writing it down as a sanity bound rather than dressing it up as a
+test.
+
+**P-R2 changed direction entirely.** It predicted effective independent samples
+**below 2**. Fault-free cortex gives **8.44** on T11 and **2.75** on T5, so the
+bar was not merely mis-set — it pointed the wrong way. Keeping the same form
+with a new number would have been dishonest, so it was rewritten to test the
+*mechanism* instead of the level: on the rig, sub-threshold faulted episodes
+will show a non-overlap correlation at least 0.20 above fault-free ones.
+
+That is the better prediction and it is the one carrying the weight now. The
+rise on cortex is +0.838 on T11 (0.085 → 0.923) and +0.390 on T5 (0.435 →
+0.825): large, same direction on both participants, and measured on hundreds of
+episodes rather than seventeen. The 0.20 bar sits below the smaller of the two
+deliberately, so the prediction is not a restatement of the cortical numbers. If
+the same rise appears in a camera, the mechanism behind C04 and C18 belongs to
+monotone degradation in any many-channel drifting sensor and not to neurons,
+which is exactly what Arm B exists to establish.
+
+P-R3 to P-R7 are untouched; none of them derives from C18.
+
+Gate 4 in the build manual is now closed and the build is unblocked.
+
+### Audited the whole repository afterwards
+
+- **Every backticked file path** in every document: six did not exist. Five are
+  files the experiment creates (`rig/blocklog.csv`, `rig/darkframe.npy`,
+  `rig/stim_log.csv`, and two rig outputs), which are legitimate forward
+  references. One was a real error: the build manual named
+  `reports/MONITORABILITY_CERTIFICATE.md`, but the certificate carries the
+  participant in its filename, so a rig certificate could never overwrite a
+  neural one. Fixed.
+- **Every program named in a document:** `rig/daily_session.py` was referenced
+  in two documents, in a cron line, and did not exist. That is the natural-drift
+  arm — six to ten weeks unattended, the arm P-R7 is judged on. Written. Its
+  session number comes from the calendar rather than a counter, so a missed
+  night leaves a visible gap instead of silently renumbering everything after
+  it, which matters on an arm that runs unwatched for weeks.
+- **`RIG_CODE.md` was already stale.** It inlines the full source of every rig
+  program so a file lost from an SD card can be retyped, which makes it part
+  hand-written and part generated — the exact shape that cost this project
+  `ACHIEVABILITY.md` in August and `DATASET_EXPLORATION.md` in September. Wrote
+  `tools/refresh_rig_code.py`: prose above the marker is never touched, source
+  below it is regenerated, and `--check` fails if they have drifted. It reported
+  STALE the first time it ran, which is the point.
+- **Cross-checked every headline number** against its JSON source: the
+  fault-free and pooled correlations, the decoder's 54.6° against 90.7°, the
+  36.1° margin, the twin's 0.00211 depth and 35.3° margin, the 4–811 s sweep
+  band, and 5 levels × 53 blocks = 22.1 hours. All consistent.

@@ -124,7 +124,7 @@ building this?", the answer is a row of it.
 |---|---|---|---|---|
 | 1 | A session contains roughly one independent measurement; lag-1 autocorrelation 0.995 | claim C04, `reports/AGGREGATION_LIMIT.md` | Is that a fact about brains, or about any slowly drifting many-channel sensor? | **B-9**: measure the same quantity on the rig |
 | 2 | That autocorrelation survives removing all window overlap (0.902 / 0.784) | claim C18, `reports/WINDOW_SPACING.md` | — | — |
-| 3 | **But those figures are pooled over episodes carrying an injected fault ramp. Fault-free, it is 0.085 (T11) and 0.435 (T5)** | `reports/AUTOCORR_BY_SEVERITY.md` | The rig's natural-drift arm injects nothing, so which number is it compared against? | **Blocks B-9 until resolved.** See `RIG_PREREGISTRATION.md` §11 |
+| 3 | **But those figures are pooled over episodes carrying an injected fault ramp. Fault-free, it is 0.085 (T11) and 0.435 (T5)** | `reports/AUTOCORR_BY_SEVERITY.md` | The rig's natural-drift arm injects nothing, so which number is it compared against? | **Resolved 19 Sep**: the fault-free figures. `RIG_PREREGISTRATION.md` §12 |
 | 4 | The lag-1 estimator saturates near 0.60 at 10 windows, so 0.902 cannot be inverted to a drift speed | `reports/AUTOCORR_BY_SEVERITY.md`, `reports/DRIFT_SWEEP_DESIGN.md` | How long must a rig block be for its number to be comparable? | **B-8**: match block length to window count, not to duration |
 | 5 | 0 of 48 configurations passed all five gates; the binding gate is silence, not detection | `reports/BENCHMARK_SUMMARY.md` | Does the same gate bind on hardware? | **B-11**: run the identical gate battery on rig recordings |
 | 6 | Injected faults are equations applied to recorded numbers; nobody checked whether real degradation resembles them | `research/RIG_PREREGISTRATION.md` P-R6 | Do faults I cause but did not design look like the ones I invented? | **B-12**: undesigned physical faults, reported in a separate table |
@@ -220,17 +220,39 @@ grep -n "default=48" rig/capture.py
 **If either is missing:** the built rig will not match the simulated one and
 Gate 2's result does not apply to it.
 
-### GATE 4 — The preregistration decision is made
+### GATE 4 — The preregistration is settled (**DONE — 19 September 2026**)
 
-Open `research/RIG_PREREGISTRATION.md` and read §11. Predictions P-R1 and P-R2
-take their thresholds from figures that turned out to include injected faults.
-**Pick one of the three options, write the reason in `research/research_log.md`,
-and update the prediction.**
+This gate was blocking the build. It is now closed, and this is what it closed
+with, so it can be explained at the fair without re-deriving it.
 
-**This gate is not optional and it is not a formality.** P-R1 currently sets a
-bar of 0.70 that the fault-free figures (0.085 and 0.435) sit well below, so as
-written the prediction would fail for a reason having nothing to do with the
-rig. Building against it would waste the build.
+P-R1 and P-R2 both took their thresholds from claim C18's pooled 0.902 and
+0.784. Those turned out to be raised by the sub-threshold fault ramp injected
+into those episodes, not measured on fault-free recording. Fault-free, the same
+measurement gives **0.085** on T11 and **0.435** on T5. So the old P-R1 bar of
+"≥ 0.70, just below both" sat *above* both, and P-R2's "fewer than 2 effective
+samples" pointed the wrong way — fault-free gives 8.44 and 2.75.
+
+**Both were retargeted to the fault-free figures** (`RIG_PREREGISTRATION.md`
+Amendment 1, §12; the original wording is preserved there):
+
+| | Now predicts | Falsified if |
+|---|---|---|
+| **P-R1** | fault-free non-overlap r between **−0.12 and +0.54** | outside that band |
+| **P-R2** | faulted r exceeds fault-free r by **≥ 0.20** | the rise is under 0.20, absent, or negative |
+
+**What to say if a judge presses on this.** P-R1 is a wide band and therefore
+weak — it rests on 17 episodes on T11 and 15 on T5, with intervals wide enough
+to cover most of the plausible range. It rules out a rig pinned at zero or at
+its ceiling and little else. That weakness is exactly why P-R2 was rewritten to
+test the *mechanism* rather than the level: the rise from fault-free to faulted
+is large (+0.838 on T11, +0.390 on T5), in the same direction on both
+participants, and measured on hundreds of episodes rather than seventeen. **P-R2
+is the prediction that carries the weight.**
+
+Verify it is in place before building:
+```
+grep -n "between \*\*−0.12 and +0.54\*\*" research/RIG_PREREGISTRATION.md
+```
 
 ### GATE 5 — Every claim still verifies
 
@@ -614,8 +636,9 @@ would break the comparison in a way that is much harder to see.
 
 ## B-9 — The main comparison: how much independent evidence is in a session?
 
-**Do not run this until Gate 4 is resolved.** The threshold it is judged against
-is the open decision in `research/RIG_PREREGISTRATION.md` §11.
+Gate 4 settled what this is judged against: **P-R1**, a fault-free non-overlap r
+between −0.12 and +0.54, and **P-R2**, a faulted-minus-fault-free rise of at
+least 0.20.
 
 Record 10 healthy blocks with nothing injected. Then:
 ```
@@ -747,7 +770,9 @@ python3 scripts/73_monitorability_certificate.py --participant RIG1
 ```
 
 It reads recordings already processed by the standard pipeline and emits
-`reports/MONITORABILITY_CERTIFICATE.md`, containing:
+`reports/MONITORABILITY_CERTIFICATE_RIG1.md` — the participant name is part
+of the filename, so a rig certificate never overwrites a neural one —
+containing:
 
 | Field | Meaning |
 |---|---|
@@ -878,7 +903,7 @@ output files, and running them afterwards leaves the tree dirty.
 
 ## 8.4 The five decisions still outstanding
 
-1. **P-R1 and P-R2 retargeting** (`RIG_PREREGISTRATION.md` §11) — blocks B-9.
+1. ~~P-R1 and P-R2 retargeting~~ — **done 19 September 2026**, Amendment 1.
 2. **The AI disclosure** in the research plan — must be written by you.
 3. **Bibliography author lists**, supervision location, category confirmation.
 4. **`ISEF_RESEARCH_PLAN.md`** — retire it, or make it the December draft.

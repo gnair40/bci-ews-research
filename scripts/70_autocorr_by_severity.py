@@ -335,11 +335,14 @@ def main() -> int:
       "fewer.")
     A("- **The rig comparison is aimed at the wrong number.** The natural-drift "
       "arm of the rig study has no injected fault, so it must be compared "
-      "against the fault-free rows, not against 0.902 and 0.784. Prediction "
-      "**P-R1** in `research/RIG_PREREGISTRATION.md` sets its 0.70 bar directly "
-      "from those two numbers, and **P-R2** sets its effective-sample bar of 2 "
-      "from the same place; both need retargeting before that document is "
-      "frozen. P-R3 to P-R7 do not depend on these figures and are unaffected.")
+      "against the fault-free rows, not against 0.902 and 0.784. Predictions "
+      "**P-R1** and **P-R2** in `research/RIG_PREREGISTRATION.md` originally "
+      "took their thresholds from the pooled numbers and were **retargeted to "
+      "the fault-free figures on 19 September 2026** (Amendment 1, §12). P-R1 "
+      "is now a band spanning both participants' fault-free intervals; P-R2 was "
+      "rewritten to test the fault-driven RISE in correlation, which is large "
+      "on both participants and measured on hundreds of episodes rather than "
+      "seventeen. P-R3 to P-R7 never depended on these figures.")
     A("- **Every no-overlap number in this project is biased low**, because the "
       "estimator is biased low at 7 to 10 points. That direction makes the "
       "project's negative results look weaker than they are, not stronger, so "

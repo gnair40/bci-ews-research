@@ -12,6 +12,7 @@ the same files, extracted so they can be run and tested.
 | `run_block.py` | The Pi | Records ONE block end to end — stimulus, capture, conversion — and logs every setting to `blocklog.csv`. The command you type most. |
 | `run_batch.py` | The Pi | Works through a plan file of many blocks unattended, skipping any already recorded. For the 265-block drift sweep. |
 | `bench.py` | Either* | The bench checks from the build manual: `darkframe`, `lag`, `dither`, `margin`. |
+| `daily_session.py` | The Pi | The natural-drift arm: a few blocks a day for weeks, run from cron. Session number derived from the date so a missed night leaves a gap rather than renumbering. |
 | `motor.py` | The Pi | Turns the stage for the rotation fault, in real units. |
 | `logtemp.py` | The Pi | Temperature and humidity, so warmth and drift stay separable. Never fatal if the sensor is missing. |
 
