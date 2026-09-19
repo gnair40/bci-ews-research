@@ -5451,3 +5451,31 @@ gates verify that numbers match their sources. They cannot verify that a
 sentence about a number is true, and every significant error in this project has
 been of that second kind: "healthy" meaning not-crossed, "neural covariance
 geometry" meaning fitted decoder weights, "a session" meaning a faulted session.
+
+## 19 September 2026 — Propagated the C04 correction, and drew a line about what not to edit
+
+Having amended C04 and C18, checked whether the correction had actually reached
+the documents. It had not: twelve places still asserted the unqualified version,
+including the first row of the build manual's tie-in table and the "what this
+experiment tests" section of the procedures — the two documents I would actually
+work from, and the one I would explain at a fair.
+
+Corrected the **live** documents: `BUILD_MANUAL.md`, `EXPERIMENTAL_PROCEDURES.md`,
+`RIG_PREREGISTRATION.md` §0, and `RIG_PROCEDURE.md`, whose table still told a
+reader to compare the rig against 0.902 / 0.784 when the amendment says to use
+the fault-free figures.
+
+**Did not edit the frozen records**, and the distinction is worth stating because
+it would be easy to "fix" them and destroy something. `UNIT_OF_ANALYSIS_NOTE.md`,
+`INVARIANT_DETECTOR_NOTE.md`, the feature and combination preregistrations and
+`ORIGINAL_DATA_COLLECTION_DESIGN.md` all quote 0.995 as a property of a session.
+That is what was believed when each of those studies ran, and rewriting them
+would turn an accurate record of the project's thinking into a false one.
+Each now carries a banner saying the figure has since been qualified, pointing
+at the amended claim, and saying explicitly that the document is left as written
+on purpose.
+
+The rule I am adopting: **a document that tells you what to do gets corrected; a
+document that records what was done gets annotated.** Three days of audit have
+produced a lot of corrections, and without that line the project would quietly
+lose its own history.

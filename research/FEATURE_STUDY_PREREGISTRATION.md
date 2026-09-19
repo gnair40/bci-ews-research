@@ -1,5 +1,13 @@
 # Preregistration — the feature study
 
+> **Note added 19 September 2026, after this document was written.** It quotes
+> a lag-1 autocorrelation of 0.995 as a property of a *session*. That figure is
+> computed over a pool that is roughly 18 to 1 sub-threshold injected fault
+> ramps; fault-free it is 0.893. See `reports/AUTOCORR_BY_SEVERITY.md` and the
+> amended claim C04. **This document is deliberately left as it was written** —
+> it is a record of what was believed when the study ran, and editing it would
+> destroy that record. Read the figure with this note attached.
+
 **Status:** DRAFT, not yet frozen. Freeze with `scripts/12_freeze_design.py`
 before running anything in §4.
 **Written:** 28 August 2026, after Phase 3 and **before any candidate feature has

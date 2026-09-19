@@ -235,11 +235,20 @@ document is the part I build.
 **The main question: is what I found a fact about brains, or a fact about any
 sensor that drifts slowly?**
 
-My computational result rests on one measurement. Within a recording session, my
-monitor's readings barely vary independently of each other. A session that looks
-like 55 measurements behaves like roughly one measurement taken 55 times. That is
-why averaging does not help, why no decision rule rescues it, and why nothing
-passes the gates.
+My computational result rests on one measurement. Within a recording session
+where a fault is developing, my monitor's readings barely vary independently of
+each other: a session that looks like 55 measurements behaves like roughly one
+measurement taken 55 times. That is why averaging does not help, why no decision
+rule rescues it, and why nothing passes the gates.
+
+**Fault-free sessions are less extreme, and I had this wrong until 19 September.**
+The figure above was computed over a pool that is about 18 to 1 sub-threshold
+injected fault ramps, and every fault I inject is a monotone ramp, which raises
+that correlation by itself. On genuinely fault-free recording it is 0.893 rather
+than 0.995, giving about three independent measurements per session rather than
+one. The conclusion about *detecting faults* is unchanged, because faults are
+measured on faulted episodes. What changes is the healthy-operation side, and
+that is the side the rig's natural-drift arm measures.
 
 But I found that in two electrode arrays, in two people. That is the entire
 evidence base. If somebody asks whether it is specific to cortex or just what
@@ -253,7 +262,7 @@ identical analysis on it, with no change to any script.
 
 | If the rig behaves like this | Then the conclusion is |
 |---|---|
-| About one independent measurement per session, the same as cortex | The problem is not neurons. It is the shape of this kind of measurement problem, and the finding applies to sensor health monitoring in general. |
+| Serial correlation like cortex's, fault-free — see `reports/AUTOCORR_BY_SEVERITY.md` for which figure that is | The problem is not neurons. It is the shape of this kind of measurement problem, and the finding applies to sensor health monitoring in general. |
 | Many independent measurements per session | Something specific to cortex causes it, and the next attempt at a neural monitor needs a neural-specific fix rather than better statistics. |
 | Cannot be made comparable to cortex at all (Procedure 71) | The analogy has a limit and I found where it is. |
 

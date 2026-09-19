@@ -65,8 +65,9 @@ slack**. **The longitudinal arm (Arm B) is in.**
 
 This project measured that no configuration of a decoder-health monitor passes
 its five gates on real intracortical recordings, and located the cause in a
-single number: a recording session contains roughly one independent measurement,
-because the risk signal's lag-1 autocorrelation is 0.902–0.995 depending on
+single number: a recording session **in which a fault is developing** contains
+roughly one independent measurement, because the risk signal's lag-1
+autocorrelation is 0.902–0.995 depending on
 window spacing (claims C04, C18). **What the archived data cannot say is whether
 that is a fact about cortex or about any multichannel sensor array that drifts
 slowly** — there is no second kind of array in the dataset. It also cannot say

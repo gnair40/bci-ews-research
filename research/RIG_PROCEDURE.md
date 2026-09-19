@@ -104,7 +104,15 @@ entries in the claim verifier (register claim **C18**).
 | every 3rd window | 50% | 0.964 | 0.917 |
 | **every 6th window** | **none** | **0.902** | **0.784** |
 
-Quote the **0.902 / 0.784** row when comparing against the rig, not the 0.995.
+> **Superseded 19 September 2026.** This table splits by window *overlap*. It
+> does not split by whether a fault was injected, and that turns out to matter
+> more: the whole table is computed over a pool roughly 18 to 1 sub-threshold
+> fault ramps. **Fault-free, the no-overlap figure is 0.085 (T11) and 0.435
+> (T5)**, not 0.902 and 0.784. The rig's natural-drift arm injects nothing, so
+> those are the numbers it is compared against — see
+> `reports/AUTOCORR_BY_SEVERITY.md` and `research/RIG_PREREGISTRATION.md` §12.
+
+Quote the no-overlap **fault-free** figures when comparing against the rig.
 The published figure is computed on overlapping windows, so part of it is forced
 by the window geometry; the no-overlap row is the part that is a property of the
 signal. Effective independent measurements per session stay **below 1 at every

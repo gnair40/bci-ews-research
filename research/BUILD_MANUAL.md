@@ -122,7 +122,7 @@ building this?", the answer is a row of it.
 
 | # | What was found computationally | Where it lives | The question it leaves open | The physical test |
 |---|---|---|---|---|
-| 1 | A session contains roughly one independent measurement; lag-1 autocorrelation 0.995 | claim C04, `reports/AGGREGATION_LIMIT.md` | Is that a fact about brains, or about any slowly drifting many-channel sensor? | **B-9**: measure the same quantity on the rig |
+| 1 | A **faulted** session contains roughly one independent measurement; lag-1 autocorrelation 0.995. **Fault-free it is 0.893, for 3.12 effective samples** | claim C04 (amended 19 Sep), `reports/AUTOCORR_BY_SEVERITY.md` | Is either figure a fact about brains, or about any slowly drifting many-channel sensor? | **B-9**: measure the same quantity on the rig, against the fault-free figure |
 | 2 | That autocorrelation survives removing all window overlap (0.902 / 0.784) | claim C18, `reports/WINDOW_SPACING.md` | — | — |
 | 3 | **But those figures are pooled over episodes carrying an injected fault ramp. Fault-free, it is 0.085 (T11) and 0.435 (T5)** | `reports/AUTOCORR_BY_SEVERITY.md` | The rig's natural-drift arm injects nothing, so which number is it compared against? | **Resolved 19 Sep**: the fault-free figures. `RIG_PREREGISTRATION.md` §12 |
 | 4 | The lag-1 estimator saturates near 0.60 at 10 windows, so 0.902 cannot be inverted to a drift speed | `reports/AUTOCORR_BY_SEVERITY.md`, `reports/DRIFT_SWEEP_DESIGN.md` | How long must a rig block be for its number to be comparable? | **B-8**: match block length to window count, not to duration |
