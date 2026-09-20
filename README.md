@@ -77,6 +77,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/INVARIANT_DETECTOR.md`](reports/INVARIANT_DETECTOR.md) | Building the sharper detector the evidence pointed to — it was worse on both axes |
 | [`reports/INVARIANT_ATTRIBUTION.md`](reports/INVARIANT_ATTRIBUTION.md) | The other half fails too — and what that says about supervised probes |
 | [`research/ORIGINAL_DATA_COLLECTION_DESIGN.md`](research/ORIGINAL_DATA_COLLECTION_DESIGN.md) | **Design for original data collection** — options, rejections, recommendation |
+| [`physical/README.md`](physical/README.md) | **The physical-validation phase** — an apparatus whose failures are scheduled in advance, so lead time and false-alarm rate have a fixed value for the first time |
 
 ## Checking the work
 
@@ -179,11 +180,20 @@ regenerated — see [`reports/REPRODUCIBILITY_AUDIT.md`](reports/REPRODUCIBILITY
 ## Layout
 
 ```
-scripts/     01-65; 31, 55, 56, 61 and 65 run last, everything else in order
+scripts/     01-76; 31, 55, 56, 61 and 65 run last, everything else in order
 research/    design decisions, preregistrations, the dated log
 reports/     results, figures, the demo
 data/        raw (gitignored) and processed outputs
+rig/         the first version of the bench apparatus
+physical/    the physical-validation phase: docs 00-08, code, and its own data
 ```
+
+The two halves answer different questions. `scripts/` asks what a
+decoder-health monitor does on archived human recordings, where nobody wrote
+down when the electrodes started failing. `physical/` builds a system where
+that moment **is** written down — drawn at random and checksummed before each
+recording exists — so that lead time and false-alarm rate stop depending on
+which moment an analyst picks.
 
 ## Honest limitations
 

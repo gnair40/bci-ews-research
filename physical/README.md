@@ -1,0 +1,106 @@
+# The physical-validation phase
+
+Everything in this folder builds and runs an apparatus that can measure
+something the archived human recordings cannot: **how early a decoder-health
+monitor warns, and how often it warns when nothing is wrong.**
+
+Both numbers need failures whose start times were fixed before the recording
+existed, and many hours of genuinely fault-free recording. Human brain-implant
+recordings have neither. A sealed box with a screen and a camera has both.
+
+---
+
+## Read in this order
+
+| | Document | What it is for |
+|---|---|---|
+| 00 | [`docs/00_WHY_THIS_PHASE_EXISTS.md`](docs/00_WHY_THIS_PHASE_EXISTS.md) | The argument. What is new, what is not, and an honest account of what already exists. **Start here.** |
+| 01 | [`docs/01_RESEARCH_DESIGN.md`](docs/01_RESEARCH_DESIGN.md) | An audit of the old design, the new hypothesis, the variables, and the limitations written in advance |
+| 02 | [`docs/02_EXPERIMENTS.md`](docs/02_EXPERIMENTS.md) | The six experiments P-1 to P-6, what each tests, and what every outcome would mean |
+| 03 | [`docs/03_MATERIALS_AND_SAFETY.md`](docs/03_MATERIALS_AND_SAFETY.md) | What to buy, why each item, and the safety assessment |
+| 04 | [`docs/04_BUILD.md`](docs/04_BUILD.md) | From an empty box to a calibrated apparatus, assuming no prior knowledge |
+| 05 | [`docs/05_SOFTWARE.md`](docs/05_SOFTWARE.md) | Every script: what it does, what it needs, what it produces |
+| 06 | [`docs/06_DATA_COLLECTION.md`](docs/06_DATA_COLLECTION.md) | What to do on each recording day |
+| 07 | [`docs/07_ANALYSIS.md`](docs/07_ANALYSIS.md) | What to run, and what each result would and would not license you to claim |
+| 08 | [`docs/08_WHAT_COMES_AFTER.md`](docs/08_WHAT_COMES_AFTER.md) | What, if anything, gets built afterwards — decided by result, written before the results exist |
+
+`data/_FOLDER_NOTES.md` explains what lives where and what is committed.
+
+---
+
+## The apparatus, in one paragraph
+
+A screen shows a grid of grey patches. Each patch brightens and dims with a
+direction the computer chose, the way a direction-tuned brain cell fires faster
+for its preferred direction. A camera in a sealed dark box watches the screen,
+and each small region of its image is one "channel", standing in for one
+electrode. A decoder learns to read the direction back out. Then the system is
+degraded on purpose — a filter over the lens, tape across part of the field, the
+stage rotated — **at a moment drawn at random and locked under a checksum before
+the recording existed.**
+
+That last clause is the whole point. It is the one property no human recording
+has, and without it neither lead time nor false-alarm rate has a fixed value.
+
+---
+
+## Try the whole thing today, with no hardware
+
+```bash
+python3 physical/code/monitor.py --selftest
+python3 physical/code/dryrun.py --clean --healthy 12 --degraded 8
+python3 physical/code/make_session_table.py --raw physical/data/dryrun/raw --tag _dryrun
+python3 physical/code/analyze_falsealarm.py --tag _dryrun
+python3 physical/code/analyze_leadtime.py --tag _dryrun
+rm -rf physical/data/dryrun
+```
+
+That manufactures fake recordings and runs the entire analysis chain on them.
+**No number it produces is a result** — the fakes come from a formula, not from
+an apparatus. It answers one question: does the chain run?
+
+---
+
+## Once the apparatus exists
+
+```bash
+# calibrate
+python3 physical/code/run_session.py --session 0 --block 1 --calibration
+python3 physical/code/bench.py check --session 0 --block 1
+
+# record
+python3 physical/code/run_campaign.py plan   --session 10 --healthy 101
+python3 physical/code/run_campaign.py record --session 10
+
+# analyse
+python3 physical/code/make_session_table.py
+python3 physical/code/analyze_falsealarm.py
+python3 physical/code/analyze_leadtime.py
+python3 physical/code/analyze_correlation.py
+python3 physical/code/analyze_decision_rate.py
+```
+
+---
+
+## Three things the code will not let you do
+
+**Record a session without deciding its outcome first.** `run_session.py`
+refuses unless `draw_onset.py` has already drawn and checksummed a plan. An
+onset chosen after the fact is an onset the analyst can adjust, and then lead
+time is a matter of opinion.
+
+**Re-draw a plan.** `draw_onset.py` refuses to overwrite one. Re-drawing after
+seeing a recording is exactly the tampering the checksum exists to prevent.
+
+**Overwrite raw data.** `run_session.py` refuses to record into a folder that
+already holds a recording, and nothing in the analysis writes to
+`physical/data/raw/` at all.
+
+---
+
+## No human participants
+
+Nobody is a subject of this research at any stage, including the researcher.
+Nobody is recruited, surveyed, interviewed, photographed, recorded or measured.
+The camera is inside a closed box pointing at a screen; no person is ever in its
+field of view or a source of data. See `docs/03_MATERIALS_AND_SAFETY.md` §3.1.

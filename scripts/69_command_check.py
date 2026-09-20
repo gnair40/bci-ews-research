@@ -67,6 +67,8 @@ def documents() -> list[str]:
                     for q in (REPO / "physical" / "docs").glob("*.md"))
     found += sorted(str(q.relative_to(REPO))
                     for q in (REPO / "physical" / "data").glob("*.md"))
+    found += sorted(str(q.relative_to(REPO))
+                    for q in (REPO / "physical").glob("*.md"))
     return ["README.md"] + found
 
 
