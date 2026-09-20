@@ -37,7 +37,8 @@ mixed.
 
 | File | What it is |
 |---|---|
-| **`RESEARCH_PLAN_2026-09-15.md`** | **The September 2026 ISEF submission.** Third person, aligned to page 2 of ISEF Form 1A. This is the one that goes to the SRC. |
+| **`RESEARCH_PLAN_2026-09-15.md`** | **The September 2026 ISEF submission.** Third person, aligned to page 2 of ISEF Form 1A. This is the one that went to the SRC, and it is kept exactly as submitted. |
+| **`RESEARCH_PLAN_DECEMBER_DRAFT.md`** | **Draft of the December final plan — Sections B and C only**, rebuilt for the physical design from `physical/docs/`. Not submitted. Lists the six items still open, of which only the campaign length changes what gets recorded. |
 | `EXPERIMENTAL_PROCEDURES.md` | The procedures, by phase, in the researcher's own voice. Phases 1–6 are the computational work at plan level. **Phases 7–10 are superseded** by `physical/docs/`. |
 | `BUILD_MANUAL.md` | **Superseded** by `physical/docs/04_BUILD.md`. Kept for its extra depth on the Raspberry Pi setup and the enclosure, which build the same apparatus. |
 | `RIG_CODE.md` | **Superseded** by `physical/docs/05_SOFTWARE.md`. Kept because it holds the full source of the `rig/` programs inline as a fallback. |

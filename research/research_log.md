@@ -5898,3 +5898,50 @@ per decision — buys anything on top of it.
 documents, each already carrying a banner, and they are kept unchanged as the
 record. `reports/OPERATING_POINT_BOUND.md` names them so a reader who meets
 0.933 there can find out why.
+
+---
+
+## 20 September 2026 (evening) — drafted Sections B and C of the December plan
+
+The September submission describes a physical experiment that no longer exists.
+Rather than edit it — it is the document of record and stays as submitted — the
+two sections that changed are rebuilt in
+`research/RESEARCH_PLAN_DECEMBER_DRAFT.md`, from `physical/docs/01`, `02`, `03`
+and `06`.
+
+**Section B had to be rebuilt as well as Section C.** Section C cannot be
+coherent while Section B still states a hypothesis that has been tested and
+falsified. The draft reports that falsification as a result — median lead time
+−20 s on T11 and −35 s on T5, 3.4 false alarms an hour against a budget of 0.1,
+ten of 48 configurations reaching a positive median lead time and none passing
+all five gates — and then states the new hypothesis the physical phase tests.
+
+**Section C's materials list needed no change at all.** Checked item by item
+against `physical/docs/03`: the redesign changed which experiments run on the
+apparatus, not what the apparatus is made of. Worth recording as a check that
+was performed rather than an assumption.
+
+**What the draft adds that September did not have:**
+
+- the 30-hour arithmetic, stated in the procedures rather than left implicit, so
+  a reviewer can see why the campaign is four nights rather than one;
+- the distinction between lead time and detection delay, since the two were
+  being conflated until yesterday and detection delay is the measurement the
+  apparatus exists to make;
+- the corrected decision-rate figures — 0.9992 at 720 decisions an hour, 0.990
+  at one per session — rather than the superseded 0.933;
+- a statement that P-5's sessions are never pooled with P-3's, and why;
+- the rule that a warning preceding the onset is a false alarm rather than an
+  early detection.
+
+**Figures verified against the data before writing, not quoted from memory:**
+the lead times and false-alarm rates from the monitorability certificates, 0 of
+48 gates from `PHASE3_REPORT.md`, the 36.1° margin, and the two AUC targets from
+today's correction. The one change made after checking was to attribute −20 s
+and 3.4/hour to a participant rather than stating them unqualified — T5's
+false-alarm rate is 0.23/hour, and an unattributed 3.4 would have read as though
+it applied to both.
+
+Six items remain open. Only the first — 101 fault-free sessions or about 360 —
+changes what gets recorded; the rest are administrative and do not block the
+build.
