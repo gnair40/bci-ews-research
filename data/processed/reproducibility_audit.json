@@ -1,7 +1,5 @@
 {
   "n_scripts": 76,
-  "n_problems": 1,
-  "problems": [
-    "'.json' is read by 73_monitorability_certificate.py but no script writes it"
-  ]
+  "n_problems": 0,
+  "problems": []
 }

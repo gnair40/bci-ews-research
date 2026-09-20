@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import ast
 import json
+import pathlib
 import re
 import sys
 from pathlib import Path
@@ -54,6 +55,11 @@ RESOLVED_BY_HAND = {
     "reference_decoder.json": "18_reference_decoder.py, via decoder_paths() -> write_text",
 }
 SCRIPT_RE = re.compile(r'\b(\d{2}_[a-z0-9_]+\.py)\b')
+# The physical phase's scripts are not numbered, so SCRIPT_RE cannot see them.
+# Without this a document could name a physical/code file that does not exist
+# and nothing would notice -- the same gap that let four broken rig commands
+# sit in the build manual until a dry run found them.
+PHYSICAL_RE = re.compile(r'\b(physical/code/[a-z0-9_]+\.py)\b')
 
 
 def script_files() -> list[Path]:
@@ -239,6 +245,14 @@ def main() -> int:
             continue
         if f in HAND_COMMITTED or f.endswith(".md"):
             continue
+        # A fragment with no stem -- ".json", ".npy" -- is what is left of an
+        # f-string whose name ends in an interpolation, e.g.
+        # f"harness_summary{sfx}.json". It is not a filename, and reporting it
+        # left this audit permanently showing "1 problem", which is how a gate
+        # stops being read. The filename it belongs to is caught by the
+        # non-interpolated variant of the same expression.
+        if re.fullmatch(r"\.[a-z0-9]+", pathlib.Path(f).name):
+            continue
         if f in RESOLVED_BY_HAND:
             print(f"   (allowed)    {f:<38} produced by {RESOLVED_BY_HAND[f]}")
             continue
@@ -280,12 +294,20 @@ def main() -> int:
     have = {p.name for p in scripts}
     dangling = []
     docs = list(REPORTS.glob("*.md")) + [REPO / "README.md"] + \
-        list((REPO / "research").glob("*.md"))
+        list((REPO / "research").glob("*.md")) + \
+        list((REPO / "physical").glob("*.md")) + \
+        list((REPO / "physical" / "docs").glob("*.md")) + \
+        list((REPO / "physical" / "data").glob("*.md")) + \
+        list((REPO / "rig").glob("*.md"))
     for d in docs:
         if not d.exists():
             continue
-        for m in SCRIPT_RE.finditer(d.read_text()):
+        text = d.read_text()
+        for m in SCRIPT_RE.finditer(text):
             if m.group(1) not in have:
+                dangling.append((d.name, m.group(1)))
+        for m in PHYSICAL_RE.finditer(text):
+            if not (REPO / m.group(1)).exists():
                 dangling.append((d.name, m.group(1)))
     if dangling:
         for doc, s in sorted(set(dangling)):

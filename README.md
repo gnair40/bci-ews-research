@@ -81,18 +81,23 @@ works — and the reason is now measured rather than guessed.**
 
 ## Checking the work
 
-Five gates plus a test suite. Run all of them before committing anything, never
+Six gates plus a test suite. Run all of them before committing anything, never
 after, or you end up with regenerated files that disagree with the code.
 
 ```
-python3 -m unittest discover -s tests   # 32 unit tests
+python3 -m unittest discover -s tests   # 45 unit tests
 python3 tools/mutation_check.py         # do those tests catch anything?
 python3 scripts/31_verify_claims.py     # every headline number, recomputed
 python3 scripts/55_reproducibility_audit.py
 python3 scripts/56_claims_register.py
 python3 scripts/61_statistical_hygiene.py
 python3 scripts/65_log_coverage.py
+python3 scripts/69_command_check.py     # would a reader's first command work?
+python3 physical/code/monitor.py --selftest   # the physical phase's pipeline
 ```
+
+`69_command_check.py` was missing from this list until 20 September 2026,
+which is exactly the way a gate stops being run.
 
 `tools/mutation_check.py` is the unusual one. A test suite that passes on its
 first run has demonstrated nothing, so it reintroduces eleven bugs this project
