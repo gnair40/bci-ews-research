@@ -92,6 +92,18 @@ def make_one(folder: Path, plan: dict, pref: np.ndarray, depth: float,
             X[onset:] *= np.clip(1.0 + sev * rng.normal(0, 0.5, nch), 0.05, None)
         elif kind == "GEOMETRY_ROTATION":
             X[onset:] = np.roll(X[onset:], int(round(sev * nch * 0.06)), axis=1)
+        elif kind == "UNDESIGNED":
+            # Several things at once, mildly, which is what a real physical
+            # fault does -- a loosened connector dims the image, shifts it, and
+            # adds noise together. The first version of this file applied no
+            # degradation at all to an UNDESIGNED session, so the fake P-5
+            # recordings were healthy ones wearing a fault label, and the fake
+            # P-5 detection rate came out at 0%. That is what a dry run is for.
+            X[onset:] *= (1.0 - 0.15 * sev)
+            X[onset:] *= np.clip(1.0 + 0.3 * sev * rng.normal(0, 0.5, nch),
+                                 0.05, None)
+            X[onset:] = np.roll(X[onset:], int(round(sev * nch * 0.02)), axis=1)
+            X[onset:] += rng.normal(0, 0.5 * sev, X[onset:].shape)
 
     folder.mkdir(parents=True, exist_ok=True)
     np.save(folder / "capture.npy", X.astype(np.float32))
@@ -105,10 +117,16 @@ def make_one(folder: Path, plan: dict, pref: np.ndarray, depth: float,
                     f"{int(onset is not None and i >= onset)}\n")
     (folder / "session.json").write_text(json.dumps(
         {"session": plan["session"], "block": plan["block"],
-         "kind": "experiment", "healthy": plan["healthy"],
+         "kind": plan.get("kind", "experiment"), "healthy": plan["healthy"],
          "SYNTHETIC": True,
          "warning": "Made by dryrun.py. Not data. Not for the write-up."},
         indent=2))
+    # A P-5 session keeps its onset beside the recording rather than in the
+    # onsets folder, because it was noted afterwards rather than drawn.
+    if plan.get("kind") == "undesigned":
+        (folder / "observed_onset.json").write_text(json.dumps(
+            {**{k: v for k, v in plan.items() if k != "kind"},
+             "onset_provenance": "stopwatch", "SYNTHETIC": True}, indent=2))
 
 
 def main() -> int:
@@ -116,6 +134,12 @@ def main() -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--healthy", type=int, default=12)
     ap.add_argument("--degraded", type=int, default=8)
+    ap.add_argument("--undesigned", type=int, default=0,
+                    help="P-5 sessions: fault caused by hand, onset noted "
+                         "afterwards rather than drawn")
+    ap.add_argument("--orphans", type=int, default=0,
+                    help="P-5 sessions with NO noted onset, to check the "
+                         "analysis refuses to score them")
     ap.add_argument("--frames", type=int, default=6000, help="6000 = 2 minutes")
     ap.add_argument("--channels", type=int, default=384)
     ap.add_argument("--depth", type=float, default=0.004,
@@ -155,14 +179,39 @@ def main() -> int:
                       "onset_seconds": round(onset / FPS, 2),
                       "frames": a.frames, "fps": FPS})
 
+    # P-5: caused by hand, onset written down afterwards. Its plan lives beside
+    # the recording, not in the onsets folder, so the two provenances cannot be
+    # confused for one another even on fake data.
+    undesigned = []
+    for i in range(a.undesigned + a.orphans):
+        onset = int(rng.integers(int(a.frames * 0.2), int(a.frames * 0.8)))
+        undesigned.append({"session": 3, "block": i + 1, "healthy": False,
+                           "kind": "undesigned",
+                           "fault_type": "UNDESIGNED",
+                           "severity": float(rng.choice([0.5, 1.0])),
+                           "onset_frame": onset,
+                           "onset_seconds": round(onset / FPS, 2),
+                           "frames": a.frames, "fps": FPS,
+                           # The last `--orphans` of them get no noted onset.
+                           "_note_it": i < a.undesigned})
+
     for p in plans:
         name = f"s{p['session']}_b{p['block']}"
         (onsets / f"{name}.json").write_text(json.dumps(p, indent=2))
         make_one(raw / name, p, pref, a.depth, a.noise, a.drift, rng)
 
-    print(f"wrote {len(plans)} fake recordings to {raw}")
+    for p in undesigned:
+        name = f"s{p['session']}_b{p['block']}"
+        note_it = p.pop("_note_it")
+        make_one(raw / name, p if note_it else {**p, "kind": "undesigned"},
+                 pref, a.depth, a.noise, a.drift, rng)
+        if not note_it:
+            (raw / name / "observed_onset.json").unlink(missing_ok=True)
+
+    print(f"wrote {len(plans) + len(undesigned)} fake recordings to {raw}")
     print(f"      {a.healthy} healthy, {a.degraded} degraded, "
-          f"{a.frames / FPS / 60:.1f} minutes each")
+          f"{a.undesigned} undesigned, {a.orphans} undesigned with no noted "
+          f"onset, {a.frames / FPS / 60:.1f} minutes each")
     print()
     print("These are NOT data. Run the analysis against them like this:")
     print(f"    python3 physical/code/make_session_table.py \\")

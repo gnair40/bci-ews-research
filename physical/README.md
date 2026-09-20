@@ -48,16 +48,23 @@ has, and without it neither lead time nor false-alarm rate has a fixed value.
 
 ```bash
 python3 physical/code/monitor.py --selftest
-python3 physical/code/dryrun.py --clean --healthy 12 --degraded 8
+python3 physical/code/dryrun.py --clean --healthy 12 --degraded 8 --undesigned 4 --orphans 2
 python3 physical/code/make_session_table.py --raw physical/data/dryrun/raw --tag _dryrun
 python3 physical/code/analyze_falsealarm.py --tag _dryrun
 python3 physical/code/analyze_leadtime.py --tag _dryrun
+python3 physical/code/analyze_leadtime.py --tag _dryrun --undesigned
 rm -rf physical/data/dryrun
 ```
 
 That manufactures fake recordings and runs the entire analysis chain on them.
 **No number it produces is a result** — the fakes come from a formula, not from
 an apparatus. It answers one question: does the chain run?
+
+`--orphans 2` deliberately makes two broken sessions: undesigned faults whose
+onset was never written down. The table builder should name them and throw them
+out. If it ever stops doing that, a session containing a fault would land in the
+fault-free arm and corrupt the false-alarm rate, so it is worth checking that
+the check still works.
 
 ---
 
@@ -76,13 +83,14 @@ python3 physical/code/run_campaign.py record --session 10
 python3 physical/code/make_session_table.py
 python3 physical/code/analyze_falsealarm.py
 python3 physical/code/analyze_leadtime.py
+python3 physical/code/analyze_leadtime.py --undesigned
 python3 physical/code/analyze_correlation.py
 python3 physical/code/analyze_decision_rate.py
 ```
 
 ---
 
-## Three things the code will not let you do
+## Four things the code will not let you do
 
 **Record a session without deciding its outcome first.** `run_session.py`
 refuses unless `draw_onset.py` has already drawn and checksummed a plan. An
@@ -95,6 +103,12 @@ seeing a recording is exactly the tampering the checksum exists to prevent.
 **Overwrite raw data.** `run_session.py` refuses to record into a folder that
 already holds a recording, and nothing in the analysis writes to
 `physical/data/raw/` at all.
+
+**Score a hand-caused fault whose onset was never written down.**
+`make_session_table.py` names it and excludes it. Nothing on record would say a
+fault happened, so every other piece of code would read it as healthy and put it
+in the fault-free arm — which would quietly corrupt the one measurement this
+phase exists to make.
 
 ---
 

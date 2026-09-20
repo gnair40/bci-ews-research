@@ -1,6 +1,6 @@
 # The code: what each file does and when you run it
 
-Eleven files in `physical/code/`. This document says what each one is for, what
+Thirteen files in `physical/code/`. This document says what each one is for, what
 it needs, what it produces, and where it sits in the workflow. Each file also
 carries a long explanation at the top of itself; open it and read it if you want
 the reasoning rather than the summary.
@@ -120,6 +120,31 @@ The script **refuses to overwrite an existing plan.** That refusal is the point:
 re-drawing a plan after seeing a recording is precisely the tampering the
 checksum exists to prevent.
 
+### `note_onset.py` — the P-5 counterpart to `draw_onset.py`
+
+**What:** records when a fault you caused *by hand* actually started, after the
+fact, from a stopwatch.
+**Run it:**
+```bash
+python3 physical/code/run_session.py --session 30 --block 1 --undesigned "fingerprint on the lens edge"
+python3 physical/code/note_onset.py  --session 30 --block 1 --at-clock 21:47:12
+```
+**Produces:** `physical/data/raw/s30_b1/observed_onset.json`.
+**When:** experiment P-5 only, immediately after each recording.
+
+**Why this is not `draw_onset.py`.** P-5's faults are ones nobody designed — a
+half-unseated ribbon cable, a fingerprint, a warm afternoon. They cannot be
+drawn in advance, because the onset is the moment your hand moves. So the onset
+is your word rather than a checksum, which is weaker evidence, and the analysis
+keeps those sessions in **a separate table that is never pooled with P-3**.
+
+What P-5 keeps is the part that matters most: nobody designed what the fault
+would look like.
+
+It refuses to overwrite an existing note. If the first was wrong, `--replace`
+exists and the research log gets a line saying what was wrong — a silently
+corrected onset is indistinguishable from an onset adjusted to improve a result.
+
 ### `stimulus.py`
 
 **What:** draws the moving pattern the camera watches, and writes down the true
@@ -155,10 +180,11 @@ capture, waits for both, and writes down every setting used.
 `physical/data/raw/SESSION_LOG.csv`.
 **When:** once per session.
 
-It **refuses** to record unless a plan has been drawn, unless you pass
-`--calibration` (which marks the session as apparatus-setup and keeps it out of
-every result). It also refuses to overwrite a folder that already has a
-recording in it.
+It **refuses** to record unless a plan has been drawn, with two marked
+exceptions: `--calibration` (apparatus setup, kept out of every result) and
+`--undesigned "what you are about to do"` (experiment P-5, where the onset is
+written down afterwards with `note_onset.py`). It also refuses to overwrite a
+folder that already has a recording in it.
 
 ### `run_campaign.py`
 
@@ -201,6 +227,11 @@ look good on exactly those recordings.
 **It never modifies `physical/data/raw/`.** Raw recordings are written once and
 read forever.
 
+**It refuses to score a P-5 session whose onset was never written down**, and
+names it. Such a session has nothing on record saying a fault happened, so every
+other piece of code would read it as healthy and put it in the fault-free arm —
+quietly corrupting the one measurement this phase exists to make.
+
 **It prints how much healthy recording you would need.** See below.
 
 ### `analyze_falsealarm.py` — experiment P-2
@@ -209,6 +240,18 @@ read forever.
 gate.
 **Run it:** `python3 physical/code/analyze_falsealarm.py`
 **Produces:** `physical/data/results/P2_FALSE_ALARM_RATE.md` and a JSON file.
+
+### `analyze_leadtime.py --undesigned` — experiment P-5
+
+**What:** the same analysis, on the sessions whose faults nobody designed,
+reported in its own file with a direct comparison against P-3.
+**Run it:** `python3 physical/code/analyze_leadtime.py --undesigned`
+**Produces:** `physical/data/results/P5_UNDESIGNED_FAULTS.md`.
+**When:** after P-3, because the comparison needs P-3's numbers to exist.
+
+If undesigned faults turn out to be meaningfully harder to detect, that is a
+finding about how fault benchmarks are built — **including this project's own** —
+and it belongs in the write-up as a headline rather than a limitation.
 
 ### `analyze_leadtime.py` — experiment P-3
 

@@ -201,8 +201,20 @@ Every degradation in P-3, and every one in the computational half, was an
 equation someone wrote. Nobody has checked whether *real* degradation looks like
 them.
 
-For each intervention: start the recording, note the **exact clock time** you
-act, cause the fault, and let the recording run to the end.
+For each intervention: start the recording with `--undesigned`, note the
+**exact clock time** you act, cause the fault, and let the recording run to the
+end. Then write the onset down straight away.
+
+```bash
+python3 physical/code/run_session.py --session 30 --block 1 \
+    --undesigned "half-unseated the camera ribbon and re-seated it"
+python3 physical/code/note_onset.py --session 30 --block 1 \
+    --at-clock 21:47:12 --fault CONNECTOR
+```
+
+`run_session.py` prints the clock time the recording started, so keep that
+window visible and **write down the time you act while it is happening.** Do not
+reconstruct it afterwards from memory.
 
 | Intervention | How | Care |
 |---|---|---|
@@ -212,12 +224,23 @@ act, cause the fault, and let the recording run to the end.
 | Mechanical rotation | turn the stage with the stepper motor, recording the angle | hands clear while powered |
 | Thermal | hair dryer, **lowest setting, at least 30 cm, no more than 60 s** | component below 50 °C, adult present |
 
-Record these with `--calibration` off and a drawn plan where the drawn fault
-type is ignored — or, more simply, draw them `--healthy` and record the real
-onset time by hand in the log and in `--note`. **Say in the write-up which of
-the two you did.** These sessions are analysed in a separate table from P-3,
-because the onset came from your stopwatch rather than from a checksummed file,
-and that is a weaker provenance which should not be silently mixed in.
+These sessions are analysed in a **separate table** from P-3, by
+`analyze_leadtime.py --undesigned`. The onset came from your stopwatch rather
+than from a checksummed file, and that is weaker provenance which must not be
+silently mixed in. Everything else is identical: the same monitor, the same
+threshold, the same code.
+
+**A P-5 session with no noted onset cannot be analysed at all.**
+`make_session_table.py` refuses to score it and says so by name — because a
+session containing a fault, with nothing on record saying so, would otherwise
+land in the fault-free arm and quietly corrupt the false-alarm rate. That is the
+single worst thing that could happen to this phase's main measurement, so the
+code checks for it rather than trusting the protocol.
+
+If you get an onset wrong, `note_onset.py` refuses to overwrite it. Use
+`--replace` **and write in the research log what was wrong and why** — a
+silently corrected onset is indistinguishable from an onset adjusted to improve
+a result.
 
 If undesigned faults turn out to be meaningfully harder to detect, that is a
 finding about how fault benchmarks are built — **including this project's own** —

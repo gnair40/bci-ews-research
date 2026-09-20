@@ -212,6 +212,15 @@ def load_session(folder: Path, lag_s: float = 0.0) -> Session:
         plan_file = DATA / "onsets" / f"{folder.name}.json"
     plan = json.loads(plan_file.read_text()) if plan_file.exists() else None
 
+    # A P-5 session has no drawn plan -- its fault was caused by hand and its
+    # onset was written down afterwards with note_onset.py. It is read here so
+    # the same code can score it, and it carries onset_provenance: "stopwatch"
+    # so that everything downstream can keep it out of the drawn-onset tables.
+    if plan is None:
+        noted = folder / "observed_onset.json"
+        if noted.exists():
+            plan = json.loads(noted.read_text())
+
     s, b = folder.name.lstrip("s").split("_b")
     return Session(int(s), int(b), X, heading[idx], tc - tc[0], plan, folder)
 

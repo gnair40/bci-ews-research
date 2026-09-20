@@ -231,6 +231,13 @@ Cause a real fault by hand, note the exact time, let the recording run through.
 You know *when* it started because you caused it. You did **not** design what it
 would look like — that is the whole point.
 
+Recorded with `run_session.py --undesigned`, and the onset written down
+immediately afterwards with `note_onset.py`. Analysed by
+`analyze_leadtime.py --undesigned`, which reports them in their own table beside
+P-3's and never pools the two: a stopwatch is weaker evidence than a checksum,
+and pretending otherwise would hand back the argument the rest of the phase
+rests on.
+
 ### Outcome
 
 If undesigned faults are meaningfully harder to detect, that is a finding about

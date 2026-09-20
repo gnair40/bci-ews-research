@@ -168,9 +168,35 @@ def main() -> int:
         j = s.folder / "session.json"
         return json.loads(j.read_text()).get("kind", "experiment") if j.exists() else "experiment"
 
+    # A P-5 session whose onset has not been written down yet looks, to every
+    # piece of code here, like a healthy session -- it has no plan, so nothing
+    # says a fault happened. It would then enter the false-alarm arm and
+    # silently corrupt the one measurement this phase exists to make. Caught
+    # here, loudly, and excluded.
+    orphans = [s for s in sessions
+               if kind(s) == "undesigned" and s.plan is None]
+    if orphans:
+        print()
+        print(f"{len(orphans)} undesigned-fault session(s) have no noted onset:")
+        for s in orphans:
+            print(f"  {s.folder.name}")
+        print("They are EXCLUDED from everything below. A P-5 session with no")
+        print("noted onset cannot be scored, and leaving it in would put a")
+        print("session that contains a fault into the fault-free arm.")
+        print("Write the onsets down:")
+        print("    python3 physical/code/note_onset.py --session N --block N "
+              "--at-clock HH:MM:SS")
+        # Compared by folder name, not by object. A Session holds numpy arrays,
+        # and comparing two of them with `==` gives an array rather than a
+        # yes/no, which would raise instead of filtering.
+        drop = {s.folder.name for s in orphans}
+        sessions = [s for s in sessions if s.folder.name not in drop]
+
     calib = [s for s in sessions if kind(s) == "calibration"]
-    healthy = [s for s in sessions if kind(s) != "calibration" and s.healthy]
-    degraded = [s for s in sessions if kind(s) != "calibration" and not s.healthy]
+    healthy = [s for s in sessions
+               if kind(s) not in ("calibration", "undesigned") and s.healthy]
+    degraded = [s for s in sessions
+                if kind(s) != "calibration" and not s.healthy]
 
     fit = list(calib)
     borrowed = 0
@@ -257,6 +283,11 @@ def main() -> int:
             "fault_type": p.get("fault_type") or "",
             "severity": p.get("severity", 0.0),
             "onset_seconds": p.get("onset_seconds", np.nan),
+            # "drawn" was fixed and checksummed before the recording existed;
+            # "stopwatch" was written down afterwards by the experimenter. The
+            # analysis reports them in separate tables and never pools them.
+            "onset_provenance": (p.get("onset_provenance", "drawn")
+                                 if p.get("onset_frame") is not None else ""),
             "duration_seconds": s.duration_seconds,
             "n_windows": len(starts),
             "risk_score": float(np.median(raw)),
@@ -320,6 +351,8 @@ def main() -> int:
         "n_sessions": int(len(df)),
         "n_fit": len(fit), "n_val": len(val_names),
         "n_test_healthy": int(len(t_h)), "n_degraded": len(degraded),
+        "n_undesigned": int((df.kind == "undesigned").sum()) if len(df) else 0,
+        "n_orphaned_undesigned": len(orphans),
         "borrowed_healthy_for_fit": borrowed,
         "test_healthy_hours": test_hours,
         "false_alarms_in_test": fa,
@@ -334,8 +367,11 @@ def main() -> int:
     print()
     print("=" * 70)
     print(f"{len(df)} sessions  ->  {out}")
+    n_undesigned = int((df.kind == "undesigned").sum()) if len(df) else 0
     print(f"  fit {len(fit)}   val {len(val_names)}   "
-          f"test healthy {len(t_h)}   degraded {len(degraded)}")
+          f"test healthy {len(t_h)}   degraded {len(degraded)}"
+          + (f"   (of which {n_undesigned} undesigned, reported separately)"
+             if n_undesigned else ""))
     print(f"  median decoding error {df.performance.median():.1f} deg "
           f"vs chance {df.chance_deg.median():.1f} deg "
           f"(margin {df.margin_deg.median():.1f} deg, neural is 36.1)")

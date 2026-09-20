@@ -15,12 +15,14 @@ cd ~/bci-ews-research
 python3 physical/code/make_session_table.py
 python3 physical/code/analyze_falsealarm.py
 python3 physical/code/analyze_leadtime.py
+python3 physical/code/analyze_leadtime.py --undesigned
 python3 physical/code/analyze_correlation.py
 python3 physical/code/analyze_decision_rate.py
 ```
 
-Five commands. The first must come before the other four; the four can be run in
-any order. Everything lands in `physical/data/results/` as a markdown report you
+Six commands. The first must come before the rest, and
+`--undesigned` must come after the plain `analyze_leadtime.py`, because its
+report compares against P-3's numbers. The others can be run in any order. Everything lands in `physical/data/results/` as a markdown report you
 can read and a JSON file the reports are built from.
 
 **Do not edit the reports by hand.** They say so at the top. If a number looks
@@ -150,6 +152,30 @@ designer something. A pooled 62% tells them nothing, and hides it.
 
 ---
 
+## Step 3b — P-5, faults nobody designed
+
+`analyze_leadtime.py --undesigned` → `P5_UNDESIGNED_FAULTS.md`
+
+Same monitor, same threshold, same code — different sessions and **different
+provenance**. P-3's onsets were drawn and checksummed before the recording
+existed; P-5's were written down afterwards from a stopwatch, because the fault
+was the moment your hand moved.
+
+The report puts the two side by side and says which way the gap went.
+
+| Outcome | What it licenses |
+|---|---|
+| Undesigned faults **harder** to catch | A finding about how fault benchmarks are built, **including this project's own**. A monitor evaluated only on invented faults is being graded on a paper its author wrote. Headline, not limitation. |
+| Undesigned faults **easier** to catch | A real physical fault disturbs more of the signal at once than a clean equation applied to one property of it — so the designed benchmark is the harder, more conservative test. |
+| The two are **close** | The result the designed benchmark needs in order to be trusted. Worth stating plainly, because it could easily have gone the other way. |
+
+With ten P-5 sessions only a large difference is detectable. **Read a small gap
+as "not measured", not as "no difference".** The two are not the same claim and
+the write-up must not blur them.
+
+Never quote a P-5 number as if it were a P-3 number. The separation is the
+reason the drawn onsets mean anything.
+
 ## Step 4 — P-4, the experiment that tests the hypothesis
 
 `analyze_correlation.py` → `P4_CORRELATION_VS_USABILITY.md`
@@ -227,7 +253,9 @@ them.
   brain.
 - **The faults are still mostly designed.** P-5 exists precisely because the
   other faults are equations someone wrote. If P-5's undesigned faults behave
-  differently, that is a finding about this project's own benchmark.
+  differently, that is a finding about this project's own benchmark. P-5 is
+  itself only ten sessions, and its onsets rest on a stopwatch, so it is a
+  partial answer rather than a complete one.
 - **Sessions are five minutes.** A monitor that only misbehaves after an hour of
   continuous running would not be caught.
 - **Every number depends on the threshold**, which depends on the budget. The

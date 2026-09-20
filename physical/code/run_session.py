@@ -34,6 +34,14 @@ apparatus and is not part of any lead-time or false-alarm number. Sessions
 recorded that way are marked `calibration` in the log and the analysis scripts
 skip them.
 
+`--undesigned` exists for experiment P-5, where the fault is something you cause
+by hand and nobody wrote an equation for — a half-unseated ribbon cable, a
+fingerprint on the lens, a warm afternoon imposed with a hair dryer. Those
+cannot be drawn in advance because the onset is the moment your hand moves. You
+record the session, then write the onset down with `note_onset.py`, and the
+analysis keeps those sessions in a separate table because a stopwatch is weaker
+evidence than a checksum.
+
 =============================================================================
 HOW TO RUN IT
 =============================================================================
@@ -51,6 +59,11 @@ prints a countdown telling you when to act.
 For the P-1 calibration sessions, which have no plan:
 
     python3 physical/code/run_session.py --session 0 --block 1 --calibration
+
+For a P-5 undesigned fault:
+
+    python3 physical/code/run_session.py --session 30 --block 1 --undesigned "fingerprint on the lens edge"
+    python3 physical/code/note_onset.py   --session 30 --block 1 --at-clock 21:47:12
 
 =============================================================================
 WHAT IT PRODUCES
@@ -91,7 +104,8 @@ RAW = DATA / "raw"
 ONSETS = DATA / "onsets"
 LOG = RAW / "SESSION_LOG.csv"
 
-FIELDS = ["recorded_at", "session", "block", "kind", "healthy", "fault_type",
+FIELDS = ["recorded_at", "session", "block", "kind", "undesigned_what",
+          "healthy", "fault_type",
           "severity", "onset_seconds", "frames", "fps", "depth", "base",
           "exposure", "gain", "width", "height", "cols", "rows",
           "frames_recorded", "fps_measured", "long_gap_fraction",
@@ -125,6 +139,11 @@ def main() -> int:
     ap.add_argument("--calibration", action="store_true",
                     help="P-1 only: record without a drawn plan, and mark the "
                          "session as unusable for lead time or false alarms")
+    ap.add_argument("--undesigned", default=None, metavar="WHAT",
+                    help="P-5 only: record without a drawn plan because the "
+                         "fault is one you cause by hand and nobody designed. "
+                         "Say what you are about to do, in your own words. "
+                         "Note the onset afterwards with note_onset.py")
     ap.add_argument("--frames", type=int, default=15000)
     ap.add_argument("--fps", type=int, default=50)
     ap.add_argument("--depth", type=float, default=0.00211,
@@ -146,7 +165,12 @@ def main() -> int:
     plan = None
     if plan_file.exists():
         plan = json.loads(plan_file.read_text())
-    elif not a.calibration:
+        if a.undesigned:
+            print(f"REFUSING: a plan already exists at {plan_file}.")
+            print("A session cannot be both a drawn-onset session and an")
+            print("undesigned-fault session. Use a different --block number.")
+            return 1
+    elif not (a.calibration or a.undesigned):
         print(f"REFUSING: there is no plan at {plan_file}.")
         print()
         print("Draw the session first, so its onset is fixed before the")
@@ -201,6 +225,9 @@ def main() -> int:
               f"at {plan['onset_seconds']:.0f} s")
     elif plan:
         print("  HEALTHY — touch nothing during this recording")
+    elif a.undesigned:
+        print(f"  UNDESIGNED FAULT — {a.undesigned}")
+        print("  Watch the clock. Write down the time you act, to the second.")
     else:
         print("  CALIBRATION — not usable for lead time or false alarms")
     print(f"  {a.frames} frames at {a.fps} fps = {a.frames / a.fps / 60:.1f} minutes")
@@ -225,7 +252,9 @@ def main() -> int:
     record = {
         "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "session": a.session, "block": a.block,
-        "kind": "calibration" if a.calibration and not plan else "experiment",
+        "kind": ("undesigned" if a.undesigned else
+                 "calibration" if a.calibration and not plan else "experiment"),
+        "undesigned_what": a.undesigned or "",
         "healthy": plan["healthy"] if plan else None,
         "fault_type": (plan or {}).get("fault_type") or "",
         "severity": (plan or {}).get("severity", ""),
@@ -262,6 +291,13 @@ def main() -> int:
 
     print(f"\ndone in {record['wall_seconds']:.0f} s — wrote {folder}")
     print(f"logged to {LOG}")
+    if a.undesigned:
+        print()
+        print("This was an undesigned fault, so nothing knows when it started")
+        print("except you. Record that now, while you still remember:")
+        print(f"    python3 physical/code/note_onset.py --session {a.session} "
+              f"--block {a.block} --at-clock HH:MM:SS")
+        print("Until you do, this session cannot be analysed at all.")
     return 0
 
 
