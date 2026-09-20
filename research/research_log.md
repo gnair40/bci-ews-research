@@ -5719,3 +5719,91 @@ evidence is a −20 s lead time at 3.4 false alarms an hour and a box that issue
 those warnings would be a box that does not do what its label says. What gets
 built depends on which row the experiments land in. Writing the table now is
 what stops a disappointing result from quietly becoming a demonstration.
+
+---
+
+## 20 September 2026 (later) — P-5 had no code, and the repository had two physical designs with nothing saying which was current
+
+Two problems, both of the same kind: a document promising something no code
+does, and code that no document points at.
+
+### P-5 was written down and never implemented
+
+`02_EXPERIMENTS.md` said the undesigned-fault sessions would be "analysed in a
+separate table from P-3". Nothing did that. Worse, the instruction in
+`06_DATA_COLLECTION.md` for how to record them was actively harmful: it
+suggested drawing them `--healthy` and noting the real onset by hand. A session
+drawn healthy goes into the **fault-free arm**, so following that instruction
+would have put ten sessions containing deliberate faults into the very group the
+false-alarm rate is measured on — the single worst thing that could happen to
+this phase's main measurement.
+
+I wrote that instruction myself, four days ago, while writing the protocol
+without the code in front of me. It is a good argument for writing them
+together.
+
+What exists now:
+
+- `note_onset.py` records when a hand-caused fault actually started, from a
+  stopwatch, after the recording. It refuses to overwrite; `--replace` exists
+  and asks for a research-log entry, because a silently corrected onset is
+  indistinguishable from an onset adjusted to improve a result.
+- `run_session.py --undesigned "what you are about to do"` records without
+  demanding a drawn plan and tells you to note the onset immediately.
+- `make_session_table.py` **refuses to score a P-5 session whose onset was never
+  written down**, and names it. Without that guard the session reads as healthy
+  to every other piece of code.
+- `analyze_leadtime.py --undesigned` reports them separately, with a direct
+  comparison against P-3 and a line saying that at ten sessions only a large gap
+  is detectable — read a small one as *not measured*, not as *no difference*.
+
+A stopwatch is weaker evidence than a checksum, so the two are never pooled.
+What P-5 keeps is the part that matters: nobody designed what those faults would
+look like.
+
+**A bug the dry run caught.** My fake P-5 sessions matched none of the fault
+branches in `dryrun.py`, so they were healthy recordings wearing a fault label,
+and the fake detection rate came out at 0%. I nearly read that as "undesigned
+faults are hard to catch" before checking what the fake data actually contained.
+That is exactly the trap a dry run exists to spring, and it sprang on me.
+
+### Six documents described a design that no longer existed
+
+The physical phase was rebuilt yesterday and today, but `research/` still held
+the earlier version — a build manual, a code index, a procedure document, a
+preregistration, phases 7–10 of the procedures, and stage 9 of the replication
+guide — with nothing saying which was current. Somebody opening
+`research/BUILD_MANUAL.md` had no way to tell it was not the build manual any
+more. The replication guide was still instructing the reader to freeze the old
+preregistration and build from the old procedure.
+
+Every one now carries a banner naming its replacement. **None was rewritten.**
+The route a design took is part of the record, and a document quietly edited to
+match a later decision records nothing.
+
+The one that mattered most is the preregistration, which gets **Amendment 3**
+rather than a banner alone. A preregistration's entire force comes from being
+amended in public, so §14 states what carried over — the apparatus, the 36.1°
+difficulty match, the 0.1-per-hour budget, the decision-rate curve, the
+no-human-participants constraint — and what did not: **P-R1 through P-R10 are
+not carried forward, and no result from the physical phase should be reported as
+confirming or refuting them.** Quoting an old prediction against data collected
+to answer a different question is precisely the practice that document exists to
+prevent.
+
+**A hazard the banners all repeat**, because it is real and silent: `rig/` and
+`physical/code/` keep separate `preferred_directions.npy` files — the file that
+decides which patch on the screen is which channel. Recordings made under one
+cannot be compared with recordings made under the other, and **nothing in the
+data would reveal that they had been mixed.**
+
+**The September submission gets a status note, not an edit.** It is the plan as
+submitted and will not be rewritten. The note tabulates what changed and says
+that only Section C's physical half has to be rebuilt for December.
+
+### Two things found while doing the above
+
+The rig preregistration had **two sections both numbered 11**, and its
+**amendment log said "(empty)" while three amendments existed**. The log now
+lists them and says plainly that it was not being kept, rather than being
+backfilled as though it had been. A log filled in afterwards is not a log.
