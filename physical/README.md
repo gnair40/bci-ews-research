@@ -23,6 +23,7 @@ recordings have neither. A sealed box with a screen and a camera has both.
 | 06 | [`docs/06_DATA_COLLECTION.md`](docs/06_DATA_COLLECTION.md) | What to do on each recording day |
 | 07 | [`docs/07_ANALYSIS.md`](docs/07_ANALYSIS.md) | What to run, and what each result would and would not license you to claim |
 | 08 | [`docs/08_WHAT_COMES_AFTER.md`](docs/08_WHAT_COMES_AFTER.md) | What, if anything, gets built afterwards — decided by result, written before the results exist |
+| 09 | [`docs/09_PREREGISTRATION.md`](docs/09_PREREGISTRATION.md) | **The predictions, with numbers attached, and the freeze procedure.** Draft — must be read, edited and frozen by the researcher before anything is built |
 
 `data/_FOLDER_NOTES.md` explains what lives where and what is committed.
 
@@ -90,7 +91,7 @@ python3 physical/code/analyze_decision_rate.py
 
 ---
 
-## Four things the code will not let you do
+## Five things not to do, four of which the code enforces
 
 **Record a session without deciding its outcome first.** `run_session.py`
 refuses unless `draw_onset.py` has already drawn and checksummed a plan. An
@@ -99,6 +100,12 @@ time is a matter of opinion.
 
 **Re-draw a plan.** `draw_onset.py` refuses to overwrite one. Re-drawing after
 seeing a recording is exactly the tampering the checksum exists to prevent.
+
+**Start recording data before the predictions are frozen.** Not enforced by
+code — this one is on you. `docs/09_PREREGISTRATION.md` §10 is the procedure,
+and the commit timestamp on the freeze is what makes every "we predicted this
+beforehand" checkable rather than asserted. Calibration sessions are fine
+before the freeze; nothing that counts as data is.
 
 **Overwrite raw data.** `run_session.py` refuses to record into a folder that
 already holds a recording, and nothing in the analysis writes to

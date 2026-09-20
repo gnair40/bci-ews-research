@@ -366,9 +366,11 @@ recordings, both remain distant. The looser budget alone is therefore not a
 remedy, and what this experiment measures is whether the second mechanism —
 more evidence behind each decision — contributes anything beyond it.
 
-**Predictions fixed in advance.** What each outcome of each experiment would mean
-is written into `physical/docs/02_EXPERIMENTS.md` and committed before any
-recording exists. No comparison is left to be defined after the data are seen.
+**Predictions fixed in advance.** Numerical thresholds for every comparison are
+written into `physical/docs/09_PREREGISTRATION.md`, together with what would
+falsify each one and what either outcome would mean, and that document is
+committed and frozen before any recording exists. What each outcome would mean
+in narrative terms is in `physical/docs/02_EXPERIMENTS.md`. No comparison is left to be defined after the data are seen.
 The superseded rig preregistration is retained as a record; its predictions P-R1
 to P-R10 are not carried forward, and no result from this phase will be reported
 as confirming or refuting them.

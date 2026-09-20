@@ -5945,3 +5945,73 @@ it applied to both.
 Six items remain open. Only the first — 101 fault-free sessions or about 360 —
 changes what gets recorded; the rest are administrative and do not block the
 build.
+
+---
+
+## 20 September 2026 (late) — the physical phase had no preregistration
+
+Noticed while writing the December draft: `02_EXPERIMENTS.md` says what each
+outcome would *mean*, but nothing said what was *expected*, with numbers. The
+superseded `RIG_PREREGISTRATION.md` had that, and its predictions are explicitly
+not carried forward. So the phase was about to be built with its predictions
+living only in narrative form.
+
+That is the gap that matters most, because it has a deadline built into it: a
+preregistration written after the apparatus exists is worth nothing. Written
+now, before a single part has been ordered, it is worth what the project's whole
+methodology rests on.
+
+`physical/docs/09_PREREGISTRATION.md` — eight predictions, each with its
+derivation cited to a file in this repository, what would falsify it, and what
+either outcome would mean.
+
+### The ones worth noting
+
+**PP-1 can be un-falsifiable, and says so.** The prediction is that the
+false-alarm rate exceeds 0.1/hour. Falsifying it needs the 95% upper bound at or
+below 0.1, which with zero observed alarms needs ~30 held-out fault-free hours.
+Below that the prediction is **untested, not failed** — a result about the
+campaign rather than about the monitor. Writing that into the preregistration is
+what stops a short campaign being reported later as though it had tested
+something.
+
+**PP-2 is the one most likely to be wrong, and it is flagged as such.** The
+silence gate fails on fault-free neural episodes at 76.5% and 100% against a 10%
+bar. Predicting it fails again on a box with no biology in it is the obvious
+call. But a *pass* would be the more interesting outcome — it would mean the
+computational failure is specific to neural recordings, which is a stronger
+claim than this project makes anywhere.
+
+**PP-6 is a manipulation check, not a finding.** Detection must rise with
+severity. If it does not, the monitor is not tracking degradation, and PP-1 to
+PP-5 get reported but not interpreted as being about degradation. Saying that in
+advance is cheaper than discovering it afterward.
+
+**PP-8 predicts no direction, deliberately.** There is no measured number
+anywhere in this repository from which to derive one for undesigned faults —
+every degradation ever tested here was an equation someone wrote. Inventing a
+direction would be guessing dressed as a prediction. It fixes the comparison and
+the 20-point threshold instead, and states that a smaller gap is **not
+measured**, never *no difference*.
+
+**PP-7 is the weakest and is labelled that way.** Two mechanisms argue that
+deciding less often helps; the archived data's two participants disagree about
+the direction. It is stated directionally anyway, because a preregistration that
+declines to predict where a mechanism exists is not doing its job. It also
+carries today's correction — the looser budget alone moves the requirement from
+0.9992 to 0.990, not to 0.933, so what PP-7 really tests is whether pooling
+evidence adds anything on top.
+
+### What I did not do
+
+**I did not choose the thresholds and present them as settled.** §11 collects
+all eight judgement calls in one table with what each was drafted at and why,
+and marks which are inherited (changing them breaks comparability with the
+computational half) and which are genuinely open. §0.2 says outright that this
+is an AI-written draft and must not be frozen until the researcher has read
+every prediction and made it their own. That is the same discipline the earlier
+preregistration used, and it exists because a threshold is a statement about
+what would count as interesting, which is not mine to make.
+
+One `[[RESEARCHER]]` field blocks the freeze: the fault-free campaign length.
+It is the only judgement call that changes what gets recorded.

@@ -7,6 +7,11 @@ Read `01_RESEARCH_DESIGN.md` first. Build instructions are in
 `04_BUILD.md`; the code is in `physical/code/` and explained in
 `05_SOFTWARE.md`.
 
+**The numeric predictions live in `09_PREREGISTRATION.md`**, which must be
+frozen before anything is recorded. This document says what each outcome would
+*mean*; that one says what was *expected*, with thresholds attached, so that
+"quiet enough" cannot be decided after seeing the graph.
+
 ---
 
 ## The apparatus in one paragraph
