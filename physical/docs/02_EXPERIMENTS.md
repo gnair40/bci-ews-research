@@ -83,13 +83,36 @@ anyone, ever. This experiment exists to fix exactly that.
 1. Seal the box. Verify darkness with `bench.py darkframe`.
 2. Record **101 healthy sessions minimum** — nothing touched, nothing degraded,
    nothing adjusted. 5 minutes each, about 8.4 hours, unattended overnight.
-3. **Record more if time allows.** 101 is a floor. The binding constraint is
-   the tail of the distribution, so healthy recording is the only thing that
-   buys precision.
+3. **Then record about four times more.** 101 is a floor, and the arithmetic
+   below says how far above it the campaign needs to go.
 4. **Change nothing during the campaign.** No cleaning, no refocusing, no
    re-seating cables. If something is changed anyway, write it in the log with
    the date — an undocumented mid-campaign intervention cannot be detected
    afterwards and would invalidate the arm.
+
+### How much healthy recording is actually enough
+
+*Added after the analysis code was written and the arithmetic was done
+properly. The original figure of 101 sessions was chosen for the effort it
+costs, not for what it can demonstrate, and those are different questions.*
+
+Suppose the monitor is perfect and produces **zero** false alarms. Zero is not
+a rate; it is an upper bound. Seeing no events in H hours puts a 95% upper
+bound of about **3/H per hour** on the true rate — the standard "rule of
+three". For that bound to reach the 0.1/hour budget, H must be about **30
+hours of held-out healthy recording.**
+
+101 sessions is 8.4 hours in total, and the fit and validation groups take
+their share, leaving roughly **4 test hours**. Zero false alarms in 4 hours
+supports an upper bound of about **0.75/hour** — seven times the budget.
+
+**101 sessions is enough to catch a monitor that is noisy. It is not enough to
+show that a quiet monitor meets the budget.** The two are different claims and
+the write-up must make whichever one the data supports.
+
+Thirty hours is about four unattended nights rather than one.
+`make_session_table.py` and `analyze_falsealarm.py` both print the arithmetic
+for whatever has actually been recorded; use their number, not this paragraph.
 
 ### Outcomes
 
@@ -257,15 +280,21 @@ down to one per session. **No extra recording is required.**
 | Experiment | Sessions | Time | Attended? |
 |---|---|---|---|
 | P-1 calibration | 5 | 25 min | yes |
-| P-2 healthy campaign | 101+ | 8.4 h+ | **no — overnight** |
+| P-2 healthy campaign | 101 floor, ~360 to demonstrate the budget | 8.4 h floor, ~30 h to demonstrate the budget | **no — overnight** |
 | P-3 degraded sessions | 101 | 8.4 h | partly |
 | P-4 correlation analysis | 0 | minutes | analysis only |
 | P-5 undesigned faults | 10 | 50 min | yes, by hand |
 | P-6 decision-rate curve | 0 | minutes | analysis only |
-| **Total recording** | **~217** | **~18 hours** | mostly unattended |
+| **Total recording** | **~217 at the floor, ~480 to demonstrate the budget** | **~18 h at the floor, ~40 h to demonstrate the budget** | mostly unattended |
 
 Two of the six experiments need no recording at all, because the decision rate
 and the correlation are analysis choices. That is what makes this affordable.
 
 **If time runs short, cut P-5 and P-6 before P-2.** P-2 is the measurement that
-does not exist anywhere else.
+does not exist anywhere else, it is the one that runs while you sleep, and
+every other result in the phase is reported against the threshold it produces.
+
+The extra P-2 hours are the cheapest thing in the project: the box records by
+itself, and nobody has to be present. They are also the only thing that buys
+precision on the false-alarm rate — no analysis choice can substitute for
+fault-free hours.

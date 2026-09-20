@@ -41,6 +41,7 @@ import argparse
 import importlib.util
 import io
 import re
+import shlex
 import sys
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
@@ -59,6 +60,13 @@ def documents() -> list[str]:
     """
     found = sorted(str(q.relative_to(REPO)) for q in (REPO / "research").glob("*.md"))
     found += sorted(str(q.relative_to(REPO)) for q in (REPO / "reports").glob("*.md"))
+    # The physical-validation phase's own documents. Added when that phase got
+    # its build manual and code index; without this line its commands would have
+    # gone unchecked, which is the exact failure the docstring above describes.
+    found += sorted(str(q.relative_to(REPO))
+                    for q in (REPO / "physical" / "docs").glob("*.md"))
+    found += sorted(str(q.relative_to(REPO))
+                    for q in (REPO / "physical" / "data").glob("*.md"))
     return ["README.md"] + found
 
 
@@ -119,6 +127,7 @@ def _check_module_level(rel: str, parts: list[str]) -> tuple[bool, str]:
         real(self, *a, **k)
         raise _Parsed
 
+    _with_physical_path()
     saved_argv = sys.argv
     saved_mods = _stub_hardware()
     argparse.ArgumentParser.parse_args = stop
@@ -142,6 +151,20 @@ def _check_module_level(rel: str, parts: list[str]) -> tuple[bool, str]:
         sys.modules.pop("_cmdcheck_tmp", None)
 
 
+PHYSICAL_CODE = str(REPO / "physical" / "code")
+
+
+def _with_physical_path() -> None:
+    """physical/code/*.py do `import monitor`, their own shared core.
+
+    That works when the script is run directly, because Python puts a script's
+    own folder on the import path. Importing them from here does not, so the
+    folder is added explicitly.
+    """
+    if PHYSICAL_CODE not in sys.path:
+        sys.path.insert(0, PHYSICAL_CODE)
+
+
 _MODULES: dict[str, object] = {}
 
 
@@ -153,6 +176,7 @@ def _module(rel: str):
     and calling main() with a patched argv is the same test, far faster.
     """
     if rel not in _MODULES:
+        _with_physical_path()
         name = Path(rel).stem
         spec = importlib.util.spec_from_file_location(name, REPO / rel)
         mod = importlib.util.module_from_spec(spec)
@@ -164,7 +188,12 @@ def _module(rel: str):
 
 
 def check(cmd: str) -> tuple[bool, str]:
-    parts = cmd.split()
+    # shlex, not split(): a documented --note "two words" is ONE argument, and
+    # splitting on whitespace turned a correct command into a false failure.
+    try:
+        parts = shlex.split(cmd)
+    except ValueError as e:
+        return False, f"unbalanced quotes: {e}"
     rel = parts[0]
     if not (REPO / rel).exists():
         return False, f"no such script: {rel}"
@@ -226,7 +255,9 @@ def main() -> int:
         # that omission hid a broken command in the build manual: a documented
         # invocation of rig/to_mat.py used --npy/--stim/--out, none of which that
         # program accepts. A reader would have been stopped dead by it.
-        for c in re.findall(r"python3 ((?:scripts|rig)/\S+\.py[^\n`]*)", p.read_text()):
+        for c in re.findall(
+                r"python3 ((?:scripts|rig|physical/code)/\S+\.py[^\n`]*)",
+                p.read_text()):
             # Strip shell continuations and chaining: a documented line like
             # "python3 scripts/61_x.py && \" is one command plus shell syntax.
             c = re.split(r"\s*(?:&&|\|\||;|\|)\s*", c.strip())[0]

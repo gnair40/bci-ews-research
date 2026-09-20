@@ -29,6 +29,10 @@ returns numbers costs the project.
                 decodes perfectly has nothing left to lose when it is degraded.
                 This is experiment P-1.
 
+    frames      Did the recording arrive intact? Dropped frames and dead
+                channels both produce a file that looks fine and analyses into
+                nonsense.
+
     check       Run everything that can be run from recordings already made.
 
 =============================================================================
@@ -142,6 +146,57 @@ def darkframe(a) -> int:
         "frame every session and subtract it — and write that down as a "
         "deviation, because a subtracted offset is not the same as no offset "
         "when the thing being measured is drift.")
+
+
+# -------------------------------------------------------------------- frames
+def frames(a) -> int:
+    """Did the recording arrive intact, and is every channel alive?
+
+    Two failures this catches, both of which otherwise produce a recording that
+    looks fine and analyses into nonsense:
+
+    **Dropped frames.** If the camera could not keep up, some frames arrived
+    late. A late frame is a moment where the camera and the screen disagree
+    about what was on display, so its direction label is wrong. A few are
+    tolerable; a lot are not.
+
+    **Dead channels.** A channel that never changes is either outside the
+    screen's image, in shadow, or saturated. It carries no information, and 384
+    channels of which 100 are dead is really a 284-channel apparatus -- which is
+    fine, as long as you know it, and misleading if you do not.
+    """
+    s = _session(a)
+    meta_file = _folder(a) / "capture_meta.json"
+    meta = json.loads(meta_file.read_text()) if meta_file.exists() else {}
+
+    sd = s.X.std(axis=0)
+    dead = int((sd < 1e-6).sum())
+    n = s.X.shape[1]
+    print(f"frames recorded     {len(s.X)}")
+    if meta.get("fps_measured"):
+        print(f"frame rate          {meta['fps_measured']:.2f} fps "
+              f"(asked for {meta.get('fps_requested')})")
+    if "long_gap_fraction" in meta:
+        print(f"frames arriving late{meta['long_gap_fraction']:>7.1%}")
+    print(f"channels            {n}")
+    print(f"channels that never change  {dead}")
+    print(f"typical channel variation   {np.median(sd):.3f} brightness counts")
+    print(f"brightness range    {s.X.min():.1f} to {s.X.max():.1f} of 255")
+
+    late = meta.get("long_gap_fraction", 0.0)
+    saturated = float((s.X.max(axis=0) > 254).mean())
+    if saturated > 0.01:
+        print(f"\n{saturated:.1%} of channels reach the top of the brightness "
+              f"range, which means they are clipped and cannot show an increase.")
+    return _verdict(
+        late <= 0.01 and dead <= 0.05 * n and saturated <= 0.01,
+        "the recording is intact and the channels are alive",
+        "something is wrong with the recording. Dropped frames: lower --fps, "
+        "close other programs, or use a faster SD card. Dead channels: the "
+        "screen does not fill the camera's view, or part of it is in shadow — "
+        "move the camera or the screen until the grid fills the frame. Clipped "
+        "channels: the screen is too bright or the exposure too long, so lower "
+        "--brightness or --exposure.")
 
 
 # ----------------------------------------------------------------------- lag
@@ -272,7 +327,8 @@ def margin(a) -> int:
 def check(a) -> int:
     """Everything that can be checked from a recording already made."""
     results = {}
-    for name, fn in (("lag", lag), ("dither", dither), ("margin", margin)):
+    for name, fn in (("frames", frames), ("lag", lag),
+                     ("dither", dither), ("margin", margin)):
         print("=" * 70)
         print(name)
         print("=" * 70)
@@ -305,7 +361,8 @@ def main() -> int:
     d.add_argument("--gain", type=float, default=2.0)
     d.set_defaults(fn=darkframe)
 
-    for name, fn, h in (("lag", lag, "camera/screen timing"),
+    for name, fn, h in (("frames", frames, "did the recording arrive intact?"),
+                        ("lag", lag, "camera/screen timing"),
                         ("dither", dither, "is the sub-level signal surviving?"),
                         ("margin", margin, "P-1: is it as hard as cortex?"),
                         ("check", check, "run all three on one recording")):

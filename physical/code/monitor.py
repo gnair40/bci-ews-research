@@ -510,9 +510,20 @@ def selftest() -> int:
     return 0 if ok else 1
 
 
-if __name__ == "__main__":
-    if "--selftest" in sys.argv:
-        raise SystemExit(selftest())
+def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--selftest", action="store_true",
+                    help="check the pipeline works; needs no camera or recordings")
+    a = ap.parse_args()
+    if a.selftest:
+        return selftest()
     print(__doc__)
     print("This file is imported by the analysis scripts, not run directly.")
     print("Run  python3 physical/code/monitor.py --selftest  to check it works.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
