@@ -13,6 +13,35 @@ Decoder-Health Monitor for Neural Interfaces*
 
 ---
 
+> ## Status, added 20 September 2026 — read before using this document
+>
+> **This is the September submission exactly as submitted. It has not been
+> rewritten, and it will not be.** A submitted plan that quietly changes to
+> match later decisions is not a record of anything.
+>
+> **The physical experiment described in Section C changed on 20 September
+> 2026**, five days after this was submitted. The hypothesis was replaced, the
+> experiments were rebuilt as P-1 to P-6, and the design now lives in
+> `physical/` rather than in `research/`.
+>
+> What changed, in one line each:
+>
+> | | September plan (below) | Current design (`physical/`) |
+> |---|---|---|
+> | Physical question | Does the monitor's early-warning signal behave on a rig the way it does on neural data? | Does correlation with task performance — the way this field validates such monitors — support the conclusions drawn from it? |
+> | Physical experiments | Phases 7–10 | P-1 to P-6 |
+> | Healthy recording | 101 sessions | 101 is a floor; ~30 held-out hours to demonstrate the false-alarm budget |
+> | Code | `rig/` | `physical/code/` |
+>
+> `research/RIG_PREREGISTRATION.md` §14 states what carried over and what did
+> not. `physical/docs/00_WHY_THIS_PHASE_EXISTS.md` gives the reasoning.
+>
+> **The computational work in Sections A, B and D is unaffected**, as is the
+> Risk and Safety subsection, which describes the same apparatus.
+>
+> **For the December final plan**, Section C's physical half has to be rebuilt
+> from `physical/docs/01`, `02`, `03` and `06`. Nothing else needs to move.
+
 > ## Note on scope and voice
 >
 > This is the September submission. It is written in the third person throughout,
@@ -30,8 +59,9 @@ Decoder-Health Monitor for Neural Interfaces*
 > rejected rather than protected.
 >
 > Step-by-step replication instructions for every computational stage are in
-> `research/REPLICATION_GUIDE.md`. The physical build is detailed procedure by
-> procedure in `research/EXPERIMENTAL_PROCEDURES.md`.
+> `research/REPLICATION_GUIDE.md`. The physical build was detailed procedure by
+> procedure in `research/EXPERIMENTAL_PROCEDURES.md`; **as of 20 September 2026
+> that part is superseded by `physical/docs/`** — see the status note above.
 
 ---
 

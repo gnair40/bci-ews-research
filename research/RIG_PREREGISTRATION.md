@@ -4,6 +4,19 @@
 **Status: DRAFT — NOT YET FROZEN. Nothing has been built and nothing measured.**
 **Frozen at commit:** `[[RESEARCHER — fill in after running the freeze in §10]]`
 
+> ## SUPERSEDED 20 September 2026
+>
+> **This is no longer the live study design.** The hypothesis was replaced and
+> the design moved to `physical/`. Read
+> **`physical/docs/01_RESEARCH_DESIGN.md`** and
+> **`physical/docs/02_EXPERIMENTS.md`** instead.
+>
+> This document is kept unchanged because the route a design took is part of the
+> research record, and because §14 (Amendment 3) states exactly what carried
+> over and what did not. **P-R1 through P-R10 are not carried forward**, and no
+> result from the physical phase should be reported as confirming or refuting
+> them.
+
 > **AMENDED 19 September 2026 — P-R1 and P-R2 retargeted; no longer blocked.**
 > Both took their thresholds from claim C18's pooled 0.902 and 0.784, which
 > turned out to be raised by the sub-threshold fault ramp injected into those
@@ -466,11 +479,26 @@ makes every "before" in this document checkable rather than asserted.
 
 ## 11. Amendment log
 
-*(empty)*
+Every change to this document since it was drafted. The originals are preserved
+inside each amendment, never overwritten.
+
+| # | Date | What changed | Where |
+|---|---|---|---|
+| 1 | 19 Sep 2026 | P-R1 and P-R2 retargeted to the fault-free autocorrelation figures, after the pooled ones turned out to be raised by sub-threshold fault ramps | §12 |
+| 2 | 19 Sep 2026 | The session-level study replaces the drift sweep as the primary arm; P-R8, P-R9, P-R10 added | §13 |
+| 3 | 20 Sep 2026 | **The whole study is superseded.** The hypothesis is replaced and the live design moves to `physical/` | §14 |
+
+*(This log said "(empty)" until 20 September 2026, by which time three
+amendments existed. It was not being kept. Recording that here rather than
+quietly backfilling it, because a log that is filled in afterwards is not a log.)*
 
 ---
 
-## 11. Open item — the C18 derivation behind P-R1 and P-R2
+## 11b. Open item — the C18 derivation behind P-R1 and P-R2
+
+*(Numbered 11b because this document shipped with two sections numbered 11.
+Renumbering the later sections would change the references that Amendments 1 and
+2 make to them, so the duplicate is corrected in place instead.)*
 
 **Raised:** 15 September 2026, before anything was built or measured.
 
@@ -623,3 +651,87 @@ spent on first, and P-R8 and P-R9 are the predictions for it.
 **What this amendment does not do.** It does not relax the 0.1-per-hour budget.
 That figure is unchanged. What changes is how many decisions it is divided
 among, which is a different quantity that the original design conflated with it.
+
+
+---
+
+## 14. Amendment 3 — the rig study is superseded by the physical-validation phase
+
+**Decided:** 20 September 2026, by the researcher, before anything was built or
+measured.
+**Status of this document after this amendment:** **superseded as a study
+design, kept as the record of how the design got here.**
+
+### What changed
+
+The rig study preregistered above tested whether a decoder-health monitor's
+early-warning signal behaves on a physical apparatus the way it behaves on
+archived neural recordings. Amendment 2 already moved its primary question from
+a drift sweep to the decision-rate curve. This amendment goes further: the
+**hypothesis itself** has been replaced.
+
+The new hypothesis is:
+
+> A decoder-health monitor can show a strong correlation with task performance
+> while simultaneously being unusable as a warning system.
+
+The design that tests it is `physical/docs/01_RESEARCH_DESIGN.md`, and the six
+experiments are `physical/docs/02_EXPERIMENTS.md`. **That is now the live
+design. This document is not.**
+
+### Why
+
+Two findings, both already in the repository, made the old question the wrong
+one to spend eighteen hours of recording on.
+
+1. **The monitor is not novel and does not need re-demonstrating.** Sensors that
+   diagnose their own health are a thirty-year-old idea with a national standard
+   behind them, and in this field MINDFUL (Pun et al., 2024) already reports an
+   instability score correlating with cursor performance at r = 0.93 and 0.72.
+   `physical/docs/00_WHY_THIS_PHASE_EXISTS.md` sets this out in full.
+2. **What is missing is not another monitor but the two numbers nobody reports.**
+   No published decoder-health monitor has a lead time or a false-alarm rate
+   attached, because measuring either needs failures whose start times were
+   fixed in advance and many hours of genuinely fault-free recording. Archived
+   human recordings have neither. An apparatus can have both.
+
+So the physical phase stops asking "does the monitor work here too?" and asks
+"does the way this field validates such monitors support the conclusions drawn
+from it?" — which is answerable, has not been answered, and has three
+publishable outcomes.
+
+### What carries over unchanged
+
+- **The apparatus.** Same box, same screen, same camera, same 384 channels.
+- **The difficulty match.** The apparatus is still tuned to the neural decoder's
+  36.1° margin, and for the same reason.
+- **The 0.1-per-hour false-alarm budget.** Unchanged, and still the figure every
+  verdict is conditional on.
+- **The decision-rate curve**, which becomes experiment P-6.
+- **The no-human-participants constraint**, which is absolute and unchanged.
+
+### What this amendment costs, stated plainly
+
+P-R1 through P-R10 were derived from the old question. They are **not carried
+forward as predictions**, and no result from the physical phase should be
+reported as having confirmed or refuted them. Quoting one of them against data
+collected to answer a different question would be exactly the practice §0.1 of
+this document exists to prevent.
+
+The new design's predictions live in `physical/docs/02_EXPERIMENTS.md`, where
+each experiment states what every outcome would mean **before** any of it runs.
+That file has the same job this one had, and its timestamp is what gives it
+force.
+
+### One thing the new design corrected in the old one
+
+The old plan called for 101 healthy sessions and said "record more if time
+allows" without attaching a number. Writing the analysis code forced the
+arithmetic: a zero false-alarm count in H hours only bounds the true rate at
+about 3/H per hour, so demonstrating the 0.1/hour budget needs roughly **30
+hours of held-out healthy recording**, not the ~4 that 101 sessions leaves after
+the fit and validation groups take their share.
+
+101 sessions is enough to catch a monitor that is noisy. It is not enough to
+show that a quiet one meets the budget. The two are different claims, and the
+old plan would have let the weaker evidence be reported as the stronger one.

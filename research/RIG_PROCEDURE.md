@@ -1,5 +1,20 @@
 # Physical rig — step-by-step experimental procedure
 
+> ## SUPERSEDED 20 September 2026
+>
+> **This is no longer the experimental procedure** for the physical phase. Read **`physical/docs/06_DATA_COLLECTION.md`** instead.
+>
+> This file is kept because the bench checks and the reasoning behind several settings are worked through here at more length than the replacement needs to repeat.
+>
+> **Do not mix the two.** The programs in `rig/` and the programs in
+> `physical/code/` each keep their own `preferred_directions.npy` — the file
+> that decides which patch on the screen is which channel. Recordings made with
+> one set cannot be compared with recordings made with the other, and nothing in
+> the data would reveal that they had been mixed. Pick one and stay in it; for
+> anything recorded from 20 September 2026 onward, that is `physical/code/`.
+
+---
+
 **Written:** 6 September 2026.
 **Status: PROCEDURE ONLY. NOTHING HAS BEEN BUILT AND NOTHING HAS BEEN MEASURED.**
 No number in this document is a result. Every number is either a setting to use,

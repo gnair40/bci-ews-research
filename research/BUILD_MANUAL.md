@@ -1,5 +1,20 @@
 # The Build Manual
 
+> ## SUPERSEDED 20 September 2026
+>
+> **This is no longer the build manual** for the physical phase. Read **`physical/docs/04_BUILD.md`** instead.
+>
+> This file is kept because it carries more depth on some hardware steps — the Raspberry Pi setup and the enclosure in particular — and because the apparatus it builds is the same one. What changed is the experiments run on it, not the box.
+>
+> **Do not mix the two.** The programs in `rig/` and the programs in
+> `physical/code/` each keep their own `preferred_directions.npy` — the file
+> that decides which patch on the screen is which channel. Recordings made with
+> one set cannot be compared with recordings made with the other, and nothing in
+> the data would reveal that they had been mixed. Pick one and stay in it; for
+> anything recorded from 20 September 2026 onward, that is `physical/code/`.
+
+---
+
 **Everything needed to finish this project without further help.**
 
 This assumes you have never soldered anything, never used a Raspberry Pi, and

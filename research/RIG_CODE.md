@@ -1,5 +1,20 @@
 # Every piece of code the physical experiment needs
 
+> ## SUPERSEDED 20 September 2026
+>
+> **This is no longer the code index** for the physical phase. Read **`physical/docs/05_SOFTWARE.md`** instead.
+>
+> This file is kept because it holds the full source of the `rig/` programs inline, which is a useful fallback if a file is ever lost. The programs it documents still run; they are simply not the ones the current design uses.
+>
+> **Do not mix the two.** The programs in `rig/` and the programs in
+> `physical/code/` each keep their own `preferred_directions.npy` — the file
+> that decides which patch on the screen is which channel. Recordings made with
+> one set cannot be compared with recordings made with the other, and nothing in
+> the data would reveal that they had been mixed. Pick one and stay in it; for
+> anything recorded from 20 September 2026 onward, that is `physical/code/`.
+
+---
+
 **Short answer to "will I have to write code?": no.** Everything is written and
 in the repository. This file is the index, the reason each program exists, and
 the fallback for when it does not behave.

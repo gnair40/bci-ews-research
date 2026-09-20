@@ -1,5 +1,24 @@
 # Rig programs
 
+> ## SUPERSEDED 20 September 2026
+>
+> **These are not the programs the current design uses.** The physical
+> experiment was rebuilt and its code is in **`physical/code/`**, documented in
+> `physical/docs/05_SOFTWARE.md`.
+>
+> The programs here still run, and they are kept because the apparatus is the
+> same one and because several of them were the working version that the current
+> code was derived from.
+>
+> **Do not mix the two.** `rig/preferred_directions.npy` and
+> `physical/data/preferred_directions.npy` are different files, and each decides
+> which patch on the screen is which channel. Recordings made under one cannot
+> be compared with recordings made under the other, and nothing in the data
+> would reveal that they had been mixed. For anything recorded from
+> 20 September 2026 onward, use `physical/code/`.
+
+---
+
 The three programs the physical experiment runs on. They are written out in full
 in `research/EXPERIMENTAL_PROCEDURES.md`, Phase 8, with the reasoning; these are
 the same files, extracted so they can be run and tested.

@@ -517,8 +517,20 @@ already.
 
 ### STAGE 9 — Build the physical instrument (Procedures 61–75)
 
-The full detail, including wiring and safety, is in
-`research/RIG_PROCEDURE.md`. Nothing gets built until Procedure 61 is done.
+> **SUPERSEDED 20 September 2026.** The physical experiment was redesigned. Do
+> not follow the procedures below; follow **`physical/README.md`** and
+> `physical/docs/04_BUILD.md` through `07_ANALYSIS.md` instead.
+>
+> The order there is the same in spirit — decide what the session will be before
+> recording it, build, check, then record — but the code is in `physical/code/`
+> rather than `rig/`, and the experiments are P-1 to P-6 rather than Procedures
+> 61–75. `research/RIG_PREREGISTRATION.md` §14 says what carried over.
+>
+> Procedures 61–75 are kept below unchanged, as the record of what the physical
+> stage was going to be.
+
+The full detail, including wiring and safety, was in
+`research/RIG_PROCEDURE.md`. Nothing got built until Procedure 61 was done.
 
 **Procedure 61. Preregister the physical experiment, and freeze it.**
 Fill in `research/RIG_PREREGISTRATION.md`: predictions with actual numbers in

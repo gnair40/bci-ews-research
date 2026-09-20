@@ -5,14 +5,42 @@ than once as the project changed. That is normal, and keeping the older versions
 is deliberate — the difference between them is part of the research record. But
 it makes it easy to open the wrong one, so this is the map.
 
+## Before anything else: where the physical phase lives
+
+**The physical experiment was redesigned on 20 September 2026 and now lives in
+[`physical/`](../physical/README.md), not in this folder.** Start at
+`physical/README.md`.
+
+Four documents in here describe the *earlier* physical design. They each carry a
+banner saying so and pointing at their replacement, and they are kept because
+the route a design took is part of the research record:
+
+| Old (here) | Current (in `physical/`) |
+|---|---|
+| `BUILD_MANUAL.md` | `physical/docs/04_BUILD.md` |
+| `RIG_CODE.md` | `physical/docs/05_SOFTWARE.md` |
+| `RIG_PROCEDURE.md` | `physical/docs/06_DATA_COLLECTION.md` |
+| `RIG_PREREGISTRATION.md` | `physical/docs/01_RESEARCH_DESIGN.md` and `02_EXPERIMENTS.md` |
+
+`EXPERIMENTAL_PROCEDURES.md` phases 7–10 are superseded the same way; phases 1–6
+are not.
+
+**Do not mix `rig/` and `physical/code/`.** They keep separate
+`preferred_directions.npy` files — the file that decides which patch on the
+screen is which channel — so recordings from one cannot be compared with
+recordings from the other, and nothing in the data would show that they had been
+mixed.
+
+---
+
 ## The submission documents
 
 | File | What it is |
 |---|---|
 | **`RESEARCH_PLAN_2026-09-15.md`** | **The September 2026 ISEF submission.** Third person, aligned to page 2 of ISEF Form 1A. This is the one that goes to the SRC. |
-| `EXPERIMENTAL_PROCEDURES.md` | The procedures, by phase, in the researcher's own voice. Phases 1–6 are the computational work at plan level; phases 7–10 are the physical build in full detail, because that part still has to be done. |
-| **`BUILD_MANUAL.md`** | **The complete build-and-test manual for the physical rig**, from unboxing a Raspberry Pi to the finished instrument. Written to be followed with no prior hardware experience and no further help. Start at Part 0. |
-| **`RIG_CODE.md`** | **Every program the physical experiment needs**: what each is for, the commands for a typical session, a fallback table, and the full source inline. Read this to answer "do I have to write any code?" — no. |
+| `EXPERIMENTAL_PROCEDURES.md` | The procedures, by phase, in the researcher's own voice. Phases 1–6 are the computational work at plan level. **Phases 7–10 are superseded** by `physical/docs/`. |
+| `BUILD_MANUAL.md` | **Superseded** by `physical/docs/04_BUILD.md`. Kept for its extra depth on the Raspberry Pi setup and the enclosure, which build the same apparatus. |
+| `RIG_CODE.md` | **Superseded** by `physical/docs/05_SOFTWARE.md`. Kept because it holds the full source of the `rig/` programs inline as a fallback. |
 | `REPLICATION_GUIDE.md` | Command-by-command instructions for every computational stage. Was Section C of the research plan until 17 September 2026, when it was moved out so the plan could be read at the level a reviewer reads. |
 
 ## The preregistrations
@@ -23,7 +51,7 @@ edited silently.
 
 | File | Governs |
 |---|---|
-| `RIG_PREREGISTRATION.md` | The physical rig study. **DRAFT, not frozen.** P-R1 and P-R2 were retargeted to the fault-free figures on 19 September 2026 (Amendment 1, §12); §11 records why. |
+| `RIG_PREREGISTRATION.md` | The physical rig study. **SUPERSEDED 20 September 2026** (Amendment 3, §14) — the hypothesis was replaced and the live design moved to `physical/`. P-R1 through P-R10 are not carried forward. Kept as the record of how the design got where it did. |
 | `FEATURE_STUDY_PREREGISTRATION.md` | The feature-family study. |
 | `COMBINATION_STUDY_PREREGISTRATION.md` | The detector-combination study. |
 | `DAY_PREDICTOR_PREREGISTRATION.md` | The day-effect predictor study. |

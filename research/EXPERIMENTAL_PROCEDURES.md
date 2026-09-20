@@ -3,8 +3,13 @@
 **Gayathri Nair**
 
 This is my plan for the whole project, written as procedures somebody else could
-follow. Phases 1 through 6 are the computational work. Phases 7 through 10 are
+follow. Phases 1 through 6 are the computational work. Phases 7 through 10 were
 the physical experiment.
+
+**Phases 7 to 10 are superseded.** The physical design was rebuilt on
+20 September 2026 and now lives in `physical/`, with its own procedures in
+`physical/docs/06_DATA_COLLECTION.md`. They are kept below as the record of what
+the physical experiment was going to be. Phases 1 to 6 are unaffected.
 
 The computational phases are written at the level I planned them. The physical
 phases are written in far more detail, because I have to build that part myself
@@ -226,6 +231,22 @@ files, so a figure that stops matching its source is something I find out about.
 ---
 
 # The physical experiment
+
+> ## SUPERSEDED 20 September 2026 — everything from here down
+>
+> **Phases 7 to 10 below are no longer the physical experiment.** The design was
+> rebuilt: the hypothesis changed, the six experiments P-1 to P-6 replaced these
+> phases, and the code moved from `rig/` to `physical/code/`.
+>
+> Read **`physical/README.md`** and work through `physical/docs/00` to `08`.
+> `research/RIG_PREREGISTRATION.md` §14 records exactly what carried over and
+> what did not.
+>
+> Phases 1 to 6 above, the computational work, are unaffected.
+>
+> This section is kept unchanged because it is the record of what the physical
+> experiment was going to be, and the difference between it and what replaced it
+> is part of the research record.
 
 Everything above analyzes recordings somebody else made. The rest of this
 document is the part I build.

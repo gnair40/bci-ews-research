@@ -10,6 +10,17 @@ struck throughout; the Human Participants section is struck in full; Form 4 and
 SRC participant approval are not required. See `PROJECT_DEFINITION.md`
 Amendment 1 for what this does and does not cost.
 
+> **Physical sections superseded, 20 September 2026.** Whatever this document
+> becomes — retired, or the base for the December draft — its physical-experiment
+> content is out of date. The current design is `physical/docs/01` and `02`, the
+> materials and safety are `physical/docs/03`, and the procedures are
+> `physical/docs/06`. The computational sections, the rationale and the
+> bibliography are unaffected.
+>
+> `[[RESEARCHER — still open: is this retired, or does it become the December
+> draft? If it becomes the December draft, Section C's physical half is the only
+> part that has to be rewritten.]]`
+
 **Status:** DRAFT. Fields only the researcher can supply are marked
 `[[RESEARCHER]]`. Decisions deliberately left open in the definition are marked
 `[[OPEN — see PROJECT_DEFINITION §11]]`.
