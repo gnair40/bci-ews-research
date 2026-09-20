@@ -5599,3 +5599,123 @@ The binding constraint is the tail of the fault-free distribution, so 101 health
 sessions is a **floor** and healthy recording is the only thing that buys
 precision. That is now stated in the manual rather than left as a target to hit
 and stop.
+
+---
+
+## 20 September 2026 — Built the physical phase's code, and the code corrected the plan twice
+
+Wrote the eleven scripts that take the physical phase from an empty box to its
+four reports, plus the build manual, the code index, the collection protocol and
+the analysis guide. Everything is on branch `claude/physical-validation-phase`.
+
+Two things I had written into the experiment plan turned out to be wrong, and
+both were found by implementing them rather than by re-reading them.
+
+### 1. 101 healthy sessions cannot demonstrate the false-alarm budget
+
+`02_EXPERIMENTS.md` said "101 healthy sessions minimum" and "record more if time
+allows". I never attached a number to "more", and when I did the arithmetic
+while writing `make_session_table.py`, the honest number was much larger than
+the floor.
+
+Suppose the monitor is perfect and produces **zero** false alarms. Zero is not a
+rate; it is an upper bound. The rule of three says no events in H hours bounds
+the true rate at about 3/H per hour. For that bound to reach the 0.1/hour budget
+**H must be about 30 hours of held-out healthy recording.**
+
+101 sessions is 8.4 hours in total. After the fit and validation groups take
+their share, roughly **4 test hours** remain, supporting a bound of about
+**0.75/hour** — seven times the budget.
+
+So: 101 sessions is enough to catch a monitor that is *noisy*. It is not enough
+to show a *quiet* one meets the budget. Those are different claims and I had
+been assuming the campaign could make the second one.
+
+This is the same family of mistake as the estimator-ceiling error from earlier
+in the project: treating a measurement's limit as a property of the thing being
+measured. Both scripts now print the arithmetic for whatever has actually been
+recorded, so the write-up can make whichever claim the data supports. The fix
+costs four unattended nights instead of one, which is the cheapest correction
+this project has ever had to make.
+
+### 2. `analyze_correlation.py` and `analyze_leadtime.py` disagreed about lead time
+
+Written two days apart, and they measured different things under the same name.
+`analyze_correlation.py` computed lead time as *drawn onset − warning time*;
+the computational half measures it as *performance failing − warning time*.
+Those are genuinely different quantities, and I had not noticed because each
+script was correct on its own terms.
+
+Both are worth having, so both are now defined once, in `monitor.py`, and named
+apart:
+
+- **lead time** = when decoding actually failed − when the monitor warned.
+  Same definition as the computational half, so the two compare.
+- **detection delay** = when the monitor warned − the drawn onset.
+  **New here.** Not computable on any archived human recording.
+
+This is the third time in this project that two files have quietly computed
+different things under one name. The shared-core file exists because of that
+pattern, not because of an abstract preference for not repeating code.
+
+### Three smaller things the implementation forced me to decide
+
+**A warning is timestamped at the END of the window that produced it.** A window
+covers 30 seconds and its score cannot exist until the last of them has
+happened. Timestamping at the window's start would credit the monitor with
+knowing something up to half a minute before the data existed and would inflate
+every lead time by that much. There is no version of this that flatters the
+monitor honestly, so it is stated in the code and in the report rather than
+buried.
+
+**A warning before the drawn onset is a false alarm, not an early detection.**
+If the warning window *ends* before the fault started it contains no faulty data
+at all. Counting those as detections is the easiest available way to manufacture
+a positive result here, so `make_session_table.py` flags them and every timing
+figure excludes them. The dry run produced one, which is how I noticed it needed
+handling.
+
+**The decoder is frozen by default.** Fitted once on the earliest healthy
+sessions and never refitted, because that is what happens to a real implant and
+what the computational half does. `--decoder per-session` is available, and the
+analysis guide says: if a result appears with a frozen decoder and vanishes with
+a per-session one, it is a result about **staleness** and must be described that
+way.
+
+### Two bugs in my own self-test, caught by making it strict
+
+The first version of `monitor.py --selftest` printed `PASS` while reporting a
+risk score of `nan`. The comparison `nan <= x` is False, so the failure check
+passed. Fixed by testing for finiteness explicitly before comparing — and the
+underlying cause was that the fake session was too short to have any windows
+lying entirely after the fault.
+
+The second version then failed for a fake reason: I generated the healthy and
+faulty runs with different random seeds, so the channels had different tuning
+and the detector flagged the faulty run as anomalous from its first window.
+That is a property of my fake data, not of the monitor. Same seed for both now,
+so the only difference is the fault.
+
+Neither bug would have reached a result, but both would have made the self-test
+useless as a check, which is worse: a check that always passes is indistinguish-
+able from no check at the moment you most need one.
+
+### The command gate found two more
+
+`scripts/69_command_check.py` — which exists because four documented rig
+commands were once broken — now covers `physical/`. On its first run over the
+new documents it rejected two commands. One was a real defect: `monitor.py`
+read `--selftest` straight out of `sys.argv` instead of using argparse like
+every other script, so nothing could check it. The other was a defect in the
+checker: it split commands on whitespace, so a documented
+`--note "applied filter ~4 s late"` looked like three stray arguments. It uses
+`shlex` now. 146 documented commands, none rejected.
+
+### What is deliberately not built
+
+`08_WHAT_COMES_AFTER.md` decides the prototype question *before* results exist.
+Three of its five outcome rows say **no device**, because the computational
+evidence is a −20 s lead time at 3.4 false alarms an hour and a box that issues
+those warnings would be a box that does not do what its label says. What gets
+built depends on which row the experiments land in. Writing the table now is
+what stops a disappointing result from quietly becoming a demonstration.
