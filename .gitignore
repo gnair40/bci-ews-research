@@ -40,3 +40,25 @@ venv/
 # OS clutter
 .DS_Store
 Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Physical-validation phase
+# ---------------------------------------------------------------------------
+# Camera recordings are large and are re-creatable only by recording again, not
+# by re-running a script, so they are kept out of Git like any other raw data.
+# What IS committed is the provenance: the drawn onset plans and their
+# checksums, which are small and are the reason the lead-time claim can be
+# checked by somebody else.
+physical/data/raw/*
+!physical/data/raw/.gitkeep
+!physical/data/raw/SESSION_LOG.csv
+
+# Per-window arrays, regenerable from the recordings by make_session_table.py.
+physical/data/processed/windows/
+
+# Fake recordings made by dryrun.py for testing the analysis. Never data.
+physical/data/dryrun/
+
+# Anything produced from those fakes.
+physical/data/*_dryrun*
+physical/data/results/*_dryrun*

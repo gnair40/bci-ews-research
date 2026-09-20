@@ -153,16 +153,30 @@ def main() -> int:
     degraded = df[~df.healthy.astype(bool)]
 
     usable = {}
-    if "warn_seconds" in df.columns and "onset_seconds" in df.columns:
-        d = degraded.dropna(subset=["warn_seconds", "onset_seconds"])
+    # Lead time is taken from the column `make_session_table.py` computed, not
+    # recomputed here. It is defined once, in monitor.py, as the time between
+    # the warning and decoding performance actually failing -- the same
+    # definition the computational half uses. An earlier version of this file
+    # measured it against the fault onset instead, which is a different
+    # quantity (monitor.py calls that the detection delay) and made this
+    # script disagree with analyze_leadtime.py about the same recordings.
+    if "lead_seconds" in df.columns:
+        d = degraded.dropna(subset=["lead_seconds"])
         if len(d):
-            lead = (d.onset_seconds - d.warn_seconds).to_numpy()
+            lead = d.lead_seconds.to_numpy()
             usable["median_lead_seconds"] = float(np.median(lead))
             usable["n_degraded_scored"] = int(len(d))
-            usable["fraction_warned_before_onset"] = float((lead > 0).mean())
-    if len(healthy) and "warn_seconds" in healthy.columns:
+            usable["fraction_warned_before_failure"] = float((lead > 0).mean())
+        if "warn_before_onset" in degraded.columns:
+            usable["n_warned_before_onset"] = int(
+                degraded.warn_before_onset.fillna(False).astype(bool).sum())
+    # Only healthy sessions in the TEST group can measure false alarms: the fit
+    # and validation sessions built the monitor and chose its threshold.
+    if "group" in healthy.columns:
+        healthy = healthy[healthy.group == "test"]
+    if len(healthy) and "warned" in healthy.columns:
         # A healthy session that produced any warning at all is a false alarm.
-        n_fa = int(healthy.warn_seconds.notna().sum())
+        n_fa = int(healthy.warned.astype(bool).sum())
         hours = float(healthy.get("duration_seconds",
                                   pd.Series([300.0] * len(healthy))).sum() / 3600.0)
         usable["healthy_sessions"] = int(len(healthy))
@@ -226,8 +240,12 @@ def main() -> int:
     if "median_lead_seconds" in u:
         A(f"| Median lead time | **{u['median_lead_seconds']:+.1f} s** "
           f"(positive = warned before the failure) |")
-        A(f"| Degraded sessions warned before onset | "
-          f"{u['fraction_warned_before_onset']:.1%} of {u['n_degraded_scored']} |")
+        A(f"| Warned before decoding failed | "
+          f"{u['fraction_warned_before_failure']:.1%} of "
+          f"{u['n_degraded_scored']} |")
+        if "n_warned_before_onset" in u:
+            A(f"| Warned before the fault even started (false alarms) | "
+              f"{u['n_warned_before_onset']} |")
     if "false_alarms_per_hour" in u:
         A(f"| False alarms per hour | **{u['false_alarms_per_hour']:.3f}** "
           f"(budget {a.budget}) |")
