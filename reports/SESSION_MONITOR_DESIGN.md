@@ -6,9 +6,11 @@
 
 ## Why the question changed
 
-**1. The failure was located precisely.** A budget of 0.1 false alarms per hour, divided among 720 decisions an hour, demands a per-decision false-positive rate of 1.4e-4 — needing a per-window AUC of **0.9992** against an observed 0.693. Asked **once per session** instead, the same detector needs **0.933** to flag 80% of degrading sessions while wrongly flagging 10% of healthy ones. It achieves **0.673** (T11) and **0.742** (T5).
+**1. The failure was located precisely.** A budget of 0.1 false alarms per hour, divided among 720 decisions an hour, demands a per-decision false-positive rate of 1.4e-4 — needing a per-window AUC of **0.9992** against an observed 0.693. Asked **once per session** instead, the same detector needs **0.991** to flag 80% of degrading sessions while staying inside the same 0.1/hour budget. It achieves **0.673** (T11) and **0.742** (T5).
 
-That is the difference between *this cannot work* and *this needs to be about this much better*, and only the second is a research programme.
+> **Corrected 20 September 2026.** This paragraph, and the tables below, used to quote **0.933** as the session-level target. That figure is the AUC needed for 80% detection at a **10% false-flag rate**, which at one decision per episode is about 1.3 false alarms an hour — thirteen times the budget. The budget-consistent target is **0.991**. See `reports/OPERATING_POINT_BOUND.md`, which now reports both and says which question each answers.
+
+That is the difference between *this cannot work* and *this needs to be about this much better*, and only the second is a research programme — though at the corrected target the second is a harder programme than this report used to imply.
 
 **2. The false-alarm rate cannot be measured on the archived data at all.** Restricted to genuinely fault-free episodes it rests on 17 and 15 episodes — about **1.4 hours** — against a budget of 0.1 per hour. A rate that low cannot be estimated from that much data by anyone.
 
@@ -22,13 +24,13 @@ So the open question is no longer *whether* monitoring fails. It is **how much b
 
 | Sessions per arm | Total | 95% CI half-width | Recording time |
 |---|---|---|---|
-| 20 | 40 | ±0.083 | 3.3 h |
-| 40 | 80 | ±0.058 | 6.7 h |
-| 60 | 120 | ±0.047 | 10.0 h |
-| 100 | 200 | ±0.036 | 16.7 h |
-| 150 | 300 | ±0.030 | 25.0 h |
-| 200 | 400 | ±0.026 | 33.3 h |
-| 300 | 600 | ±0.021 | 50.0 h |
+| 20 | 40 | ±0.030 | 3.3 h |
+| 40 | 80 | ±0.021 | 6.7 h |
+| 60 | 120 | ±0.017 | 10.0 h |
+| 100 | 200 | ±0.013 | 16.7 h |
+| 150 | 300 | ±0.011 | 25.0 h |
+| 200 | 400 | ±0.009 | 33.3 h |
+| 300 | 600 | ±0.007 | 50.0 h |
 
 Half the sessions healthy, half with a constructed degradation. Standard error by Hanley and McNeil, which is conservative for skewed score distributions — the safe direction for a sample size.
 
@@ -36,12 +38,12 @@ Half the sessions healthy, half with a constructed degradation. Standard error b
 
 | Comparison | Sessions per arm | Total | Recording time |
 |---|---|---|---|
-| Target 0.933 vs T11 (0.673) | 12 | 24 | 2.0 h |
-| Target 0.933 vs T5 (0.742) | 19 | 38 | 3.2 h |
-| Target 0.933 vs a near miss (0.883) | 148 | 296 | 24.7 h |
-| Target 0.933 vs a clear miss (0.833) | 48 | 96 | 8.0 h |
+| Target 0.991 vs T11 (0.673) | 8 | 16 | 1.3 h |
+| Target 0.991 vs T5 (0.742) | 10 | 20 | 1.7 h |
+| Target 0.991 vs a near miss (0.941) | 55 | 110 | 9.2 h |
+| Target 0.991 vs a clear miss (0.891) | 25 | 50 | 4.2 h |
 
-**Do not take the first row as the schedule.** Showing the rig beats 0.673 needs only 12 sessions per arm, and it is a straw man: nobody doubts it can, and a study powered only for that answers nothing. Resolving a *near miss* — is it 0.93 or 0.88? — is the hard case, and it costs an order of magnitude more.
+**Do not take the first row as the schedule.** Showing the rig beats 0.673 needs only 8 sessions per arm, and it is a straw man: nobody doubts it can, and a study powered only for that answers nothing. Resolving a *near miss* — is it 0.99 or 0.94? — is the hard case, and it costs an order of magnitude more.
 
 ## The measurement nobody can currently make
 
@@ -57,7 +59,7 @@ To measure a 10% false-flag rate to within about a third of itself takes 101 hea
 
 - **101 healthy sessions and 101 with a constructed degradation**
 - **202 sessions total, about 17 hours** of unattended recording
-- Gives a session-level AUC to ±0.036 and a 10% false-flag rate to within about a third of itself
+- Gives a session-level AUC to ±0.013 and a 10% false-flag rate to within about a third of itself
 - Binding constraint: **false-flag rate**
 
 For comparison, the drift sweep this replaces costs about 22 hours. **The new design costs about the same and answers the question that is actually open.**
@@ -66,7 +68,7 @@ For comparison, the drift sweep this replaces costs about 22 hours. **The new de
 
 | | Old design | New design |
 |---|---|---|
-| Question | Is the within-session limit neural-specific? | Can a session-level monitor reach AUC 0.93, and at what false-flag rate? |
+| Question | Is the within-session limit neural-specific? | Can a session-level monitor reach AUC 0.99, and at what false-flag rate? |
 | Centrepiece | Drift sweep, 5 levels x 53 blocks, 22 h | Session-level monitor study, 202 sessions, 17 h |
 | Compared against | Cortex's autocorrelation | A design target derived from this project's own arithmetic |
 | If it succeeds | The limit generalises beyond brains | **A monitor that flags sessions for recalibration, with a measured false-flag rate** |

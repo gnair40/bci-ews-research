@@ -60,6 +60,22 @@ def pools(rows, crossed, crossing):
     return E, H
 
 
+def _session_target() -> float:
+    """The budget-consistent session-level AUC target, from scripts/28.
+
+    Read rather than hardcoded. This said 0.93 as a literal until 20 September
+    2026, which is the figure for 80% detection at a 10% false-flag rate -- about
+    thirteen times the 0.1/hour budget. Inside the budget it is about 0.99.
+    """
+    f = REPO / "data" / "processed" / "operating_point_bound.json"
+    if not f.exists():
+        raise SystemExit(
+            "data/processed/operating_point_bound.json is missing.\n"
+            "Run:  python3 scripts/28_operating_point_bound.py")
+    by = json.loads(f.read_text())["by_participant"]
+    return max(v["auc_ep_needed_at_budget"] for v in by.values())
+
+
 def main() -> int:
     frozen = json.loads((REPO / "research" / "COMBINATION_STUDY_FROZEN.json").read_text())
     results = {}
@@ -148,11 +164,13 @@ def main() -> int:
           "this project's own results identified, and combining them does not "
           "close the gap either. That closes the last direction the results "
           "themselves suggested.\n")
-        A(f"The session-level target remains ≈ 0.93. {frozen['what_this_cannot_settle']}\n")
+        A(f"The session-level target remains ≈ {_session_target():.2f}. "
+          f"{frozen['what_this_cannot_settle']}\n")
     else:
         A(f"### {', '.join(passed)} clears the bar\n")
-        A("Encouraging, and still n = 2. The gap to the session-level target of "
-          "≈ 0.93 is what decides whether it matters in practice.\n")
+        A(f"Encouraging, and still n = 2. The gap to the session-level target "
+          f"of ≈ {_session_target():.2f} is what decides whether it matters in "
+          f"practice.\n")
 
     (REPORTS / "COMBINATION_STUDY_RESULT.md").write_text("\n".join(L))
     print(f"\nwrote {REPORTS/'COMBINATION_STUDY_RESULT.md'}")

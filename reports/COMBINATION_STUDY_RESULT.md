@@ -27,4 +27,4 @@
 
 Better features and a better decomposition were the two ingredients this project's own results identified, and combining them does not close the gap either. That closes the last direction the results themselves suggested.
 
-The session-level target remains ≈ 0.93. n = 2 and the participants disagree - in Phase 1-2, on the joint-detector prediction, and in the F3 row of the feature study. A third dataset remains worth more than any arm here.
+The session-level target remains ≈ 0.99. n = 2 and the participants disagree - in Phase 1-2, on the joint-detector prediction, and in the F3 row of the feature study. A third dataset remains worth more than any arm here.

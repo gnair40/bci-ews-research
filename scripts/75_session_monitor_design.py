@@ -15,8 +15,10 @@ made that the wrong question to spend twenty-two hours of recording on.
    0.1 false alarms per hour divided among 720 decisions an hour demands a
    per-decision false-positive rate of 1.4e-4, which needs a per-window AUC of
    0.9992 against an observed 0.693. Asked **once per session** instead, the same
-   detector needs an AUC of **0.933** to flag 80% of degrading sessions while
-   wrongly flagging 10% of healthy ones. It achieves **0.673** (T11) and **0.742**
+   detector needs an AUC of about **0.99** to flag 80% of degrading sessions
+   while staying inside that same budget (this was quoted as 0.933 until
+   20 September 2026; 0.933 is the target at a 10% false-flag rate, which is
+   thirteen times the budget). It achieves **0.673** (T11) and **0.742**
    (T5).
 
    That is the difference between "this cannot work" and "this needs to be about
@@ -61,8 +63,27 @@ REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "data" / "processed"
 REPORTS = REPO / "reports"
 
-# From reports/OPERATING_POINT_BOUND.md.
-AUC_TARGET = 0.933        # needed for 80% detection at a 10% false-flag rate
+# Read from scripts/28's output rather than copied out of its report. This used
+# to be `AUC_TARGET = 0.933`, a literal transcribed by hand, and when scripts/28
+# was corrected on 20 September 2026 this file went on quoting the superseded
+# number. A constant with no producer is a constant nobody can audit.
+def _target() -> tuple[float, float, dict]:
+    """(budget-consistent target, the 10%-FPR target, the full record)."""
+    f = REPO / "data" / "processed" / "operating_point_bound.json"
+    if not f.exists():
+        raise SystemExit(
+            "data/processed/operating_point_bound.json is missing.\n"
+            "Run:  python3 scripts/28_operating_point_bound.py")
+    d = json.loads(f.read_text())
+    by = d["by_participant"]
+    # The stricter of the participants' budget-consistent targets, because a
+    # design sized against the easier one would be under-powered for the other.
+    at_budget = max(v["auc_ep_needed_at_budget"] for v in by.values())
+    at_10 = max(v["auc_ep_needed"] for v in by.values())
+    return float(at_budget), float(at_10), d
+
+
+AUC_TARGET, AUC_TARGET_AT_10PCT, OPBOUND = _target()
 AUC_OBSERVED = {"T11": 0.673, "T5": 0.742}
 SESSION_MINUTES = 5.0     # one rig block
 ALPHA = 0.05
@@ -175,15 +196,24 @@ def main() -> int:
     A = L.append
 
     A("## Why the question changed\n")
-    A("**1. The failure was located precisely.** A budget of 0.1 false alarms "
-      "per hour, divided among 720 decisions an hour, demands a per-decision "
-      "false-positive rate of 1.4e-4 — needing a per-window AUC of **0.9992** "
-      "against an observed 0.693. Asked **once per session** instead, the same "
-      "detector needs **0.933** to flag 80% of degrading sessions while wrongly "
-      "flagging 10% of healthy ones. It achieves **0.673** (T11) and **0.742** "
-      "(T5).\n")
+    A(f"**1. The failure was located precisely.** A budget of 0.1 false alarms "
+      f"per hour, divided among 720 decisions an hour, demands a per-decision "
+      f"false-positive rate of 1.4e-4 — needing a per-window AUC of **0.9992** "
+      f"against an observed 0.693. Asked **once per session** instead, the same "
+      f"detector needs **{AUC_TARGET:.3f}** to flag 80% of degrading sessions "
+      f"while staying inside the same 0.1/hour budget. It achieves **0.673** "
+      f"(T11) and **0.742** (T5).\n")
+    A(f"> **Corrected 20 September 2026.** This paragraph, and the tables below, "
+      f"used to quote **{AUC_TARGET_AT_10PCT:.3f}** as the session-level target. "
+      f"That figure is the AUC needed for 80% detection at a **10% false-flag "
+      f"rate**, which at one decision per episode is about 1.3 false alarms an "
+      f"hour — thirteen times the budget. The budget-consistent target is "
+      f"**{AUC_TARGET:.3f}**. See `reports/OPERATING_POINT_BOUND.md`, which now "
+      f"reports both and says which question each answers.\n")
     A("That is the difference between *this cannot work* and *this needs to be "
-      "about this much better*, and only the second is a research programme.\n")
+      "about this much better*, and only the second is a research programme — "
+      "though at the corrected target the second is a harder programme than "
+      "this report used to imply.\n")
     A("**2. The false-alarm rate cannot be measured on the archived data at "
       "all.** Restricted to genuinely fault-free episodes it rests on 17 and 15 "
       "episodes — about **1.4 hours** — against a budget of 0.1 per hour. A rate "
@@ -216,15 +246,17 @@ def main() -> int:
     A("| Comparison | Sessions per arm | Total | Recording time |")
     A("|---|---|---|---|")
     for q in disc:
-        A(f"| Target 0.933 vs {q['against']} ({q['observed_auc']:.3f}) | "
+        A(f"| Target {AUC_TARGET:.3f} vs {q['against']} "
+          f"({q['observed_auc']:.3f}) | "
           f"{q['sessions_each_arm']} | {q['total_sessions']} | {q['hours']:.1f} h |")
     A("")
     n_t11 = next(q for q in disc if q["against"] == "T11")
     A(f"**Do not take the first row as the schedule.** Showing the rig beats "
       f"0.673 needs only {n_t11['sessions_each_arm']} sessions per arm, and it "
       f"is a straw man: nobody doubts it can, and a study powered only for that "
-      f"answers nothing. Resolving a *near miss* — is it 0.93 or 0.88? — is the "
-      f"hard case, and it costs an order of magnitude more.\n")
+      f"answers nothing. Resolving a *near miss* — is it {AUC_TARGET:.2f} or "
+      f"{AUC_TARGET - 0.05:.2f}? — is the hard case, and it costs an order of "
+      f"magnitude more.\n")
 
     A("## The measurement nobody can currently make\n")
     A("| False-flag rate to measure | Healthy sessions needed | Recording time | "
@@ -257,8 +289,9 @@ def main() -> int:
     A("## What Arm B becomes\n")
     A("| | Old design | New design |")
     A("|---|---|---|")
-    A("| Question | Is the within-session limit neural-specific? | Can a "
-      "session-level monitor reach AUC 0.93, and at what false-flag rate? |")
+    A(f"| Question | Is the within-session limit neural-specific? | Can a "
+      f"session-level monitor reach AUC {AUC_TARGET:.2f}, and at what "
+      f"false-flag rate? |")
     A(f"| Centrepiece | Drift sweep, 5 levels x 53 blocks, 22 h | Session-level "
       f"monitor study, {rec['total_sessions']} sessions, {rec['hours']:.0f} h |")
     A("| Compared against | Cortex's autocorrelation | A design target derived "

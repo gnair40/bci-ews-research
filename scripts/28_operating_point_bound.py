@@ -35,8 +35,33 @@ requirement into a demand for near-perfect per-window discrimination.
 
 A deployed decoder-health monitor does not need to re-decide every 5 seconds.
 "Should this session be flagged for a recalibration check?" is a once-per-session
-question, and at that rate the same detector faces a per-decision false-positive
-budget four orders of magnitude looser.
+question, and at that rate the same detector faces a looser per-decision budget.
+
+CORRECTED 20 SEPTEMBER 2026 -- TWO ERRORS IN THAT ARGUMENT
+----------------------------------------------------------
+This file used to say the once-per-session budget is "four orders of magnitude
+looser", and used to report a session-level target of 0.933. Both were wrong,
+and the second was wrong in a way that flattered the conclusion.
+
+**The looseness is the pooling factor, nothing more.** One decision per episode
+instead of one per window divides the number of decisions by the number of
+windows in an episode -- 55 on T11, 42 on T5. That is a factor of 55, i.e. 1.7
+orders of magnitude, not 10,000. Four orders would need one decision per
+~14 hours. The figure is now computed from the data rather than asserted.
+
+**The 0.933 target was never derived from the budget.** It answers "what AUC
+gives 80% detection at a 10% false-flag rate?" -- a fixed 10% that appeared
+nowhere in the design. At one decision per 4.6-minute episode, flagging 10% of
+healthy episodes is 1.3 false alarms an HOUR, which is 13x the 0.1/hour budget
+this project set. Judged at the actual budget the requirement is an AUC of about
+**0.990**, against an observed 0.673 and 0.742.
+
+So aggregating to session level does help, and the direction of the
+decision-rate argument survives -- but it moves the requirement from 0.9992 to
+0.990, not from 0.9992 to 0.933, and the gap to what the monitor achieves stays
+very large. Both numbers are reported below, each labelled with the question it
+answers, because the 10% figure is a legitimate answer to a different question
+and deleting it would hide the mistake rather than correct it.
 
 This file reports both framings side by side, and the design target that follows.
 
@@ -44,6 +69,7 @@ Usage: python3 scripts/28_operating_point_bound.py
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -121,6 +147,23 @@ def main() -> int:
             "tpr_ep_5": float((np.array(epE) > np.quantile(epH, 0.95)).mean()),
             "auc_ep_needed": auc_needed(0.10),
         }
+        # The session-level decision rate, measured rather than assumed: one
+        # decision per episode, and an episode is n_windows steps long.
+        # From the episode length itself, not from winE -- those are SLICES
+        # between onset and crossing, so their length is not an episode's.
+        wins = float(sub.n_windows.median())
+        ep_hours = wins * STEP_S / 3600
+        ep_per_hour = 1.0 / ep_hours
+        fpr_ep_budget = BUDGET_PER_HOUR / ep_per_hour
+        stats_by[pname].update({
+            "windows_per_episode": wins,
+            "episode_minutes": ep_hours * 60,
+            "episodes_per_hour": ep_per_hour,
+            "pooling_factor": wins,
+            "fpr_ep_budget": fpr_ep_budget,
+            "auc_ep_needed_at_budget": auc_needed(fpr_ep_budget),
+            "alarms_per_hour_at_10pct": 0.10 * ep_per_hour,
+        })
 
     def row(label, key, fmt):
         A(f"| {label} | " + " | ".join(fmt(stats_by[p][key]) for _, p in SOURCES
@@ -144,10 +187,18 @@ def main() -> int:
       "per ten hours would train a user to ignore it. The error was applying it "
       "to a system that re-decides every 5 seconds, which quietly converts a "
       "mild usability constraint into a demand for 0.9992 AUC.\n")
-    A("A deployed monitor need not re-decide every 5 seconds. *\"Should this "
-      "session be flagged for a recalibration check?\"* is a once-per-session "
-      "question, and at that rate the false-positive budget per decision is four "
-      "orders of magnitude looser.\n")
+    fac = stats_by[SOURCES[0][1]]["pooling_factor"] if stats_by else float("nan")
+    A(f"A deployed monitor need not re-decide every 5 seconds. *\"Should this "
+      f"session be flagged for a recalibration check?\"* is a once-per-session "
+      f"question, and at that rate the per-decision budget is looser by exactly "
+      f"the pooling factor — the number of windows in an episode, "
+      f"**{fac:.0f}** on {SOURCES[0][1]} — which is about "
+      f"{np.log10(fac):.1f} orders of magnitude.\n")
+    A("> **Corrected 20 September 2026.** This paragraph used to say \"four "
+      "orders of magnitude looser\". It is not: the looseness is the pooling "
+      "factor and nothing else, and four orders would need one decision per "
+      "fourteen hours. The figure is now computed from the data rather than "
+      "asserted.\n")
 
     A("### The same detector, judged once per session\n")
     A("| | " + " | ".join(p for _, p in SOURCES) + " |")
@@ -155,21 +206,68 @@ def main() -> int:
     row("Session-level AUC", "auc_ep", lambda v: f"{v:.3f}")
     row("Detection at 10% false-flag rate", "tpr_ep_10", lambda v: f"{v*100:.1f}%")
     row("Detection at 5% false-flag rate", "tpr_ep_5", lambda v: f"{v*100:.1f}%")
+    row("Episode length (minutes)", "episode_minutes", lambda v: f"{v:.1f}")
+    row("Decisions per hour at that rate", "episodes_per_hour", lambda v: f"{v:.1f}")
     row("AUC needed for 80% detection at 10%", "auc_ep_needed", lambda v: f"{v:.3f}")
+    row("**False alarms/hour that 10% implies**", "alarms_per_hour_at_10pct",
+        lambda v: f"**{v:.2f}**")
+    row("**Per-decision FPR the 0.1/h budget allows**", "fpr_ep_budget",
+        lambda v: f"**{v:.4f}**")
+    row("**AUC needed for 80% detection at the budget**",
+        "auc_ep_needed_at_budget", lambda v: f"**{v:.3f}**")
     A("")
     A("Aggregating to session level helps one participant and not the other "
       "(T5 0.707 → 0.742; T11 0.693 → 0.673), so it is **not** the rescue "
-      "either — the disagreement between participants shows up here too. But it "
-      "moves the problem from impossible to merely hard.\n")
+      "either — the disagreement between participants shows up here too.\n")
+
+    A("### Two targets, and which one the budget actually implies\n")
+    b = stats_by[SOURCES[0][1]] if stats_by else {}
+    A("> **Corrected 20 September 2026.** Earlier versions of this report gave "
+      "**0.933** as *the* session-level design target. That number answers "
+      "\"what AUC gives 80% detection at a **10%** false-flag rate?\" — and the "
+      "10% was a round figure that appears nowhere in the design. It is not the "
+      "budget.\n")
+    if b:
+        A(f"At one decision per {b['episode_minutes']:.1f}-minute episode, "
+          f"flagging 10% of healthy episodes is **{b['alarms_per_hour_at_10pct']:.2f} "
+          f"false alarms an hour** — about "
+          f"{b['alarms_per_hour_at_10pct'] / BUDGET_PER_HOUR:.0f} times the "
+          f"0.1/hour budget this project set and never relaxed.\n")
+        A("| Question | Target AUC | What it costs in false alarms |")
+        A("|---|---|---|")
+        A(f"| 80% detection at a 10% false-flag rate | {b['auc_ep_needed']:.3f} | "
+          f"{b['alarms_per_hour_at_10pct']:.2f}/hour |")
+        A(f"| 80% detection **inside the 0.1/hour budget** | "
+          f"**{b['auc_ep_needed_at_budget']:.3f}** | 0.1/hour |")
+        A("")
+        A(f"So the honest statement is: deciding once per episode moves the "
+          f"requirement from **0.9992 to "
+          f"{b['auc_ep_needed_at_budget']:.3f}**, not from 0.9992 to 0.933. "
+          f"That is a real reduction and the direction of the argument "
+          f"survives — but against an observed **0.673 and 0.742** the gap "
+          f"stays very large, and describing it as \"merely hard\" was "
+          f"premature.\n")
 
     A("## The design target that follows\n")
-    tgt = stats_by[SOURCES[0][1]]["auc_ep_needed"] if stats_by else float("nan")
-    A(f"To flag 80% of degrading sessions while wrongly flagging 10% of healthy "
-      f"ones, a session-level AUC of about **{tgt:.2f}** is required. The "
+    tgt = b.get("auc_ep_needed_at_budget", float("nan"))
+    A(f"To flag 80% of degrading sessions **while staying inside the 0.1/hour "
+      f"budget**, a session-level AUC of about **{tgt:.3f}** is required. The "
       f"current monitor achieves **0.67–0.74**.\n")
-    A("That is a real gap and a specific one. It is the difference between "
-      "*\"this cannot work\"* and *\"this needs a measurement roughly this much "
-      "better\"*, and only the second is a research programme.\n")
+    A("That is a real gap and a specific one, and it is larger than this report "
+      "previously said. It is still the difference between *\"this cannot "
+      "work\"* and *\"this needs a measurement roughly this much better\"* — but "
+      "the second is now a harder programme than the 0.933 figure implied.\n")
+    A("The 10% figure is kept in the table above rather than deleted, because "
+      "it is a legitimate answer to a different question and because removing "
+      "it would hide the mistake instead of correcting it.\n")
+    A("`reports/SESSION_MONITOR_DESIGN.md` and "
+      "`reports/COMBINATION_STUDY_RESULT.md` were regenerated against the "
+      "corrected target on the same day, and both now read it from this "
+      "script's output rather than holding it as a hand-copied literal. "
+      "`research/RIG_PREREGISTRATION.md`, `research/BUILD_MANUAL.md` and "
+      "`research/EXPERIMENTAL_PROCEDURES.md` still quote 0.933; they are "
+      "superseded documents, kept unchanged as the record, and each carries a "
+      "banner saying so.\n")
 
     A("## What this does not license\n")
     A("Relaxing a target after failing to meet it is the classic way to "
@@ -180,6 +278,15 @@ def main() -> int:
       "unchanged; what changes is how many decisions it is divided among.\n")
     A("The honest headline stays as it was: **on this data, at the operating "
       "point the design specified, no configuration works.**\n")
+
+    # Written so that later scripts can READ the targets instead of copying
+    # them out of this report by hand. scripts/75 held 0.933 as a literal for
+    # that reason, which is how it kept a superseded number after this one was
+    # corrected -- a hand-copied constant has no producer and no audit trail.
+    (OUT / "operating_point_bound.json").write_text(json.dumps(
+        {"budget_per_hour": BUDGET_PER_HOUR, "target_tpr": TARGET_TPR,
+         "step_seconds": STEP_S, "by_participant": stats_by}, indent=2,
+        default=float))
 
     (REPORTS / "OPERATING_POINT_BOUND.md").write_text("\n".join(L))
     print("\n".join(L[3:]).replace("**", ""))

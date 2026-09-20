@@ -5807,3 +5807,94 @@ The rig preregistration had **two sections both numbered 11**, and its
 **amendment log said "(empty)" while three amendments existed**. The log now
 lists them and says plainly that it was not being kept, rather than being
 backfilled as though it had been. A log filled in afterwards is not a log.
+
+---
+
+## 20 September 2026 (later still) — the session-level target was never derived from the budget
+
+Found while checking whether `reports/SESSION_MONITOR_DESIGN.md` still agreed
+with the physical phase's sample sizes. It did not, and the reason turned out to
+be an error in a headline claim rather than a difference of framing.
+
+### What was wrong
+
+**Error 1: "four orders of magnitude looser."** `scripts/28` said that asking
+the monitor once per session instead of every five seconds gives a per-decision
+false-positive budget four orders of magnitude looser. It does not. The
+looseness is exactly the pooling factor — the number of windows in an episode —
+which is **55 on T11 and 42 on T5**, about **1.7 orders of magnitude**. Four
+orders would need one decision per fourteen hours.
+
+**Error 2, the one that matters: the 0.933 target was never derived from the
+budget.** It was computed as `auc_needed(0.10)` — a hardcoded 10% false-flag
+rate that appears nowhere in this project's design. At one decision per
+4.6-minute episode, flagging 10% of healthy episodes is **1.31 false alarms an
+hour**, which is **thirteen times** the 0.1/hour budget this project set and has
+never relaxed.
+
+Judged at the actual budget:
+
+| | T11 | T5 |
+|---|---|---|
+| Per-decision FPR the budget allows | 0.0076 | 0.0058 |
+| AUC needed for 80% detection there | **0.990** | **0.991** |
+| AUC quoted since 6 September | 0.933 | 0.933 |
+| Observed | 0.673 | 0.742 |
+
+### What it changes, and what it does not
+
+**The direction of the decision-rate argument survives.** Deciding less often
+genuinely does loosen the per-decision budget, and it does so by a measurable,
+derivable factor. That part is fine.
+
+**The magnitude was overstated and the conclusion oversold.** Aggregating to
+session level moves the requirement from 0.9992 to **0.990**, not to 0.933.
+Against an observed 0.673–0.742 the gap stays very large. `OPERATING_POINT_BOUND`
+described this as moving the problem "from impossible to merely hard"; that was
+premature, and the report now says so in those words.
+
+**It does not relax the budget.** 0.1 per hour is unchanged. What changed is
+that the session-level target is now computed from it instead of from a round
+number.
+
+### How it got there, and what stops it recurring
+
+`AUC_TARGET = 0.933` sat in `scripts/75` as a **literal transcribed by hand**
+from `scripts/28`'s report. So when 28 was corrected, 75 went on quoting the
+superseded figure, and nothing noticed — the reproducibility audit's producer
+check only tracks files a script *reads*, and a hardcoded constant reads
+nothing.
+
+Both `scripts/75` and `scripts/37` now read the target from
+`data/processed/operating_point_bound.json`, which `scripts/28` writes. That
+file did not exist before today; 28 wrote only a markdown report, which is
+precisely why the constant had to be copied by hand.
+
+### Why the 10% figure is kept rather than deleted
+
+It is a legitimate answer to a different question — "what AUC gives 80%
+detection at a 10% false-flag rate?" — and deleting it would hide the mistake
+instead of correcting it. Both numbers are now in the table, each labelled with
+the question it answers and what it costs in alarms per hour.
+
+### What was already right
+
+The physical phase's `analyze_decision_rate.py`, written yesterday, computes
+`per_decision_fpr_allowed = budget / decisions_per_hour` directly and chooses
+each rate's threshold to meet the per-hour budget on held-out healthy sessions.
+Its docstring already said "0.0083 instead of 0.00014 — sixty times as much
+room". Doing that arithmetic independently is what made the discrepancy visible;
+if I had reused the 0.933 figure the error would still be in place.
+
+`physical/docs/07_ANALYSIS.md` now states the corrected numbers explicitly, so
+P-6 does not inherit an overstated prior: the looser budget alone is **not** a
+rescue, and what P-6 measures is whether the second mechanism — more evidence
+per decision — buys anything on top of it.
+
+### Documents left quoting 0.933
+
+`research/RIG_PREREGISTRATION.md`, `research/BUILD_MANUAL.md` and
+`research/EXPERIMENTAL_PROCEDURES.md` still contain it. They are superseded
+documents, each already carrying a banner, and they are kept unchanged as the
+record. `reports/OPERATING_POINT_BOUND.md` names them so a reader who meets
+0.933 there can find out why.

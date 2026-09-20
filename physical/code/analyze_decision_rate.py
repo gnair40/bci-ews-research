@@ -289,9 +289,15 @@ def main() -> int:
       "the whole system is to stay inside "
       f"{a.budget} false alarms an hour. At 720 decisions an hour that is "
       "0.00014 — a detector would need an AUC of about 0.9992 to manage it. "
-      "At one decision per session it is a far less demanding number. "
-      "**That column, not the detector, is where the computational monitor "
-      "actually failed.**\n")
+      "At one decision per five-minute session it is 0.0083, needing about "
+      "0.990. **That column, not the detector, is where the computational "
+      "monitor actually failed.**\n")
+    A("Both of those are a long way above the 0.673 and 0.742 the computational "
+      "monitor achieved, so deciding less often is not on its own a rescue — "
+      "the looseness it buys is exactly the pooling factor, no more. What the "
+      "curve above measures is whether the *second* mechanism, more evidence "
+      "behind each decision, adds anything beyond that. **That is the open "
+      "question, and it is why this is measured rather than argued.**\n")
 
     A("## What this cannot show\n")
     A("- Every row uses the same recordings, so the rows are not independent. "

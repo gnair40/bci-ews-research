@@ -227,6 +227,20 @@ detector: it was deciding 720 times an hour, so a budget of 0.1 false alarms per
 hour left each decision a false-positive rate of 0.00014 — needing an AUC of
 about 0.9992.
 
+**Deciding less often loosens that, but by less than it first appears.** The
+looseness is exactly the pooling factor: one decision per five-minute session is
+12 decisions an hour, so the allowed rate rises to 0.0083 and the required AUC
+falls to about 0.990. Against the 0.673 and 0.742 the computational monitor
+achieved, that is still a very large gap. (An earlier version of this project's
+reports put the once-per-session target at **0.933**, which is the figure for a
+**10%** false-flag rate — about thirteen times the budget. Corrected
+20 September 2026; see `reports/OPERATING_POINT_BOUND.md`.)
+
+So the looser budget alone is not a rescue. What P-6 actually measures is
+whether the *second* mechanism — more evidence behind each decision — buys
+anything on top of it. That is the open question, and it is why the curve is
+measured rather than argued.
+
 This re-scores the same recordings at every rate from one decision per window to
 one per session, choosing a fresh threshold at each rate so the comparison is at
 equal false-alarm cost.
