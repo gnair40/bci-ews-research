@@ -121,11 +121,17 @@ def three_correlations(score: np.ndarray, perf: np.ndarray,
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--table", default=str(DATA / "sessions.csv"))
+    ap.add_argument("--table", default=None,
+                    help="a session table; default is the one --tag names")
+    # --tag matches the other three analysis scripts. Without it this script
+    # read a tagged table but wrote an untagged result, so a dry run silently
+    # overwrote the real one and figures.py could not find the tagged output.
+    ap.add_argument("--tag", default="",
+                    help="suffix used by make_session_table.py, e.g. _dryrun")
     ap.add_argument("--budget", type=float, default=FALSE_ALARM_BUDGET)
     a = ap.parse_args()
 
-    path = Path(a.table)
+    path = Path(a.table) if a.table else DATA / f"sessions{a.tag}.csv"
     if not path.exists():
         print(f"No session table at {path}.")
         print("Build it first:  python3 physical/code/make_session_table.py")
@@ -214,7 +220,8 @@ def main() -> int:
         "n_sessions": int(len(df)),
     }
     RESULTS.mkdir(parents=True, exist_ok=True)
-    (RESULTS / "correlation_vs_usability.json").write_text(json.dumps(result, indent=2))
+    (RESULTS / f"correlation_vs_usability{a.tag}.json").write_text(
+        json.dumps(result, indent=2))
 
     c, u = corr_all, usable
     L = ["# P-4 — Does correlation with performance mean the monitor works?\n",
@@ -292,9 +299,10 @@ def main() -> int:
     A("- A different monitor might behave differently; nothing here bounds what "
       "is possible in general.")
 
-    (RESULTS / "P4_CORRELATION_VS_USABILITY.md").write_text("\n".join(L))
+    out_md = RESULTS / f"P4_CORRELATION_VS_USABILITY{a.tag}.md"
+    out_md.write_text("\n".join(L))
     print("\n".join(L[2:]).replace("**", ""))
-    print(f"\nwrote {RESULTS / 'P4_CORRELATION_VS_USABILITY.md'}")
+    print(f"\nwrote {out_md}")
     return 0
 
 
