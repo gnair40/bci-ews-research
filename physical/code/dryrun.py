@@ -118,6 +118,7 @@ def make_one(folder: Path, plan: dict, pref: np.ndarray, depth: float,
     (folder / "session.json").write_text(json.dumps(
         {"session": plan["session"], "block": plan["block"],
          "kind": plan.get("kind", "experiment"), "healthy": plan["healthy"],
+         "config": plan.get("config", "A"),
          "SYNTHETIC": True,
          "warning": "Made by dryrun.py. Not data. Not for the write-up."},
         indent=2))
@@ -147,6 +148,13 @@ def main() -> int:
     ap.add_argument("--noise", type=float, default=1.0)
     ap.add_argument("--drift", type=float, default=0.02,
                     help="slow warming across a session, healthy or not")
+    ap.add_argument("--config", default="A",
+                    help="apparatus configuration label (experiment P-7). "
+                         "Written into every session so the analysis can group "
+                         "by it, exactly as run_session.py does")
+    ap.add_argument("--session-offset", type=int, default=0,
+                    help="shift session numbers so several configurations can "
+                         "live side by side without colliding")
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--clean", action="store_true", help="delete previous fakes first")
     a = ap.parse_args()
@@ -162,17 +170,23 @@ def main() -> int:
     # Saved where bench.py will look for it, so the bench checks can be
     # exercised on the fakes too -- and kept out of physical/data/, so it can
     # never be mistaken for the real apparatus's channel definitions.
-    np.save(DRY / "preferred_directions.npy", pref)
+    # Per configuration, not shared. Configurations may have different channel
+    # counts, so one shared file would be the wrong length for all but the last
+    # one written -- and silently so.
+    np.save(DRY / f"preferred_directions_{a.config}.npy", pref)
+    if a.config == "A":
+        np.save(DRY / "preferred_directions.npy", pref)
 
     plans = []
+    off = a.session_offset
     for i in range(a.healthy):
-        plans.append({"session": 1, "block": i + 1, "healthy": True,
+        plans.append({"session": 1 + off, "block": i + 1, "healthy": True,
                       "fault_type": None, "severity": 0.0,
                       "onset_frame": None, "onset_seconds": None,
                       "frames": a.frames, "fps": FPS})
     for i in range(a.degraded):
         onset = int(rng.integers(int(a.frames * 0.2), int(a.frames * 0.8)))
-        plans.append({"session": 2, "block": i + 1, "healthy": False,
+        plans.append({"session": 2 + off, "block": i + 1, "healthy": False,
                       "fault_type": FAULTS[i % len(FAULTS)],
                       "severity": float(rng.choice([0.25, 0.5, 1.0])),
                       "onset_frame": onset,
@@ -185,7 +199,7 @@ def main() -> int:
     undesigned = []
     for i in range(a.undesigned + a.orphans):
         onset = int(rng.integers(int(a.frames * 0.2), int(a.frames * 0.8)))
-        undesigned.append({"session": 3, "block": i + 1, "healthy": False,
+        undesigned.append({"session": 3 + off, "block": i + 1, "healthy": False,
                            "kind": "undesigned",
                            "fault_type": "UNDESIGNED",
                            "severity": float(rng.choice([0.5, 1.0])),
@@ -194,6 +208,9 @@ def main() -> int:
                            "frames": a.frames, "fps": FPS,
                            # The last `--orphans` of them get no noted onset.
                            "_note_it": i < a.undesigned})
+
+    for p in plans + undesigned:
+        p["config"] = a.config
 
     for p in plans:
         name = f"s{p['session']}_b{p['block']}"

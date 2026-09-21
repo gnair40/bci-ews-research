@@ -104,7 +104,16 @@ def _predicted(s) -> np.ndarray:
     """What each channel should look like, from the logged direction alone."""
     # Next to the recordings first, so a dry run is checked against its own
     # channel definitions rather than the real apparatus's.
-    pref_file = s.folder.parent.parent / "preferred_directions.npy"
+    # Configuration-specific first: a P-7 configuration may have a different
+    # channel count, and comparing against another configuration's channel
+    # definitions would look like a catastrophic apparatus fault.
+    cfg = None
+    j = s.folder / "session.json"
+    if j.exists():
+        cfg = json.loads(j.read_text()).get("config")
+    pref_file = s.folder.parent.parent / f"preferred_directions_{cfg}.npy"
+    if not (cfg and pref_file.exists()):
+        pref_file = s.folder.parent.parent / "preferred_directions.npy"
     if not pref_file.exists():
         pref_file = DATA / "preferred_directions.npy"
     if not pref_file.exists():

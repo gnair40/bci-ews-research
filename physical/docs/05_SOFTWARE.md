@@ -1,6 +1,6 @@
 # The code: what each file does and when you run it
 
-Sixteen files in `physical/code/`. This document says what each one is for, what
+Seventeen files in `physical/code/`. This document says what each one is for, what
 it needs, what it produces, and where it sits in the workflow. Each file also
 carries a long explanation at the top of itself; open it and read it if you want
 the reasoning rather than the summary.
@@ -328,6 +328,36 @@ that every excluded session carries a reason.
 **It deliberately cannot see any result.** A check you run daily that could see
 results is a check that would slowly teach you to stop the campaign when the
 numbers look good. It only asks whether the recordings are what they claim.
+
+### `analyze_apparatus.py` — experiment P-7
+
+**What:** compares the configurations against each other and tests the two
+preregistered predictions about them.
+**Run it:** `python3 physical/code/analyze_apparatus.py --configs A,B,C,D`
+**Produces:** `physical/data/results/P7_APPARATUS_VARIATION.md`.
+**When:** after each configuration has its own table and analyses.
+
+**Each configuration is a separate apparatus and gets its own decoder and
+threshold.** Pooling them would average over the thing being varied, which is
+why `make_session_table.py` takes `--config` and the whole chain is run once per
+configuration.
+
+It answers **PP-9** (does the decision-rate direction hold?) and **PP-10** (do
+the headline lead time and false-alarm rate move?). **It is designed to be able
+to embarrass the rest of the phase** — if four configurations of the same box
+disagree, the single-apparatus numbers are apparatus-specific and have to be
+reported with their spread.
+
+Two things it will not do, both of which it did in its first version and both of
+which were caught by rehearsing it on synthetic data:
+
+- **It will not call a direction "held" from one observation.** A configuration
+  whose curve is flat is counted as neither agreeing nor disagreeing, and with
+  fewer than two directed configurations the verdict is *not testable* rather
+  than *passed*.
+- **It will not drop a false-alarm rate of zero.** A configuration that never
+  alarms beside one that alarms six times an hour is the largest difference the
+  experiment can find, and treating 0.0 as a missing value hid exactly that.
 
 ### `monitor.py` — the shared core
 

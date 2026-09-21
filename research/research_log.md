@@ -6640,3 +6640,72 @@ recording it is the only honest response.
 The ground-truth discipline, the five gates, the preregistration mechanism, the
 negative result, the code, the schedule, the safety assessment. They survived
 the audit unchanged, and the audit was looking for reasons they should not.
+
+---
+
+## 21 September 2026 (P-7 rehearsal) — the new arm had no analysis, and its first version lied twice
+
+Rehearsed P-7 end to end on synthetic data before committing ten hours of
+recording to it, the way the main pipeline was rehearsed. Two things came out.
+
+### The arm was specified with nothing to analyse it
+
+P-7 was added this morning with four configurations, two preregistered
+predictions, and **no script that compares configurations**. Each configuration
+could be analysed on its own, but the experiment's entire question is whether
+the four *agree*, and nothing answered it.
+
+`physical/code/analyze_apparatus.py` now does: per-configuration table of
+margin, lead time, false-alarm rate and decision-rate change, then PP-9 (does
+the direction hold?) and PP-10 (do the headline numbers move?).
+
+Supporting changes: `dryrun.py` takes `--config` and `--session-offset` so four
+configurations can be generated side by side, and writes **per-configuration
+channel definitions** — the first version had all four overwrite one shared
+`preferred_directions.npy`, which for configuration D (96 channels instead of
+384) is not merely stale but the wrong length. `bench.py` now prefers the
+configuration's own file, because comparing against another configuration's
+channel definitions would look like a catastrophic apparatus fault.
+
+### Its first version produced two falsely reassuring verdicts
+
+Both found by running it, neither by reading it.
+
+**1. It announced unanimous agreement from one observation.** Three of the four
+synthetic configurations had a decision-rate change of exactly 0.0%. The code
+filtered zeros out as "unknown sign", leaving one configuration, and then
+reported *"Yes. All 1 configurations move the same way."*
+
+A flat curve is not agreement — it is the absence of an effect. Now flat
+configurations are counted as neither, and with fewer than two *directed*
+configurations the verdict is **not testable**, with the honest note that
+"the effect is absent" and "the campaign is too small to see it" are different
+conclusions this experiment cannot separate.
+
+**2. It discarded the most informative number it had.** The false-alarm spread
+used `if r.get("false_alarms_per_hour")`, which is falsy for **0.0**.
+Configuration B never alarmed; A, C and D alarmed 3, 6 and 6 times an hour. The
+single largest difference the experiment could possibly find was silently
+excluded, and the verdict came back *"the numbers hold across
+configurations"* — the exact opposite of the truth. Fixed to `is not None`,
+with an explicit path for "one configuration never alarms", where a ratio is
+undefined and the budget itself becomes the yardstick.
+
+**Both bugs failed in the reassuring direction.** A check that wrongly says
+"fine" is worse than no check, because it is trusted. This is the third time
+this week a rehearsal has caught something a reading would not have.
+
+### On whether the build needs me
+
+Asked, reasonably, whether the repository does not already have a guide for
+everything. It does, and I checked rather than asserting: 460 lines of build
+manual, 371 of troubleshooting with 28 named failure modes, a 390-line runbook,
+a bench card, a shopping list, and every one of the five bench checks appears in
+both the troubleshooting guide and the runbook.
+
+So the honest answer is that the guides cover **everything that can be
+anticipated**, and I was over-hedging when I implied otherwise. What they
+cannot contain is the diagnosis for a failure nobody has seen yet — a margin
+that lands at 52° and will not move, a screen that passes the dither check on
+one setting and fails on another. That is a real but narrow gap, and it is not
+a reason to delay anything.

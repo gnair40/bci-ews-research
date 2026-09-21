@@ -320,9 +320,13 @@ For each one:
   python3 physical/code/analyze_decision_rate.py --tag _B
   python3 physical/code/analyze_leadtime.py --tag _B
   ```
-      Repeat for C and D. Then compare the four: **does the decision-rate curve
-      keep its direction?** (PP-9) **Do the lead time and false-alarm rate
-      move?** (PP-10)
+      Repeat for C and D. Then compare the four:
+  ```bash
+  python3 physical/code/analyze_apparatus.py --configs A,B,C,D
+  ```
+      It answers **PP-9** (does the decision-rate curve keep its direction?) and
+      **PP-10** (do the lead time and false-alarm rate move?), and it is allowed
+      to say *not testable* — which is a real answer, not a failure.
 - [ ] **10.6** Run it again with the other decoder, as a stated check.
   ```bash
   python3 physical/code/make_session_table.py --decoder per-session --tag _persession
