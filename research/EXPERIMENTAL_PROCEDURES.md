@@ -312,6 +312,10 @@ Procedure 78 was the centrepiece of this experiment. **It is not any more.**
 The September audit found that the false-alarm budget had been applied at 720
 decisions an hour, which demanded a per-window AUC of 0.9992 against an observed
 0.693. Asked once per session the same detector needs 0.933 and reaches 0.673 to
+
+
+> **0.933 is superseded.** It is the AUC needed at a 10% false-flag rate, which at one decision per episode is about thirteen times this project's 0.1/hour budget. Derived from the budget the target is **0.990**. Corrected 20 September 2026; see `reports/OPERATING_POINT_BOUND.md`. This document is kept unchanged as the record.
+
 0.742 — a gap to close rather than a wall. It also found that the false-flag
 rate cannot be estimated from the archived data at all: 17 and 15 fault-free
 episodes, about 1.4 hours.
@@ -371,6 +375,10 @@ the two ever disagree, that document wins.**
 | P-R7 | Natural drift resembles at least one designed fault mode | nearest-mode match **above chance (25%)** | at or below chance | Procedure 77 |
 | **P-R10** | **The decision-rate law: deciding less often helps** | detection **≥10 points higher** at 1 decision/session than at 720/hour | the rise is under 10 points, flat, or negative | **B-14, the centrepiece** |
 | **P-R8** | A session-level monitor clears the archived shortfall | session-level AUC > 0.80 (archived: 0.673, 0.742; target: 0.933) | AUC at or below 0.80 | B-14, secondary |
+
+
+> **0.933 is superseded.** It is the AUC needed at a 10% false-flag rate, which at one decision per episode is about thirteen times this project's 0.1/hour budget. Derived from the budget the target is **0.990**. Corrected 20 September 2026; see `reports/OPERATING_POINT_BOUND.md`. This document is kept unchanged as the record.
+
 | **P-R9** | **The false-flag rate becomes measurable at all** | **relative SE under 35%** over 101 healthy sessions | fewer than ~100 usable sessions, or SE above 35% | **B-14** |
 
 Every row has a useful outcome in both directions, which is the test of whether

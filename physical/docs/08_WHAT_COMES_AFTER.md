@@ -59,12 +59,19 @@ before the experiments finish.
 | **P-6's curve rises** and the intervals separate | A *decision-rate calculator*: given a false-alarm budget and how fast the failure develops, it returns how often to check | This is the generalisable output — it applies to any drifting many-channel sensor, not just a brain implant |
 | A high correlation with **unusable** lead time or false-alarm rate | **No device.** A validation protocol instead: the checklist and the code that any future monitor should be put through before it is proposed for clinical use | The finding is that the standard validation is insufficient. The useful artefact is a better test, not another monitor |
 | The silence gate fails on an apparatus with no biology in it | **No device.** A written account of why this class of monitor drifts, and what would have to change | A monitor that alarms during healthy operation should not be packaged up |
+| The correlation **collapses** once the time trend is removed | **No device.** A written account of why published correlations of this kind may be measuring shared drift, and the control that separates them | If the correlation is largely the passage of time, the thing worth publishing is the control, not another monitor |
 | Results are inconclusive — intervals overlap, no measure settles | **No device.** The benchmark, the data, and a statement of exactly how much more recording would settle it | "We do not know yet, and here is what it would take" is a real result and a common one |
 
-**Three of the five rows say "no device".** That is not pessimism; it is what
+**Four of the six rows say "no device".** That is not pessimism; it is what
 follows from the current evidence, and writing it down now is what stops a
 disappointing result from quietly turning into a demonstration of something that
 was not shown.
+
+*(This table had five rows until 21 September 2026. The sixth — the correlation
+collapsing once the time trend is removed — was already a named outcome of P-4
+in `07_ANALYSIS.md` and prediction PP-5 in `09_PREREGISTRATION.md`, but had no
+row here saying what to build. A cross-reference between this table and the
+runbook is what found it.)*
 
 ---
 

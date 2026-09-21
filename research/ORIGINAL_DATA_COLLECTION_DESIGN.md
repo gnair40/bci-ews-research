@@ -79,6 +79,10 @@ camera relative to the stimulus.
 stepper + driver (~$5), neutral-density filter sheet (~$8), cardboard or printed
 mount. **≈ $115.** No soldering strictly required.
 
+
+> **This cost is superseded.** It was correct for the earlier parts list. The current one is in `physical/docs/11_SHOPPING_LIST.md`: about **$110 for the four critical items** and $150-250 all in. Kept unchanged as the record.
+
+
 **Subjects.** None.
 
 **Volume.** At 30 fps with 50 ms bins, one T11-equivalent *session* takes ~20
@@ -186,6 +190,10 @@ standalone project.**
 
 1. **Idea A** — best combination of novelty, feasibility and rigor. Attacks the
    worst gap, reuses 64 verified scripts, ~$115, two weekends to build, no
+
+
+> **This cost is superseded.** It was correct for the earlier parts list. The current one is in `physical/docs/11_SHOPPING_LIST.md`: about **$110 for the four critical items** and $150-250 all in. Kept unchanged as the record.
+
    participant paperwork.
 2. **Idea B** — higher novelty, gated on 6+ weeks of calendar time. **Start on day
    one, harvest at the end**; it costs nothing extra to run in parallel.

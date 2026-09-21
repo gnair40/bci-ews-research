@@ -74,6 +74,8 @@ self-inflicted. Asked **once per session** instead, the same detector needs an
 AUC of **0.933** to flag 80% of degrading sessions while wrongly flagging 10% of
 healthy ones. It currently reaches **0.673** (T11) and **0.742** (T5).
 
+> **0.933 is superseded.** It is the AUC needed at a 10% false-flag rate, which at one decision per episode is about thirteen times this project's 0.1/hour budget. Derived from the budget the target is **0.990**. Corrected 20 September 2026; see `reports/OPERATING_POINT_BOUND.md`. This document is kept unchanged as the record.
+
 **That is the difference between "this cannot work" and "this needs to be about
 this much better", and only the second is something to build.**
 
@@ -177,6 +179,10 @@ building this?", the answer is a row of it.
 | 9 | **The rig as originally specified decodes perfectly (0.0° vs 89° chance) and no fault can move it** | `reports/RIG_DIGITAL_TWIN.md` | — | **Fixed before building.** Calibration is now B-7 |
 | 10 | **The calibrated stimulus asks for half a brightness level, which a screen cannot emit** | `reports/RIG_DIGITAL_TWIN.md`, `rig/stimulus.py` | Does spatial dithering deliver it on real hardware? | **B-6**: measure the dither with the camera |
 | 11 | **The budget was applied at 720 decisions/hour, demanding AUC 0.9992. Once per session it needs 0.933; the monitor reaches 0.673–0.742** | `reports/OPERATING_POINT_BOUND.md` | Can a session-level monitor close that gap? | **B-14**: the session-level monitor study — now the centrepiece |
+
+
+> **0.933 is superseded.** It is the AUC needed at a 10% false-flag rate, which at one decision per episode is about thirteen times this project's 0.1/hour budget. Derived from the budget the target is **0.990**. Corrected 20 September 2026; see `reports/OPERATING_POINT_BOUND.md`. This document is kept unchanged as the record.
+
 | 12 | **The false-flag rate cannot be estimated from archived data: 17 and 15 fault-free episodes, ~1.4 hours** | `reports/AUTOCORR_BY_SEVERITY.md` | What is it actually? | **B-14**: 101 healthy sessions, which no participant could sit through |
 
 Rows 9 and 10 are the two that would have wasted the most time. Both were caught

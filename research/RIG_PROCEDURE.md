@@ -154,6 +154,10 @@ Quantities are for one rig. Prices are indicative, September 2026.
 
 **Required subtotal: ≈ $115**, or ≈ $75 if you already have a spare screen.
 
+
+> **This cost is superseded.** It was correct for the earlier parts list. The current one is in `physical/docs/11_SHOPPING_LIST.md`: about **$110 for the four critical items** and $150-250 all in. Kept unchanged as the record.
+
+
 ### 1.2 Required for Stage 9 (undesigned faults) only
 
 | # | Item | Spec | Qty | ~Cost | What it is for |
@@ -1026,4 +1030,8 @@ of the record rather than something discovered later.
 | 12 | Analysis | 1 day | Yes |
 
 **Cost: ≈ $115 required, ≈ $135 with all optional parts, ≈ $75 if a spare screen
+
+
+> **This cost is superseded.** It was correct for the earlier parts list. The current one is in `physical/docs/11_SHOPPING_LIST.md`: about **$110 for the four critical items** and $150-250 all in. Kept unchanged as the record.
+
 already exists.** No consumables, nothing hazardous, nobody recruited.

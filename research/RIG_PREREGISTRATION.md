@@ -215,6 +215,10 @@ a study whose null result teaches nothing should not be run.
 - **Why 0.80, and why that is not a manufactured success:** 0.80 is a bar the
   archived data **fails**, so confirming it is a real result rather than a
   restatement. It is also well short of 0.933, so confirming it does **not**
+
+
+> **0.933 is superseded.** It is the AUC needed at a 10% false-flag rate, which at one decision per episode is about thirteen times this project's 0.1/hour budget. Derived from the budget the target is **0.990**. Corrected 20 September 2026; see `reports/OPERATING_POINT_BOUND.md`. This document is kept unchanged as the record.
+
   license claiming the monitor works. The interesting outcomes are all three:
   below 0.74 means the rig is worse than cortex and the analogy is in trouble;
   0.80 to 0.93 means the gap is narrowed but not closed; above 0.93 means a
@@ -637,6 +641,10 @@ recording on:
 1. **The failure was located.** `reports/OPERATING_POINT_BOUND.md` shows a
    per-hour alarm budget divided among 720 decisions an hour demands a per-window
    AUC of 0.9992. Asked once per session the same detector needs 0.933, and
+
+
+> **0.933 is superseded.** It is the AUC needed at a 10% false-flag rate, which at one decision per episode is about thirteen times this project's 0.1/hour budget. Derived from the budget the target is **0.990**. Corrected 20 September 2026; see `reports/OPERATING_POINT_BOUND.md`. This document is kept unchanged as the record.
+
    reaches 0.673 and 0.742. That is a gap to close, not a wall.
 2. **The false-flag rate cannot be measured on archived data at all** — 17 and
    15 fault-free episodes, about 1.4 hours.
