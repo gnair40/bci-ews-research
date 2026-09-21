@@ -1,5 +1,35 @@
 # Research Plan
 
+> **SUPERSEDED — 26 August 2026.** This was the plan written before any data
+> existed. It is kept unchanged below as a record of the project's starting
+> position, because the difference between it and what replaced it is itself part
+> of the research record.
+>
+> **This pointer was itself out of date and was corrected on 17 September 2026.**
+> The submission document is now
+> **`research/RESEARCH_PLAN_2026-09-15.md`**. See `research/README.md` for what
+> every document in this folder is. The two files this note originally pointed to
+> are still worth reading, in this order:
+> - **`research/PROJECT_DEFINITION.md`** — what the final product is, why, and the
+>   critical comparison of four possible project framings.
+> - **`research/ISEF_RESEARCH_PLAN.md`** — the earlier full-length draft mapped
+>   onto the form, superseded as the submission document but longer in several
+>   sections.
+>
+> **What changed and why:** the original question — *can early-warning signals
+> detect impending deterioration before performance degrades?* — was tested on the
+> public dataset under a frozen design and returned a negative result
+> (`reports/EWS_RESULTS.md`). More importantly, the pilot showed the question is
+> **unverifiable observationally**: without knowing when deterioration actually
+> began, lead time is an artefact of the analyst's own definition and the
+> false-alarm rate cannot be estimated at all. That is why the project now
+> includes an original experiment with degradation of known, pre-logged onset.
+
+---
+
+## Original plan, as written (retained unchanged)
+
+
 ## Working Title
 
 Predictive Neural Stability: Engineering an Early-Warning System for Brain-Computer Interface Deterioration
@@ -10,7 +40,15 @@ Can early-warning signals detect impending deterioration in brain-computer inter
 
 ## Status
 
-Draft — research question and methodology are under investigation.
+**Superseded, and kept as the starting position.** This was written before any
+data existed. The fifteen-step procedure below was the plan; what actually
+happened, including the steps that were abandoned and why, is in
+`research/research_log.md`. The current plan is
+`research/RESEARCH_PLAN_2026-09-15.md` (submitted) and
+`research/RESEARCH_PLAN_DECEMBER_DRAFT.md` (in progress).
+
+Original status line, 2026: *Draft — research question and methodology are under
+investigation.*
 
 ## Current Procedure
 

@@ -1,0 +1,47 @@
+{
+  "budget_per_hour": 0.1,
+  "target_tpr": 0.8,
+  "step_seconds": 5.0,
+  "by_participant": {
+    "T11": {
+      "windows": 17014,
+      "hours": 23.630555555555556,
+      "allowed": 2.363055555555556,
+      "fpr": 0.00013888888888888892,
+      "auc_win": 0.693226379609062,
+      "tpr_at_budget": 0.001793400286944046,
+      "auc_win_needed": 0.9992261356646583,
+      "auc_ep": 0.6725439525270833,
+      "tpr_ep_10": 0.14417744916820702,
+      "tpr_ep_5": 0.08502772643253234,
+      "auc_ep_needed": 0.933362285134116,
+      "windows_per_episode": 55.0,
+      "episode_minutes": 4.583333333333334,
+      "episodes_per_hour": 13.09090909090909,
+      "pooling_factor": 55.0,
+      "fpr_ep_budget": 0.0076388888888888895,
+      "auc_ep_needed_at_budget": 0.9895659881341036,
+      "alarms_per_hour_at_10pct": 1.309090909090909
+    },
+    "T5": {
+      "windows": 17337,
+      "hours": 24.079166666666666,
+      "allowed": 2.407916666666667,
+      "fpr": 0.00013888888888888892,
+      "auc_win": 0.7074798757015265,
+      "tpr_at_budget": 0.0002767783005812344,
+      "auc_win_needed": 0.9992261356646583,
+      "auc_ep": 0.7423324553702078,
+      "tpr_ep_10": 0.3044776119402985,
+      "tpr_ep_5": 0.1701492537313433,
+      "auc_ep_needed": 0.933362285134116,
+      "windows_per_episode": 42.0,
+      "episode_minutes": 3.5,
+      "episodes_per_hour": 17.142857142857142,
+      "pooling_factor": 42.0,
+      "fpr_ep_budget": 0.005833333333333334,
+      "auc_ep_needed_at_budget": 0.9913081105023419,
+      "alarms_per_hour_at_10pct": 1.7142857142857144
+    }
+  }
+}

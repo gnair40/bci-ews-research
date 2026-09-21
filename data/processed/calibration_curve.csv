@@ -1,0 +1,7 @@
+participant,draw,n_windows,minutes,auc_mean,auc_sd,repeats
+T11,scattered,10,1.2,0.6698,0.0096,5
+T11,scattered,20,2.1,0.6535,0.0022,5
+T11,scattered,40,3.8,0.6524,0.003,5
+T11,scattered,80,7.1,0.646,0.0022,5
+T11,scattered,160,13.8,0.6461,0.0013,5
+T11,all-pooled,221,18.8,0.6476,0.0,1

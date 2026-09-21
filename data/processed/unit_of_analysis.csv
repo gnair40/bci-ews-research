@@ -1,0 +1,15 @@
+participant,baseline,detector,n_windows,n_episodes,auc_window,p_window_published,auc_episode,p_episode_bootstrap,ci_lo,ci_hi,auc_shift,significant_window,significant_episode,flipped_to_null
+T11,calibrate once,decoder_guard,22590,850,0.4911,0.0464,0.5039,0.848,0.463,0.5443,0.0128,True,False,True
+T11,calibrate once,distribution_shift,22590,850,0.5407,6.85e-20,0.558,0.003,0.5186,0.5971,0.0174,True,True,False
+T11,calibrate once,mean_activity,22590,850,0.5143,0.00138,0.5267,0.217,0.485,0.5668,0.0124,True,False,True
+T11,calibrate once,robust_dispersion,22590,850,0.4649,3.38e-15,0.4702,0.144,0.4304,0.5112,0.0053,True,False,True
+T11,recent normal,decoder_guard,22590,850,0.6932,0.0,0.6725,0.001,0.6331,0.7106,-0.0207,True,True,False
+T11,recent normal,decoder_guard_joint,22590,850,0.6873,0.0,0.6672,0.001,0.6266,0.7068,-0.0202,True,True,False
+T11,recent normal,distribution_shift,22590,850,0.6659,1.17e-303,0.6458,0.001,0.6044,0.6854,-0.0201,True,True,False
+T11,recent normal,mean_activity,22590,850,0.6112,2.03e-137,0.5566,0.004,0.5174,0.5927,-0.0545,True,True,False
+T11,recent normal,robust_dispersion,22590,850,0.6024,8.05e-117,0.5776,0.001,0.539,0.6177,-0.0247,True,True,False
+T5,recent normal,decoder_guard,20950,743,0.7075,0.0,0.7423,0.001,0.7061,0.7768,0.0349,True,True,False
+T5,recent normal,decoder_guard_joint,20950,743,0.7026,0.0,0.7155,0.001,0.6777,0.7528,0.0129,True,True,False
+T5,recent normal,distribution_shift,20950,743,0.6612,7.23e-205,0.6614,0.001,0.621,0.7034,0.0001,True,True,False
+T5,recent normal,mean_activity,20950,743,0.612,8.5e-100,0.5892,0.001,0.5472,0.6343,-0.0228,True,True,False
+T5,recent normal,robust_dispersion,20950,743,0.6199,3.12e-114,0.6425,0.001,0.6001,0.6845,0.0226,True,True,False

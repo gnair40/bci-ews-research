@@ -132,6 +132,18 @@ def participant_colors(parts) -> dict:
 # FIGURES
 # ---------------------------------------------------------------------------
 
+def main_only(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Keep only the main experimental cohort.
+
+    The deposit also contains 'T11(additional)' blocks -- a personal-use
+    (web-browsing) session and a random-target session, run as alternative
+    reference tasks. They are different tasks on different days, so mixing them
+    into a performance-over-time series would compare unlike things.
+    """
+    return df[df["cohort"] == "main"] if "cohort" in df else df
+
+
 def fig_session_timeline(blocks: pd.DataFrame, colors: dict) -> str:
     """
     When did recording sessions happen? Dot plot along the trial-day axis.
@@ -165,15 +177,24 @@ def fig_performance_over_time(trials: pd.DataFrame, colors: dict) -> str:
     """
     Does performance change across sessions?
 
-    Form choice: a measure over ordered time -> line chart, with per-session
-    points shown. Median (not mean) because angle error is bounded 0-180 and
-    can be skewed; the median is less pulled around by a few bad trials.
-    Shaded band = interquartile range, showing spread without a second axis.
+    Form choice: a measure over ordered time -> line chart. The two
+    participants are separated by roughly 1,400 trial days (T11 is on days
+    658-800, T5 on days 2121-2149), so plotting both against one shared axis
+    wastes most of the canvas on empty space and squashes the data. Small
+    multiples -- one panel per participant, each with its own x-range -- show
+    both properly. This is the standard answer to "two series that do not share
+    a scale"; the alternative, a second x-axis, is never correct.
+
+    Median rather than mean, because angle error is bounded at 0-180 and skewed;
+    the shaded band is the interquartile range, showing spread without adding
+    an axis.
     """
     if "angle_error_deg" not in trials:
         return ""
-    fig, ax = plt.subplots(figsize=(10, 4.5))
-    for p in sorted(trials["participant"].unique()):
+    parts = sorted(trials["participant"].unique())
+    fig, axes = plt.subplots(1, len(parts), figsize=(6.2 * len(parts), 4.2),
+                             squeeze=False)
+    for ax, p in zip(axes[0], parts):
         sub = trials[trials["participant"] == p]
         g = sub.groupby("trial_day")["angle_error_deg"]
         med, q1, q3 = g.median(), g.quantile(0.25), g.quantile(0.75)
@@ -182,11 +203,46 @@ def fig_performance_over_time(trials: pd.DataFrame, colors: dict) -> str:
                         linewidth=0)
         ax.plot(days, med.values, color=colors[p], linewidth=2,
                 marker="o", markersize=5, markeredgecolor="white",
-                markeredgewidth=1, label=f"{p} (median)")
-    style_axes(ax, "Angle error per session — lower is better",
-               "Trial day", "Angle error (degrees)")
-    ax.legend(frameon=False, fontsize=9, labelcolor=INK)
+                markeredgewidth=1)
+        span = int(days.max() - days.min())
+        style_axes(ax, f"{p} — {len(days)} sessions over {span} days",
+                   "Trial day", "Median angle error (degrees)")
+        ax.set_ylim(0, 180)
+        ax.set_yticks([0, 45, 90, 135, 180])
+    fig.suptitle("Angle error per session — lower is better  (band = interquartile range)",
+                 fontsize=12, color=INK, x=0.02, ha="left", y=1.06)
+    fig.tight_layout()
     return save_fig(fig, "02_performance_over_time.png")
+
+
+def fig_percent_correct(blocks: pd.DataFrame, colors: dict) -> str:
+    """
+    Block-level success rate over time.
+
+    percentCorrect is recorded once per block by the dataset authors, so it is
+    an independent check on the trial-level angle-error picture: if the two
+    disagree, one of them is being computed or interpreted wrongly.
+
+    Form choice: same small-multiples treatment, for the same reason.
+    """
+    if "percent_correct" not in blocks:
+        return ""
+    parts = sorted(blocks["participant"].unique())
+    fig, axes = plt.subplots(1, len(parts), figsize=(6.2 * len(parts), 4.2),
+                             squeeze=False)
+    for ax, p in zip(axes[0], parts):
+        sub = blocks[blocks["participant"] == p].sort_values("trial_day")
+        ax.scatter(sub["trial_day"], sub["percent_correct"], s=45,
+                   color=colors[p], edgecolor="white", linewidth=1, zorder=3)
+        g = sub.groupby("trial_day")["percent_correct"].mean()
+        ax.plot(g.index, g.values, color=colors[p], linewidth=2, alpha=0.75)
+        style_axes(ax, f"{p} — success rate per block", "Trial day",
+                   "percentCorrect (%)")
+        ax.set_ylim(0, 105)
+    fig.suptitle("Block success rate over time — higher is better",
+                 fontsize=12, color=INK, x=0.02, ha="left", y=1.06)
+    fig.tight_layout()
+    return save_fig(fig, "06_percent_correct.png")
 
 
 def fig_error_distribution(trials: pd.DataFrame, colors: dict) -> str:
@@ -211,7 +267,8 @@ def fig_error_distribution(trials: pd.DataFrame, colors: dict) -> str:
                    "Angle error (degrees)", "Trials")
         ax.set_xticks([0, 45, 90, 135, 180])
     fig.suptitle("Distribution of per-trial angle error", fontsize=12,
-                 color=INK, x=0.02, ha="left")
+                 color=INK, x=0.02, ha="left", y=1.06)
+    fig.tight_layout()
     return save_fig(fig, "03_error_distribution.png")
 
 
@@ -346,10 +403,18 @@ def build_report(ds, figs: dict, root: Path) -> str:
     figs_md = "\n\n".join(
         f"### {t}\n\n![{t}]({p})" for t, p in figs.items() if p)
 
+    # The report is committed, so the source path must not name whoever ran it.
+    # Writing the absolute path put "/home/<someone>/bci-ews-research/..." into a
+    # tracked file and made the report differ on every machine.
+    try:
+        _rootlabel = str(Path(root).resolve().relative_to(REPO_ROOT))
+    except ValueError:
+        _rootlabel = str(root)
+
     return f"""# DATASET_EXPLORATION — what is actually in this dataset
 
 **Generated:** {now} by `scripts/04_explore_dataset.py`
-**Source:** `{root}` (Dryad DOI 10.5061/dryad.n2z34tn5s)
+**Source:** `{_rootlabel}` (Dryad DOI 10.5061/dryad.n2z34tn5s)
 **Companion document:** `DATASET_README.md` (provenance, file structure, variable dictionary)
 
 > **How to read this.** Everything under a **Computed** heading was calculated
@@ -379,6 +444,17 @@ def build_report(ds, figs: dict, root: Path) -> str:
 ### Tasks present
 
 {md_table(tasks) if len(tasks) else "_No task names recovered from task.mat._"}
+
+### Cohorts
+
+{md_table(blocks.groupby(["participant", "cohort"]).agg(
+    sessions=("trial_day", "nunique"), blocks=("block_id", "count"),
+    trials=("n_trials", "sum")).reset_index()) if "cohort" in blocks else ""}
+
+> `main` is the primary cursor-control data. The other cohorts are alternative
+> reference tasks for T11 (a personal-use web-browsing session and a
+> random-target session). The figures below use `main` only, because comparing
+> performance across different tasks over time would compare unlike things.
 
 ---
 
@@ -445,24 +521,7 @@ _(first 10 of {len(blocks):,} rows)_
 
 ---
 
-## 6. What measurements appear relevant to the research question — *Requires your judgement*
-
-The project asks whether early-warning signals precede BCI performance
-deterioration. That requires (a) a performance measure over time and (b) a
-neural measure over the same time. Both exist — §3 lists them.
-
-**Decisions only you should make, with reasons written down:**
-
-- Which variable *operationally defines* "performance"? `angle_error_deg` is what
-  the original paper uses, but `time_to_target`, `path_efficiency` and
-  `orth_changes` are also present and are not the same quantity.
-- What counts as "deterioration"? A threshold? A relative drop? A change point?
-  Until this is defined, no analysis can be specified.
-- At what level is the analysis? Per trial, per block, or per session? The
-  answer changes the sample size and the meaning of the result.
-
----
-
+{SECTION_6}
 ## 7. What the dataset does NOT contain — *Computed where possible*
 
 - **No electrode impedance measurements** and no explicit array-health variable —
@@ -488,30 +547,98 @@ Carried over from `DATASET_README.md` §8, still open:
 
 ---
 
-## 9. What preprocessing may eventually be necessary — *Requires your judgement*
-
-Candidates suggested by what is above — **none decided**:
-
-- Normalisation across sessions (the original code rolling z-scores; whether
-  that is appropriate for an early-warning analysis is an open question, since
-  normalisation can remove the very drift being studied).
-- Handling the missing values quantified in §3.
-- A decision on excluded trials.
-- Aggregation from bins to trials or sessions.
-- Handling uneven session spacing (§1).
-
----
-
-## 10. What analyses appear potentially possible — *Requires your judgement*
-
-**Not filled in deliberately.** Whether the dataset can support the research
-question depends on the numbers in §1 and §4 and on the definitions in §6.
-Work through those first, then write this section yourself — that is the
-argument the project rests on, and it should be yours.
-
+{SECTION_9}
+{SECTION_10}
 ---
 
 *Regenerate with:* `python3 scripts/04_explore_dataset.py`
+"""
+
+
+# ---------------------------------------------------------------------------
+# ANSWERED SECTIONS
+#
+# Sections 6, 9 and 10 were written by hand after Phases 1-2, directly into
+# reports/DATASET_EXPLORATION.md. The template below still carried the original
+# "Requires your judgement" placeholders, so running this script threw the
+# answers away and put the questions back. That was found on 17 September 2026
+# by regenerating the report and reading the diff.
+#
+# This is the second time this project has lost hand-written text to a
+# regenerating script; the first was the correction block in ACHIEVABILITY.md,
+# and the fix then was the same one used here -- move the prose into the script
+# that emits it, so regeneration preserves it instead of destroying it.
+#
+# Edit these strings, not the generated report.
+# ---------------------------------------------------------------------------
+
+SECTION_6 = """\
+## 6. What measurements appear relevant — *ANSWERED by Phases 1–2*
+
+Originally left blank pending decisions. Those decisions were made, frozen in
+`research/FROZEN_DESIGN.json`, and tested. What the analysis established:
+
+- **Performance** was defined as median angle error per block, with block success
+  rate as confirmation. They agree on both the timing and direction of decline.
+- **Deterioration** was defined as a change point at **T11 trial day 758**, agreed
+  by three independent methods on two independent variables (p = 0.0018).
+- **The neural observable** turned out to be the binding constraint. Every purely
+  neural quantity is essentially memoryless (0.3–0.7 samples of memory from 20 ms
+  to 5 s bins), so the autocorrelation half of critical slowing down could not be
+  measured at all. A robust dispersion measure was used instead.
+- **The most relevant measurement turned out to be the simplest one.** Mean firing
+  rate falls 56.5% across T11's record and predicts performance (ρ = −0.880) as
+  well as the full five-dimensional pipeline does (ρ = +0.858).
+"""
+
+SECTION_9 = """\
+## 9. What preprocessing is necessary — *ANSWERED by Phases 1–2*
+
+Established by testing rather than assumed:
+
+| Step | Verdict |
+|---|---|
+| Trailing 180 s rolling z-score | Correct for distribution-shape measures (validated: reproduces the published result to three decimals). **Wrong for scale-based indicators** — it forces block variance to ≈1 by construction. |
+| Smoothing to give a signal "memory" | **Never.** A 25-sample moving average raises the lag-1 correlation of pure white noise from −0.002 to +0.962. |
+| Non-overlapping rebinning | Safe — rebinned white noise stays white. |
+| Robust dispersion instead of variance | Necessary. Raw per-channel variance swings ~100× between healthy blocks; robust estimation halves the noise floor. |
+| **De-trending the block-level indicator series** | **Necessary and omitted.** This omission is why monotonic drift produced p = 0.0002. Required in Phase 3. |
+| Regressing out mean firing rate | Necessary. It explains 71% of the indicator. |
+"""
+
+SECTION_10 = """\
+## 10. What analyses are possible — *ANSWERED by Phases 1–2*
+
+**Not possible on this dataset:**
+
+- Autocorrelation-based critical slowing down. No observable has a measurable
+  recovery rate. The one candidate with memory (the decoder output) has it
+  because of the decoder's own exponential smoothing filter.
+- A session-level trend test on T5. With 3 pre-transition sessions, no test can
+  reach α = 0.05 at all.
+- Separating "neural instability" from "electrode signal decline" using
+  scale-based measures. They are entangled: controlling for firing rate removes
+  the indicator's relationship to performance entirely.
+
+**Possible and done:**
+
+- Reproduction of the published MINDFUL baseline (r = 0.985 vs 0.985).
+- Change-point location of the deterioration event with method agreement.
+- A preregistered variance-based trend test at block level (n = 21, detects
+  |τ| ≥ 0.305 with power 0.74 against a 2 sd rise).
+- Reversibility tests using T5's recovery and T11's internal day-727→751 excursion.
+- An out-of-distribution check using the extra T11 sessions.
+
+**Possible but not yet attempted — candidates for Phase 3:**
+
+- The *residual* after regressing out firing rate, which is what the literature
+  review's framing (C) actually predicts.
+- Covariance **geometry** rather than scale, which is less rate-dependent.
+- Flickering, visible in T11 (day 727 degraded → 751 fully recovered → 758
+  collapsed) and a recognised early-warning phenomenon distinct from variance and
+  autocorrelation.
+
+All three require preregistration in advance.
 """
 
 
@@ -546,18 +673,21 @@ def main() -> int:
 
     colors = participant_colors(ds.blocks["participant"].unique())
     print("\nBuilding figures:")
+    mblocks, mtrials = main_only(ds.blocks), main_only(ds.trials)
     figs = {
-        "Recording sessions over time": fig_session_timeline(ds.blocks, colors),
-        "Angle error per session": fig_performance_over_time(ds.trials, colors),
-        "Distribution of angle error": fig_error_distribution(ds.trials, colors),
+        "Recording sessions over time": fig_session_timeline(mblocks, colors),
+        "Angle error per session": fig_performance_over_time(mtrials, colors),
+        "Distribution of angle error": fig_error_distribution(mtrials, colors),
         "Missing values": fig_missingness(ds.trials),
-        "Trials per session": fig_trials_per_session(ds.blocks, colors),
+        "Trials per session": fig_trials_per_session(mblocks, colors),
+        "Block success rate over time": fig_percent_correct(mblocks, colors),
     }
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(build_report(ds, figs, args.root))
     print(f"\nWrote {rel(args.out)}")
-    print("\nSections 6, 9 and 10 are intentionally left for you to complete.")
+    print("\nSections 6, 9 and 10 carry the Phase 1-2 answers, held in this\n"
+          "script as SECTION_6 / SECTION_9 / SECTION_10. Edit them there.")
     return 0
 
 

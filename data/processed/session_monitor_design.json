@@ -1,0 +1,118 @@
+{
+  "what_this_is": "Recording schedule for the session-level monitor study.",
+  "auc_target": 0.9913081105023419,
+  "auc_observed": {
+    "T11": 0.673,
+    "T5": 0.742
+  },
+  "target_from": "reports/OPERATING_POINT_BOUND.md \u2014 the AUC needed for 80% detection at a 10% false-flag rate",
+  "precision": [
+    {
+      "sessions_each_arm": 20,
+      "total_sessions": 40,
+      "auc_se": 0.01512654756289642,
+      "ci95_half_width": 0.02964803322327698,
+      "hours": 3.3333333333333335
+    },
+    {
+      "sessions_each_arm": 40,
+      "total_sessions": 80,
+      "auc_se": 0.010571105216579274,
+      "ci95_half_width": 0.020719366224495377,
+      "hours": 6.666666666666667
+    },
+    {
+      "sessions_each_arm": 60,
+      "total_sessions": 120,
+      "auc_se": 0.008596987087393848,
+      "ci95_half_width": 0.01685009469129194,
+      "hours": 10.0
+    },
+    {
+      "sessions_each_arm": 100,
+      "total_sessions": 200,
+      "auc_se": 0.006637875938829017,
+      "ci95_half_width": 0.013010236840104872,
+      "hours": 16.666666666666668
+    },
+    {
+      "sessions_each_arm": 150,
+      "total_sessions": 300,
+      "auc_se": 0.0054110774881830975,
+      "ci95_half_width": 0.010605711876838871,
+      "hours": 25.0
+    },
+    {
+      "sessions_each_arm": 200,
+      "total_sessions": 400,
+      "auc_se": 0.004682347732301696,
+      "ci95_half_width": 0.009177401555311323,
+      "hours": 33.333333333333336
+    },
+    {
+      "sessions_each_arm": 300,
+      "total_sessions": 600,
+      "auc_se": 0.0038200297455246992,
+      "ci95_half_width": 0.00748725830122841,
+      "hours": 50.0
+    }
+  ],
+  "discrimination": [
+    {
+      "against": "T11",
+      "observed_auc": 0.673,
+      "sessions_each_arm": 8,
+      "total_sessions": 16,
+      "hours": 1.3333333333333333
+    },
+    {
+      "against": "T5",
+      "observed_auc": 0.742,
+      "sessions_each_arm": 10,
+      "total_sessions": 20,
+      "hours": 1.6666666666666667
+    },
+    {
+      "against": "a near miss",
+      "observed_auc": 0.9413081105023419,
+      "sessions_each_arm": 55,
+      "total_sessions": 110,
+      "hours": 9.166666666666666
+    },
+    {
+      "against": "a clear miss",
+      "observed_auc": 0.8913081105023419,
+      "sessions_each_arm": 25,
+      "total_sessions": 50,
+      "hours": 4.166666666666667
+    }
+  ],
+  "false_flag_measurement": [
+    {
+      "false_flag_rate": 0.1,
+      "healthy_sessions_needed": 101,
+      "hours": 8.416666666666666,
+      "archived_equivalent_hours": 1.4
+    },
+    {
+      "false_flag_rate": 0.05,
+      "healthy_sessions_needed": 212,
+      "hours": 17.666666666666668,
+      "archived_equivalent_hours": 1.4
+    },
+    {
+      "false_flag_rate": 0.02,
+      "healthy_sessions_needed": 545,
+      "hours": 45.416666666666664,
+      "archived_equivalent_hours": 1.4
+    }
+  ],
+  "recommended": {
+    "healthy_sessions": 101,
+    "degrading_sessions": 101,
+    "total_sessions": 202,
+    "hours": 16.833333333333332,
+    "auc_ci95_half_width": 0.012945050933608614,
+    "binding_constraint": "false-flag rate"
+  }
+}

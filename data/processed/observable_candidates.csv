@@ -1,0 +1,10 @@
+observable,median_memory_samples,median_memory_seconds,n_blocks,usable
+"decoder output (cursorVel x), 20 ms",54.89,1.098,8,True
+"decoder output, rebinned 1 s",1.35,1.345,8,False
+"population mean, 20 ms",0.78,0.016,8,False
+"neural PC1, rebinned 5 s",0.69,3.455,6,False
+"population mean, rebinned 1 s",0.61,0.612,8,False
+"population mean, rebinned 5 s",0.6,2.989,5,False
+"neural PC1, rebinned 1 s",0.56,0.562,7,False
+"neural PC1, rebinned 500 ms",0.44,0.222,8,False
+"neural PC1, 20 ms",0.33,0.007,7,False

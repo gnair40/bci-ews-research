@@ -1,0 +1,31 @@
+{
+  "fitted_utc": "2026-08-27T17:37:10+00:00",
+  "participant": "T11",
+  "train_days": [
+    658,
+    665,
+    670
+  ],
+  "val_days": [
+    671,
+    675
+  ],
+  "train_blocks": [
+    "T11/day_658/block_5",
+    "T11/day_658/block_7",
+    "T11/day_665/block_6",
+    "T11/day_665/block_7"
+  ],
+  "val_blocks": [
+    "T11/day_675/block_6",
+    "T11/day_675/block_7"
+  ],
+  "n_fit_bins": 56953,
+  "ridge_lambda": 10000.0,
+  "normalisation": "frozen at training (see module docstring)",
+  "median_angular_error_train_deg": 32.534,
+  "median_angular_error_val_deg": 54.554,
+  "median_angular_error_chance_deg": 90.692,
+  "target": "unit vector from cursorPos to targetPos",
+  "min_target_dist": 0.02
+}

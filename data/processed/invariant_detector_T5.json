@@ -1,0 +1,16 @@
+{
+  "participant": "T5",
+  "n_faulted": 208,
+  "n_healthy": 225,
+  "auc_invariant": 0.6804,
+  "auc_current_decoder_guard": 0.742,
+  "auc_change": -0.0616,
+  "beats_current": false,
+  "silence_median_tau": 0.734,
+  "silence_fraction_significant": 0.987,
+  "silence_gate_pass": false,
+  "n_healthy_episodes_tested": 225,
+  "silence_median_tau_unclipped": 0.717,
+  "silence_fraction_significant_unclipped": 0.987,
+  "clipping_explains_the_trend": false
+}

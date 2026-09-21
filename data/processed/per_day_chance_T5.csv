@@ -1,0 +1,7 @@
+day,n_bins,median_error_deg,day_chance_deg,margin_deg,direction_concentration,prob_error_exceeds_chance,prob_better_than_chance,p_vs_own_chance,barely_beats_own_chance
+2121,23230,38.3,71.38,33.08,0.3028,0.3463,0.6537,0.0,False
+2126,34309,30.48,85.66,55.18,0.0451,0.2738,0.7262,0.0,False
+2128,46130,52.8,84.73,31.93,0.2213,0.3813,0.6187,0.0,False
+2133,45424,61.22,84.52,23.3,0.1043,0.4128,0.5872,0.0,False
+2135,45407,80.11,96.09,15.98,0.2348,0.4417,0.5583,0.0,False
+2149,45794,62.19,76.3,14.11,0.3832,0.4397,0.5603,0.0,False

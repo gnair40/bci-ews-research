@@ -1,0 +1,60 @@
+{
+  "participant": "T5",
+  "mapping": {
+    "CHANNEL_DROPOUT": "frac_severely_down",
+    "RATE_LOSS": "mean",
+    "GAIN_DRIFT": "sd",
+    "GEOMETRY_ROTATION": "skew"
+  },
+  "n_episodes": 204,
+  "correct": 81,
+  "accuracy": 0.3971,
+  "accuracy_current_guard": 0.525,
+  "change": -0.1279,
+  "beats_current": false,
+  "rotation_accuracy": 0.061,
+  "rotation_beats_chance": false,
+  "by_mode": [
+    {
+      "injected_mode": "CHANNEL_DROPOUT",
+      "n": 53,
+      "n_correct": 0,
+      "accuracy": 0.0,
+      "named_CHANNEL_DROPOUT": 0,
+      "named_RATE_LOSS": 13,
+      "named_GAIN_DRIFT": 34,
+      "named_GEOMETRY_ROTATION": 6
+    },
+    {
+      "injected_mode": "GAIN_DRIFT",
+      "n": 51,
+      "n_correct": 37,
+      "accuracy": 0.725,
+      "named_CHANNEL_DROPOUT": 0,
+      "named_RATE_LOSS": 14,
+      "named_GAIN_DRIFT": 37,
+      "named_GEOMETRY_ROTATION": 0
+    },
+    {
+      "injected_mode": "GEOMETRY_ROTATION",
+      "n": 49,
+      "n_correct": 3,
+      "accuracy": 0.061,
+      "named_CHANNEL_DROPOUT": 0,
+      "named_RATE_LOSS": 3,
+      "named_GAIN_DRIFT": 43,
+      "named_GEOMETRY_ROTATION": 3
+    },
+    {
+      "injected_mode": "RATE_LOSS",
+      "n": 51,
+      "n_correct": 41,
+      "accuracy": 0.804,
+      "named_CHANNEL_DROPOUT": 0,
+      "named_RATE_LOSS": 41,
+      "named_GAIN_DRIFT": 10,
+      "named_GEOMETRY_ROTATION": 0
+    }
+  ],
+  "both_criteria_met": false
+}
