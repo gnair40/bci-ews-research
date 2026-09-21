@@ -1,5 +1,23 @@
 # Original data collection — design, options, and the recommendation
 
+> ## Its recommendation is superseded — note added 21 September 2026
+>
+> This document recommended an apparatus that would test **whether the
+> computational result is specific to neural tissue or general to any drifting
+> array.** That is no longer the question. The physical phase asks instead
+> whether the **correlation-based validation this field relies on supports the
+> conclusions drawn from it** — a question this document does not contain.
+>
+> Why the question changed is in `physical/docs/00_WHY_THIS_PHASE_EXISTS.md`;
+> what carried over and what did not is in `research/RIG_PREREGISTRATION.md`
+> §14. The live design is `physical/docs/01_RESEARCH_DESIGN.md`.
+>
+> **Still current:** §1's account of which gaps archived data cannot close, and
+> the comparison of options that were rejected. Those are why an apparatus
+> exists at all, and they did not change — only what it is pointed at.
+>
+> Kept unchanged, for the same reason as the note below.
+
 > **Note added 19 September 2026, after this document was written.** It quotes
 > a lag-1 autocorrelation of 0.995 as a property of a *session*. That figure is
 > computed over a pool that is roughly 18 to 1 sub-threshold injected fault

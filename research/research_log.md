@@ -6015,3 +6015,109 @@ what would count as interesting, which is not mine to make.
 
 One `[[RESEARCHER]]` field blocks the freeze: the fault-free campaign length.
 It is the only judgement call that changes what gets recorded.
+
+---
+
+## 21 September 2026 — reassessed the whole repository; two documents were lying
+
+Asked to go through everything and leave no old information in place. Nothing
+was deleted. Every superseded document is kept and marked, because the route a
+design took is part of the record — but "kept" and "unmarked" are different
+things, and several documents were the second.
+
+### The two that would actually have misled somebody
+
+**`DATASET_README.md` said the dataset had never been downloaded.** Its status
+block read *"⚠️ Dataset NOT yet downloaded. Network access to Dryad is blocked...
+No claim here has been checked against the actual data files."*
+
+The download manifest says the files arrived at **18:14 UTC on 25 August** — the
+same day that status line was last touched. So it was wrong within hours and
+stayed wrong for four weeks, by which point the data had been downloaded,
+loaded, verified against the depositors' own analysis code, and used for every
+result in this repository. **A reader opening that file would have concluded the
+project had no data.** Corrected, with the old wording quoted in place, and §7's
+"current blocker" marked as the historical record of a blocker that was lifted.
+
+**`reports/PHASE3_REPORT.md` and `reports/OPERATING_POINT_BOUND.md` disagreed
+with each other for two weeks.** PHASE3_REPORT §3.5 has given the session-level
+AUC target as **0.990 and 0.991** since 1 September, derived from the
+per-session false-flag rate the 0.1/hour budget actually allows. It was right
+all along. Six days later `scripts/28` began reporting **0.933**, computed at a
+10% false-flag rate, and that figure propagated into three other documents
+before being corrected yesterday.
+
+**Nothing caught it, and I now understand why.** Every gate in this project
+checks a figure against the data file it came from. Both figures were faithful
+to their own calculation. *Nothing was checking that two reports agree with each
+other.* That is a real hole and it was invisible because each half looked
+correct in isolation.
+
+The narrowest fix that would have caught it: make the target a **claim**. Five
+added to `31_verify_claims.py` — both budget-derived targets, the 10% target
+kept alongside so the two cannot be confused again, the 1.31 alarms/hour that a
+10% per-episode rate implies, and the pooling factor of 55 (which is what
+"four orders of magnitude" should have said). 102 claims now, all matching.
+
+### Everything else, by what was wrong with it
+
+**Front doors that described only half the project.**
+
+- `README.md` — a "where this is" section at the top, the argument extended from
+  five steps to eight so it ends where the project actually is, and the stale
+  "ninety-three headline figures" corrected to 102. That sentence now also says
+  the script prints the count, so it cannot drift silently a second time.
+- `reports/project_guide.html` — masthead redated from 28 August; the fact strip
+  corrected (36 → 48 configurations, "Deliverable: Software system" → the
+  benchmark and the apparatus, stage, script counts); a panel before the body
+  explaining that the goal changed twice and why; the results table corrected
+  from 21/5/1/0/0 of 36 to 47/10/3/0/0 of 48, with a note saying what moved and
+  why (a fourth transform, and the threshold-search bug that had been reporting
+  "no operating point exists" when the truth was "none below an arbitrary
+  bound"). The two rows that matter did not move.
+- `reports/bad_day_problem.html` — its "Designed: a $115 camera-and-LED array to
+  test whether this failure is a fact about cortex" entry was the old framing of
+  the apparatus. Rewritten to what it is actually for.
+- `reports/monitor_demo.html` — a note saying what the demo cannot show. It
+  replays injected faults on archived recordings, which is enough to show the
+  monitor working and failing, and not enough to answer either of the two
+  questions that decide deployability.
+
+**Documents still presented as current.**
+
+- `PROJECT_DEFINITION.md` — `research/README.md` described it as "still current
+  as a statement of what the project is." It is not: the hypothesis it derives
+  was falsified and the rig it promotes was redesigned. Both corrected; what in
+  it *is* still current (Amendment 1, the ground-truth reasoning) is named.
+- `research_plan.md` — the pre-data fifteen-step procedure, now marked as the
+  starting position.
+- `ORIGINAL_DATA_COLLECTION_DESIGN.md` — its §1 (which gaps archived data cannot
+  close) is still exactly right and is why an apparatus exists at all. Its
+  *recommendation* is superseded, because the apparatus is now pointed at a
+  different question. Noted without touching the body.
+- `reports/DRIFT_SWEEP_DESIGN.md` — bannered through `scripts/71`, since the arm
+  no longer exists.
+- `tools/audit_report/README.md` — the audit PDF it builds is dated 6 September
+  and predates two redesigns.
+
+**Two frozen preregistrations quoting the superseded target.** The feature study
+and the combination study both quote ≈ 0.93. They are frozen, so no prediction
+was touched; each gets an appended amendment stating that the budget-derived
+target is 0.990, that the gap they measure against is therefore **larger** not
+smaller, and that none of their predictions depends on the target's value.
+
+**`reports/PHASE3_REPORT.md` §7** listed next steps written on 1 September that
+did not include what the project actually did. Item 4 added — build an apparatus
+where the two missing numbers exist — and a new §9 on what that report could not
+settle and why no analysis could have closed it.
+
+### What I take from this
+
+Two of today's findings are the same shape: **a document that was true when
+written, was never false in any single edit, and became wrong by standing
+still.** Neither was caught by a gate, because gates here check that a number
+matches its source — and a stale sentence matches its source perfectly.
+
+The claims added today close that for one specific number. The general version —
+checking that two documents agree about the same quantity — is not solved, and I
+am recording that as an open weakness rather than implying the sweep fixed it.

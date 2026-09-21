@@ -3,6 +3,14 @@
 Rebuilds `reports/PROJECT_AUDIT_2026-09-06.pdf` from source, so the PDF is a
 build artefact rather than a document that exists only as a binary.
 
+> **The audit it builds is dated 6 September 2026 and predates two redesigns.**
+> Its findings about the computational work stand — they are what prompted the
+> redesigns — but its forward-looking sections describe a physical study that no
+> longer exists. The live design is `physical/docs/`; what carried over from the
+> earlier one is in `research/RIG_PREREGISTRATION.md` §14. The PDF is kept
+> unchanged, and dated in its filename, for the same reason every superseded
+> document here is kept.
+
 ```
 pip install reportlab
 python3 tools/audit_report/build.py reports/PROJECT_AUDIT_2026-09-06.pdf
