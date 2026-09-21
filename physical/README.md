@@ -12,6 +12,12 @@ recordings have neither. A sealed box with a screen and a camera has both.
 
 ## If you just want to know what to do next
 
+**[`docs/13_SCHEDULE.md`](docs/13_SCHEDULE.md)** is the plan: week by week
+against real dates, with three checkpoints and what each risk costs in days.
+**[`docs/14_BENCH_CARD.md`](docs/14_BENCH_CARD.md)** is the one page to print
+and keep with the box.
+
+
 **[`docs/12_RUNBOOK.md`](docs/12_RUNBOOK.md)** — every step, in order, from
 "nothing bought yet" to "results in hand". Numbered, with the command for each
 step and what success looks like. Tick the boxes as you go.
@@ -35,6 +41,8 @@ Everything else in this folder explains *why*. That one is the order.
 | 10 | [`docs/10_TROUBLESHOOTING.md`](docs/10_TROUBLESHOOTING.md) | **When something goes wrong** — every situation, by when it happens, with the command that fixes it |
 | 11 | [`docs/11_SHOPPING_LIST.md`](docs/11_SHOPPING_LIST.md) | **What to buy, in the order to buy it** — search terms, costs, and what can be substituted or skipped |
 | 12 | [`docs/12_RUNBOOK.md`](docs/12_RUNBOOK.md) | **The checklist.** Every step from parts to results, in order, with the command for each |
+| 13 | [`docs/13_SCHEDULE.md`](docs/13_SCHEDULE.md) | **The plan against the calendar** — week by week, three checkpoints, what each risk costs in days, and what to cut if you fall behind |
+| 14 | [`docs/14_BENCH_CARD.md`](docs/14_BENCH_CARD.md) | **Print this.** One page to keep with the box: the daily check, every command, the four rules, and a log template |
 
 `data/_FOLDER_NOTES.md` explains what lives where and what is committed.
 

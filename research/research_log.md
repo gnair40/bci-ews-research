@@ -6488,3 +6488,64 @@ somewhere else.**
 
 The cross-reference gate is the first tool here that looks at relationships
 rather than at values. It is narrow, and it is more than existed yesterday.
+
+---
+
+## 21 September 2026 (final) — turned the runbook into a plan
+
+`12_RUNBOOK.md` says what order to do things in. It does not say **when**, how
+long anything takes, or what happens if a step slips — and without those it is
+instructions, not a plan.
+
+### `13_SCHEDULE.md` — the calendar
+
+Worked the arithmetic out properly rather than guessing. Today is 21 September;
+**71 days to the December plan, 161 to the fair.** Ordering parts this week and
+working straight through finishes on **27 October**, which leaves **35 days of
+slack**.
+
+That slack figure is the number worth watching, and it changed how I would
+advise. It absorbs roughly *one* major setback. The risk table costs each
+failure in days — wrong camera cable +1 week, calibration not converging +3 to
+7 days, the screen destroying the dither up to +2 weeks — and the worst
+realistic stack-up is about four weeks, finishing late November. Inside the
+deadline with no room to spare.
+
+**So "order the parts this week" is not impatience, it is the whole margin.**
+
+Three checkpoints, each with what to do if it is missed rather than just a
+date: preregistration frozen by 12 October, recording done by 1 November,
+December section drafted by 20 November. The third one says something I think
+is right and worth having written down before it is needed: *a plan that
+reports 60 fault-free hours and says so is stronger than one that implies a
+completed campaign.*
+
+The cut order is taken from `02_EXPERIMENTS.md` rather than invented now —
+P-5 first, then P-6, then P-3's middle severity, **never P-2**.
+
+**The campaign-length decision, costed.** The longer campaign is **+3 days of
+calendar** and it is the difference between "probably below 0.75/hour, seven
+times the budget" and a claim about the budget itself. Three days. Put that way
+it stops being a real decision, which is the point of costing it.
+
+### `14_BENCH_CARD.md` — one page to print
+
+Everything needed standing at the box: the daily `health_check.py`, a table of
+every command, the four rules, what to do when a hand-imposed fault is
+mistimed, how to exclude a session, and a session-log template.
+
+The log template is there because "write it down" has been an instruction in
+this project for a month with no form to write it in, and the two lines that
+matter — *mistakes* and *what I changed* — are the ones people skip when there
+is no box asking for them.
+
+### What I notice
+
+The last few days have been a slow discovery that **specified is not the same
+as runnable, and runnable is not the same as schedulable.** The design was
+complete on the 20th. Since then: figures, a health check, an exclusions
+mechanism, a troubleshooting guide, a shopping list, a runbook, a schedule, a
+bench card — and two bugs that would have stopped the campaign dead.
+
+None of it changed the science. All of it changed whether the science can
+actually happen.
