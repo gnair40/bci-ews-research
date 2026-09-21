@@ -24,6 +24,8 @@ recordings have neither. A sealed box with a screen and a camera has both.
 | 07 | [`docs/07_ANALYSIS.md`](docs/07_ANALYSIS.md) | What to run, and what each result would and would not license you to claim |
 | 08 | [`docs/08_WHAT_COMES_AFTER.md`](docs/08_WHAT_COMES_AFTER.md) | What, if anything, gets built afterwards — decided by result, written before the results exist |
 | 09 | [`docs/09_PREREGISTRATION.md`](docs/09_PREREGISTRATION.md) | **The predictions, with numbers attached, and the freeze procedure.** Draft — must be read, edited and frozen by the researcher before anything is built |
+| 10 | [`docs/10_TROUBLESHOOTING.md`](docs/10_TROUBLESHOOTING.md) | **When something goes wrong** — every situation, by when it happens, with the command that fixes it |
+| 11 | [`docs/11_SHOPPING_LIST.md`](docs/11_SHOPPING_LIST.md) | **What to buy, in the order to buy it** — search terms, costs, and what can be substituted or skipped |
 
 `data/_FOLDER_NOTES.md` explains what lives where and what is committed.
 
@@ -69,6 +71,19 @@ the check still works.
 
 ---
 
+## Every recording day, before you start
+
+```bash
+python3 physical/code/health_check.py
+```
+
+One second. It checks that every drawn plan still matches its checksum, that
+every recording is complete, that the apparatus has not drifted since
+calibration, and that the disk will hold the rest of the campaign. **Almost
+everything that can go wrong with a campaign produces recordings that look
+fine**, which is why this is a daily habit rather than a thing you run when
+suspicious.
+
 ## Once the apparatus exists
 
 ```bash
@@ -87,6 +102,9 @@ python3 physical/code/analyze_leadtime.py
 python3 physical/code/analyze_leadtime.py --undesigned
 python3 physical/code/analyze_correlation.py
 python3 physical/code/analyze_decision_rate.py
+
+# draw everything
+python3 physical/code/figures.py all
 ```
 
 ---

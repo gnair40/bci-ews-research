@@ -6121,3 +6121,104 @@ matches its source — and a stale sentence matches its source perfectly.
 The claims added today close that for one specific number. The general version —
 checking that two documents agree about the same quantity — is not solved, and I
 am recording that as an open weakness rather than implying the sweep fixed it.
+
+---
+
+## 21 September 2026 (later) — reassessed for "could Gayathri do this alone?"
+
+Different question from the last sweep. That one asked whether any document was
+out of date. This one asked: **someone is at a bench with a box, the parts, and
+this repository, and nobody to ask. What do they hit that is not covered?**
+
+Four things, and one of them was a hole rather than a gap.
+
+### The phase could not draw a figure
+
+Sixteen scripts and not one line of plotting. The computational half has
+`scripts/23_benchmark_figures.py`; the physical phase had nothing. A poster, a
+slide, and a judge at the table all need pictures, and a picture made by hand in
+a spreadsheet is one nobody can reproduce.
+
+`physical/code/figures.py` — six figures, all from stored data, one command.
+The two that matter most:
+
+- **`session_detail`** puts the drawn fault onset, the moment decoding failed,
+  and the moment the monitor warned on one time axis. It explains the entire
+  project in one image, which nothing else in this repository does.
+- **`false_alarm_evidence`** draws fault-free hours accumulating against the
+  rule-of-three bound, with the 30-hour mark where "zero alarms" finally means
+  "inside the budget". The campaign-length argument has been a paragraph since
+  yesterday; now it is a picture, and a far harder one to wave away.
+
+Deliberately not drawn: any dual-axis chart pairing lead time against
+false-alarm rate, and any single combined score. Opposite signs of "good", and
+the trade-off is the finding.
+
+**Two bugs the figures exposed**, which is the usual reason to draw something:
+
+1. `analyze_correlation.py` took `--table` where the other three analysis
+   scripts take `--tag`. So it read a *tagged* table and wrote an **untagged**
+   result — a dry run silently overwrote the real P-4 output. Four scripts that
+   do the same kind of job should take the same arguments; this one did not, and
+   the inconsistency was invisible until something tried to find its output.
+2. The correlation scatter put every fault-free session on the y-axis, because
+   risk scores span three orders of magnitude. The fault-free half is where the
+   false-alarm rate comes from, so it has to be visible. Log axis when the range
+   warrants it.
+
+### There was no way to exclude a bad session
+
+The protocol has said since it was written that a session is discarded only for
+a recorded mechanical reason, never for its result, and that every discard is
+logged. **It provided no mechanism.** So the only ways to act on it were to
+delete raw data — which nothing here is allowed to do — or to edit the analysis
+script, which is worse.
+
+`physical/data/EXCLUSIONS.csv` now exists: `folder,reason,excluded_at`.
+`make_session_table.py` honours it, and **refuses outright** if a row has no
+reason. An unexplained exclusion cannot be told apart from dropping a session
+because of how it turned out, so the file will not let you write one.
+
+This is the second time this week a rule existed in prose with nothing
+enforcing it. The first was P-5's onsets. Both were found by asking what the
+code actually does rather than by re-reading the document that describes it.
+
+### Nothing checked whether a campaign was still sound
+
+A campaign runs for nights. Almost everything that can go wrong with it produces
+**recordings that look fine**: the screen sleeps and every later session is a
+dark frame; the room warms and every channel drifts; the disk fills and sessions
+truncate; a plan file gets touched and its onset no longer matches its checksum.
+
+`physical/code/health_check.py`, to be run every recording day. Six checks,
+about a second. It deliberately **cannot see any result** — a daily check that
+could would slowly teach me to stop a campaign when the numbers looked good.
+
+**A bug in my own first version, caught on the dry run.** The drift check
+compared the earliest five recordings against the latest five, whatever they
+were. On any campaign that ends with degraded sessions it therefore fires every
+time — it was measuring the faults, which are *supposed* to change the signal.
+Now it compares fault-free recordings only. A check that cries wolf on correct
+behaviour is a check people switch off, which is worse than not having it.
+
+### Two documents that did not exist
+
+- **`10_TROUBLESHOOTING.md`** — every situation, organised by when it happens,
+  with the command. Camera not detected, screen slept mid-campaign, margin
+  drifted, filter applied late, plan checksum changed, no threshold found,
+  correlation inconclusive. Ends with what to do when something happens that is
+  not on the list, which is mostly: write down what you saw *before* you change
+  anything, because fixing it destroys the evidence.
+- **`11_SHOPPING_LIST.md`** — what to type into a search box, roughly what it
+  costs, what can be substituted, and what can be skipped and at what cost. The
+  critical path is four items and about $110; everything else can follow. It
+  also names the single most common mistake at this stage, which is buying a
+  camera cable separately and getting the Pi 5 kind that does not fit.
+
+### What I notice about all four
+
+None of these is a scientific gap. The design, the code and the preregistration
+were complete. **All four are the difference between a project that is specified
+and a project that one person can actually run alone** — and I only found them
+by changing the question from "is this correct?" to "what happens when she is
+standing there at 11pm and it does not work?"

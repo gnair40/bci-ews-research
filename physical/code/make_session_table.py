@@ -163,6 +163,43 @@ def main() -> int:
         print("Nothing loaded.")
         return 1
 
+    # ------------------------------------------------------------ exclusions
+    # The protocol says a session is discarded only for a recorded mechanical
+    # reason, never because of how it turned out, and that every discard is
+    # written down. That needs a mechanism, or the only ways to exclude a bad
+    # session are to delete raw data (forbidden) or to edit this script (worse).
+    #
+    # physical/data/EXCLUSIONS.csv, columns: folder,reason,excluded_at
+    # A row with no reason is refused outright -- an unexplained exclusion is
+    # indistinguishable from dropping a session for its result.
+    excl_file = DATA / "EXCLUSIONS.csv"
+    excluded = {}
+    if excl_file.exists():
+        import csv as _csv
+        with excl_file.open() as fh:
+            for row in _csv.DictReader(fh):
+                name = (row.get("folder") or "").strip()
+                reason = (row.get("reason") or "").strip()
+                if not name:
+                    continue
+                if not reason:
+                    print(f"\nREFUSING: {excl_file} excludes {name!r} with no "
+                          f"reason given.")
+                    print("Every exclusion needs a recorded mechanical reason.")
+                    print("An exclusion with no reason cannot be told apart from")
+                    print("dropping a session because of how it turned out.")
+                    return 1
+                excluded[name] = reason
+    if excluded:
+        print(f"\n{len(excluded)} session(s) excluded by {excl_file.name}:")
+        for k, v in excluded.items():
+            print(f"  {k:<14} {v}")
+        print("These are left out of every group and every number below.")
+        sessions = [x for x in sessions if x.folder.name not in excluded]
+        if not sessions:
+            print("\nEverything was excluded. Nothing to analyse.")
+            return 1
+
     # ---------------------------------------------------------------- split
     def kind(s):
         j = s.folder / "session.json"
@@ -354,6 +391,7 @@ def main() -> int:
         "n_undesigned": int((df.kind == "undesigned").sum()) if len(df) else 0,
         "n_orphaned_undesigned": len(orphans),
         "borrowed_healthy_for_fit": borrowed,
+        "excluded": excluded,
         "test_healthy_hours": test_hours,
         "false_alarms_in_test": fa,
         "false_alarms_per_hour": fa / test_hours if test_hours else None,

@@ -1,6 +1,6 @@
 # The code: what each file does and when you run it
 
-Thirteen files in `physical/code/`. This document says what each one is for, what
+Sixteen files in `physical/code/`. This document says what each one is for, what
 it needs, what it produces, and where it sits in the workflow. Each file also
 carries a long explanation at the top of itself; open it and read it if you want
 the reasoning rather than the summary.
@@ -227,6 +227,11 @@ look good on exactly those recordings.
 **It never modifies `physical/data/raw/`.** Raw recordings are written once and
 read forever.
 
+**It honours `physical/data/EXCLUSIONS.csv`**, which is how a session is set
+aside without deleting raw data. The file wants `folder,reason,excluded_at`, and
+a row with no reason is **refused outright** — an unexplained exclusion cannot
+be told apart from dropping a session because of how it turned out.
+
 **It refuses to score a P-5 session whose onset was never written down**, and
 names it. Such a session has nothing on record saying a fault happened, so every
 other piece of code would read it as healthy and put it in the fault-free arm —
@@ -275,6 +280,46 @@ recordings**.
 one per session. No extra recording needed.
 **Run it:** `python3 physical/code/analyze_decision_rate.py`
 **Produces:** `physical/data/results/P6_DECISION_RATE.md`.
+
+### `figures.py` — every picture, from the stored data
+
+**What:** six figures, regenerated from `physical/data/` by one command.
+**Run it:** `python3 physical/code/figures.py all`
+**Produces:** `physical/data/figures/*.png` at 200 dpi.
+**When:** after the analysis scripts, and again any time a number changes.
+
+| Figure | What it is for |
+|---|---|
+| `session_detail` | One session with the fault onset, the failure, and the warning all marked. **The figure that explains the project.** |
+| `false_alarm_evidence` | Fault-free hours accumulating against the rule-of-three bound, with the 30-hour mark drawn. Makes the campaign-length argument visual. |
+| `lead_time` | The distribution, with zero marked. Everything left of it arrived too late. |
+| `decision_rate` | Detection against decision rate, with the intervals — because overlapping intervals *are* the result. |
+| `severity_response` | The manipulation check as a picture. |
+| `correlation_vs_usability` | What the field publishes on the left, the two numbers that decide usability on the right, same recordings. |
+
+**Never edit a figure by hand**, for the same reason as the reports: a
+hand-edited figure is one nobody can trace back to data. Each one burns its
+date, session count and source into the image, so a figure that escapes into a
+slide deck still says what it rests on.
+
+Deliberately absent: any dual-axis chart pairing lead time against false-alarm
+rate, and any single combined "score". They have opposite signs of "good", and
+the trade-off *is* the finding.
+
+### `health_check.py` — run this every recording day
+
+**What:** asks whether the campaign is still sound. Takes about a second.
+**Run it:** `python3 physical/code/health_check.py`
+**Produces:** PASS or FAIL for six checks, on your screen.
+**When:** every recording day, before starting.
+
+It checks the plan checksums, completeness, dropped and truncated frames,
+whether the apparatus itself has drifted since calibration, disk headroom, and
+that every excluded session carries a reason.
+
+**It deliberately cannot see any result.** A check you run daily that could see
+results is a check that would slowly teach you to stop the campaign when the
+numbers look good. It only asks whether the recordings are what they claim.
 
 ### `monitor.py` — the shared core
 
