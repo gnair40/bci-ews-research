@@ -10,6 +10,14 @@ recordings have neither. A sealed box with a screen and a camera has both.
 
 ---
 
+## If you just want to know what to do next
+
+**[`docs/12_RUNBOOK.md`](docs/12_RUNBOOK.md)** — every step, in order, from
+"nothing bought yet" to "results in hand". Numbered, with the command for each
+step and what success looks like. Tick the boxes as you go.
+
+Everything else in this folder explains *why*. That one is the order.
+
 ## Read in this order
 
 | | Document | What it is for |
@@ -26,6 +34,7 @@ recordings have neither. A sealed box with a screen and a camera has both.
 | 09 | [`docs/09_PREREGISTRATION.md`](docs/09_PREREGISTRATION.md) | **The predictions, with numbers attached, and the freeze procedure.** Draft — must be read, edited and frozen by the researcher before anything is built |
 | 10 | [`docs/10_TROUBLESHOOTING.md`](docs/10_TROUBLESHOOTING.md) | **When something goes wrong** — every situation, by when it happens, with the command that fixes it |
 | 11 | [`docs/11_SHOPPING_LIST.md`](docs/11_SHOPPING_LIST.md) | **What to buy, in the order to buy it** — search terms, costs, and what can be substituted or skipped |
+| 12 | [`docs/12_RUNBOOK.md`](docs/12_RUNBOOK.md) | **The checklist.** Every step from parts to results, in order, with the command for each |
 
 `data/_FOLDER_NOTES.md` explains what lives where and what is committed.
 

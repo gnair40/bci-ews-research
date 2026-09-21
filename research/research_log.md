@@ -6401,3 +6401,90 @@ testing and fatal at the scale I was prescribing.
 
 I have no general fix. What I have now is the habit of asking, for every number
 I put in a document, **what does this weigh, and what does it cost to hold?**
+
+---
+
+## 21 September 2026 (late) — cross-referenced the repository against itself
+
+Asked to make sure every part of the repo agrees with the new plan, that the
+procedure is genuinely followable, and that I am covered whatever the results
+are. Three separate questions; took them one at a time.
+
+### 1. Do the documents agree? Built a gate instead of reading
+
+Reading everything once would have answered it today and not tomorrow. So:
+`scripts/77_cross_reference.py`, which checks two things across 104 documents.
+
+**Constants against code.** The budget, the window geometry, the frame rate,
+the difficulty target, the per-session size. If a constant changes, every
+document quoting it has to change too.
+
+**Values that must not be quoted as current.** Each mistake this project has
+corrected, with the wording that legitimises mentioning it — "corrected",
+"superseded", "used to say". A bare 0.933 with no such marker nearby is a
+document that did not get the memo.
+
+It failed on its first run, three ways, and two of them were my fault in a way
+worth recording:
+
+- **0.933 appeared unmarked in four long documents.** I had bannered each at
+  the top on 20 September and considered them handled. But the occurrences are
+  hundreds of lines down, and **a reader scrolling to §7 never sees a banner on
+  page one.** Fixed with an inline note at each occurrence. The lesson is that
+  a banner marks a *document*, not a *sentence*, and for a thousand-line file
+  those are different things.
+- **Two markers failed because the prose wrapped.** "until 20 September"
+  straddled a line break, so my regex missed a correction that was there. The
+  checker was wrong, not the document. Whitespace is `\s+` throughout now.
+- **`$115` in two rig documents.** Genuinely stale — but not *wrong*; it was
+  the correct cost of the earlier parts list. That made me rename the whole
+  section: not "superseded values" but **"values that must not be quoted as
+  current"**, which covers both a figure that was mistaken and one that was
+  right about something no longer being done.
+
+**What it cannot do**, stated in the file: it cannot find a contradiction
+nobody has noticed. It prevents recurrence, not discovery, and when a number
+changes the person changing it has to add a row. Nothing enforces that, and
+saying so is better than implying the problem is solved.
+
+### 2. Is the procedure followable? There was no single ordered list
+
+`04_BUILD`, `06_DATA_COLLECTION` and `07_ANALYSIS` are each good and each
+covers one stage. **Nothing put them end to end**, so the answer to "what do I
+do next?" required knowing which of twelve documents to open.
+
+`12_RUNBOOK.md`: eleven stages, from "nothing bought yet" to "results in hand".
+Every step numbered, with its command and what success looks like, and a
+pointer to the document that explains why. Tick boxes throughout. It ends with
+six commands worth remembering if nothing else sticks.
+
+It is now the first thing `physical/README.md` offers.
+
+### 3. Covered whatever the results are? Not quite — and I found it in my own work
+
+Writing the runbook's outcome table meant writing out every result the phase
+could produce. **It had six rows. `08_WHAT_COMES_AFTER.md` had five.**
+
+The missing one: *the correlation collapses once the time trend is removed.*
+That outcome was already named in `07_ANALYSIS.md` as a P-4 result and in
+`09_PREREGISTRATION.md` as prediction PP-5 — but **there was no row anywhere
+saying what to build if it happened.** A real gap in the "you are covered
+whatever happens" claim, and it existed because three documents each listed the
+outcomes for their own purpose and nobody had laid the lists side by side.
+
+Added to 08, which now has six. And my own summary sentence was wrong twice
+over: I wrote "three of six say no device" when the runbook had six rows of
+which four say no device, while 08 correctly said "three of five" for five.
+Both now say **four of six**, and I verified the two tables cover the same set
+programmatically rather than by eye.
+
+### The pattern, again
+
+Every one of today's findings — the checker's false negatives, the banner that
+does not reach page seven, the outcome missing from one table but present in
+two others — is the same failure I have now hit four times this week: **a thing
+that is correct in the place it was written and wrong in its relationship to
+somewhere else.**
+
+The cross-reference gate is the first tool here that looks at relationships
+rather than at values. It is narrow, and it is more than existed yesterday.
