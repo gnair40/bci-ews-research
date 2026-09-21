@@ -56,6 +56,18 @@ recalibration happens on evidence instead of on a calendar.
 
 So: the monitor exists. **This project did not invent it and does not claim to.**
 
+> **A fairness note, added 21 September 2026.** MINDFUL's authors report a
+> correlation and propose the monitor for deciding when to recalibrate. They do
+> **not** claim a lead time or a false-alarm rate. Criticising them for not
+> reporting something they never claimed would be unfair, and a reviewer who
+> knows the paper would notice.
+>
+> The accurate statement is about the **field**, not that paper: *no monitor of
+> this class has a published lead time or false-alarm rate, because measuring
+> either needs data nobody has.* That is uncontroversial, it is true, and it
+> motivates everything here without putting words in anyone's mouth. See
+> `research/REASSESSMENT_2026-09-21.md` §3.6.
+
 ---
 
 ## 3. The gap this project found

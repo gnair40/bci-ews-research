@@ -1,0 +1,67 @@
+{
+  "what_this_is": "The decision-rate change, tested as paired.",
+  "n_boot": 4000,
+  "participants": {
+    "T11": {
+      "own_range": {
+        "k_fast": 1,
+        "k_slow": 55,
+        "decisions_fast": 720.0,
+        "decisions_slow": 13.090909090909092,
+        "n_degraded": 764,
+        "n_fault_free": 29,
+        "change": 0.11518324607329844,
+        "ci95": [
+          -0.002617801047120394,
+          0.27617801047120416
+        ],
+        "excludes_zero": false
+      },
+      "matched_range": {
+        "k_fast": 1,
+        "k_slow": 27,
+        "decisions_fast": 720.0,
+        "decisions_slow": 26.666666666666668,
+        "n_degraded": 764,
+        "n_fault_free": 29,
+        "change": 0.11256544502617805,
+        "ci95": [
+          0.0,
+          0.2709424083769634
+        ],
+        "excludes_zero": false
+      }
+    },
+    "T5": {
+      "own_range": {
+        "k_fast": 1,
+        "k_slow": 27,
+        "decisions_fast": 720.0,
+        "decisions_slow": 26.666666666666668,
+        "n_degraded": 369,
+        "n_fault_free": 21,
+        "change": -0.18157181571815717,
+        "ci95": [
+          -0.4227642276422764,
+          -0.04878048780487798
+        ],
+        "excludes_zero": true
+      },
+      "matched_range": {
+        "k_fast": 1,
+        "k_slow": 27,
+        "decisions_fast": 720.0,
+        "decisions_slow": 26.666666666666668,
+        "n_degraded": 369,
+        "n_fault_free": 21,
+        "change": -0.18157181571815717,
+        "ci95": [
+          -0.4146341463414634,
+          -0.05149051490514911
+        ],
+        "excludes_zero": true
+      }
+    }
+  },
+  "matched_k": 27
+}

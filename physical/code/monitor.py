@@ -243,6 +243,7 @@ class SessionInfo:
     session: int
     block: int
     kind: str
+    config: str
     plan: dict | None
     n_frames: int
     duration_seconds: float
@@ -264,8 +265,11 @@ def session_info(folder: Path) -> SessionInfo:
     t = np.load(folder / "capture_t.npy", mmap_mode="r")
     dur = float(t[-1] - t[0]) if len(t) > 1 else 0.0
 
-    j = folder / "session.json"
-    kind = json.loads(j.read_text()).get("kind", "experiment") if j.exists() else "experiment"
+    meta = json.loads((folder / "session.json").read_text()) if (folder / "session.json").exists() else {}
+    kind = meta.get("kind", "experiment")
+    # Which apparatus configuration (experiment P-7). Sessions recorded before
+    # P-7 existed have no label and are the baseline by definition.
+    config = str(meta.get("config", "A"))
 
     plan_file = folder.parent.parent / "onsets" / f"{folder.name}.json"
     if not plan_file.exists():
@@ -277,7 +281,7 @@ def session_info(folder: Path) -> SessionInfo:
             plan = json.loads(noted.read_text())
 
     s, b = folder.name.lstrip("s").split("_b")
-    return SessionInfo(folder, int(s), int(b), kind, plan, len(t), dur)
+    return SessionInfo(folder, int(s), int(b), kind, config, plan, len(t), dur)
 
 
 def find_sessions(root: Path | None = None) -> list[Path]:

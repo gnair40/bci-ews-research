@@ -24,6 +24,13 @@ step and what success looks like. Tick the boxes as you go.
 
 Everything else in this folder explains *why*. That one is the order.
 
+> **Reassessed 21 September 2026.** The hypothesis was reframed from an
+> existence claim to a measurement claim, P-6 was promoted to co-primary, an
+> apparatus-variation arm (P-7) was added, and the comparison was retargeted
+> from one paper to the field. The full audit — including what survived, what
+> did not, and a re-analysis that found the archived data is *not* silent on the
+> decision-rate question — is `research/REASSESSMENT_2026-09-21.md`.
+
 ## Read in this order
 
 | | Document | What it is for |

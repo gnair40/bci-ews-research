@@ -258,10 +258,22 @@ equal false-alarm cost.
 Write these into the limitations section before the results tempt you out of
 them.
 
-- **One apparatus, in one room.** A false-alarm rate measured here does not
-  transfer to an implanted array, and no claim is made that it does. What
-  transfers is the *method*: onsets fixed in advance, lead time and false-alarm
-  rate reported as a pair, enough fault-free recording to bound the rate.
+- **One apparatus, in one room.** A false-alarm rate measured here is **not an
+  estimate of the false-alarm rate of an implanted array**, and no claim is made
+  that it is. Matching the decoding difficulty to 36.1° makes the task
+  comparably hard; it does not make the noise, the drift mechanism or the
+  failure modes comparable. What the number *is*: a demonstration that the
+  measurement is possible, and a test of whether the monitor's behaviour is
+  intrinsic to the method or specific to neural recordings. Write it that way
+  every time it is reported.
+- **Except for P-6.** The decision-rate question is about drifting
+  many-channel sensors, not about biology, so the apparatus is an instance of
+  the class rather than a proxy and the objection above does not apply. That is
+  why P-6 is co-primary. See `01_RESEARCH_DESIGN.md` §5.4.
+- **P-7 narrows the single-apparatus objection but does not close it.** Four
+  configurations vary the settings, not the room, the experimenter or the
+  camera model. Report the spread across configurations, never an average that
+  hides it.
 - **Cardboard is not cortex.** The apparatus was tuned to match the neural
   decoder's difficulty, which makes the comparison fair. It does not make it a
   brain.

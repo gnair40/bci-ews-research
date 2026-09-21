@@ -41,10 +41,17 @@ assumes the longer campaign.
 | 3–4 | 9 – 15 Oct | P-2: the fault-free campaign, 4 nights | **nobody — it runs while you sleep** |
 | 4–5 | 15 – 20 Oct | P-3: 101 degraded sessions | partly attended |
 | 5 | 20 – 21 Oct | P-5: the five undesigned faults | you, one hour |
+| 5–6 | 21 – 25 Oct | **P-7: three more apparatus configurations** | mostly unattended |
 | 5 | 21 – 22 Oct | Analysis and figures | laptop, 20 min |
 | 6 | 22 – 27 Oct | Write the December section with real numbers | you |
 
-**Finishes 27 October. That leaves 35 days of slack before 1 December.**
+**Finishes 31 October with P-7 included. That leaves 31 days of slack before
+1 December.**
+
+*(P-7 was added on 21 September and costs about 10 hours of mostly unattended
+recording plus three re-calibrations — four days of calendar, and four days of
+slack. It is what turns "one apparatus in one room" from an unanswered
+objection into a narrowed one.)*
 
 That slack is the whole point of starting now. It absorbs roughly one major
 setback — see the risk table — and still lands the December plan with data in
@@ -109,8 +116,12 @@ From `02_EXPERIMENTS.md`, decided before any of this started:
 
 1. **P-5** (undesigned faults) — 1 hour. Losing it costs you the check on
    whether real faults resemble designed ones. Say so in the limitations.
-2. **P-6** (decision rate) — 0 hours of recording; it is pure analysis. Only
-   cut it if you run out of *writing* time.
+2. **P-7** (apparatus variation) — 10 hours, unattended. Cutting it leaves the
+   single-apparatus objection unanswered; say so in the limitations.
+
+**P-6 is no longer on the cut list.** It costs no recording at all — it is a
+re-scoring of sessions you already have — and since 21 September it is
+co-primary with P-2. Cutting it saves analysis time and nothing else.
 3. **P-3 severities** — record 1.0 and 0.25 only, dropping 0.5. Halves the
    degraded campaign. You lose resolution on the severity ladder, which is
    preregistered prediction PP-6.

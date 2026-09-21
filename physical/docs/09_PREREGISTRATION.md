@@ -54,8 +54,20 @@ document replaces it completely.
 
 ## 1. The hypothesis, and how it will be judged
 
-> **A decoder-health monitor can show a strong correlation with task performance
-> while simultaneously being unusable as a warning system.**
+> **Reframed 21 September 2026 from an existence claim to a measurement claim.**
+> "A monitor *can* correlate strongly and be unusable" is close to a statistical
+> truism. What this phase does is **measure two quantities nobody has
+> measured**. See `01_RESEARCH_DESIGN.md` §3 and
+> `research/REASSESSMENT_2026-09-21.md` §3.1. The judging rule below is
+> unchanged — it was always a measurement rule.
+
+> **Primary:** for a monitor of the class proposed for deciding when to
+> recalibrate, the lead time and false-alarm rate, measured against onsets fixed
+> in advance with enough fault-free recording to bound the rate, fall outside
+> what a deployed system could use.
+
+> **Secondary:** that monitor reaches the correlation the field reports as
+> evidence, while those two measured quantities say it is unusable.
 
 Judged by a rule fixed here, computed by
 `physical/code/analyze_correlation.py`, with no discretion left at the end:
@@ -217,15 +229,35 @@ manipulation check.
 > Detection at one decision per session will exceed detection at 720 decisions
 > per hour by **at least 10 percentage points**, at equal false-alarm cost.
 
-**Derivation, and its weakness.** Two mechanisms argue for it: a looser budget
-per decision, and more evidence behind each decision. But **the archived data's
-two participants disagree about the direction** — T11 rises **+11.5%**, T5 falls
-**−18.2%**, with intervals spanning 62% to 99% because the thresholds rest on 29
-and 21 fault-free episodes (`data/processed/decision_rate_curve.json`).
+**Derivation, and the evidence against it.** Two mechanisms argue for it: a
+looser budget per decision, and more evidence behind each decision.
 
-**This is the least well-supported prediction here and is flagged as such.** It
-is stated directionally anyway, because a preregistration that declines to
-predict where a mechanism exists is not doing its job.
+**The archived evidence does not support it, and on one participant actively
+contradicts it.** The published reading was that the intervals overlap so
+nothing can be settled — but overlap of marginal intervals is not a test of a
+difference, and both rates are scored on the same episodes. Re-done as a paired
+test (`scripts/78_decision_rate_paired.py`, 21 September 2026):
+
+| | Change, 720 → slowest | Paired 95% CI | Established? |
+|---|---|---|---|
+| T11 | +11.5% | −0.3% to +27.6% | no |
+| **T5** | **−18.2%** | **−42.3% to −4.9%** | **yes** |
+
+So the **one established result** in the archived data says deciding less often
+makes detection **worse** — the opposite of this prediction.
+
+**This prediction is therefore made against the weight of the available
+evidence, deliberately and on the record.** That is legitimate: the mechanisms
+are real, the archived thresholds rest on 29 and 21 fault-free episodes, and
+the apparatus removes exactly that limitation. But it has to be stated, because
+"we predicted the direction that the only significant evidence contradicted" is
+a very different thing to report afterwards than "we predicted the obvious".
+
+**If PP-7 fails** — if detection falls on the apparatus too — that is the more
+likely outcome on current evidence and is **not a disappointment**. It would
+mean pooling destroys more than the looser budget buys, which is the opposite
+of the intuition this whole direction rests on, and it is the result that would
+most change what a designer does.
 
 **Falsified if** detection falls, or rises by less than 10 points, at one
 decision per session.
@@ -268,6 +300,46 @@ as *no difference*.
 
 ---
 
+### PP-9 — The decision-rate direction will hold across apparatus configurations
+
+> The sign of the decision-rate change will be **the same in all four**
+> apparatus configurations of P-7.
+
+**Derivation.** None from measurement — no one has run this. It follows from
+the *claim* P-6 makes: if the decision-rate effect is a property of monitoring
+drifting many-channel sensors, it should not depend on the exposure, the patch
+size or the channel count, all of which are held at the same decoding
+difficulty.
+
+**Falsified if** any configuration reverses the sign.
+
+**Either way.** Holding across four configurations is what would let the result
+be stated as a design rule rather than an observation about one box. Reversing
+is equally informative and more surprising: it would say the effect depends on
+something the design has not identified, and name which configuration differs.
+
+---
+
+### PP-10 — The single-apparatus numbers will move across configurations
+
+> The median lead time will differ by **more than 10 seconds**, or the
+> false-alarm rate by **more than a factor of two**, between the four
+> configurations.
+
+**Derivation.** Also none — this is the self-applied version of the criticism
+this project makes of two-participant conclusions. If four configurations of the
+same box give materially different numbers, then a single-apparatus figure is
+apparatus-specific and must be reported with its spread.
+
+**Falsified if** all four agree closely, which would mean the numbers are more
+robust to apparatus detail than expected — a genuinely useful thing to know and
+the outcome that would most strengthen every other result here.
+
+**This prediction expects the project's own headline numbers to be unstable.**
+It is here because the alternative is discovering it after publication.
+
+---
+
 ## 3. The gate: what must pass before any prediction is interpreted
 
 Applied in this order. **A prediction evaluated on an apparatus that has not
@@ -296,6 +368,7 @@ cannot be brought within tolerance, §7 applies.
 | Fault-free (P-2) | **`[[RESEARCHER — 101 floor, or ~360 to make PP-1 falsifiable]]`** | See PP-1 |
 | Degraded (P-3) | **101**, spread across 4 types and 3 severities | Gives ~8 sessions per type-severity cell |
 | Undesigned (P-5) | **10** | See PP-8 |
+| Apparatus variation (P-7) | **3 × 40** (20 fault-free + 20 degraded each) | Enough to see a sign reversal (PP-9) or a large shift (PP-10); not enough to estimate either precisely, and the report says so |
 
 **Stopping rules.**
 
@@ -447,6 +520,8 @@ count as interesting, and each is the researcher's to make.
 | 6 | Undesigned-fault margin (PP-8) | **20 points** | Chosen for what ~10 sessions can actually resolve, not for what would be interesting |
 | 7 | Severity check (PP-6) | **1.0 vs 0.25** | The ends of the ladder, where any response should be largest |
 | 8 | Difficulty tolerance | **±6° of 36.1°** | Inherited from the rig design |
+| 9 | Apparatus-shift margin (PP-10) | **10 s / 2×** | Chosen for what four configurations can resolve, not for what would be interesting |
+| 10 | Number of P-7 configurations | **4** | Three extra is ~10 unattended hours; a fifth adds 3.5 h for little extra discrimination |
 
 **Values 3, 4 and 8 are inherited and changing them would break comparability
 with the computational half.** Values 2, 5, 6 and 7 are genuinely open. Value 1
