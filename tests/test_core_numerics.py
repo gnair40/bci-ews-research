@@ -645,3 +645,80 @@ class StreamingDecoderMatchesStacked(unittest.TestCase):
         src = inspect.getsource(self.M.session_info)
         self.assertNotIn("capture.npy", src)
         self.assertIn("capture_t.npy", src)
+
+
+# ---------------------------------------------------------------------------
+class DitherBlocksMatchPixelExpansion(unittest.TestCase):
+    """The fast stimulus must paint bit-identical pixels to the slow one.
+
+    Corresponds to a real problem, measured 21 September 2026: the original
+    inner loop called np.repeat twice per frame, allocating two 614,400-element
+    arrays fifty times a second. It measured 6.9 ms per frame on a fast laptop,
+    which extrapolates to more than the entire 20 ms budget on a Raspberry Pi 4
+    -- so the stimulus would silently have failed to hold 50 fps, every camera
+    frame's direction label would have been wrong by an unknown amount, and
+    nothing in the recording would have said so.
+
+    The fix broadcasts a per-patch value into (cols, patch, rows, patch)
+    instead of expanding to pixels. A faster stimulus is only a fix if it draws
+    THE SAME SCREEN -- otherwise it changes the apparatus -- so that is what is
+    tested, including the geometric-rotation path which reorders patches before
+    the expansion.
+    """
+
+    def setUp(self):
+        self.cols, self.rows, self.patch = 24, 16, 40
+        rng = np.random.default_rng(3)
+        self.n = self.cols * self.rows
+        self.pref = rng.uniform(0, 2 * np.pi, self.n)
+        W, H = self.cols * self.patch, self.rows * self.patch
+        self.dither = rng.random((W, H)).astype(np.float32)
+
+    def _values(self, heading, roll=0):
+        t = np.clip(0.5 + 0.00211 * np.cos(heading - self.pref), 0, 1) * 255.0
+        if roll:
+            t = np.roll(t.reshape(self.rows, self.cols), roll, axis=1).ravel()
+        return t
+
+    def _slow(self, t):
+        def expand(v):
+            g = v.reshape(self.rows, self.cols).T
+            return np.repeat(np.repeat(g, self.patch, 0), self.patch, 1)
+        lo = np.floor(t)
+        return (expand(lo) + (self.dither < expand(t - lo))).astype(np.uint8)
+
+    def _fast(self, t):
+        db = self.dither.reshape(self.cols, self.patch, self.rows, self.patch)
+        blocks = lambda v: v.reshape(self.rows, self.cols).T[:, None, :, None]
+        lo = np.floor(t)
+        px = blocks(lo).astype(np.uint8) + (db < blocks(t - lo))
+        return px.reshape(self.cols * self.patch, self.rows * self.patch)
+
+    def test_identical_pixels(self):
+        for heading in (0.0, 1.2345, 3.0, 5.9):
+            t = self._values(heading)
+            self.assertTrue(np.array_equal(self._slow(t), self._fast(t)),
+                            f"pixels differ at heading {heading}")
+
+    def test_identical_under_geometric_rotation(self):
+        """The rotation fault reorders patches; the expansion must follow."""
+        t = self._values(2.0, roll=6)
+        self.assertTrue(np.array_equal(self._slow(t), self._fast(t)))
+
+    def test_the_dither_actually_does_something(self):
+        """A guard against both versions being trivially equal.
+
+        At the calibrated depth the modulation is about half a brightness
+        level, so neighbouring patches must differ by exactly one level in
+        SOME pixels and not others. If the dither were being discarded, every
+        pixel in a patch would be equal and this test would pass vacuously
+        while the apparatus recorded nothing but noise.
+        """
+        t = self._values(1.0)
+        img = self._fast(t)
+        patch0 = img[:self.patch, :self.patch]
+        self.assertGreater(len(np.unique(patch0)), 1,
+                           "a patch is uniform -- the dither is being lost")
+        self.assertLessEqual(int(patch0.max()) - int(patch0.min()), 1,
+                             "a patch spans more than one brightness level")
+

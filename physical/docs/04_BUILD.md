@@ -58,7 +58,28 @@ If it says a module is missing:
 pip3 install numpy scipy pandas
 ```
 
-### 1.2 Run the whole analysis on fake recordings
+### 1.2 Check this machine can draw the pattern fast enough
+
+```bash
+python3 physical/code/stimulus.py --benchmark 300
+```
+
+The apparatus assumes the screen shows exactly 50 frames a second. If the
+computer driving it cannot keep up, frames arrive late, **every camera frame's
+direction label is wrong by an unknown amount, and nothing in the recording
+says so.** This runs the real drawing arithmetic with no display attached — so
+it works over SSH — and reports what the machine can actually sustain.
+
+It needs no hardware, so run it now. **Then run it again on the Pi** once it is
+set up (Part 2), because that is the machine that matters and it is several
+times slower than a laptop.
+
+If it fails there, it prints the options in order: move the stimulus to a faster
+computer with the screen attached, lower `--patch`, or drop to 25 fps. The
+second and third change the apparatus, so each says what to re-check and to
+record it in the log.
+
+### 1.3 Run the whole analysis on fake recordings
 
 ```bash
 python3 physical/code/dryrun.py --clean --healthy 12 --degraded 8
@@ -76,7 +97,7 @@ produces reports. Delete them afterwards:
 rm -rf physical/data/dryrun
 ```
 
-### 1.3 The two faults this caught
+### 1.4 The two faults this caught
 
 **The apparatus as first specified decoded perfectly.** A simulation
 (`scripts/72_rig_digital_twin.py`) put it at 0.0 degrees of error where the real
@@ -302,6 +323,7 @@ obvious error**. That is what makes them worth the hour they take.
 
 | Check | What it asks | Command |
 |---|---|---|
+| B-0 | Can this machine draw at 50 fps? | `python3 physical/code/stimulus.py --benchmark 300` |
 | B-1 | Does the software work at all? | `python3 physical/code/monitor.py --selftest` |
 | B-2 | Is the box light-tight? | `python3 physical/code/bench.py darkframe` |
 | B-3/4 | Did the recording arrive intact? | `python3 physical/code/bench.py frames --session 0 --block 1` |
@@ -403,6 +425,7 @@ When it lands within 6° of 36.1:
 
 You are ready to record data when **all of these are true**:
 
+- [ ] B-0 the Pi sustains 50 fps with room to spare
 - [ ] B-1 self-test passes
 - [ ] B-2 darkness passes with the box sealed
 - [ ] B-3/4 frames arrive intact, no dead or clipped channels
@@ -424,7 +447,7 @@ Then go to `06_DATA_COLLECTION.md`.
 |---|---|---|
 | `rpicam-hello` lists no camera | ribbon cable backwards or not seated | power off, re-seat with silver contacts toward the HDMI ports |
 | Stimulus window does not appear over SSH | there is no screen attached to your SSH session | run it from the Pi's own desktop, or set `export DISPLAY=:0` first |
-| Frames arriving late | Pi cannot keep up | lower `--fps`, close other programs, faster SD card |
+| Frames arriving late | Pi cannot keep up | run `stimulus.py --benchmark 300` on the Pi; then lower `--fps`, close other programs, faster SD card |
 | Many dead channels | screen does not fill the camera's view | move the camera or screen, re-record |
 | Channels clipped at 255 | screen too bright or exposure too long | lower `--brightness` or `--exposure` |
 | B-6 fails | screen is processing the image | turn off every enhancement and dimmer; then try `--exposure 16000`; then try a different screen |

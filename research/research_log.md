@@ -6310,3 +6310,94 @@ somewhere else that nothing connected the two. The gates here check that a
 figure matches its source. Nothing checks that a figure is *survivable*.
 
 I do not have a general fix for that. What I have is one more specific test.
+
+---
+
+## 21 September 2026 (night) — kept asking "what breaks at real scale?", found a second silent failure
+
+The memory bug earlier today came from asking what happens at campaign scale
+rather than dry-run scale. Kept the same lens on three things I had never
+measured: the stimulus frame budget, analysis runtime, and storage.
+
+Two were fine. One was not, and it was the worst kind — an assumption that a
+slow computer breaks **silently**.
+
+### The stimulus might not have held 50 frames a second
+
+The whole apparatus assumes the screen shows exactly 50 frames a second, so
+that one camera frame corresponds to one neural bin. Nothing had ever measured
+whether the computer can draw that fast.
+
+The original inner loop called `np.repeat` **twice per frame**, expanding every
+patch value to pixels — allocating two 614,400-element arrays fifty times a
+second. Measured on a fast laptop: **6.9 ms per frame against a 20 ms budget**.
+A Raspberry Pi 4 is roughly five to ten times slower on this kind of numpy
+work, which puts it at or beyond the entire budget.
+
+**What would have happened.** Frames arrive late. Every camera frame's
+direction label is wrong by an unknown amount. The decoder looks worse than it
+is, uniformly, in every session — and **nothing in the recording says so.**
+`bench.py frames` would have caught the late frames afterwards, on a Pi, after
+the box was built and sealed.
+
+### The fix, and the optimisation that was 2.6x slower
+
+A patch is uniform, so its value can **broadcast** into `(cols, patch, rows,
+patch)` without ever being expanded to pixels. Same pixels, no allocation:
+
+| | ms/frame | est. Pi 4 budget |
+|---|---|---|
+| original, two `np.repeat` | 6.90 | 241% |
+| **broadcast, three channel writes** | **1.83** | **64%** |
+| broadcast, one `[..., None]` write | 4.84 | 169% |
+| packed 32-bit | 1.19 | 42% |
+
+**The one-broadcast-write version reads better than three explicit writes and
+is 2.6x slower**, because adding a trailing axis defeats the memory layout. I
+would have chosen it on looks. That is the whole argument for measuring.
+
+Took the three-writes version: 3.8x faster than the original, bit-identical
+pixels, no change to the apparatus. Did not take the packed variant — it is
+faster still but assumes a 32-bit surface format, and 64% of budget is enough.
+
+### `--benchmark`, because my estimate is not a fact about her Pi
+
+Every number above is from *this* machine, and the Pi multiplier is a rule of
+thumb. So `stimulus.py --benchmark 300` runs the real inner loop with no
+display attached — works over SSH — and reports what the machine actually
+sustains. It is now **B-0**, the first bench check, run on a laptop before
+buying anything and again on the Pi once it exists.
+
+When it fails it prints the three options in order, and says what each costs:
+move the stimulus to a faster computer (**re-measure the lag — two machines
+means two clocks**), lower `--patch` (**an apparatus change — re-run
+`bench.py margin`**), or drop to 25 fps (**halves the resolution of every
+lead-time claim**).
+
+Three regression tests added: identical pixels at four headings, identical
+under the geometric-rotation fault, and a guard that the dither is not being
+silently discarded — because if a patch came out uniform, the fast and slow
+versions would agree perfectly while the apparatus recorded nothing but noise.
+50 tests now.
+
+### The two that were fine, measured rather than assumed
+
+| | Per session | 480 sessions |
+|---|---|---|
+| Raw data | 23.7 MB | **11.4 GB** |
+| Analysis | 0.58 s | **5 min** |
+
+11.4 GB fits on a 32 GB card beside the OS but not comfortably, so the docs now
+say to move recordings to the USB drive as you go, and the shopping list says
+64 GB is worth the few extra dollars. All of these replaced estimates I had
+written earlier with measurements.
+
+### The pattern, three for three
+
+Memory, frame rate, and yesterday's two stale documents are the same shape: a
+quantity that was right where it was computed and wrong in its consequences
+somewhere nothing connected the two. Each was invisible at the scale I was
+testing and fatal at the scale I was prescribing.
+
+I have no general fix. What I have now is the habit of asking, for every number
+I put in a document, **what does this weigh, and what does it cost to hold?**

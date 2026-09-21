@@ -115,6 +115,36 @@ A varying delay is the one thing a fixed correction cannot fix. Either drop to
 analyse only the middle three. Both cost resolution and both are better than a
 label that is wrong by an unknown amount.
 
+### The Pi cannot hold 50 frames a second
+
+Measure it rather than guess:
+
+```bash
+python3 physical/code/stimulus.py --benchmark 300
+```
+
+**This is the one assumption a slow computer can break silently.** Late frames
+mean every camera frame's direction label is wrong by an unknown amount, and
+nothing in the recording says so — `bench.py frames` catches it afterwards, this
+catches it before a campaign is planned around a rate the machine cannot hold.
+
+The benchmark prints the options in order of preference:
+
+1. **Run the stimulus on a faster computer** with the screen attached, and
+   capture on the Pi. Then **re-measure the lag** — two machines means two
+   clocks, and `bench.py lag` is what tells you whether that matters.
+2. **Lower `--patch`.** 40 now; 24 costs about a third as much. This shrinks the
+   pattern on screen and changes how many camera pixels see each patch, so it is
+   an **apparatus change**: re-run `bench.py margin` afterwards and record it.
+3. **Drop to `--fps 25`** and record twice as long per session. The analysis
+   window is 30 s either way; you halve the resolution of every lead-time claim,
+   so the write-up has to say so.
+
+For reference, the drawing arithmetic measured **1.83 ms per frame** on a
+laptop against a 20 ms budget. An earlier version of the loop measured 6.9 ms,
+which would not have fitted on a Pi — it expanded every patch to pixels twice
+per frame instead of broadcasting.
+
 ### Lots of dead channels
 
 The screen does not fill the camera's view, or part of it is in shadow. Move the
