@@ -130,6 +130,11 @@ def main() -> int:
     ap.add_argument("--lag", type=float, default=None,
                     help="camera-behind-screen delay in seconds; "
                          "default reads physical/data/lag.json, else 0")
+    ap.add_argument("--config", default=None,
+                    help="analyse only one apparatus configuration (P-7). "
+                         "Each configuration is a separate apparatus and gets "
+                         "its own decoder, threshold and report -- pooling them "
+                         "would average over the thing being varied")
     ap.add_argument("--tag", default="", help="suffix for the output filenames")
     a = ap.parse_args()
 
@@ -169,6 +174,14 @@ def main() -> int:
     if not sessions:
         print("Nothing loaded.")
         return 1
+
+    if a.config:
+        before = len(sessions)
+        sessions = [x for x in sessions if x.config == a.config]
+        print(f"configuration {a.config!r}: {len(sessions)} of {before} sessions")
+        if not sessions:
+            print(f"No sessions recorded with --config {a.config}.")
+            return 1
 
     # ------------------------------------------------------------ exclusions
     # The protocol says a session is discarded only for a recorded mechanical
@@ -338,7 +351,8 @@ def main() -> int:
         rows.append({
             "session": s.session, "block": s.block,
             "folder": s.folder.name, "group": group.get(s.folder.name, "test"),
-            "kind": info.kind, "healthy": bool(s.healthy),
+            "kind": info.kind, "config": info.config,
+            "healthy": bool(s.healthy),
             "fault_type": p.get("fault_type") or "",
             "severity": p.get("severity", 0.0),
             "onset_seconds": p.get("onset_seconds", np.nan),
@@ -407,6 +421,7 @@ def main() -> int:
 
     meta = {
         "detector": a.detector, "decoder": a.decoder, "lag_seconds": lag,
+        "config": a.config,
         "budget_per_hour": a.budget, "warn_threshold": threshold,
         "n_sessions": int(len(df)),
         "n_fit": len(fit), "n_val": len(val_names),

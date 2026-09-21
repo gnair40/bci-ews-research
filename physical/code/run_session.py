@@ -104,8 +104,8 @@ RAW = DATA / "raw"
 ONSETS = DATA / "onsets"
 LOG = RAW / "SESSION_LOG.csv"
 
-FIELDS = ["recorded_at", "session", "block", "kind", "undesigned_what",
-          "healthy", "fault_type",
+FIELDS = ["recorded_at", "session", "block", "config", "kind",
+          "undesigned_what", "healthy", "fault_type",
           "severity", "onset_seconds", "frames", "fps", "depth", "base",
           "exposure", "gain", "width", "height", "cols", "rows",
           "frames_recorded", "fps_measured", "long_gap_fraction",
@@ -156,6 +156,11 @@ def main() -> int:
     ap.add_argument("--height", type=int, default=32)
     ap.add_argument("--exposure", type=int, default=8000)
     ap.add_argument("--gain", type=float, default=2.0)
+    ap.add_argument("--config", default="A",
+                    help="which apparatus configuration this session used "
+                         "(experiment P-7). 'A' is the calibrated baseline; "
+                         "B, C, D vary exposure, patch size and channel count. "
+                         "Recorded so the analysis can group by it")
     ap.add_argument("--note", default="", help="anything unusual about this run")
     ap.add_argument("--dry-run", action="store_true",
                     help="print the two commands and stop, without recording")
@@ -252,6 +257,7 @@ def main() -> int:
     record = {
         "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "session": a.session, "block": a.block,
+        "config": a.config,
         "kind": ("undesigned" if a.undesigned else
                  "calibration" if a.calibration and not plan else "experiment"),
         "undesigned_what": a.undesigned or "",

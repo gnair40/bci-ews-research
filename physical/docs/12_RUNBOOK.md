@@ -255,6 +255,44 @@ For each of the five interventions in `06_DATA_COLLECTION.md`:
 
 ---
 
+## Stage 9b — the same questions on a different apparatus *(P-7, ~10 hours, mostly unattended)*
+
+**Why:** this project criticises conclusions drawn from two participants. It
+would be drawing conclusions from one box. This narrows that.
+
+Three extra configurations, each **re-calibrated to 36.1° first** so that only
+the apparatus changes and not the difficulty.
+
+| Config | What to change |
+|---|---|
+| B | `--exposure 16000`, and halve `--depth` to compensate |
+| C | `--patch 24` |
+| D | `--cols 12 --rows 8` (96 channels instead of 384) |
+
+For each one:
+
+- [ ] **9b.1** Re-calibrate. Record a calibration session with the new settings
+      and check the margin:
+  ```bash
+  python3 physical/code/run_session.py --session 40 --block 1 --calibration --exposure 16000
+  python3 physical/code/bench.py margin --session 40 --block 1
+  ```
+      Adjust `--depth` until the margin is back within 6° of 36.1°.
+      **Write the settings in the log.**
+- [ ] **9b.2** Draw and record a reduced campaign — 20 fault-free, 20 degraded:
+  ```bash
+  python3 physical/code/run_campaign.py plan   --session 41 --healthy 20
+  python3 physical/code/run_campaign.py plan   --session 41 --degraded 20
+  python3 physical/code/run_campaign.py record --session 41
+  ```
+- [ ] **9b.3** Label every session with its configuration as you record it:
+  ```bash
+  python3 physical/code/run_session.py --session 41 --block 1 --config B
+  ```
+      Sessions with no label count as configuration **A**, the baseline.
+
+---
+
 ## Stage 10 — the analysis *(20 minutes, laptop)*
 
 - [ ] **10.1** Copy the recordings to your laptop. Only recording needs the Pi.
@@ -274,11 +312,22 @@ For each of the five interventions in `06_DATA_COLLECTION.md`:
   ```bash
   python3 physical/code/figures.py all
   ```
-- [ ] **10.5** Run it again with the other decoder, as a stated check.
+- [ ] **10.5** Analyse each apparatus configuration **separately** — each is a
+      different apparatus and gets its own decoder and threshold. Pooling them
+      would average over the thing being varied.
+  ```bash
+  python3 physical/code/make_session_table.py --config B --tag _B
+  python3 physical/code/analyze_decision_rate.py --tag _B
+  python3 physical/code/analyze_leadtime.py --tag _B
+  ```
+      Repeat for C and D. Then compare the four: **does the decision-rate curve
+      keep its direction?** (PP-9) **Do the lead time and false-alarm rate
+      move?** (PP-10)
+- [ ] **10.6** Run it again with the other decoder, as a stated check.
   ```bash
   python3 physical/code/make_session_table.py --decoder per-session --tag _persession
   ```
-- [ ] **10.6** Read `07_ANALYSIS.md` alongside the reports. It says what each
+- [ ] **10.7** Read `07_ANALYSIS.md` alongside the reports. It says what each
       result does and does **not** license you to claim.
 
 ---

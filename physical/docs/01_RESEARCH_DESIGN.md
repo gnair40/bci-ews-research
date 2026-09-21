@@ -100,10 +100,52 @@ observational recording records that.
 
 ## 3. The hypothesis
 
-> **A decoder-health monitor can show a strong correlation with task performance
-> while simultaneously being unusable as a warning system — that is, a high
-> correlation does not imply a usable lead time or an acceptable false-alarm
-> rate.**
+> **REFRAMED 21 September 2026.** This was previously stated as an *existence*
+> claim — "a monitor **can** show a strong correlation while being unusable".
+> That is close to a statistical truism: correlation measures association across
+> a range, deployability is one operating point under an alarm budget, and of
+> course they can come apart. Demonstrating that something is *possible* is the
+> weakest form of empirical claim, and a reviewer with statistical training
+> would have said so in the first two minutes.
+>
+> What this project actually does is **measure two quantities nobody has
+> measured**. The hypothesis now says that. The original wording is preserved
+> below. See `research/REASSESSMENT_2026-09-21.md` §3.1.
+
+### The primary claim — a measurement
+
+> **For a decoder-health monitor of the class currently proposed for deciding
+> when to recalibrate, the lead time and the false-alarm rate are measurable,
+> and when measured against onsets fixed in advance with enough fault-free
+> recording to bound the rate, they fall outside what a deployed system could
+> use.**
+
+**What would falsify it.** A median lead time above zero *and* a false-alarm
+rate whose 95% upper bound is within 0.1 per hour, at the threshold needed for
+80% detection. That outcome would mean this class of monitor is usable after
+all — which is equally worth reporting and would be the more useful result for
+anyone building one.
+
+**Why it is not circular.** The archived half already measured both as far as
+that data allows and found −20 s and 3.4 per hour. The apparatus is not being
+used to re-confirm that; it is being used to measure the false-alarm rate on
+enough fault-free recording to bound it at all, which the archived data
+structurally cannot supply (§5.1).
+
+### The secondary claim — the comparison
+
+> **A monitor can reach the correlation with performance that the field reports
+> as evidence, while those two measured quantities say it is unusable.**
+
+This is the original hypothesis, kept as a *secondary* result. Its value is not
+that the possibility is surprising — it is not — but that the two things have
+never been measured **on the same recordings**, so nobody has been able to show
+how far apart they fall in practice.
+
+*Original wording, 20 September 2026: "A decoder-health monitor can show a
+strong correlation with task performance while simultaneously being unusable as
+a warning system — that is, a high correlation does not imply a usable lead time
+or an acceptable false-alarm rate."*
 
 **Stated so it can be falsified.** On recordings with constructed, pre-recorded
 degradation onsets, the monitor will achieve a correlation with performance of
@@ -165,6 +207,33 @@ on the same sessions, is what tests the hypothesis.
 
 ---
 
+## 4.4 What a result from this apparatus is, and is not
+
+Stated here because it is the first thing a reviewer will press on, and
+"we matched the decoding difficulty" is not an answer to it.
+
+**A false-alarm rate measured on a camera in a sealed box is not an estimate of
+the false-alarm rate of an implanted electrode array.** Matching median angular
+error to 36.1° makes the decoding problem comparably hard. It does not make the
+noise structure, the drift mechanism or the failure modes comparable, and no
+claim is made that it does.
+
+What a result from this apparatus **is**:
+
+1. **A demonstration that the measurement is possible at all**, on a system
+   where the onset is known and fault-free hours are unlimited. Nobody has
+   reported these two numbers for any monitor of this class, and the reason is
+   data availability rather than disinterest.
+2. **A test of whether the monitor's behaviour is intrinsic to the method or
+   specific to neural recordings.** If the silence gate fails on an apparatus
+   with no biology in it, that is hard to blame on the recordings.
+3. **For the decision-rate question only, a direct result rather than a proxy.**
+   That claim is about the statistics of monitoring any drifting many-channel
+   sensor. The apparatus is an instance of that class, not a stand-in for
+   something else, so the objection above does not apply to it — see §5.4.
+
+---
+
 ## 5. Why this needs physical apparatus
 
 Three reasons, each of which independently rules out doing this in software or on
@@ -187,6 +256,22 @@ whole curve falls out of the same sessions.
 
 This is what makes the design affordable, and it is worth understanding before
 reading the procedures.
+
+### 5.4 One question where the apparatus is not a proxy at all
+
+Everything above defends the apparatus as a *stand-in*. For the decision-rate
+question (IV5, experiment P-6) it is not a stand-in.
+
+**"Given an alarm budget and how fast failures develop, how often should a
+monitor decide?" is a question about drifting many-channel sensors, not about
+biology.** A camera array is one of those. So the result transfers to the
+extent the *class* is right, and the "your box is not a brain" objection does
+not arise — there is no brain in the claim.
+
+It is also the only result here that reaches past brain-computer interfaces, to
+any sensor array that drifts: an industrial rack, an environmental network, a
+prosthetic limb. That is why P-6 was promoted to co-primary on 21 September,
+having previously been second on the list of things to cut.
 
 ### 5.3 A simulation cannot test this
 

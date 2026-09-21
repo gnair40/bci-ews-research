@@ -165,7 +165,15 @@ someone who does not trust you.
 
 ---
 
-## P-4 — Correlation against usability *(the novel experiment)*
+## P-4 — Correlation against usability *(secondary; see the note)*
+
+> **Demoted from "the novel experiment" on 21 September 2026.** The
+> underlying statistical point — that a correlation does not imply a usable
+> operating point — is close to a truism and is not novel. What is novel is
+> that the two have never been measured **on the same recordings**, so
+> nobody knows how far apart they fall in practice. That is worth
+> reporting; it is not the headline. The headline is the measurement
+> itself (P-2, P-3) and the design question (P-6).
 
 **Tests the hypothesis directly.**
 **Moves:** nothing new — this is an analysis of P-2 and P-3 recordings.
@@ -251,7 +259,28 @@ in the write-up as a headline rather than a limitation.
 
 ---
 
-## P-6 — How often should a monitor decide?
+## P-6 — How often should a monitor decide? *(co-primary with P-2)*
+
+> **Promoted 21 September 2026**, from second-on-the-cut-list to co-primary.
+> Two reasons, in `research/REASSESSMENT_2026-09-21.md` §3.3 and §3.4.
+>
+> **1. The apparatus is not a proxy for this one.** "Given an alarm budget and
+> how fast failures develop, how often should a monitor decide?" is a question
+> about drifting many-channel sensors, not about biology. A camera array is one
+> of those, so the *"your box is not a brain"* objection — which is the main
+> threat to every other result here — **does not apply**. It is also the only
+> result that reaches past brain-computer interfaces to any drifting array.
+>
+> **2. The archived data is not silent, and it points the other way.** The
+> published reading was that the intervals overlap so nothing can be settled.
+> Overlap of marginal intervals is not a test of a difference, and both rates
+> are scored on the same episodes. Done paired
+> (`scripts/78_decision_rate_paired.py`): T11 **+11.5%, CI −0.3% to +27.6%**,
+> not established; **T5 −18.2%, CI −42.3% to −4.9%, established.**
+>
+> So the one established result in the archived data says deciding less often
+> makes detection **worse**. That is a sharper reason to run this than "we
+> cannot tell", and a worse starting position than this project assumed.
 
 **Tests:** whether deciding less often makes monitoring easier.
 **Moves:** IV5, decision rate — **set in analysis, costing no extra recording**.
@@ -287,6 +316,60 @@ down to one per session. **No extra recording is required.**
 
 ---
 
+## P-7 — The same questions on a deliberately different apparatus
+
+> **Added 21 September 2026.** The project criticises conclusions drawn from
+> **two participants**, repeatedly and correctly, and then planned to draw
+> conclusions from **one apparatus** in one room. That is the same defect.
+> Unlike the participant problem it is cheap to fix.
+
+**Tests:** whether any result here is a property of *this particular box*.
+**Moves:** the apparatus itself — a controlled variable in every other
+experiment, deliberately varied here.
+**Measures:** DV1–DV5, compared across configurations.
+
+### The configurations
+
+Four, including the baseline. Each changes one thing that plausibly matters and
+costs nothing to change.
+
+| | What differs | Why this one |
+|---|---|---|
+| **A** | the calibrated baseline | the reference |
+| **B** | exposure doubled, depth halved to compensate | same difficulty, different noise |
+| **C** | patch 24 instead of 40 (fewer pixels per channel) | changes how much averaging each channel gets |
+| **D** | 12×8 channel grid instead of 24×16 | 96 channels instead of 384 |
+
+**Each configuration is re-calibrated to the 36.1° margin before use.** The
+point is to hold difficulty fixed and vary everything else — otherwise a
+difference in result is just a difference in how hard the task was.
+
+### Protocol
+
+Per configuration, a reduced campaign: **20 fault-free and 20 degraded
+sessions**, about 3.5 hours. Three extra configurations is about **10 hours**,
+unattended, plus a calibration session each.
+
+### Outcomes
+
+| Result | Meaning |
+|---|---|
+| The decision-rate curve keeps its **direction** across all four | The strongest form of the finding: a property of the class, not of one box. This is what would let the design rule be stated generally. |
+| The curve's direction **changes with configuration** | Also a finding, and an important one — it would say the decision-rate law depends on something the design has not identified, and name the configurations that differ. |
+| Lead time and false-alarm rate move a lot across configurations | The single-apparatus numbers are apparatus-specific and must be reported as such, with the spread rather than the point. |
+
+**Report the spread, not just the mean.** Four configurations is a small family,
+and the honest presentation is four points with their intervals, not an average
+that hides them.
+
+### What this does not fix
+
+One room, one experimenter, one camera model, one screen technology. Varying
+the settings is not the same as varying the apparatus independently, and this
+arm narrows the objection rather than closing it.
+
+---
+
 ## Summary: what each experiment costs
 
 | Experiment | Sessions | Time | Attended? |
@@ -297,12 +380,17 @@ down to one per session. **No extra recording is required.**
 | P-4 correlation analysis | 0 | minutes | analysis only |
 | P-5 undesigned faults | 10 | 50 min | yes, by hand |
 | P-6 decision-rate curve | 0 | minutes | analysis only |
+| **P-7 apparatus variation** | **120 (3 × 40)** | **~10 h** | **no — overnight** |
 | **Total recording** | **~217 at the floor, ~480 to demonstrate the budget** | **~18 h at the floor, ~40 h to demonstrate the budget** | mostly unattended |
 
 Two of the six experiments need no recording at all, because the decision rate
 and the correlation are analysis choices. That is what makes this affordable.
 
-**If time runs short, cut P-5 and P-6 before P-2.** P-2 is the measurement that
+**Cut order, revised 21 September 2026: P-5, then P-7, then P-3's middle
+severity. P-2 and P-6 are co-primary and are not cut.** P-6 costs no recording
+at all, so cutting it saves nothing but the analysis time.
+
+**If time runs short, cut P-5 and P-7 before P-2 or P-6.** P-2 is the measurement that
 does not exist anywhere else, it is the one that runs while you sleep, and
 every other result in the phase is reported against the threshold it produces.
 

@@ -6549,3 +6549,94 @@ bench card — and two bugs that would have stopped the campaign dead.
 
 None of it changed the science. All of it changed whether the science can
 actually happen.
+
+---
+
+## 21 September 2026 (reassessment) — assumed nothing, tested the load-bearing claims
+
+Instructed to reassess from the ground up and not to treat anything as correct
+just because it already exists. Full audit in
+`research/REASSESSMENT_2026-09-21.md`; this is what it changed and what it cost.
+
+### The thing I most expected to break, held
+
+The whole case for building hardware rests on "only 1.4 hours of genuinely
+fault-free recording exists". My first move was to attack that, because it
+looked like a **design choice** — faults were injected into ~1,850 episodes and
+only 32 left clean, so surely more could have been held out.
+
+It is not a choice. **A block of real recording can contribute at most one
+fault-free episode**, because injecting into it makes it not fault-free. The
+ceiling is set by how many blocks were recorded in 2016–17: 29 + 21 = 50 blocks,
+about **3.4 hours total**, of which ~1.4 is held out. Reaching 30 hours would
+need roughly **400 blocks**; no public intracortical dataset is close, and a
+third participant adds hours, not hundreds.
+
+So the apparatus is not a physical component bolted on for the sake of having
+one. It supplies the one quantity the archived data structurally cannot. Worth
+having tested rather than inherited.
+
+### What did not hold
+
+**The hypothesis was an existence claim.** *"A monitor can correlate strongly
+and be unusable."* Of course it can — correlation is an association across a
+range, deployability is one operating point under a budget. That is close to a
+truism, and a reviewer with statistics would have said so in two minutes. The
+project was not doing the weak thing; it was **describing** itself as doing the
+weak thing, and it would have been judged on the description. Reframed to the
+measurement claim it actually makes.
+
+**P-6 was ranked last and is probably the best experiment here.** The
+decision-rate question is about drifting many-channel sensors, not biology — so
+a camera array is *an instance of the class*, not a proxy, and the "your box is
+not a brain" objection, which is the main threat to everything else, **does not
+apply to it at all.** It is also the only result that reaches past BCIs.
+Promoted to co-primary and off the cut list.
+
+**The project applied a standard to others it did not apply to itself.** It
+criticises two-participant conclusions constantly, then planned one apparatus in
+one room. Added P-7: four configurations, same difficulty, different exposure,
+patch size and channel count. ~10 unattended hours, no new parts, four days of
+slack. It narrows the objection rather than closing it, and says so.
+
+**The comparison target was slightly a straw man.** MINDFUL's authors never
+claimed a lead time. Criticising them for not reporting it is unfair and a
+reviewer who knows the paper would notice. Retargeted to the field.
+
+### A new result — found by getting it wrong first
+
+`scripts/76` gives each decision rate its own interval, and the published
+reading was "the intervals overlap, so nothing can be settled". **Overlap of
+marginal intervals is not a test of a difference**, and both rates are scored on
+the same episodes against the same fault-free set, so most of the uncertainty
+cancels. Done paired (`scripts/78_decision_rate_paired.py`):
+
+| | Change | Paired 95% CI | Established? |
+|---|---|---|---|
+| T11 | +11.5% | −0.3% to +27.6% | no |
+| **T5** | **−18.2%** | **−42.3% to −4.9%** | **yes** |
+
+**The archived data is not silent, and its one established result says deciding
+less often makes detection worse** — the opposite of what PP-7 predicts. PP-7
+now states that it predicts against the weight of available evidence, which is a
+legitimate thing to do and a very different thing to report afterwards than
+having predicted the obvious.
+
+**My first attempt at this was wrong.** I selected negatives as "all
+not-crossed episodes" and got T5 *rising* **+52%** — a clean, confident,
+completely wrong number, produced by re-introducing the sub-threshold-ramp
+mislabel this project had already found and corrected in
+`AUTOCORR_BY_SEVERITY.md`. I caught it only because it disagreed with the
+published figure, not because anything flagged it.
+
+That is the second time this week I have nearly reported an artifact as a
+finding — the first was the dry-run fault that was not a fault. Both times the
+number looked publishable and the check that caught it was comparing against
+something already known. **I have no general defence against this**, and
+recording it is the only honest response.
+
+### What I did not change
+
+The ground-truth discipline, the five gates, the preregistration mechanism, the
+negative result, the code, the schedule, the safety assessment. They survived
+the audit unchanged, and the audit was looking for reasons they should not.

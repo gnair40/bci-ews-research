@@ -155,6 +155,11 @@ SUPERSEDED = [
     ("physical code count", r"[Tt]hirteen files in `physical/code/`|"
                             r"[Ee]leven scripts",
      "there are 16"),
+    ("P-4 billed as the novel experiment", r"P-4 — Correlation against usability \*\(the novel experiment\)\*",
+     "demoted 21 Sep 2026; the statistical point is not novel, the measurement is"),
+    ("decision-rate question called unsettleable",
+     r"cannot be settled there\.\*\*|intervals are too wide to say",
+     "the paired re-analysis establishes T5's fall; see scripts/78"),
 ]
 
 
