@@ -149,16 +149,23 @@ def main() -> int:
             print("    python3 physical/code/bench.py lag --session 0 --block 1")
             print()
 
-    print(f"loading {len(folders)} recordings (lag {lag * 1000:.0f} ms)")
+    # Metadata only. A five-minute session is 46 MB of camera data, so a
+    # 480-session campaign is 22 GB -- more than any machine this will run on,
+    # and it would crash on the fourth night of recording, which is the worst
+    # possible moment to find out. Working out which group a session belongs to
+    # needs a few hundred bytes, not 46 MB, so that is read first and the
+    # recordings are loaded one at a time later.
+    print(f"reading metadata for {len(folders)} recordings "
+          f"(lag {lag * 1000:.0f} ms)")
     sessions = []
     for f in folders:
         try:
-            sessions.append(M.load_session(f, lag))
+            sessions.append(M.session_info(f))
         except Exception as e:
             # Loudly, not silently. A recording that will not load is a fact
             # about the campaign, and quietly dropping it changes every
             # denominator downstream.
-            print(f"  COULD NOT LOAD {f.name}: {type(e).__name__}: {e}")
+            print(f"  COULD NOT READ {f.name}: {type(e).__name__}: {e}")
     if not sessions:
         print("Nothing loaded.")
         return 1
@@ -202,8 +209,7 @@ def main() -> int:
 
     # ---------------------------------------------------------------- split
     def kind(s):
-        j = s.folder / "session.json"
-        return json.loads(j.read_text()).get("kind", "experiment") if j.exists() else "experiment"
+        return s.kind
 
     # A P-5 session whose onset has not been written down yet looks, to every
     # piece of code here, like a healthy session -- it has no plan, so nothing
@@ -268,32 +274,48 @@ def main() -> int:
         group[s.folder.name] = "test"
 
     # ------------------------------------------------------------- decoder
-    Xf = np.vstack([s.X for s in fit])
-    hf = np.concatenate([s.heading for s in fit])
-    frozen_dec = M.fit_decoder(Xf, hf)
+    frozen_dec = M.fit_decoder_streaming([s.folder for s in fit], lag)
+    frames_fit = sum(s.n_frames for s in fit)
     print(f"\ndecoder fitted on {len(fit)} sessions, "
-          f"{len(Xf)} frames ({len(Xf) / M.FPS / 60:.1f} minutes)")
+          f"{frames_fit} frames ({frames_fit / M.FPS / 60:.1f} minutes)")
 
-    def decoder_for(s):
+    def decoder_for(sess):
+        """`sess` here is a loaded Session, not a SessionInfo."""
         if a.decoder == "frozen":
             return frozen_dec
-        half = len(s.X) // 2
-        return M.fit_decoder(s.X[:half], s.heading[:half])
+        half = len(sess.X) // 2
+        return M.fit_decoder(sess.X[:half], sess.heading[:half])
 
     # ------------------------------------------------------------ detector
-    fit_windows = np.vstack([M.window_means(s.X, M.window_starts(len(s.X)))
-                             for s in fit])
+    # One session at a time. Windows are tiny compared with the frames they
+    # come from -- 55 x 384 floats against 15000 x 384 -- so the accumulated
+    # windows are affordable even for a large fit set; the raw frames are not.
+    chunks = []
+    for info in fit:
+        sess = M.load_session(info.folder, lag)
+        chunks.append(M.window_means(sess.X, M.window_starts(len(sess.X))))
+        del sess
+    fit_windows = np.vstack(chunks)
+    del chunks
     detector = M.fit_detector(a.detector, fit_windows)
     print(f"monitor '{a.detector}' fitted on {len(fit_windows)} healthy windows")
 
     # -------------------------------------------- score everything, once
     WINDOWS.mkdir(parents=True, exist_ok=True)
     rows, scores = [], {}
-    for s in sessions:
+    for info in sessions:
+        # Loaded here and released at the end of the loop body, so peak memory
+        # is one session whatever the campaign size.
+        try:
+            s = M.load_session(info.folder, lag)
+        except Exception as e:
+            print(f"  COULD NOT LOAD {info.name}: {type(e).__name__}: {e}")
+            continue
         starts = M.window_starts(len(s.X))
         if not len(starts):
             print(f"  {s.folder.name}: too short to make a single 30 s window, "
                   f"skipped")
+            del s
             continue
         F = M.window_means(s.X, starts)
         raw = detector.score(F)
@@ -316,7 +338,7 @@ def main() -> int:
         rows.append({
             "session": s.session, "block": s.block,
             "folder": s.folder.name, "group": group.get(s.folder.name, "test"),
-            "kind": kind(s), "healthy": bool(s.healthy),
+            "kind": info.kind, "healthy": bool(s.healthy),
             "fault_type": p.get("fault_type") or "",
             "severity": p.get("severity", 0.0),
             "onset_seconds": p.get("onset_seconds", np.nan),
@@ -332,6 +354,7 @@ def main() -> int:
             "chance_deg": M.chance_error(s.heading),
             "fail_seconds": M.window_end_seconds(fw, starts),
         })
+        del s, F, perf
 
     df = pd.DataFrame(rows)
     df["margin_deg"] = df.chance_deg - df.performance

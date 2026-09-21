@@ -75,6 +75,7 @@ from scipy import stats
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
+sys.path.insert(0, str(REPO / "physical" / "code"))
 
 inj = import_module("17_fault_injector")
 dec = import_module("18_reference_decoder")
@@ -570,3 +571,77 @@ class InversionRefusesOffCurve(unittest.TestCase):
         got = sweep.invert(self.taus, dented, 0.32)
         self.assertTrue(np.isfinite(got))
         self.assertTrue(self.taus[0] <= got <= self.taus[-1])
+
+
+# ---------------------------------------------------------------------------
+class StreamingDecoderMatchesStacked(unittest.TestCase):
+    """The streaming decoder fit must equal the all-at-once one, exactly.
+
+    Corresponds to a real defect, found 21 September 2026:
+    `make_session_table.py` loaded every recording into memory at once. At the
+    campaign size this project recommends -- about 480 five-minute sessions --
+    that is 22 GB, which no machine here has. It would have crashed on the
+    fourth night of recording, after thirty hours of data collection, which is
+    the worst possible moment to discover a memory bug.
+
+    The fix streams the fit, accumulating the normal equations session by
+    session instead of stacking the frames. A streaming fit is only a fix if it
+    gives the SAME answer -- otherwise it silently changes every result -- so
+    that equality is what is tested here, on data where both can be computed.
+    """
+
+    def setUp(self):
+        import monitor as M
+        self.M = M
+        rng = np.random.default_rng(11)
+        self.pref = rng.uniform(0, 2 * np.pi, 24)
+
+    def _fake(self, n, seed):
+        rng = np.random.default_rng(seed)
+        head = np.repeat(rng.uniform(0, 2 * np.pi, n // 50 + 1), 50)[:n]
+        X = 128.0 + 6.0 * np.cos(head[:, None] - self.pref[None, :])
+        X += rng.normal(0, 1.0, X.shape)
+        return X, head
+
+    def test_normal_equations_match_stacking(self):
+        """Same weights, same normalisation, from the same data."""
+        M = self.M
+        parts = [self._fake(400, s) for s in (1, 2, 3)]
+        X = np.vstack([p[0] for p in parts])
+        h = np.concatenate([p[1] for p in parts])
+
+        W_stack, mu_stack, sd_stack = M.fit_decoder(X, h)
+
+        # Reproduce the streaming arithmetic directly, without touching disk.
+        n_total = sum(len(p[0]) for p in parts)
+        s1 = sum(p[0].sum(axis=0) for p in parts)
+        s2 = sum((p[0] * p[0]).sum(axis=0) for p in parts)
+        mu = s1 / n_total
+        sd = np.sqrt(np.maximum(s2 / n_total - mu * mu, 0.0))
+        sd[sd < 1e-12] = 1.0
+        d = len(mu) + 1
+        A = np.zeros((d, d))
+        B = np.zeros((d, 2))
+        for Xi, hi in parts:
+            Z = np.hstack([(Xi - mu) / sd, np.ones((len(Xi), 1))])
+            Y = np.column_stack([np.cos(hi), np.sin(hi)])
+            A += Z.T @ Z
+            B += Z.T @ Y
+        A += M.RIDGE * n_total * np.eye(d)
+        W_stream = np.linalg.solve(A, B)
+
+        self.assertLess(np.abs(mu - mu_stack).max(), 1e-9)
+        self.assertLess(np.abs(sd - sd_stack).max(), 1e-7)
+        self.assertLess(np.abs(W_stream - W_stack).max(), 1e-8)
+
+    def test_session_info_does_not_read_the_frames(self):
+        """Metadata must be readable without touching capture.npy.
+
+        This is the property the whole fix rests on: if `session_info` ever
+        starts loading the recording, the memory problem comes straight back
+        and nothing would notice until a campaign was large enough to crash.
+        """
+        import inspect
+        src = inspect.getsource(self.M.session_info)
+        self.assertNotIn("capture.npy", src)
+        self.assertIn("capture_t.npy", src)

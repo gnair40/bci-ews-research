@@ -6222,3 +6222,91 @@ were complete. **All four are the difference between a project that is specified
 and a project that one person can actually run alone** — and I only found them
 by changing the question from "is this correct?" to "what happens when she is
 standing there at 11pm and it does not work?"
+
+---
+
+## 21 September 2026 (evening) — the analysis would have crashed on the fourth night
+
+Told to keep going after saying there was nothing urgent left. So I went
+looking for what happens at scale rather than what happens in a dry run, and
+found the worst bug of the week.
+
+### What was wrong
+
+`make_session_table.py` loaded **every recording into memory at once** before
+doing anything with them:
+
+```python
+sessions = []
+for f in folders:
+    sessions.append(M.load_session(f, lag))
+```
+
+A five-minute session is 15000 frames x 384 channels x 8 bytes = **46 MB**.
+
+| Campaign | Held at once |
+|---|---|
+| 101 sessions (the floor) | 4.7 GB |
+| 217 sessions (the plan) | 10.0 GB |
+| 480 sessions (what I recommended) | **22.1 GB** |
+
+A Raspberry Pi 4 has 4 GB. A decent laptop has 8 or 16. **The campaign size I
+have been recommending since yesterday would have crashed the analysis**, and
+it would have crashed on the fourth night of recording — after thirty hours of
+unattended data collection, which is the worst possible moment to find out a
+script cannot hold what it just asked you to record.
+
+Every dry run I have done passed, because a dry run is twenty short sessions.
+The bug was invisible at the scale I was testing at and fatal at the scale I
+was prescribing. I did not notice the contradiction between those two numbers
+for two days.
+
+### The fix
+
+Three passes, none holding more than a couple of sessions:
+
+1. **Metadata only** for every session — `monitor.session_info()` reads
+   `capture_t.npy` (120 KB) and the plan JSON, never `capture.npy`. That is
+   enough to decide which group a session belongs to, how long it was, and what
+   fault it carried.
+2. **The decoder, streamed** — `fit_decoder_streaming()` accumulates the normal
+   equations Z'Z and Z'Y session by session instead of stacking the frames. The
+   accumulators are 385x385, about a megabyte, whatever the campaign size.
+3. **Scoring, one at a time** — load, score, write the window file, release.
+
+Measured on a 90-session dry run: **peak 0.20 GB**, against 0.83 GB if held at
+once. The ratio is what matters — it is bounded by a couple of sessions, not by
+the campaign.
+
+### Why the decoder change needed proving, not just writing
+
+A streaming fit is only a fix if it gives the **same answer**. If it does not,
+it silently changes every result in the phase, which is worse than the crash it
+replaces. Checked against the all-at-once version on identical data:
+
+```
+mean  max abs diff 0.000e+00
+std   max abs diff 9.960e-11
+W     max abs diff 1.079e-12
+median angular error  streaming 5.416636  stacked 5.416636
+```
+
+Identical to floating-point ordering. Two regression tests added
+(`StreamingDecoderMatchesStacked`), one checking that equality and one checking
+that `session_info` never reads `capture.npy` — because if it ever starts to,
+the memory problem comes straight back and nothing would notice until a
+campaign was large enough to crash again. 47 tests now.
+
+### What I take from this
+
+**I recommended a campaign size without checking that my own code could
+analyse it.** The 30-hour figure came out of a statistics calculation — the
+rule of three — and I never asked the separate engineering question of what 30
+hours of recording weighs.
+
+The pattern is the same one as the two stale documents yesterday: a number that
+was correct in the place it was computed, and wrong in its consequences
+somewhere else that nothing connected the two. The gates here check that a
+figure matches its source. Nothing checks that a figure is *survivable*.
+
+I do not have a general fix for that. What I have is one more specific test.

@@ -227,6 +227,14 @@ look good on exactly those recordings.
 **It never modifies `physical/data/raw/`.** Raw recordings are written once and
 read forever.
 
+**It loads one recording at a time.** A five-minute session is 46 MB of camera
+data, so the campaign this project recommends — about 480 sessions — is **22
+GB**. An earlier version read them all in before doing anything, which would
+have crashed on the fourth night of recording, after thirty hours of data
+collection. It now reads metadata for every session first (a few hundred bytes
+each), works out the groups, and loads recordings one at a time to score them.
+Peak memory is a couple of sessions whatever the campaign size.
+
 **It honours `physical/data/EXCLUSIONS.csv`**, which is how a session is set
 aside without deleting raw data. The file wants `folder,reason,excluded_at`, and
 a row with no reason is **refused outright** — an unexplained exclusion cannot

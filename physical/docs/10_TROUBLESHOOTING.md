@@ -266,6 +266,21 @@ correlated monitor says nothing about whether correlation-based validation is
 sufficient. Report it as inconclusive. This is written into the preregistration
 precisely so it cannot be talked into a finding afterwards.
 
+### The analysis runs out of memory, or the machine freezes
+
+It should not — `make_session_table.py` loads one recording at a time and peak
+memory is a couple of sessions whatever the campaign size. If it happens
+anyway, the likely cause is an unusually large fit set combined with a machine
+that has very little RAM.
+
+Check the printout: how many sessions went into `fit`? Those are loaded twice
+(once for the decoder's normalisation, once for its weights), one at a time,
+and their *windows* are accumulated — which is small, but not nothing at fifty
+sessions.
+
+If you are running the analysis on the Pi itself, run it on a laptop instead.
+Only recording needs the Pi; every analysis script runs anywhere.
+
 ### A recording will not load
 
 `make_session_table.py` names it rather than skipping silently. Usually it is
