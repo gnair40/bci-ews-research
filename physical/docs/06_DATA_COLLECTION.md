@@ -9,6 +9,28 @@ campaign is four nights of the box running by itself.
 
 ---
 
+## What a campaign costs, measured
+
+Not estimated — these are from full-length 15000-frame sessions.
+
+| | Per session | 101 (floor) | 217 (plan) | 480 (30 held-out hours) |
+|---|---|---|---|---|
+| Raw data on disk | **23.7 MB** | 2.4 GB | 5.2 GB | **11.4 GB** |
+| Recording time | 5 min | 8.4 h | 18 h | 40 h |
+| Analysis, start to finish | 0.58 s | 1 min | 2 min | **5 min** |
+
+A session is `capture.npy` (23.0 MB), `stim.csv` (0.6 MB), `capture_t.npy`
+(0.1 MB) and `session.json`.
+
+**11 GB fits on a 32 GB card beside the operating system, but not comfortably.**
+Move completed recordings to the USB drive as you go, and let
+`health_check.py` tell you how many more will fit before you start a night that
+would not finish. A disk that fills overnight truncates sessions rather than
+stopping cleanly.
+
+**The analysis is fast and runs anywhere.** Only recording needs the Pi; run
+everything else on a laptop, where it takes minutes rather than tens of minutes.
+
 ## The four rules
 
 **1. Draw before you record.** Every session's plan — healthy or degraded, and

@@ -6015,3 +6015,389 @@ what would count as interesting, which is not mine to make.
 
 One `[[RESEARCHER]]` field blocks the freeze: the fault-free campaign length.
 It is the only judgement call that changes what gets recorded.
+
+---
+
+## 21 September 2026 — reassessed the whole repository; two documents were lying
+
+Asked to go through everything and leave no old information in place. Nothing
+was deleted. Every superseded document is kept and marked, because the route a
+design took is part of the record — but "kept" and "unmarked" are different
+things, and several documents were the second.
+
+### The two that would actually have misled somebody
+
+**`DATASET_README.md` said the dataset had never been downloaded.** Its status
+block read *"⚠️ Dataset NOT yet downloaded. Network access to Dryad is blocked...
+No claim here has been checked against the actual data files."*
+
+The download manifest says the files arrived at **18:14 UTC on 25 August** — the
+same day that status line was last touched. So it was wrong within hours and
+stayed wrong for four weeks, by which point the data had been downloaded,
+loaded, verified against the depositors' own analysis code, and used for every
+result in this repository. **A reader opening that file would have concluded the
+project had no data.** Corrected, with the old wording quoted in place, and §7's
+"current blocker" marked as the historical record of a blocker that was lifted.
+
+**`reports/PHASE3_REPORT.md` and `reports/OPERATING_POINT_BOUND.md` disagreed
+with each other for two weeks.** PHASE3_REPORT §3.5 has given the session-level
+AUC target as **0.990 and 0.991** since 1 September, derived from the
+per-session false-flag rate the 0.1/hour budget actually allows. It was right
+all along. Six days later `scripts/28` began reporting **0.933**, computed at a
+10% false-flag rate, and that figure propagated into three other documents
+before being corrected yesterday.
+
+**Nothing caught it, and I now understand why.** Every gate in this project
+checks a figure against the data file it came from. Both figures were faithful
+to their own calculation. *Nothing was checking that two reports agree with each
+other.* That is a real hole and it was invisible because each half looked
+correct in isolation.
+
+The narrowest fix that would have caught it: make the target a **claim**. Five
+added to `31_verify_claims.py` — both budget-derived targets, the 10% target
+kept alongside so the two cannot be confused again, the 1.31 alarms/hour that a
+10% per-episode rate implies, and the pooling factor of 55 (which is what
+"four orders of magnitude" should have said). 102 claims now, all matching.
+
+### Everything else, by what was wrong with it
+
+**Front doors that described only half the project.**
+
+- `README.md` — a "where this is" section at the top, the argument extended from
+  five steps to eight so it ends where the project actually is, and the stale
+  "ninety-three headline figures" corrected to 102. That sentence now also says
+  the script prints the count, so it cannot drift silently a second time.
+- `reports/project_guide.html` — masthead redated from 28 August; the fact strip
+  corrected (36 → 48 configurations, "Deliverable: Software system" → the
+  benchmark and the apparatus, stage, script counts); a panel before the body
+  explaining that the goal changed twice and why; the results table corrected
+  from 21/5/1/0/0 of 36 to 47/10/3/0/0 of 48, with a note saying what moved and
+  why (a fourth transform, and the threshold-search bug that had been reporting
+  "no operating point exists" when the truth was "none below an arbitrary
+  bound"). The two rows that matter did not move.
+- `reports/bad_day_problem.html` — its "Designed: a $115 camera-and-LED array to
+  test whether this failure is a fact about cortex" entry was the old framing of
+  the apparatus. Rewritten to what it is actually for.
+- `reports/monitor_demo.html` — a note saying what the demo cannot show. It
+  replays injected faults on archived recordings, which is enough to show the
+  monitor working and failing, and not enough to answer either of the two
+  questions that decide deployability.
+
+**Documents still presented as current.**
+
+- `PROJECT_DEFINITION.md` — `research/README.md` described it as "still current
+  as a statement of what the project is." It is not: the hypothesis it derives
+  was falsified and the rig it promotes was redesigned. Both corrected; what in
+  it *is* still current (Amendment 1, the ground-truth reasoning) is named.
+- `research_plan.md` — the pre-data fifteen-step procedure, now marked as the
+  starting position.
+- `ORIGINAL_DATA_COLLECTION_DESIGN.md` — its §1 (which gaps archived data cannot
+  close) is still exactly right and is why an apparatus exists at all. Its
+  *recommendation* is superseded, because the apparatus is now pointed at a
+  different question. Noted without touching the body.
+- `reports/DRIFT_SWEEP_DESIGN.md` — bannered through `scripts/71`, since the arm
+  no longer exists.
+- `tools/audit_report/README.md` — the audit PDF it builds is dated 6 September
+  and predates two redesigns.
+
+**Two frozen preregistrations quoting the superseded target.** The feature study
+and the combination study both quote ≈ 0.93. They are frozen, so no prediction
+was touched; each gets an appended amendment stating that the budget-derived
+target is 0.990, that the gap they measure against is therefore **larger** not
+smaller, and that none of their predictions depends on the target's value.
+
+**`reports/PHASE3_REPORT.md` §7** listed next steps written on 1 September that
+did not include what the project actually did. Item 4 added — build an apparatus
+where the two missing numbers exist — and a new §9 on what that report could not
+settle and why no analysis could have closed it.
+
+### What I take from this
+
+Two of today's findings are the same shape: **a document that was true when
+written, was never false in any single edit, and became wrong by standing
+still.** Neither was caught by a gate, because gates here check that a number
+matches its source — and a stale sentence matches its source perfectly.
+
+The claims added today close that for one specific number. The general version —
+checking that two documents agree about the same quantity — is not solved, and I
+am recording that as an open weakness rather than implying the sweep fixed it.
+
+---
+
+## 21 September 2026 (later) — reassessed for "could Gayathri do this alone?"
+
+Different question from the last sweep. That one asked whether any document was
+out of date. This one asked: **someone is at a bench with a box, the parts, and
+this repository, and nobody to ask. What do they hit that is not covered?**
+
+Four things, and one of them was a hole rather than a gap.
+
+### The phase could not draw a figure
+
+Sixteen scripts and not one line of plotting. The computational half has
+`scripts/23_benchmark_figures.py`; the physical phase had nothing. A poster, a
+slide, and a judge at the table all need pictures, and a picture made by hand in
+a spreadsheet is one nobody can reproduce.
+
+`physical/code/figures.py` — six figures, all from stored data, one command.
+The two that matter most:
+
+- **`session_detail`** puts the drawn fault onset, the moment decoding failed,
+  and the moment the monitor warned on one time axis. It explains the entire
+  project in one image, which nothing else in this repository does.
+- **`false_alarm_evidence`** draws fault-free hours accumulating against the
+  rule-of-three bound, with the 30-hour mark where "zero alarms" finally means
+  "inside the budget". The campaign-length argument has been a paragraph since
+  yesterday; now it is a picture, and a far harder one to wave away.
+
+Deliberately not drawn: any dual-axis chart pairing lead time against
+false-alarm rate, and any single combined score. Opposite signs of "good", and
+the trade-off is the finding.
+
+**Two bugs the figures exposed**, which is the usual reason to draw something:
+
+1. `analyze_correlation.py` took `--table` where the other three analysis
+   scripts take `--tag`. So it read a *tagged* table and wrote an **untagged**
+   result — a dry run silently overwrote the real P-4 output. Four scripts that
+   do the same kind of job should take the same arguments; this one did not, and
+   the inconsistency was invisible until something tried to find its output.
+2. The correlation scatter put every fault-free session on the y-axis, because
+   risk scores span three orders of magnitude. The fault-free half is where the
+   false-alarm rate comes from, so it has to be visible. Log axis when the range
+   warrants it.
+
+### There was no way to exclude a bad session
+
+The protocol has said since it was written that a session is discarded only for
+a recorded mechanical reason, never for its result, and that every discard is
+logged. **It provided no mechanism.** So the only ways to act on it were to
+delete raw data — which nothing here is allowed to do — or to edit the analysis
+script, which is worse.
+
+`physical/data/EXCLUSIONS.csv` now exists: `folder,reason,excluded_at`.
+`make_session_table.py` honours it, and **refuses outright** if a row has no
+reason. An unexplained exclusion cannot be told apart from dropping a session
+because of how it turned out, so the file will not let you write one.
+
+This is the second time this week a rule existed in prose with nothing
+enforcing it. The first was P-5's onsets. Both were found by asking what the
+code actually does rather than by re-reading the document that describes it.
+
+### Nothing checked whether a campaign was still sound
+
+A campaign runs for nights. Almost everything that can go wrong with it produces
+**recordings that look fine**: the screen sleeps and every later session is a
+dark frame; the room warms and every channel drifts; the disk fills and sessions
+truncate; a plan file gets touched and its onset no longer matches its checksum.
+
+`physical/code/health_check.py`, to be run every recording day. Six checks,
+about a second. It deliberately **cannot see any result** — a daily check that
+could would slowly teach me to stop a campaign when the numbers looked good.
+
+**A bug in my own first version, caught on the dry run.** The drift check
+compared the earliest five recordings against the latest five, whatever they
+were. On any campaign that ends with degraded sessions it therefore fires every
+time — it was measuring the faults, which are *supposed* to change the signal.
+Now it compares fault-free recordings only. A check that cries wolf on correct
+behaviour is a check people switch off, which is worse than not having it.
+
+### Two documents that did not exist
+
+- **`10_TROUBLESHOOTING.md`** — every situation, organised by when it happens,
+  with the command. Camera not detected, screen slept mid-campaign, margin
+  drifted, filter applied late, plan checksum changed, no threshold found,
+  correlation inconclusive. Ends with what to do when something happens that is
+  not on the list, which is mostly: write down what you saw *before* you change
+  anything, because fixing it destroys the evidence.
+- **`11_SHOPPING_LIST.md`** — what to type into a search box, roughly what it
+  costs, what can be substituted, and what can be skipped and at what cost. The
+  critical path is four items and about $110; everything else can follow. It
+  also names the single most common mistake at this stage, which is buying a
+  camera cable separately and getting the Pi 5 kind that does not fit.
+
+### What I notice about all four
+
+None of these is a scientific gap. The design, the code and the preregistration
+were complete. **All four are the difference between a project that is specified
+and a project that one person can actually run alone** — and I only found them
+by changing the question from "is this correct?" to "what happens when she is
+standing there at 11pm and it does not work?"
+
+---
+
+## 21 September 2026 (evening) — the analysis would have crashed on the fourth night
+
+Told to keep going after saying there was nothing urgent left. So I went
+looking for what happens at scale rather than what happens in a dry run, and
+found the worst bug of the week.
+
+### What was wrong
+
+`make_session_table.py` loaded **every recording into memory at once** before
+doing anything with them:
+
+```python
+sessions = []
+for f in folders:
+    sessions.append(M.load_session(f, lag))
+```
+
+A five-minute session is 15000 frames x 384 channels x 8 bytes = **46 MB**.
+
+| Campaign | Held at once |
+|---|---|
+| 101 sessions (the floor) | 4.7 GB |
+| 217 sessions (the plan) | 10.0 GB |
+| 480 sessions (what I recommended) | **22.1 GB** |
+
+A Raspberry Pi 4 has 4 GB. A decent laptop has 8 or 16. **The campaign size I
+have been recommending since yesterday would have crashed the analysis**, and
+it would have crashed on the fourth night of recording — after thirty hours of
+unattended data collection, which is the worst possible moment to find out a
+script cannot hold what it just asked you to record.
+
+Every dry run I have done passed, because a dry run is twenty short sessions.
+The bug was invisible at the scale I was testing at and fatal at the scale I
+was prescribing. I did not notice the contradiction between those two numbers
+for two days.
+
+### The fix
+
+Three passes, none holding more than a couple of sessions:
+
+1. **Metadata only** for every session — `monitor.session_info()` reads
+   `capture_t.npy` (120 KB) and the plan JSON, never `capture.npy`. That is
+   enough to decide which group a session belongs to, how long it was, and what
+   fault it carried.
+2. **The decoder, streamed** — `fit_decoder_streaming()` accumulates the normal
+   equations Z'Z and Z'Y session by session instead of stacking the frames. The
+   accumulators are 385x385, about a megabyte, whatever the campaign size.
+3. **Scoring, one at a time** — load, score, write the window file, release.
+
+Measured on a 90-session dry run: **peak 0.20 GB**, against 0.83 GB if held at
+once. The ratio is what matters — it is bounded by a couple of sessions, not by
+the campaign.
+
+### Why the decoder change needed proving, not just writing
+
+A streaming fit is only a fix if it gives the **same answer**. If it does not,
+it silently changes every result in the phase, which is worse than the crash it
+replaces. Checked against the all-at-once version on identical data:
+
+```
+mean  max abs diff 0.000e+00
+std   max abs diff 9.960e-11
+W     max abs diff 1.079e-12
+median angular error  streaming 5.416636  stacked 5.416636
+```
+
+Identical to floating-point ordering. Two regression tests added
+(`StreamingDecoderMatchesStacked`), one checking that equality and one checking
+that `session_info` never reads `capture.npy` — because if it ever starts to,
+the memory problem comes straight back and nothing would notice until a
+campaign was large enough to crash again. 47 tests now.
+
+### What I take from this
+
+**I recommended a campaign size without checking that my own code could
+analyse it.** The 30-hour figure came out of a statistics calculation — the
+rule of three — and I never asked the separate engineering question of what 30
+hours of recording weighs.
+
+The pattern is the same one as the two stale documents yesterday: a number that
+was correct in the place it was computed, and wrong in its consequences
+somewhere else that nothing connected the two. The gates here check that a
+figure matches its source. Nothing checks that a figure is *survivable*.
+
+I do not have a general fix for that. What I have is one more specific test.
+
+---
+
+## 21 September 2026 (night) — kept asking "what breaks at real scale?", found a second silent failure
+
+The memory bug earlier today came from asking what happens at campaign scale
+rather than dry-run scale. Kept the same lens on three things I had never
+measured: the stimulus frame budget, analysis runtime, and storage.
+
+Two were fine. One was not, and it was the worst kind — an assumption that a
+slow computer breaks **silently**.
+
+### The stimulus might not have held 50 frames a second
+
+The whole apparatus assumes the screen shows exactly 50 frames a second, so
+that one camera frame corresponds to one neural bin. Nothing had ever measured
+whether the computer can draw that fast.
+
+The original inner loop called `np.repeat` **twice per frame**, expanding every
+patch value to pixels — allocating two 614,400-element arrays fifty times a
+second. Measured on a fast laptop: **6.9 ms per frame against a 20 ms budget**.
+A Raspberry Pi 4 is roughly five to ten times slower on this kind of numpy
+work, which puts it at or beyond the entire budget.
+
+**What would have happened.** Frames arrive late. Every camera frame's
+direction label is wrong by an unknown amount. The decoder looks worse than it
+is, uniformly, in every session — and **nothing in the recording says so.**
+`bench.py frames` would have caught the late frames afterwards, on a Pi, after
+the box was built and sealed.
+
+### The fix, and the optimisation that was 2.6x slower
+
+A patch is uniform, so its value can **broadcast** into `(cols, patch, rows,
+patch)` without ever being expanded to pixels. Same pixels, no allocation:
+
+| | ms/frame | est. Pi 4 budget |
+|---|---|---|
+| original, two `np.repeat` | 6.90 | 241% |
+| **broadcast, three channel writes** | **1.83** | **64%** |
+| broadcast, one `[..., None]` write | 4.84 | 169% |
+| packed 32-bit | 1.19 | 42% |
+
+**The one-broadcast-write version reads better than three explicit writes and
+is 2.6x slower**, because adding a trailing axis defeats the memory layout. I
+would have chosen it on looks. That is the whole argument for measuring.
+
+Took the three-writes version: 3.8x faster than the original, bit-identical
+pixels, no change to the apparatus. Did not take the packed variant — it is
+faster still but assumes a 32-bit surface format, and 64% of budget is enough.
+
+### `--benchmark`, because my estimate is not a fact about her Pi
+
+Every number above is from *this* machine, and the Pi multiplier is a rule of
+thumb. So `stimulus.py --benchmark 300` runs the real inner loop with no
+display attached — works over SSH — and reports what the machine actually
+sustains. It is now **B-0**, the first bench check, run on a laptop before
+buying anything and again on the Pi once it exists.
+
+When it fails it prints the three options in order, and says what each costs:
+move the stimulus to a faster computer (**re-measure the lag — two machines
+means two clocks**), lower `--patch` (**an apparatus change — re-run
+`bench.py margin`**), or drop to 25 fps (**halves the resolution of every
+lead-time claim**).
+
+Three regression tests added: identical pixels at four headings, identical
+under the geometric-rotation fault, and a guard that the dither is not being
+silently discarded — because if a patch came out uniform, the fast and slow
+versions would agree perfectly while the apparatus recorded nothing but noise.
+50 tests now.
+
+### The two that were fine, measured rather than assumed
+
+| | Per session | 480 sessions |
+|---|---|---|
+| Raw data | 23.7 MB | **11.4 GB** |
+| Analysis | 0.58 s | **5 min** |
+
+11.4 GB fits on a 32 GB card beside the OS but not comfortably, so the docs now
+say to move recordings to the USB drive as you go, and the shopping list says
+64 GB is worth the few extra dollars. All of these replaced estimates I had
+written earlier with measurements.
+
+### The pattern, three for three
+
+Memory, frame rate, and yesterday's two stale documents are the same shape: a
+quantity that was right where it was computed and wrong in its consequences
+somewhere nothing connected the two. Each was invisible at the scale I was
+testing and fatal at the scale I was prescribing.
+
+I have no general fix. What I have now is the habit of asking, for every number
+I put in a document, **what does this weigh, and what does it cost to hold?**

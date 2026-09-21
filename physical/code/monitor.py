@@ -225,6 +225,61 @@ def load_session(folder: Path, lag_s: float = 0.0) -> Session:
     return Session(int(s), int(b), X, heading[idx], tc - tc[0], plan, folder)
 
 
+@dataclass
+class SessionInfo:
+    """Everything about a recording EXCEPT the recording itself.
+
+    A campaign of 480 five-minute sessions is 22 GB of camera data. Nothing can
+    hold that in memory, and nothing needs to: deciding which group a session
+    belongs to, how long it was, and what fault it carried takes a few hundred
+    bytes of metadata, not 46 MB of frames.
+
+    So the table builder reads this first for every session, works out the
+    groups, and only then loads sessions one at a time to score them. Without
+    that split the analysis crashes on the fourth night of recording, which is
+    the worst possible moment to discover it.
+    """
+    folder: Path
+    session: int
+    block: int
+    kind: str
+    plan: dict | None
+    n_frames: int
+    duration_seconds: float
+
+    @property
+    def healthy(self) -> bool:
+        return bool(self.plan["healthy"]) if self.plan else True
+
+    @property
+    def name(self) -> str:
+        return self.folder.name
+
+
+def session_info(folder: Path) -> SessionInfo:
+    """Read a recording's metadata without touching its camera data."""
+    folder = Path(folder)
+    # capture_t.npy is one float64 per frame -- 120 KB for a five-minute
+    # session, against 46 MB for the frames themselves.
+    t = np.load(folder / "capture_t.npy", mmap_mode="r")
+    dur = float(t[-1] - t[0]) if len(t) > 1 else 0.0
+
+    j = folder / "session.json"
+    kind = json.loads(j.read_text()).get("kind", "experiment") if j.exists() else "experiment"
+
+    plan_file = folder.parent.parent / "onsets" / f"{folder.name}.json"
+    if not plan_file.exists():
+        plan_file = DATA / "onsets" / f"{folder.name}.json"
+    plan = json.loads(plan_file.read_text()) if plan_file.exists() else None
+    if plan is None:
+        noted = folder / "observed_onset.json"
+        if noted.exists():
+            plan = json.loads(noted.read_text())
+
+    s, b = folder.name.lstrip("s").split("_b")
+    return SessionInfo(folder, int(s), int(b), kind, plan, len(t), dur)
+
+
 def find_sessions(root: Path | None = None) -> list[Path]:
     root = Path(root) if root else DATA / "raw"
     return sorted((p for p in root.glob("s*_b*") if (p / "capture.npy").exists()),
@@ -255,6 +310,57 @@ def fit_decoder(X: np.ndarray, heading: np.ndarray) -> tuple:
     A = Z.T @ Z + RIDGE * len(Z) * np.eye(Z.shape[1])
     W = np.linalg.solve(A, Z.T @ Y)
     return W, mean, std
+
+
+def fit_decoder_streaming(folders, lag: float = 0.0) -> tuple:
+    """The same decoder, fitted without holding every session in memory.
+
+    `fit_decoder` needs the whole matrix at once, which is fine for one session
+    and impossible for fifty. Since more calibration sessions are strictly
+    better -- each one is a fault-free session that does NOT have to be spent on
+    fitting -- the fit set is the part of a campaign most likely to grow, and it
+    is the last place that should have a size limit.
+
+    Two passes, each loading one session at a time:
+
+      1. mean and standard deviation per channel, from running sums.
+      2. the normal equations Z'Z and Z'Y, accumulated session by session.
+
+    Peak memory is one session, and the accumulators are 385x385 -- about a
+    megabyte -- whatever the campaign size. The result is identical to
+    `fit_decoder` on the concatenated data, up to floating-point ordering.
+    """
+    folders = [Path(f) for f in folders]
+    if not folders:
+        raise ValueError("no sessions to fit the decoder on")
+
+    # ---- pass 1: per-channel mean and standard deviation -----------------
+    n_total = 0
+    s1 = s2 = None
+    for f in folders:
+        X = load_session(f, lag).X
+        if s1 is None:
+            s1, s2 = np.zeros(X.shape[1]), np.zeros(X.shape[1])
+        s1 += X.sum(axis=0)
+        s2 += (X * X).sum(axis=0)
+        n_total += len(X)
+    mean = s1 / n_total
+    var = np.maximum(s2 / n_total - mean * mean, 0.0)
+    std = np.sqrt(var)
+    std[std < 1e-12] = 1.0
+
+    # ---- pass 2: the normal equations ------------------------------------
+    d = len(mean) + 1
+    A = np.zeros((d, d))
+    B = np.zeros((d, 2))
+    for f in folders:
+        sess = load_session(f, lag)
+        Z = np.hstack([(sess.X - mean) / std, np.ones((len(sess.X), 1))])
+        Y = np.column_stack([np.cos(sess.heading), np.sin(sess.heading)])
+        A += Z.T @ Z
+        B += Z.T @ Y
+    A += RIDGE * n_total * np.eye(d)
+    return np.linalg.solve(A, B), mean, std
 
 
 def angular_error(X: np.ndarray, heading: np.ndarray, dec) -> np.ndarray:

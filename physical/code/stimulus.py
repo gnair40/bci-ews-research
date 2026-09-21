@@ -89,6 +89,80 @@ HERE = Path(__file__).resolve().parent
 PREF_FILE = HERE.parent / "data" / "preferred_directions.npy"
 
 
+def benchmark(a) -> int:
+    """How fast can THIS machine draw the pattern? Measured, not estimated.
+
+    The frame budget is the one assumption in this design that a slow computer
+    can break silently: if the stimulus cannot keep up, frames are late, the
+    direction label on each camera frame is wrong by an unknown amount, and
+    nothing in the recording says so. `bench.py frames` catches it afterwards.
+    This catches it beforehand, in ten seconds, before a campaign is planned
+    around a frame rate the machine cannot hold.
+
+    It runs the real inner loop — same arithmetic, same array shapes — with no
+    display attached, so it works over SSH.
+    """
+    import time as _t
+
+    n = a.cols * a.rows
+    rng = np.random.default_rng(a.seed)
+    pref = rng.uniform(0, 2 * math.pi, n)
+    W, H = a.cols * a.patch, a.rows * a.patch
+    dither = rng.random((W, H)).astype(np.float32)
+    dither_blocks = dither.reshape(a.cols, a.patch, a.rows, a.patch)
+    frame_buf = np.empty((W, H, 3), dtype=np.uint8)
+    buf_blocks = frame_buf.reshape(a.cols, a.patch, a.rows, a.patch, 3)
+    gain = np.ones(n)
+
+    def one(heading):
+        b = (a.base + a.depth * np.cos(heading - pref)) * a.brightness * gain
+        t = np.clip(b, 0, 1) * 255.0
+        lo = np.floor(t)
+        blk = lo.reshape(a.rows, a.cols).T[:, None, :, None]
+        frc = (t - lo).reshape(a.rows, a.cols).T[:, None, :, None]
+        px = blk.astype(np.uint8) + (dither_blocks < frc)
+        buf_blocks[..., 0] = px
+        buf_blocks[..., 1] = px
+        buf_blocks[..., 2] = px
+
+    for _ in range(10):
+        one(1.0)
+    t0 = _t.perf_counter()
+    for i in range(a.benchmark):
+        one(float(rng.uniform(0, 2 * math.pi)))
+    per = (_t.perf_counter() - t0) / a.benchmark
+
+    budget = 1.0 / a.fps
+    used = per / budget
+    print(f"screen              {W} x {H} = {W * H:,} pixels "
+          f"({a.cols}x{a.rows} patches of {a.patch}x{a.patch})")
+    print(f"frames measured     {a.benchmark}")
+    print(f"per frame           {per * 1000:.2f} ms")
+    print(f"budget at {a.fps} fps    {budget * 1000:.1f} ms")
+    print(f"used                {used:.0%} of the budget")
+    print(f"sustainable rate    {1 / per:.0f} fps, arithmetic only")
+    print()
+    print("This is the drawing arithmetic alone. pygame's blit and the display")
+    print("flip cost more on top, so treat anything above about 60% as tight.")
+    print()
+    if used < 0.6:
+        print(f"PASS — this machine can hold {a.fps} fps with room to spare.")
+        return 0
+    print(f"FAIL — {a.fps} fps is not safe on this machine. In order of "
+          f"preference:")
+    print("  1. Run the stimulus on a faster computer with the screen attached,")
+    print("     and the capture on the Pi. Then re-measure the lag (bench.py")
+    print("     lag) — two machines means two clocks.")
+    print(f"  2. Lower --patch. It is {a.patch} now; 24 costs about a third as")
+    print("     much. This SHRINKS THE PATTERN ON SCREEN and changes how many")
+    print("     camera pixels see each patch, so it is an apparatus change:")
+    print("     re-run bench.py margin afterwards and record it in the log.")
+    print("  3. Drop to --fps 25 and record twice as long per session. The")
+    print("     analysis window is 30 s either way; you halve the resolution")
+    print("     of every lead-time claim, so say so in the write-up.")
+    return 1
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -109,7 +183,14 @@ def main() -> int:
                     help="a JSON file from draw_onset.py")
     ap.add_argument("--seed", type=int, default=20260920)
     ap.add_argument("--out", default="physical/data/stim_log.csv")
+    ap.add_argument("--benchmark", type=int, default=0, metavar="N",
+                    help="run N frames of the real arithmetic with NO display "
+                         "and report the frame rate this machine can sustain. "
+                         "Run it on the Pi before planning a campaign")
     a = ap.parse_args()
+
+    if a.benchmark:
+        return benchmark(a)
 
     plan = json.loads(Path(a.plan).read_text()) if a.plan else None
     if plan:
@@ -144,10 +225,19 @@ def main() -> int:
     dither = rng.random((W, H)).astype(np.float32)
     frame_buf = np.empty((W, H, 3), dtype=np.uint8)
 
-    def expand(vals: np.ndarray) -> np.ndarray:
-        """One value per square -> one value per screen pixel, in pygame (x,y)."""
-        g = vals.reshape(a.rows, a.cols).T
-        return np.repeat(np.repeat(g, a.patch, 0), a.patch, 1)
+    # The screen, seen as blocks rather than pixels. A patch is uniform, so a
+    # per-patch value broadcasts into (cols, patch, rows, patch) without ever
+    # being expanded to pixels. The first version of this loop called np.repeat
+    # twice per frame, allocating two 614,400-element arrays 50 times a second,
+    # and measured 6.9 ms per frame on a fast laptop -- which extrapolates to
+    # more than the whole 20 ms budget on a Raspberry Pi 4. This produces
+    # bit-identical pixels in 1.8 ms. See --benchmark.
+    dither_blocks = dither.reshape(a.cols, a.patch, a.rows, a.patch)
+    buf_blocks = frame_buf.reshape(a.cols, a.patch, a.rows, a.patch, 3)
+
+    def blocks(vals: np.ndarray) -> np.ndarray:
+        """One value per square -> shape that broadcasts over its pixels."""
+        return vals.reshape(a.rows, a.cols).T[:, None, :, None]
 
     # Per-channel gain, which is what GAIN_DRIFT changes once the onset passes.
     gain = np.ones(n)
@@ -202,11 +292,14 @@ def main() -> int:
                 t = np.roll(t.reshape(a.rows, a.cols), roll_after, axis=1).ravel()
 
             lo = np.floor(t)
-            px = expand(lo) + (dither < expand(t - lo))
-            v = px.astype(np.uint8)
-            frame_buf[:, :, 0] = v
-            frame_buf[:, :, 1] = v
-            frame_buf[:, :, 2] = v
+            px = blocks(lo).astype(np.uint8) + (dither_blocks < blocks(t - lo))
+            # Three explicit channel writes, not one broadcast write. The
+            # broadcast version reads nicer and measured 2.6x SLOWER, because
+            # adding a trailing axis defeats the memory layout. Measured, not
+            # assumed.
+            buf_blocks[..., 0] = px
+            buf_blocks[..., 1] = px
+            buf_blocks[..., 2] = px
             pygame.surfarray.blit_array(screen, frame_buf)
             pygame.display.flip()
 

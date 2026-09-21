@@ -1,12 +1,35 @@
 # DATASET_README — Pun et al. (2024) MINDFUL intracortical BCI dataset
 
 **Maintained by:** Gayathri Nair · ISEF Year 1 project
-**Last updated:** 2026-08-25
-**Status:** ⚠️ **Dataset NOT yet downloaded.** Network access to Dryad is blocked in
-the current environment (see [§7](#7-current-blocker-network-access)). Everything in
-this document is sourced from the authors' published analysis code and from the
-literature, and is labelled accordingly. **No claim here has been checked against the
-actual data files.**
+**Last updated:** 2026-09-21 (status block only; the body is as written on
+2026-08-25 and is labelled accordingly)
+
+**Status: the dataset was downloaded on 2026-08-25 and has been analysed since.**
+Version 6 from Dryad, 2 files,
+412 MB, SHA-256 verified against `data/raw/download_manifest.json`.
+
+> ## Corrected 21 September 2026
+>
+> This block previously read: *"⚠️ **Dataset NOT yet downloaded.** Network access
+> to Dryad is blocked in the current environment (see §7). Everything in this
+> document is sourced from the authors' published analysis code and from the
+> literature... **No claim here has been checked against the actual data
+> files.**"*
+>
+> That was true on 25 August and stopped being true days later. It was still
+> there on 21 September, by which point the dataset had been downloaded,
+> loaded, verified against the depositors' own analysis code, and used for
+> every result in this repository. **A reader arriving at this file would have
+> concluded the project had no data.**
+>
+> §7's "current blocker" is likewise historical; the egress problem was
+> resolved and the download script has run successfully many times since.
+>
+> **The body below is unchanged.** Its [CODE] / [LIT] / [UNVERIFIED] labels
+> describe what was known *before the files were opened*, and that record is
+> worth keeping. Where an [UNVERIFIED] item has since been settled, the answer
+> is in `reports/DATASET_EXPLORATION.md`, which is generated from the real
+> files.
 
 ---
 
@@ -325,6 +348,12 @@ no performance metrics at all. Excluded trials: **37 of 2,021 for T11 (1.83%)**,
 > be mentioned in any write-up. Consider contacting the authors.
 
 ## 7. Getting the data: network access and Dryad's anti-bot challenge
+
+> **Resolved, and kept as a record — note added 21 September 2026.** The egress
+> block described below was lifted on 25 August 2026 and the dataset downloaded
+> the same day. `scripts/01_download_dataset.py` has run successfully many times
+> since. Nothing in this section is a current obstacle; it is the record of one
+> that was.
 
 ### 7.1 Network access — RESOLVED
 

@@ -40,3 +40,23 @@ Fake recordings, made by `physical/code/dryrun.py`, so that the analysis can be
 tested before the apparatus exists. They are in a separate folder, they are
 marked `SYNTHETIC` inside, and they are excluded from Git. **No number produced
 from them belongs in the write-up.**
+
+
+## `EXCLUSIONS.csv`
+
+How a session is set aside **without deleting raw data**, which nothing here is
+allowed to do.
+
+```
+folder,reason,excluded_at
+s10_b34,screen slept; dark frames from 40 s onward,2026-10-04
+```
+
+`make_session_table.py` reads it and leaves those sessions out of every group
+and every number. **A row with no reason is refused outright.** An exclusion
+with no recorded reason is indistinguishable from dropping a session because of
+how it turned out, and the protocol only permits discards for recorded
+mechanical reasons.
+
+It is committed, because which sessions were set aside and why is part of the
+result.

@@ -75,6 +75,7 @@ from scipy import stats
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
+sys.path.insert(0, str(REPO / "physical" / "code"))
 
 inj = import_module("17_fault_injector")
 dec = import_module("18_reference_decoder")
@@ -570,3 +571,154 @@ class InversionRefusesOffCurve(unittest.TestCase):
         got = sweep.invert(self.taus, dented, 0.32)
         self.assertTrue(np.isfinite(got))
         self.assertTrue(self.taus[0] <= got <= self.taus[-1])
+
+
+# ---------------------------------------------------------------------------
+class StreamingDecoderMatchesStacked(unittest.TestCase):
+    """The streaming decoder fit must equal the all-at-once one, exactly.
+
+    Corresponds to a real defect, found 21 September 2026:
+    `make_session_table.py` loaded every recording into memory at once. At the
+    campaign size this project recommends -- about 480 five-minute sessions --
+    that is 22 GB, which no machine here has. It would have crashed on the
+    fourth night of recording, after thirty hours of data collection, which is
+    the worst possible moment to discover a memory bug.
+
+    The fix streams the fit, accumulating the normal equations session by
+    session instead of stacking the frames. A streaming fit is only a fix if it
+    gives the SAME answer -- otherwise it silently changes every result -- so
+    that equality is what is tested here, on data where both can be computed.
+    """
+
+    def setUp(self):
+        import monitor as M
+        self.M = M
+        rng = np.random.default_rng(11)
+        self.pref = rng.uniform(0, 2 * np.pi, 24)
+
+    def _fake(self, n, seed):
+        rng = np.random.default_rng(seed)
+        head = np.repeat(rng.uniform(0, 2 * np.pi, n // 50 + 1), 50)[:n]
+        X = 128.0 + 6.0 * np.cos(head[:, None] - self.pref[None, :])
+        X += rng.normal(0, 1.0, X.shape)
+        return X, head
+
+    def test_normal_equations_match_stacking(self):
+        """Same weights, same normalisation, from the same data."""
+        M = self.M
+        parts = [self._fake(400, s) for s in (1, 2, 3)]
+        X = np.vstack([p[0] for p in parts])
+        h = np.concatenate([p[1] for p in parts])
+
+        W_stack, mu_stack, sd_stack = M.fit_decoder(X, h)
+
+        # Reproduce the streaming arithmetic directly, without touching disk.
+        n_total = sum(len(p[0]) for p in parts)
+        s1 = sum(p[0].sum(axis=0) for p in parts)
+        s2 = sum((p[0] * p[0]).sum(axis=0) for p in parts)
+        mu = s1 / n_total
+        sd = np.sqrt(np.maximum(s2 / n_total - mu * mu, 0.0))
+        sd[sd < 1e-12] = 1.0
+        d = len(mu) + 1
+        A = np.zeros((d, d))
+        B = np.zeros((d, 2))
+        for Xi, hi in parts:
+            Z = np.hstack([(Xi - mu) / sd, np.ones((len(Xi), 1))])
+            Y = np.column_stack([np.cos(hi), np.sin(hi)])
+            A += Z.T @ Z
+            B += Z.T @ Y
+        A += M.RIDGE * n_total * np.eye(d)
+        W_stream = np.linalg.solve(A, B)
+
+        self.assertLess(np.abs(mu - mu_stack).max(), 1e-9)
+        self.assertLess(np.abs(sd - sd_stack).max(), 1e-7)
+        self.assertLess(np.abs(W_stream - W_stack).max(), 1e-8)
+
+    def test_session_info_does_not_read_the_frames(self):
+        """Metadata must be readable without touching capture.npy.
+
+        This is the property the whole fix rests on: if `session_info` ever
+        starts loading the recording, the memory problem comes straight back
+        and nothing would notice until a campaign was large enough to crash.
+        """
+        import inspect
+        src = inspect.getsource(self.M.session_info)
+        self.assertNotIn("capture.npy", src)
+        self.assertIn("capture_t.npy", src)
+
+
+# ---------------------------------------------------------------------------
+class DitherBlocksMatchPixelExpansion(unittest.TestCase):
+    """The fast stimulus must paint bit-identical pixels to the slow one.
+
+    Corresponds to a real problem, measured 21 September 2026: the original
+    inner loop called np.repeat twice per frame, allocating two 614,400-element
+    arrays fifty times a second. It measured 6.9 ms per frame on a fast laptop,
+    which extrapolates to more than the entire 20 ms budget on a Raspberry Pi 4
+    -- so the stimulus would silently have failed to hold 50 fps, every camera
+    frame's direction label would have been wrong by an unknown amount, and
+    nothing in the recording would have said so.
+
+    The fix broadcasts a per-patch value into (cols, patch, rows, patch)
+    instead of expanding to pixels. A faster stimulus is only a fix if it draws
+    THE SAME SCREEN -- otherwise it changes the apparatus -- so that is what is
+    tested, including the geometric-rotation path which reorders patches before
+    the expansion.
+    """
+
+    def setUp(self):
+        self.cols, self.rows, self.patch = 24, 16, 40
+        rng = np.random.default_rng(3)
+        self.n = self.cols * self.rows
+        self.pref = rng.uniform(0, 2 * np.pi, self.n)
+        W, H = self.cols * self.patch, self.rows * self.patch
+        self.dither = rng.random((W, H)).astype(np.float32)
+
+    def _values(self, heading, roll=0):
+        t = np.clip(0.5 + 0.00211 * np.cos(heading - self.pref), 0, 1) * 255.0
+        if roll:
+            t = np.roll(t.reshape(self.rows, self.cols), roll, axis=1).ravel()
+        return t
+
+    def _slow(self, t):
+        def expand(v):
+            g = v.reshape(self.rows, self.cols).T
+            return np.repeat(np.repeat(g, self.patch, 0), self.patch, 1)
+        lo = np.floor(t)
+        return (expand(lo) + (self.dither < expand(t - lo))).astype(np.uint8)
+
+    def _fast(self, t):
+        db = self.dither.reshape(self.cols, self.patch, self.rows, self.patch)
+        blocks = lambda v: v.reshape(self.rows, self.cols).T[:, None, :, None]
+        lo = np.floor(t)
+        px = blocks(lo).astype(np.uint8) + (db < blocks(t - lo))
+        return px.reshape(self.cols * self.patch, self.rows * self.patch)
+
+    def test_identical_pixels(self):
+        for heading in (0.0, 1.2345, 3.0, 5.9):
+            t = self._values(heading)
+            self.assertTrue(np.array_equal(self._slow(t), self._fast(t)),
+                            f"pixels differ at heading {heading}")
+
+    def test_identical_under_geometric_rotation(self):
+        """The rotation fault reorders patches; the expansion must follow."""
+        t = self._values(2.0, roll=6)
+        self.assertTrue(np.array_equal(self._slow(t), self._fast(t)))
+
+    def test_the_dither_actually_does_something(self):
+        """A guard against both versions being trivially equal.
+
+        At the calibrated depth the modulation is about half a brightness
+        level, so neighbouring patches must differ by exactly one level in
+        SOME pixels and not others. If the dither were being discarded, every
+        pixel in a patch would be equal and this test would pass vacuously
+        while the apparatus recorded nothing but noise.
+        """
+        t = self._values(1.0)
+        img = self._fast(t)
+        patch0 = img[:self.patch, :self.patch]
+        self.assertGreater(len(np.unique(patch0)), 1,
+                           "a patch is uniform -- the dither is being lost")
+        self.assertLessEqual(int(patch0.max()) - int(patch0.min()), 1,
+                             "a patch spans more than one brightness level")
+

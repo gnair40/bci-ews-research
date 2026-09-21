@@ -62,3 +62,4 @@ physical/data/dryrun/
 # Anything produced from those fakes.
 physical/data/*_dryrun*
 physical/data/results/*_dryrun*
+physical/data/figures/*_dryrun*

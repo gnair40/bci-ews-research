@@ -528,19 +528,26 @@ details[open] summary{border-bottom:1px solid var(--rule)}
 
   <div class="note fail">
     <span class="lbl">Headline</span>
-    <p><strong>None of the 36 passed.</strong> Not the published measure from the literature, not the simple activity count, not the purpose-built monitor.</p>
+    <p><strong>None of the 48 passed.</strong> Not the published measure from the literature, not the simple activity count, not the purpose-built monitor.</p>
   </div>
 
   <div class="tw"><table>
-    <thead><tr><th>Of 36 configurations</th><th>Count</th><th></th></tr></thead>
+    <thead><tr><th>Of 48 configurations</th><th>Count</th><th></th></tr></thead>
     <tbody>
-      <tr><td>Found a usable threshold at all</td><td class="num">21</td><td>58%</td></tr>
-      <tr><td>Warned <em>before</em> performance fell</td><td class="num">5</td><td>14%</td></tr>
-      <tr><td>Stayed within the false-alarm budget</td><td class="num">1</td><td>3%</td></tr>
+      <tr><td>Found a usable threshold at all</td><td class="num">47</td><td>98%</td></tr>
+      <tr><td>Warned <em>before</em> performance fell</td><td class="num">10</td><td>21%</td></tr>
+      <tr><td>Stayed within the false-alarm budget</td><td class="num">3</td><td>6%</td></tr>
       <tr><td><strong>Passed the silence gate</strong></td><td class="num pos">0</td><td>0%</td></tr>
       <tr><td><strong>Passed all five gates</strong></td><td class="num pos">0</td><td>0%</td></tr>
     </tbody>
   </table></div>
+  <p style="font-size:13.5px;color:var(--ink-2)">Updated 21 Sep 2026. This table
+  read <em>36 configurations — 21 / 5 / 1 / 0 / 0</em> until then. The grid grew
+  from 36 to 48 when a fourth transform was added, and the "found a threshold"
+  row rose from 21 to 47 when a bug was fixed: the threshold search had stopped
+  at 59 while scores reach 3,200, so configurations were being reported as
+  <em>no operating point exists</em> when the truth was <em>none exists below an
+  arbitrary bound</em>. The two rows that matter did not move.</p>
 
   <h3>What actually went wrong — and it is not what you would guess</h3>
 
