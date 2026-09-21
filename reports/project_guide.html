@@ -237,21 +237,30 @@ details[open] summary{border-bottom:1px solid var(--rule)}
 <div class="wrap">
 
 <header class="mast">
-  <p class="eyebrow">ISEF Project Reference · Updated 28 Aug 2026</p>
+  <p class="eyebrow">ISEF Project Reference · Updated 21 Sep 2026</p>
   <h1>Decoder-Guard</h1>
-  <p class="standfirst">A brain-computer interface slowly stops working, and nobody notices until it fails. This is everything we have built to catch that, why we changed course once, and what is left to do.</p>
+  <p class="standfirst">A brain-computer interface slowly stops working, and nobody notices until it fails. This is everything built to catch that, why the project changed course twice, and what is left to do.</p>
 </header>
 
 <dl class="strip">
-  <div><dt>Project stage</dt><dd>Phase 3 · first results in</dd></div>
+  <div><dt>Project stage</dt><dd>Computational done · physical phase awaiting parts</dd></div>
   <div><dt>Data</dt><dd>Public, de-identified</dd></div>
   <div><dt>Human participants</dt><dd>None</dd></div>
-  <div><dt>Deliverable</dt><dd>Software system</dd></div>
-  <div><dt>Configurations tested</dt><dd>36 · none passed</dd></div>
+  <div><dt>Deliverable</dt><dd>A benchmark, and the apparatus that makes it measurable</dd></div>
+  <div><dt>Configurations tested</dt><dd>48 · none passed all five gates</dd></div>
   <div><dt>Separation on task change</dt><dd>15× and 70×</dd></div>
   <div><dt>Accuracy needed</dt><dd>0.99 · have 0.67–0.74</dd></div>
-  <div><dt>Code committed</dt><dd>39 commits, 24 scripts</dd></div>
+  <div><dt>Code</dt><dd>76 analysis scripts · 13 for the apparatus</dd></div>
 </dl>
+
+<div class="note warn" style="margin:28px 0">
+  <span class="lbl">What changed on 20 September 2026 — read this before the rest</span>
+  <p>Most of this guide was written on 28 August, and the parts describing the computational work are still accurate. <strong>The goal changed twice since, and the second change was larger than the first.</strong></p>
+  <p>The project set out to <em>build</em> a monitor that warns before a brain implant's decoder fails. It built one, measured it honestly, and it does not work: the warning arrives about twenty seconds <em>after</em> the failure, at 3.4 false alarms an hour against a budget of 0.1.</p>
+  <p>Then a search of the literature established something that reframed everything: <strong>this kind of monitor is not new.</strong> Self-diagnosing sensors are a thirty-year-old idea with a national standard behind them, and in this field MINDFUL (2024) already reports its instability score correlating with cursor performance at r = 0.93 and 0.72, and proposes it for deciding when to recalibrate.</p>
+  <p>What <em>is</em> missing is not another monitor. It is the two numbers that decide whether any of them can be used on a person: <strong>how early it warns, and how often it warns when nothing is wrong.</strong> No published decoder-health monitor has either, because measuring them needs failures whose start times were recorded in advance and tens of hours of genuinely fault-free recording — and no human implant recording has either.</p>
+  <p>So the project now builds a physical apparatus that has both, and asks a question nobody has asked: <strong>does the correlation this field validates its monitors with actually support the conclusions drawn from it?</strong> See <code>physical/README.md</code>; the reasoning is in <code>physical/docs/00_WHY_THIS_PHASE_EXISTS.md</code>.</p>
+</div>
 
 <!-- ================= THE PROBLEM ================= -->
 <section id="problem">
@@ -756,7 +765,8 @@ details[open] summary{border-bottom:1px solid var(--rule)}
 
 <section id="close">
   <h2>The one-sentence version</h2>
-  <p style="font-family:Spectral,Georgia,serif;font-size:21px;line-height:1.5;font-style:italic;color:var(--ink-2)">Build the thing that notices a brain-computer interface is failing before it fails — and, because nobody could previously prove such a thing works, build the test that proves it.</p>
+  <p style="font-family:Spectral,Georgia,serif;font-size:21px;line-height:1.5;font-style:italic;color:var(--ink-2)">People are being offered a device that says when a brain implant needs recalibrating, justified by a correlation. Build the instrument that measures the two things a correlation cannot tell you — how early it warns, and how often it cries wolf — and find out whether that justification holds.</p>
+  <p style="font-size:14px;color:var(--ink-2);margin-top:14px">The earlier version of this line, written 28 Aug 2026, read: <em>"Build the thing that notices a brain-computer interface is failing before it fails — and, because nobody could previously prove such a thing works, build the test that proves it."</em> The first half turned out to be the part somebody had already done, and the second half turned out to be the contribution.</p>
 </section>
 
 </div>

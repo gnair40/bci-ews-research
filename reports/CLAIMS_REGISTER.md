@@ -345,8 +345,13 @@ The decoder-guard operating point on T11 is 50.46, giving 3.41 false alarms per 
 
 ---
 
-**Coverage:** 96 of 97 verifier checks are cited by a register entry.
+**Coverage:** 96 of 102 verifier checks are cited by a register entry.
 
 Not cited by any entry:
 
+- `Decision-rate pooling factor (windows per episode), T11`
+- `False alarms/hour implied by a 10% per-episode rate, T11`
+- `Session-level AUC needed at a 10% false-flag rate (NOT the budget)`
+- `Session-level AUC needed at the 0.1/h budget, T11`
+- `Session-level AUC needed at the 0.1/h budget, T5`
 - `hardest mode pair, T11 (the real ceiling)`

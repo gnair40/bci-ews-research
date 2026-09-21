@@ -263,6 +263,33 @@
   </p>
 </header>
 
+<div class="thesis" style="border-color:#c2410c">
+  <div class="lab">Added 21 September 2026</div>
+  <p>
+    Everything below still stands — these five studies were about the archived
+    recordings, and nothing in them has changed. What changed is what the
+    project does <em>next</em>.
+  </p>
+  <p>
+    The five studies established that the monitor's failure is real and located.
+    A literature search afterwards established something else: <b>this kind of
+    monitor is not new</b> — MINDFUL (2024) already reports one correlating with
+    cursor performance at r&nbsp;=&nbsp;0.93 and 0.72. What nobody has reported,
+    for any monitor of this class, is <b>how early it warns</b> or <b>how often
+    it warns when nothing is wrong</b>, because measuring either needs failures
+    whose start times were recorded in advance and tens of hours of genuinely
+    fault-free recording. Archived human recordings have neither; a sealed box
+    with a camera in it has both.
+  </p>
+  <p>
+    One figure below was also corrected. The session-level AUC target quoted as
+    <b>0.933</b> was computed at a 10% false-flag rate, which at one decision
+    per episode is about thirteen times the 0.1-per-hour budget. Derived from
+    the budget it is <b>0.990</b>. The direction of the argument survives; the
+    magnitude was overstated. See <code>reports/OPERATING_POINT_BOUND.md</code>.
+  </p>
+</div>
+
 <div class="thesis">
   <div class="lab">What changed</div>
   <p>
@@ -914,13 +941,13 @@
     <div><b>Next build</b><span>A performance measure with range at the bad end <em>and</em> robustness to task geometry — angular error has neither.</span></div>
     <div><b>Known limit</b><span>On the worst sessions an injected fault moves the metric by less than half a degree. The ground truth there is nearly degenerate.</span></div>
     <div><b>Open</b><span>Does abstention work using assessment-block error, which a clinical BCI already collects periodically?</span></div>
-    <div><b>Designed</b><span>An original experiment: a $115 camera-and-LED sensor array, degraded on purpose, to test whether this failure is a fact about cortex or about any drifting array. The neural analysis makes falsifiable predictions about it.</span></div>
+    <div><b>Built next</b><span>A ~$150 camera-and-screen sensor array whose failures begin at moments drawn at random and checksummed <em>before each recording exists</em>. It supplies the two numbers no published decoder-health monitor has — how early it warns, and how often it warns when nothing is wrong — neither of which is measurable on any archived human recording. Specified, coded and preregistered in <code>physical/</code>.</span></div>
     <div><b>Blocked</b><span>A third participant (Card et al. 2024, T15) — the only way to test whether any of this generalises beyond two arrays.</span></div>
   </div>
 </div>
 
 <footer>
-  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 93 claims, all matching.</span>
+  <span>All figures recomputed from source by <code>scripts/31_verify_claims.py</code> — 102 claims, all matching (21 Sep 2026; the script prints the count).</span>
   <span>Public de-identified recordings. No human participants.</span>
   <span>Five automated gates; 5 claims withdrawn on evidence; every correction kept in place.</span>
 </footer>

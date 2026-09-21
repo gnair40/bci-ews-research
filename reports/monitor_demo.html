@@ -117,6 +117,20 @@ input[type=range]{flex:1;accent-color:var(--signal);min-width:80px}
   neural signal and reports whether the decoder can still be trusted. Four real
   episodes below, replayed through the actual monitor at its actual threshold —
   one of each thing it does, including the two it gets wrong.</p>
+  <p style="margin-top:14px;padding:12px 14px;border-left:3px solid #c2410c;
+            background:rgba(194,65,12,.06);font-size:14px;line-height:1.55">
+  <b>What this demo can and cannot show (added 21 Sep 2026).</b>
+  These are archived human recordings, so the onsets are ones this project
+  <em>injected</em> — real neural data, invented faults. That is enough to show
+  the monitor working and failing, which is what the four tabs do.
+  <br><br>
+  It is <b>not</b> enough to answer the two questions that decide whether such a
+  monitor could be used on a person: <b>how early does it warn</b>, and <b>how
+  often does it warn when nothing is wrong?</b> The first needs failures whose
+  start times were recorded before anyone looked; the second needs tens of hours
+  of genuinely fault-free recording, and these recordings contain about 1.4.
+  The physical-validation phase (<code>physical/</code>) exists to supply both.
+  </p>
 </header>
 
 <div class="tabs" id="tabs"></div>

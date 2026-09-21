@@ -40,7 +40,15 @@ Can early-warning signals detect impending deterioration in brain-computer inter
 
 ## Status
 
-Draft — research question and methodology are under investigation.
+**Superseded, and kept as the starting position.** This was written before any
+data existed. The fifteen-step procedure below was the plan; what actually
+happened, including the steps that were abandoned and why, is in
+`research/research_log.md`. The current plan is
+`research/RESEARCH_PLAN_2026-09-15.md` (submitted) and
+`research/RESEARCH_PLAN_DECEMBER_DRAFT.md` (in progress).
+
+Original status line, 2026: *Draft — research question and methodology are under
+investigation.*
 
 ## Current Procedure
 

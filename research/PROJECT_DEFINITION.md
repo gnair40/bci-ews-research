@@ -8,6 +8,26 @@ section was drafted.
 is frozen. `research/FROZEN_DESIGN.json` governs the *Phase 1–2* analysis only
 and is unaffected by anything in this document.
 
+> ## SUPERSEDED 21 September 2026 as a statement of what the project is
+>
+> This document worked backward from a final product that the evidence has since
+> changed. Two things in it are no longer what the project is doing:
+>
+> - **The research question and hypothesis** it derives were tested and answered
+>   — the hypothesis was falsified. The current question and hypothesis are in
+>   `physical/docs/01_RESEARCH_DESIGN.md`, and the reasoning that replaced them
+>   is in `physical/docs/00_WHY_THIS_PHASE_EXISTS.md`.
+> - **The hardware replay rig**, promoted here to "the main defence against
+>   circularity", has been superseded by the physical-validation phase, which
+>   asks a different question. See `research/RIG_PREREGISTRATION.md` §14.
+>
+> **What in it is still current:** Amendment 1 (no human participants, absolute
+> and unchanged), the account of why constructed ground truth is necessary, and
+> the record of how the project's framing was derived rather than assumed.
+>
+> It is kept unchanged because the difference between it and what replaced it is
+> part of the research record.
+
 ---
 
 ## Amendment 1 — 26 August 2026: no human participants

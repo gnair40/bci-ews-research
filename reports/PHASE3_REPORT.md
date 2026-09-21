@@ -241,6 +241,22 @@ per-channel variability, cross-channel covariance structure, spectral content.
 
 ## 7. Next steps, in priority order
 
+> **Updated 21 September 2026.** This list was written on 1 September, before
+> the audit that followed. **Item 4 is what the project actually did**, and it
+> reframes items 1 to 3 rather than replacing them: a third participant would
+> still be worth more than any detector improvement, but it would still not
+> supply an onset time or the tens of fault-free hours a false-alarm bound
+> needs. No human recording can.
+
+4. **Build an apparatus where the two missing numbers exist.** *(Added
+   21 September 2026; this is now the live work.)* Lead time depends on an onset
+   nobody recorded, and a rate of 0.1 per hour cannot be bounded from 1.4 hours
+   of fault-free recording. A physical multichannel sensor whose failures begin
+   at moments drawn and checksummed in advance supplies both, and can record
+   unattended for as long as the calendar allows. Specified, coded and
+   preregistered in [`physical/`](../physical/README.md); the reasoning is in
+   `physical/docs/00_WHY_THIS_PHASE_EXISTS.md`.
+
 1. **A third participant.** With two who disagree, this is worth more than any
    detector improvement. Card et al. 2024 (T15, 256 electrodes, different task,
    11.6 GB) is identified and costed; blocked only on Dryad credentials.
@@ -272,3 +288,48 @@ measured explanation of why no amount of averaging closes the gap.
 
 That is a more useful contribution than a fragile positive would have been, and
 every step of it is reproducible.
+
+---
+
+## 9. What this report could not settle, and what followed
+
+*Added 21 September 2026.*
+
+Two quantities decide whether a decoder-health monitor can be deployed: **how
+early it warns**, and **how often it warns when nothing is wrong.** This report
+gives figures for both, and neither is trustworthy, for reasons that are
+properties of the data rather than of the analysis.
+
+- **Lead time** is measured against an onset that, in the archived recordings,
+  nobody wrote down. The fault-injection benchmark fixes that for injected
+  faults, but injected faults are equations this project wrote.
+- **The false-alarm rate** rests on about **1.4 hours** of genuinely fault-free
+  recording. Bounding a rate of 0.1 per hour needs roughly **30**. That is not a
+  gap an analysis can close.
+
+No published decoder-health monitor has either number attached, for the same
+reasons. The state of the art is validated instead by **correlating** the
+monitor's score against task performance — which establishes that the two move
+together, and not whether the warning arrives in time or how often it is wrong.
+
+The physical-validation phase exists to supply both numbers on one set of
+recordings, and to place them beside the correlation the field reports. Its
+design, code and preregistration are in [`physical/`](../physical/README.md).
+
+**A correction made elsewhere, which this report did not need.** §3.5 above
+gives the AUC required for 80% detection at the budget as **0.990 and 0.991**,
+derived from the per-session false-flag rate the 0.1-per-hour budget actually
+allows (0.76% and 0.59%). That is correct and has been since 1 September.
+
+Six days later a different script began reporting the session-level target as
+**0.933**, computed at a **10%** false-flag rate — a round number that appears
+nowhere in the design, and which at one decision per episode is about thirteen
+times the budget. That figure propagated into three other documents and was
+corrected on 20 September (`reports/OPERATING_POINT_BOUND.md`).
+
+**The two numbers sat in the same repository, disagreeing, for two weeks.**
+Nothing caught it, because the automated gates check each figure against the
+data file it came from, and both figures were faithful to their own
+calculations. Cross-report agreement was not being checked at all. Both targets
+are now pinned in `scripts/31_verify_claims.py`, so the disagreement could not
+recur silently.

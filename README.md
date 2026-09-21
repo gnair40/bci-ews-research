@@ -26,6 +26,15 @@ The field has spent a decade learning to *correct* that drift and almost no
 effort on *noticing it early enough to act*. There is not even a standard way to
 test whether such a warning system works.
 
+## Where this is, as of 21 September 2026
+
+**The computational half is complete** and its result is below. **The physical
+half is specified, coded and preregistered, and waiting on parts.** It exists
+because two numbers that decide whether this class of monitor can be deployed —
+how early it warns, and how often it warns when nothing is wrong — cannot be
+measured on archived human recordings by anyone. Start at
+[`physical/README.md`](physical/README.md).
+
 ## The result, in one line
 
 **On this data, at the operating point the design specified, no configuration
@@ -119,6 +128,20 @@ coverage.
    chosen to flatter it.
 5. **The monitor works in the ways that were measurable and fails in the ways
    that were measured**, with the cause identified to three decimal places.
+6. **The cause was not the detector.** A false-alarm budget of 0.1 per hour was
+   being divided among 720 decisions an hour, demanding a per-decision
+   false-positive rate of 0.00014. Deciding once per session loosens that by the
+   pooling factor — to 0.0083, needing AUC 0.990 against 0.673–0.742 observed.
+   Better, but not a rescue.
+7. **Two numbers were still missing, and could not be measured here at all.**
+   Lead time depends on an onset nobody recorded, and 1.4 hours of genuinely
+   fault-free recording cannot bound a rate of 0.1 per hour. **No published
+   decoder-health monitor has either number attached.**
+8. **So a physical apparatus was designed to supply both** — failures beginning
+   at moments drawn at random and checksummed before each recording exists, and
+   campaigns that run unattended for the tens of hours a false-alarm bound
+   needs. That phase is specified, coded, and preregistered; see
+   [`physical/`](physical/README.md).
 
 ## Reproducing it
 
@@ -146,8 +169,10 @@ came from:
 python3 scripts/31_verify_claims.py
 ```
 
-It recomputes ninety-three headline figures from `data/processed/` and compares each
-against the value written in the reports. Run it before quoting any figure.
+It recomputes every headline figure from `data/processed/` and compares each
+against the value written in the reports — **102** of them as of 21 September
+2026, and the script prints the count, so this sentence cannot drift out of date
+without the script saying so. Run it before quoting any figure.
 
 ```bash
 python3 scripts/55_reproducibility_audit.py

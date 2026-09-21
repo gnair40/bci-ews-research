@@ -61,7 +61,7 @@ edited silently.
 
 | File | Status |
 |---|---|
-| `PROJECT_DEFINITION.md` | Written 26 August 2026, working backward from the final product. The upstream source of the plan's scientific content, and the place to change it. Still current as a statement of what the project is. |
+| `PROJECT_DEFINITION.md` | Written 26 August 2026, working backward from the final product. **Superseded 21 September 2026** as a statement of what the project is — the hypothesis it derives was falsified and the rig it promotes was redesigned. Amendment 1 (no human participants) and the reasoning about constructed ground truth remain current. |
 | `ISEF_RESEARCH_PLAN.md` | The earlier full-length draft mapped onto the form. Superseded as the submission document by `RESEARCH_PLAN_2026-09-15.md`, but it carries longer treatments of several sections that the December plan will need. **`[[RESEARCHER — decide whether this is retired or becomes the December draft.]]`** |
 | `research_plan.md` | Superseded 26 August 2026. The plan as it stood before any data existed. |
 | `procedures.md` | The Phase 1 source record: what was actually done, in order, during dataset acquisition. |

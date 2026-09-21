@@ -150,3 +150,27 @@ Dryad credentials.
 
 Freeze before computing any arm. Amend with a recorded reason rather than
 editing — the discipline that made the F3 null trustworthy.
+
+
+---
+
+## Amendment — 21 September 2026: the session-level target is 0.990, not 0.93
+
+**This does not change any prediction in this document, and nothing above has
+been edited.** It corrects a figure this document quotes for context.
+
+The session-level AUC target of ≈ 0.93 was computed as the AUC needed for 80%
+detection at a **10% false-flag rate** — a round number that appears nowhere in
+this project's design. At one decision per 4.6-minute episode, flagging 10% of
+healthy episodes is about **1.31 false alarms an hour**, roughly thirteen times
+the 0.1-per-hour budget, which this project set and has never relaxed.
+
+Derived from the budget instead, the target is **0.990** (T11) and **0.991**
+(T5), against the same observed 0.673 and 0.742. The gap this study measures
+itself against is therefore **larger** than the text above states, not smaller.
+
+`reports/OPERATING_POINT_BOUND.md` reports both figures and says which question
+each answers. The hypothesis, the features, the analysis plan and the
+falsification conditions in this document are unaffected: none of them depends
+on the value of the target, only on the improvement measured against the
+observed baseline.

@@ -840,6 +840,57 @@ def _iatt_rot():
     return _iatt("T11", "rotation_accuracy")
 
 
+# ---------------------------------------------------------------------------
+# The two session-level AUC targets.
+#
+# Added 21 September 2026. PHASE3_REPORT §3.5 has given 0.990 and 0.991 since
+# 1 September; scripts/28's report began giving 0.933 on 6 September, computed
+# at a 10% false-flag rate rather than from the 0.1/hour budget. The two sat in
+# this repository disagreeing for two weeks and nothing caught it, because every
+# gate checks a figure against the data file it came from and both were faithful
+# to their own calculation. Nothing was checking that two reports agree.
+#
+# Pinning both here is the narrowest fix that would have caught it: the
+# budget-derived target is now a claim, so a script that starts reporting a
+# different one has to disagree with the verifier rather than with a document
+# nobody re-reads.
+# ---------------------------------------------------------------------------
+
+@claim("Session-level AUC needed at the 0.1/h budget, T11", 0.990, 0.002,
+       "PHASE3_REPORT §3.5, OPERATING_POINT_BOUND")
+def _auc_needed_budget_t11():
+    return json.loads((OUT / "operating_point_bound.json").read_text())[
+        "by_participant"]["T11"]["auc_ep_needed_at_budget"]
+
+
+@claim("Session-level AUC needed at the 0.1/h budget, T5", 0.991, 0.002,
+       "PHASE3_REPORT §3.5, OPERATING_POINT_BOUND")
+def _auc_needed_budget_t5():
+    return json.loads((OUT / "operating_point_bound.json").read_text())[
+        "by_participant"]["T5"]["auc_ep_needed_at_budget"]
+
+
+@claim("Session-level AUC needed at a 10% false-flag rate (NOT the budget)",
+       0.933, 0.002, "OPERATING_POINT_BOUND — kept so the two cannot be confused")
+def _auc_needed_10pct():
+    return json.loads((OUT / "operating_point_bound.json").read_text())[
+        "by_participant"]["T11"]["auc_ep_needed"]
+
+
+@claim("False alarms/hour implied by a 10% per-episode rate, T11", 1.31, 0.02,
+       "OPERATING_POINT_BOUND — 13x the 0.1/h budget")
+def _alarms_at_10pct():
+    return json.loads((OUT / "operating_point_bound.json").read_text())[
+        "by_participant"]["T11"]["alarms_per_hour_at_10pct"]
+
+
+@claim("Decision-rate pooling factor (windows per episode), T11", 55.0, 0.5,
+       "OPERATING_POINT_BOUND — the looseness is this, not four orders")
+def _pooling_factor():
+    return json.loads((OUT / "operating_point_bound.json").read_text())[
+        "by_participant"]["T11"]["pooling_factor"]
+
+
 def main() -> int:
     print(f"{'claim':<52}{'claimed':>10}{'actual':>10}   status\n" + "-" * 88)
     bad = 0
