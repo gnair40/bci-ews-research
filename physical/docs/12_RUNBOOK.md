@@ -24,27 +24,29 @@ Where a step needs more explanation than fits here, it names the document.
   pip install -r requirements.txt
   ```
 
-  > ### ⚠ The default branch is not the project
+  > ### Why the `git checkout` line is there
   >
-  > **As of 24 September 2026, `main` is the repository as it stood on 16
-  > August: four files, no `physical/`, no `scripts/`.** All 182 commits of
-  > actual work live on branches. A plain `git clone` checks out `main`, so
-  > without the `git checkout` line above, *every command in this runbook
-  > fails with "No such file or directory"* — and it looks like your computer
-  > is broken rather than like you are on the wrong branch.
+  > `main` works — it is the project as it stood on **21 September 2026**, and
+  > a plain clone of it runs. What it does **not** yet have is the frozen
+  > preregistration and everything after it, because that work is still on a
+  > branch waiting to be merged.
   >
-  > Check which branch you are on and that the work is there:
+  > That matters here specifically: **you must not record data against an
+  > unfrozen preregistration.** A clone of `main` today would show
+  > `09_PREREGISTRATION.md` as a draft, and following this runbook from there
+  > would put you at step 6 being told to make a decision that has already
+  > been made.
+  >
+  > Check you are somewhere sensible:
   > ```bash
-  > git branch -a          # what exists
-  > git log --oneline -3   # should show September 2026, not August
-  > ls physical/code       # should list 17 .py files
+  > git log --oneline -3                                    # September 2026
+  > head -5 physical/docs/09_PREREGISTRATION.md             # must say FROZEN
   > ```
   >
-  > **The permanent fix is to merge the work into `main`**, so that a plain
-  > clone just works. That is a decision for Gayathri, not something to be
-  > done automatically, because it changes what the repository's front page
-  > shows to anyone who visits it — including a judge. Until it is done, this
-  > checkout line is required. Once it is done, delete this warning.
+  > **Once the branch is merged into `main`, delete the `git checkout` line
+  > and this note** — and delete the matching check in
+  > `scripts/69_command_check.py`, which exists only to keep this workaround
+  > from being silently dropped from one document while it is still needed.
 - [ ] **0.2** Check the software works.
   ```bash
   python3 physical/code/monitor.py --selftest

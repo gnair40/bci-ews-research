@@ -248,24 +248,28 @@ def check(cmd: str) -> tuple[bool, str]:
 
 
 def check_clone_lands_on_the_work() -> list[str]:
-    """Does the reader's very first command leave them somewhere usable?
+    """Does the reader's first command leave them with a FROZEN preregistration?
 
-    Added 24 September 2026. Every command in every document was accepted by
-    its own script, and the repository was still unusable to a new reader for
-    a reason no command-level check could see: `main` is the repository as it
-    stood on 16 August — four files, no `physical/`, no `scripts/`. A plain
-    `git clone` lands there, and then every later command fails with "No such
-    file or directory", which reads like a broken computer rather than a wrong
-    branch.
+    Added 24 September 2026, and **delete it when the branch is merged into
+    `main`.** It enforces a temporary workaround, not a permanent rule.
 
-    So a documented `git clone` of this repository must be followed, within a
-    few lines, by a `git checkout` of the branch the work is actually on. That
-    is a workaround for a stale default branch rather than a fix; the fix is to
-    merge the work into `main`, which is the researcher's call because it
-    changes what a visitor to the repository sees first. Until then, this keeps
-    the workaround from being quietly dropped from one document.
+    `main` works. It is the project as of 21 September 2026 and a plain clone
+    of it runs. What it does not yet carry is the frozen preregistration and
+    the work after it, which sits on a branch awaiting merge. Recording data
+    against an unfrozen preregistration is the one thing this phase must not
+    do, so while that gap exists every documented `git clone` is followed by a
+    `git checkout`, and this check stops that line being dropped from one
+    document while it is still needed.
+
+    An honest note on how this check came to be written. Its first version
+    claimed `main` held only four files from 16 August. That was false: it
+    described a stale *local* ref that had never been fetched in that session,
+    not the repository. The error was caught by actually cloning the
+    repository and looking — the same method that had just found a real bug in
+    the dry-run chain, and the reason the conclusion was wrong is that the
+    first time, the looking was skipped.
     """
-    print("\nTHE FIRST COMMAND — does `git clone` land on the work?")
+    print("\nTHE FIRST COMMAND — does `git clone` land on the frozen prereg?")
     problems: list[str] = []
     rx = re.compile(r"git clone \S*bci-ews-research[^\n]*\n((?:[^\n]*\n){0,4})")
     for doc in sorted({d for d in DOCS} | {"physical/docs/12_RUNBOOK.md"}):
@@ -279,9 +283,12 @@ def check_clone_lands_on_the_work() -> list[str]:
                                 f"followed by `git checkout`")
                 print(f"   FAIL  {doc}")
                 print("         `git clone` here leaves the reader on `main`,")
-                print("         which does not contain this project.")
+                print("         which does not yet carry the FROZEN")
+                print("         preregistration. Data must not be recorded")
+                print("         against a draft.")
     if not problems:
         print("   ok    every documented clone is followed by a checkout")
+        print("         (delete this check once the work is merged to `main`)")
     return problems
 
 
@@ -332,10 +339,10 @@ def main() -> int:
     if clone_problems:
         print(f"\nFAIL — {len(clone_problems)} document(s) tell the reader to "
               "clone and then leave them on a branch")
-        print("       that does not contain this project.")
+        print("       whose preregistration is still a draft.")
         return 1
     print("\nPASS — every documented command is accepted by its own script, and")
-    print("       every documented clone lands on the branch with the work on it.")
+    print("       every documented clone lands on the frozen preregistration.")
     return 0
 
 

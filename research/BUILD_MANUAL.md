@@ -401,7 +401,7 @@ cd bci-ews-research
 git checkout claude/isef-research-pipeline-9zt4uq
 ```
 
-**The `git checkout` line is not optional.** A plain clone lands on `main`, which as of 24 September 2026 is the repository as it stood on 16 August — four files, no `physical/`. Every command after this one would fail. See `physical/docs/12_RUNBOOK.md` step 0.1.
+**Why the `git checkout` line is there.** `main` works, but as of 24 September 2026 it does not yet carry the **frozen** preregistration — that work is on a branch awaiting merge, and data must not be recorded against an unfrozen preregistration. Delete the line once it is merged. See `physical/docs/12_RUNBOOK.md` step 0.1.
 
 ## 4.2 Attach the camera
 

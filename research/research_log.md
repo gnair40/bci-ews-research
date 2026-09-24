@@ -6876,6 +6876,14 @@ corrected: it read "approximately 360" fault-free sessions, where the
 repository's own cost table gives **480** for 30 held-out hours. The 360 had
 appeared in two documents with no derivation behind it.
 
+### The worst finding of the night was not a finding — I got it wrong
+
+> **CORRECTION, written the same night, a few minutes after the entry below.
+> The entry below is wrong and is kept unedited because this log records
+> mistakes.** Read it, then read the correction that follows it.
+
+*(original entry, retained as written)*
+
 ### The worst finding of the night: `main` is not the project
 
 The runbook's very first command is `git clone`. A plain clone checks out
@@ -6911,6 +6919,55 @@ yet: *correct where it was computed, wrong where it was used, with nothing
 connecting the two.* Here the "computation" was the whole repository and the
 "use" was a stranger's first command.
 
+---
+
+### The correction: `main` is fine, and I had not looked
+
+**Everything in the entry above rests on a false statement of fact.**
+
+`origin/main` is at `2f42f05`, dated **21 September 2026**, and contains **407
+files including all of `physical/`**. A plain clone of this repository works. I
+cloned it and ran the self-test to check: it passes.
+
+What I actually inspected was `main` — the *local* ref, which had been sitting
+at `1b4caef` from 16 August since this session started, because I never
+fetched it. I read a stale pointer, called it "the repository", and wrote 300
+words of alarm on top of it, including a commit message that states the
+falsehood permanently.
+
+**What is true, and it is much smaller:** `origin/main` is 6 commits behind the
+working branch. It is missing the P-7 analysis and everything from tonight —
+including the frozen preregistration. So a clone of `main` today gives a
+repository whose `09_PREREGISTRATION.md` still says DRAFT. That is worth a note,
+because data must not be recorded against an unfrozen preregistration, and the
+runbook would send the reader to a step-6 decision that has already been made.
+It is not worth a warning box claiming the project is not there.
+
+Also true, and the thing I should have found first: **`main` already contains
+merges of PRs #1, #3, #4, #5 and #6.** There is an established workflow here —
+branch, pull request, merge — and the right next step is a pull request for
+tonight's work, not a warning telling readers to route around the default
+branch. That is listed for Gayathri rather than done, since opening a pull
+request is hers to authorise.
+
+The documents, the gate and its failure messages have all been rewritten to the
+true situation. The `git checkout` lines stay only until the merge, and both
+the runbook note and the gate's own docstring now say to delete them at that
+point.
+
+**Why this is worth the space.** An hour earlier I found a real bug — the
+missing P-6 step in the rehearsal chain — *by running what a reader would run
+instead of reading it.* Then I made this claim by reading a ref and not running
+anything. The lesson I had just written down, I did not apply one section
+later. The method only works when it is used.
+
+It also says something about the gates: `79_preregistration_freeze.py` was
+written tonight precisely because a document can look right while being out of
+date, and I then made exactly that error by hand, against git itself. The
+check that would have caught it is one command — `git fetch` — and no gate runs
+it, because nothing in this repository has ever needed to compare itself
+against its own remote.
+
 ### What is now outstanding
 
 The preregistration is closed, the documents agree with it, and every gate
@@ -6919,10 +6976,12 @@ passes. **Two things now stand between this project and its schedule:**
 1. **The four critical parts, about $110.** Every dated row in
    `13_SCHEDULE.md` is downstream of them arriving; nothing on the list can
    start earlier by working harder.
-2. **Deciding whether to merge the work into `main`**, so that a plain clone
-   of this repository is the project rather than its first day. Costs nothing
-   and takes a minute; it is listed as a decision only because it changes what
-   a visitor sees first.
+2. **A pull request merging tonight's work into `main`.** `main` is at
+   `2f42f05` (21 September) and is 6 commits behind: it does not yet have the
+   frozen preregistration. The repository already works this way — PRs #1, #3,
+   #4, #5 and #6 are merged into it — so this is the established next step and
+   not a new decision. It is left undone because opening a pull request is
+   Gayathri's to authorise.
 
 Still true, and worth repeating because the freeze does not change it:
 **nothing here has been tested against a single real recording.** Every check
