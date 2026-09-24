@@ -16,7 +16,7 @@ These four are the critical path. Everything else can arrive later.
 |---|---|---|---|
 | 1 | **Raspberry Pi 4 Model B 4GB** | $55–65 | **Not a Pi 5** — different camera connector and a different software stack. Not a Pi Zero — too slow for 50 frames a second. |
 | 2 | **Raspberry Pi Camera Module 3** | $25–35 | Comes with the right ribbon cable. **Keep that cable** — see below. |
-| 3 | **microSD card 32GB A2** (or U3) | $8–12 | The speed class matters: slower cards drop frames during recording, which is the failure that looks like data. 64 GB for a few dollars more is worth it — the full campaign is 11.4 GB of recordings. |
+| 3 | **microSD card 32GB A2** (or U3) | $8–12 | The speed class matters: slower cards drop frames during recording, which is the failure that looks like data. 64 GB for a few dollars more is worth it — the whole campaign, all 337 sessions, is about 8 GB of recordings. |
 | 4 | **Official Raspberry Pi 27W USB-C power supply** | $8–12 | A phone charger sags under load and the Pi throttles silently, changing the frame rate mid-session. |
 
 **Subtotal: about $100–120.** Order these today; the rest can follow.
@@ -71,7 +71,7 @@ can return.
 | # | Search for | ~Cost | Notes |
 |---|---|---|---|
 | 13 | **DHT22** or **AM2302 temperature humidity sensor module** | $5–10 | Buy the **module on a breakout board** with the pull-up resistor already fitted, not the bare sensor. |
-| 14 | **USB flash drive, 128GB** | $10–15 | Measured: a session is **23.7 MB**, so the 30-hour campaign is **11.4 GB**. That fits on a 32 GB card beside the OS, but not comfortably — and the SD card fills first. |
+| 14 | **USB flash drive, 64GB** | $8–12 | Measured: a session is **23.7 MB**, so the frozen campaign — 337 sessions across every arm — is about **8 GB**. That fits on a 32 GB card beside the OS, but not comfortably, and the SD card fills first. *(This line said 11.4 GB until 24 September 2026, sized for a 30-hour fault-free arm that was considered and not chosen. The frozen arm is 101 sessions.)* |
 
 ---
 

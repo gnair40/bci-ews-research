@@ -7048,6 +7048,31 @@ The local `main` ref has been fast-forwarded, and `origin/main` merged into
 the working branch, so the branch is 0 behind and 8 ahead — a clean merge when
 the pull request is opened.
 
+### Figures made from fakes now say so on their own face
+
+The reports gained a NOT-DATA banner earlier tonight. The figures did not, and
+a PNG travels further than a report — it is the thing that ends up pasted into
+a slide, a plan or a poster, with no surrounding text to say where it came
+from. Fixed at `_save()` in `figures.py`, which every one of the six figures
+goes through, rather than in the six drawing functions where one would
+eventually be added without it.
+
+Verified by rendering and looking: a diagonal `NOT DATA / synthetic rehearsal`
+watermark plus a one-line note in the top-left corner. The first version put
+that note along the bottom, straight over the provenance footer every figure
+already writes, leaving two overlapping lines of unreadable red and grey. Found
+by looking at the output, not by reading the code.
+
+### Storage sizing was still quoting a campaign that was not chosen
+
+`11_SHOPPING_LIST.md` sized the USB drive for **11.4 GB**, the figure for a
+30-hour fault-free arm. The frozen campaign is 337 sessions across every arm,
+which at a measured 23.7 MB each is **8 GB**. Corrected, with the old figure
+and its reason kept in the row so nobody re-derives it.
+
+That is the third stale consequence of the 101 decision found by looking at a
+document that quoted a number rather than by checking the number itself.
+
 ### What is now outstanding
 
 The preregistration is closed, the documents agree with it, and every gate

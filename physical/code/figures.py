@@ -130,8 +130,47 @@ def _table(tag: str) -> pd.DataFrame:
     return pd.read_csv(f)
 
 
+def _is_synthetic(tag: str) -> bool:
+    """Did the table behind this figure come from dryrun.py?"""
+    f = DATA / "processed" / f"table_meta{tag}.json"
+    if not f.exists():
+        return False
+    try:
+        return bool(json.loads(f.read_text()).get("synthetic"))
+    except (OSError, ValueError):
+        return False
+
+
 def _save(fig, name: str, tag: str) -> Path:
+    """Write the figure, marking it if the numbers in it are not data.
+
+    Every figure goes through here, which is why the mark goes here and not in
+    the six drawing functions -- one of them would eventually be added without
+    it.
+
+    The reports gained a NOT-DATA banner on 24 September 2026 after a
+    dry-run P-7 report was found sitting in the real results folder. The
+    figures did not, and a PNG travels further than a report: it is the thing
+    that ends up pasted into a slide, a plan or a poster, with no surrounding
+    text to say where it came from. A figure made of formulas must say so on
+    its own face.
+    """
     FIGS.mkdir(parents=True, exist_ok=True)
+    if _is_synthetic(tag):
+        fig.text(0.5, 0.5, "NOT DATA\nsynthetic rehearsal",
+                 ha="center", va="center", rotation=30,
+                 fontsize=34, color="crimson", alpha=0.20,
+                 fontweight="bold", zorder=1000,
+                 transform=fig.transFigure)
+        # Top-left, not bottom-centre: every figure already writes its own
+        # provenance footer along the bottom, and the first version of this
+        # drew straight over it, leaving two overlapping lines of red and grey
+        # text that were both unreadable.
+        fig.text(0.005, 0.995,
+                 "fake recordings from dryrun.py — remove with: "
+                 "python3 physical/code/dryrun.py --cleanup",
+                 ha="left", va="top", fontsize=6.5, color="crimson",
+                 transform=fig.transFigure)
     out = FIGS / f"{name}{tag}.png"
     fig.savefig(out)
     plt.close(fig)
