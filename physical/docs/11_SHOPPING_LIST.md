@@ -110,7 +110,7 @@ python3 physical/code/monitor.py --selftest
 python3 physical/code/dryrun.py --clean --healthy 12 --degraded 8
 python3 physical/code/make_session_table.py --raw physical/data/dryrun/raw --tag _dryrun
 python3 physical/code/figures.py all --tag _dryrun
-rm -rf physical/data/dryrun
+python3 physical/code/dryrun.py --cleanup
 ```
 
 If that runs and draws six figures, the software side works and the money is

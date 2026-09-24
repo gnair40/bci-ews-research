@@ -138,7 +138,8 @@ def main() -> int:
     ap.add_argument("--tag", default="", help="suffix for the output filenames")
     a = ap.parse_args()
 
-    folders = M.find_sessions(a.raw)
+    raw_dir = Path(a.raw) if a.raw else DATA / "raw"
+    folders = M.find_sessions(raw_dir)
     if not folders:
         print(f"No recordings found in {a.raw or DATA / 'raw'}.")
         print("Record some first:  python3 physical/code/run_session.py --help")
@@ -422,6 +423,11 @@ def main() -> int:
     meta = {
         "detector": a.detector, "decoder": a.decoder, "lag_seconds": lag,
         "config": a.config,
+        # Where the recordings came from, and whether they are real. Without
+        # this, every downstream report loses the one fact that decides
+        # whether it means anything.
+        "raw": str(raw_dir),
+        "synthetic": M.is_synthetic(raw_dir),
         "budget_per_hour": a.budget, "warn_threshold": threshold,
         "n_sessions": int(len(df)),
         "n_fit": len(fit), "n_val": len(val_names),
@@ -467,6 +473,17 @@ def main() -> int:
             short = needed_hours - test_hours
             print(f"  That is about {short * 3600 / 300:.0f} more five-minute "
                   f"healthy sessions, or {short:.0f} more hours.")
+            # That sentence used to read as an instruction. Since 24 September
+            # 2026 the fault-free arm is frozen at 101 sessions, so a reader
+            # acting on it -- especially a reader who has just seen a result --
+            # would be extending a preregistered campaign after looking at its
+            # outcome. The arithmetic stays because it is the honest statement
+            # of how much evidence exists; what follows says what to do with it.
+            print("  This is how much evidence you have, NOT an instruction to")
+            print("  record more. The arm is frozen at 101 sessions")
+            print("  (09_PREREGISTRATION.md §4). Extending it is an amendment")
+            print("  under §9 of that document, written BEFORE any further")
+            print("  analysis is run — not after seeing this line.")
         else:
             print(f"  That is within the {a.budget}/h budget.")
     print("=" * 70)

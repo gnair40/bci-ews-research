@@ -75,10 +75,25 @@ Where a step needs more explanation than fits here, it names the document.
   following it exactly produced five figures while this line promised six.
   P-6 is co-primary with P-2, so the missing step was not just a missing
   picture — the rehearsal skipped half of what it is meant to rehearse.)*
-- [ ] **0.5** Delete the fakes.
+- [ ] **0.5** Delete the fakes **and everything they produced**.
   ```bash
-  rm -rf physical/data/dryrun
+  python3 physical/code/dryrun.py --cleanup
   ```
+  It prints what it is deleting before deleting it.
+
+  > **Why this is a command and not `rm -rf physical/data/dryrun`.** That
+  > removes the fake *recordings*. It does not remove the reports, tables and
+  > figures they generated — those land in the **real** output directories
+  > under real names. A rehearsal of stage 10.5 left
+  > `physical/data/results/P7_APPARATUS_VARIATION.md` sitting there, built
+  > entirely from formulas, with nothing in it saying so.
+  >
+  > Two things now stop that. Every report generated from fakes carries a
+  > **⚠ THESE ARE NOT DATA** banner under its title, and `--cleanup` finds
+  > synthetic files by asking each one what it is — a table is deleted only if
+  > its own metadata says `synthetic`, a report only if it carries the banner.
+  > **It cannot delete a real result**, even one sitting in the same folder
+  > with a similar name.
 - [ ] **0.6** Confirm the repository still agrees with itself.
   ```bash
   python3 tools/check_all.py

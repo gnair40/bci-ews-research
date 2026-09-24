@@ -88,7 +88,7 @@ python3 physical/code/analyze_falsealarm.py --tag _dryrun
 python3 physical/code/analyze_leadtime.py --tag _dryrun
 python3 physical/code/analyze_leadtime.py --tag _dryrun --undesigned
 python3 physical/code/analyze_decision_rate.py --tag _dryrun
-rm -rf physical/data/dryrun
+python3 physical/code/dryrun.py --cleanup
 ```
 
 That manufactures fake recordings and runs the entire analysis chain on them.

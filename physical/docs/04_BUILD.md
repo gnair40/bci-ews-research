@@ -92,11 +92,16 @@ python3 physical/code/analyze_decision_rate.py --tag _dryrun
 This manufactures twenty fake recordings and runs the entire analysis on them.
 **None of those numbers are results** — they come from a formula someone wrote,
 not from an apparatus. The point is only that the chain runs end to end and
-produces reports. Delete them afterwards:
+produces reports. Delete them — and the reports they wrote — afterwards:
 
 ```bash
-rm -rf physical/data/dryrun
+python3 physical/code/dryrun.py --cleanup
 ```
+
+Not `rm -rf physical/data/dryrun`: that removes the fake recordings but leaves
+the reports they generated sitting in the real results folder under real names.
+`--cleanup` removes both, and identifies synthetic files by asking each one what
+it is, so it cannot delete a real result.
 
 ### 1.4 The two faults this caught
 

@@ -6968,6 +6968,86 @@ check that would have caught it is one command — `git fetch` — and no gate r
 it, because nothing in this repository has ever needed to compare itself
 against its own remote.
 
+### Rehearsing stage 10 found a report made of formulas sitting in the results folder
+
+Ran runbook stage 10 the way a reader would, on a four-configuration dry run,
+all the way through the P-7 comparison. The chain runs, and both of the
+21 September `analyze_apparatus` fixes hold — it refused to call one
+observation unanimous, and it kept the false-alarm rate of 0.0 instead of
+dropping it as falsy.
+
+Two real problems, neither of them in the code's arithmetic.
+
+**1. The scripts told me to break the preregistration.** With the campaign
+short, `make_session_table.py` prints *"That is about 350 more five-minute
+healthy sessions, or 29 more hours"* — and `analyze_falsealarm.py` says the
+same in its report. That sentence was written before the freeze. Read after
+the freeze, by someone who has just seen a disappointing result, it is an
+invitation to extend a preregistered campaign because of how it turned out,
+which is the exact thing preregistration exists to stop.
+
+The arithmetic stays, because it is the honest statement of how much evidence
+exists. What follows it now says so explicitly: *this is how much evidence you
+have, NOT an instruction to record more*, with a pointer to the §9 amendment
+procedure and the requirement that an extension be written down **before** any
+further analysis. Three other "record more" messages were checked and left
+alone — they fire only when the campaign is *below* the frozen count, where
+recording more is simply correct.
+
+**2. A report built entirely from fakes was sitting in the real results
+folder, with nothing in it saying so.** `physical/data/results/P7_APPARATUS_
+VARIATION.md`, generated from `dryrun.py` formulas, byte-indistinguishable
+from a real result. The documented cleanup — `rm -rf physical/data/dryrun` —
+removes the fake *recordings* and not one thing they produced. A reader
+opening that file next month has no way to tell.
+
+Fixed in three parts:
+
+- `make_session_table.py` now records **where the recordings came from** and
+  whether the path is a dry-run one. Provenance was being thrown away at the
+  first step, which is why nothing downstream could know.
+- Every one of the six reports now carries a **⚠ THESE ARE NOT DATA** banner
+  directly under its title when the table says synthetic. Verified in both
+  directions: present on a dry-run table, absent on a table built from a
+  directory not named `dryrun`. For P-7, *any* synthetic configuration taints
+  the comparison, because the report's whole subject is whether the four
+  configurations agree.
+- `dryrun.py --cleanup` deletes the fakes **and** everything they produced,
+  and the documented instruction in six places now points at it. It cannot
+  delete a real result: a table goes only if its own metadata says
+  `synthetic`, a report only if it carries the banner.
+
+**Two bugs in that cleanup, both caught by running it.** It reported "and the
+fake recordings" based on `exists()` checked *after* deleting them — always
+False, so it happened to print the right words for the wrong reason and would
+have printed them when there were no fakes at all. And it tried to find a
+report's companion JSON by lowercasing the report's filename, which for
+`P7_APPARATUS_VARIATION.md` guesses a file that does not exist — so
+`apparatus_variation.json` survived the cleanup that was meant to remove it.
+Both fixed by asking each file what it is instead of deriving it from what it
+is called.
+
+### A gate for the mistake I made earlier tonight
+
+`scripts/80_remote_freshness.py` fetches, then fails if any local branch ref
+is behind its remote. Running it immediately reported `main is 182 behind
+origin/main` — precisely the condition that produced the wrong conclusion
+earlier. It also reports, as information rather than failure, how far the
+current branch is ahead of the default branch, which is the question "would a
+fresh clone have this?"
+
+With no network it **skips and says so**, because "I could not check" and "I
+checked and it was fine" are different statements and only one is reassuring.
+
+Its own first version printed git's four-line "ambiguous argument" error into
+the middle of its output for a branch whose upstream had been deleted — which
+is how a check teaches people to ignore it. It now reports that branch as
+unmoored rather than stale, and says what to do about it.
+
+The local `main` ref has been fast-forwarded, and `origin/main` merged into
+the working branch, so the branch is 0 behind and 8 ahead — a clean merge when
+the pull request is opened.
+
 ### What is now outstanding
 
 The preregistration is closed, the documents agree with it, and every gate

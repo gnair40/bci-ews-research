@@ -83,6 +83,12 @@ GATES: list[tuple[str, list[str], bool, str]] = [
      "to it was not disclosed. This is the most serious failure in the list: "
      "a preregistration that has drifted still looks like evidence of "
      "foresight."),
+    ("remote freshness",
+     ["scripts/80_remote_freshness.py"], False,
+     "A local branch ref is behind its remote, so anything you conclude by "
+     "reading that branch may be about a pointer the server has already moved "
+     "past. `git fetch` fixes the refs. Needs network; it skips loudly rather "
+     "than passing quietly when there is none."),
     ("physical pipeline selftest",
      ["physical/code/monitor.py", "--selftest"], False,
      "The physical phase's analysis chain does not work end to end on "

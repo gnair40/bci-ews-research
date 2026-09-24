@@ -511,6 +511,48 @@ def onset_window_index(onset_frame: int | None, starts: np.ndarray) -> int | Non
     return int(after[0]) if len(after) else None
 
 
+def is_synthetic(raw_dir) -> bool:
+    """Did this table come from dryrun.py rather than from a camera?
+
+    Decided by the raw directory's path, because that is the one thing that
+    cannot be true of a real campaign: `dryrun.py` writes only ever into a
+    directory named `dryrun`, and `capture.py` never does.
+    """
+    return "dryrun" in Path(raw_dir).parts
+
+
+SYNTHETIC_BANNER = [
+    "> # ⚠ THESE ARE NOT DATA",
+    ">",
+    "> This report was generated from **fake recordings made by",
+    "> `physical/code/dryrun.py`**, not from an apparatus. Every number below",
+    "> comes from a formula someone wrote. Nothing here is evidence about a",
+    "> monitor, a decoder, or a box.",
+    ">",
+    "> It exists to show that the analysis chain runs. Delete it, and every",
+    "> other file the same run produced, with one command:",
+    ">",
+    "> ```",
+    "> python3 physical/code/dryrun.py --cleanup",
+    "> ```",
+    "",
+]
+
+
+def provenance_banner(meta: dict) -> list[str]:
+    """Banner lines to put directly under a report's title, or nothing.
+
+    Added 24 September 2026, after a rehearsal of runbook stage 10.5 left
+    `P7_APPARATUS_VARIATION.md` sitting in the real results directory,
+    generated entirely from fakes, with nothing anywhere in it saying so. A
+    reader opening that file later has no way to tell it apart from a result.
+    The dry-run instructions say to delete the fakes; they did not say to
+    delete what the fakes produced, and a file is read long after an
+    instruction is forgotten.
+    """
+    return list(SYNTHETIC_BANNER) if meta.get("synthetic") else []
+
+
 def warn_seconds(warn_window: int | None, starts: np.ndarray,
                  fps: int = FPS, win: int = WINDOW_FRAMES) -> float:
     """When the warning could first have been issued, in seconds.

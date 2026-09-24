@@ -369,5 +369,5 @@ python3 physical/code/analyze_falsealarm.py --tag _dryrun
 python3 physical/code/analyze_leadtime.py --tag _dryrun
 python3 physical/code/analyze_decision_rate.py --tag _dryrun
 python3 physical/code/figures.py all --tag _dryrun
-rm -rf physical/data/dryrun
+python3 physical/code/dryrun.py --cleanup
 ```

@@ -157,7 +157,14 @@ def main() -> int:
                          "live side by side without colliding")
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--clean", action="store_true", help="delete previous fakes first")
+    ap.add_argument("--cleanup", action="store_true",
+                    help="delete the fakes AND everything they produced, then "
+                         "stop. Identifies synthetic outputs by their own "
+                         "metadata, so it cannot touch a real result.")
     a = ap.parse_args()
+
+    if a.cleanup:
+        return cleanup()
 
     if a.clean and DRY.exists():
         shutil.rmtree(DRY)
@@ -234,7 +241,99 @@ def main() -> int:
     print(f"    python3 physical/code/make_session_table.py \\")
     print(f"        --raw {raw.relative_to(HERE.parent.parent)} --tag _dryrun")
     print()
-    print("and delete them when you are done:  rm -rf physical/data/dryrun")
+    print("and delete them AND their reports when you are done:")
+    print("    python3 physical/code/dryrun.py --cleanup")
+    return 0
+
+
+def cleanup() -> int:
+    """Delete the fakes and every file they produced.
+
+    Why this is a command rather than a line of `rm` in the documentation:
+    `rm -rf physical/data/dryrun` removes the fake recordings but not the
+    reports, figures and tables they generated, which land in the *real*
+    output directories under names like `P7_APPARATUS_VARIATION.md`. A
+    rehearsal of runbook stage 10.5 left exactly that file sitting in
+    `physical/data/results/`, generated entirely from formulas, and the
+    documented cleanup did not remove it.
+
+    Nothing here guesses. A table is deleted only if its own metadata says
+    `synthetic`, and a report only if it carries the NOT-DATA banner. A real
+    result has neither, so this cannot delete one even if it is sitting in the
+    same directory with a similar name.
+    """
+    data = HERE.parent / "data"
+    doomed: list[Path] = []
+
+    # 1. Tables whose metadata admits to being synthetic, and everything
+    #    sharing their tag.
+    for meta_file in sorted((data / "processed").glob("table_meta*.json")):
+        try:
+            meta = json.loads(meta_file.read_text())
+        except (OSError, ValueError):
+            continue
+        if not meta.get("synthetic"):
+            continue
+        tag = meta_file.stem[len("table_meta"):]      # "" or "_dryrun" or "_A"
+        doomed.append(meta_file)
+        doomed += [p for p in (
+            data / f"sessions{tag}.csv",
+        ) if p.exists()]
+        for pattern in (f"results/*{tag}.md", f"results/*{tag}.json",
+                        f"figures/*{tag}.png", f"processed/windows/*{tag}.npz"):
+            doomed += sorted(data.glob(pattern))
+
+    # 2. Reports that carry the banner but no tag of their own -- P-7's
+    #    comparison is written untagged, which is how it ended up looking like
+    #    a real result.
+    for report in sorted((data / "results").glob("*.md")):
+        try:
+            if "THESE ARE NOT DATA" in report.read_text(errors="replace")[:1200]:
+                doomed.append(report)
+        except OSError:
+            continue
+
+    # 3. Result JSONs that declare themselves synthetic. The first version of
+    #    this function tried to find a report's companion JSON by lowercasing
+    #    the report's filename, which for P7_APPARATUS_VARIATION.md guesses
+    #    "p7_apparatus_variation.json" -- a file that does not exist. The real
+    #    one, apparatus_variation.json, survived the cleanup. Asking each file
+    #    what it is beats deriving it from what it is called.
+    for js in sorted((data / "results").glob("*.json")):
+        try:
+            if json.loads(js.read_text()).get("synthetic"):
+                doomed.append(js)
+        except (OSError, ValueError):
+            continue
+
+    fakes = data / "dryrun"
+    had_fakes = fakes.exists()
+    unique = sorted({p for p in doomed if p.exists()})
+
+    if not unique and not had_fakes:
+        print("Nothing to clean up: no fake recordings and no synthetic outputs.")
+        return 0
+
+    print("Deleting:")
+    if had_fakes:
+        print(f"  {fakes.relative_to(HERE.parent.parent)}/  (the fake recordings)")
+    for p in unique:
+        print(f"  {p.relative_to(HERE.parent.parent)}")
+
+    if had_fakes:
+        shutil.rmtree(fakes)
+    for p in unique:
+        p.unlink(missing_ok=True)
+
+    # Read before deleting, not after. The first version tested fakes.exists()
+    # here, which is always False by this point, so it happened to print the
+    # right words for the wrong reason -- and would have printed them even when
+    # there had been no fakes to remove.
+    print(f"\nRemoved {len(unique)} generated file(s)"
+          f"{' and the fake recordings' if had_fakes else ''}.")
+    print("Real results are untouched: a table is deleted only if its own")
+    print("metadata says synthetic, and a report only if it carries the")
+    print("NOT-DATA banner.")
     return 0
 
 
