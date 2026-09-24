@@ -247,6 +247,44 @@ def check(cmd: str) -> tuple[bool, str]:
         sys.argv = argv
 
 
+def check_clone_lands_on_the_work() -> list[str]:
+    """Does the reader's very first command leave them somewhere usable?
+
+    Added 24 September 2026. Every command in every document was accepted by
+    its own script, and the repository was still unusable to a new reader for
+    a reason no command-level check could see: `main` is the repository as it
+    stood on 16 August — four files, no `physical/`, no `scripts/`. A plain
+    `git clone` lands there, and then every later command fails with "No such
+    file or directory", which reads like a broken computer rather than a wrong
+    branch.
+
+    So a documented `git clone` of this repository must be followed, within a
+    few lines, by a `git checkout` of the branch the work is actually on. That
+    is a workaround for a stale default branch rather than a fix; the fix is to
+    merge the work into `main`, which is the researcher's call because it
+    changes what a visitor to the repository sees first. Until then, this keeps
+    the workaround from being quietly dropped from one document.
+    """
+    print("\nTHE FIRST COMMAND — does `git clone` land on the work?")
+    problems: list[str] = []
+    rx = re.compile(r"git clone \S*bci-ews-research[^\n]*\n((?:[^\n]*\n){0,4})")
+    for doc in sorted({d for d in DOCS} | {"physical/docs/12_RUNBOOK.md"}):
+        p = REPO / doc
+        if not p.exists():
+            continue
+        text = p.read_text()
+        for m in rx.finditer(text):
+            if "git checkout" not in m.group(1):
+                problems.append(f"{doc}: a documented `git clone` is not "
+                                f"followed by `git checkout`")
+                print(f"   FAIL  {doc}")
+                print("         `git clone` here leaves the reader on `main`,")
+                print("         which does not contain this project.")
+    if not problems:
+        print("   ok    every documented clone is followed by a checkout")
+    return problems
+
+
 def main() -> int:
     found: dict[str, list[str]] = {}
     for doc in DOCS:
@@ -284,11 +322,20 @@ def main() -> int:
             print(f"{'':<70} in {', '.join(found[cmd])}")
     print("-" * 96)
     print(f"{checked} commands checked, {skipped} skipped as templates, {bad} rejected")
+
+    clone_problems = check_clone_lands_on_the_work()
+
     if bad:
         print("\nFAIL — a reader following these documents literally would be "
               "stopped by the command above.")
         return 1
-    print("\nPASS — every documented command is accepted by its own script.")
+    if clone_problems:
+        print(f"\nFAIL — {len(clone_problems)} document(s) tell the reader to "
+              "clone and then leave them on a branch")
+        print("       that does not contain this project.")
+        return 1
+    print("\nPASS — every documented command is accepted by its own script, and")
+    print("       every documented clone lands on the branch with the work on it.")
     return 0
 
 

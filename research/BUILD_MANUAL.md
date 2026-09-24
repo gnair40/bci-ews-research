@@ -398,7 +398,10 @@ stimulus, the other two do the maths.
 cd ~
 git clone https://github.com/gnair40/bci-ews-research.git
 cd bci-ews-research
+git checkout claude/isef-research-pipeline-9zt4uq
 ```
+
+**The `git checkout` line is not optional.** A plain clone lands on `main`, which as of 24 September 2026 is the repository as it stood on 16 August — four files, no `physical/`. Every command after this one would fail. See `physical/docs/12_RUNBOOK.md` step 0.1.
 
 ## 4.2 Attach the camera
 

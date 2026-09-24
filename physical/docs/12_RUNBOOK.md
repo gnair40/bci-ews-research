@@ -20,8 +20,31 @@ Where a step needs more explanation than fits here, it names the document.
   ```bash
   git clone https://github.com/gnair40/bci-ews-research.git
   cd bci-ews-research
+  git checkout claude/isef-research-pipeline-9zt4uq     # see the warning below
   pip install -r requirements.txt
   ```
+
+  > ### ⚠ The default branch is not the project
+  >
+  > **As of 24 September 2026, `main` is the repository as it stood on 16
+  > August: four files, no `physical/`, no `scripts/`.** All 182 commits of
+  > actual work live on branches. A plain `git clone` checks out `main`, so
+  > without the `git checkout` line above, *every command in this runbook
+  > fails with "No such file or directory"* — and it looks like your computer
+  > is broken rather than like you are on the wrong branch.
+  >
+  > Check which branch you are on and that the work is there:
+  > ```bash
+  > git branch -a          # what exists
+  > git log --oneline -3   # should show September 2026, not August
+  > ls physical/code       # should list 17 .py files
+  > ```
+  >
+  > **The permanent fix is to merge the work into `main`**, so that a plain
+  > clone just works. That is a decision for Gayathri, not something to be
+  > done automatically, because it changes what the repository's front page
+  > shows to anyone who visits it — including a judge. Until it is done, this
+  > checkout line is required. Once it is done, delete this warning.
 - [ ] **0.2** Check the software works.
   ```bash
   python3 physical/code/monitor.py --selftest
@@ -97,8 +120,10 @@ Full detail: `04_BUILD.md` Part 2.
   ```bash
   git clone https://github.com/gnair40/bci-ews-research.git
   cd bci-ews-research
+  git checkout claude/isef-research-pipeline-9zt4uq
   python3 physical/code/monitor.py --selftest
   ```
+  **The checkout line matters here too** — see the warning at step 0.1.
 - [ ] **2.5** **Check the Pi can draw at 50 fps.** This is the one that can
       change your plan.
   ```bash

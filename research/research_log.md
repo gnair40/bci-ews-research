@@ -6876,13 +6876,53 @@ corrected: it read "approximately 360" fault-free sessions, where the
 repository's own cost table gives **480** for 30 held-out hours. The 360 had
 appeared in two documents with no derivation behind it.
 
+### The worst finding of the night: `main` is not the project
+
+The runbook's very first command is `git clone`. A plain clone checks out
+`main`. **`main` is the repository as it stood on 16 August 2026: four files,
+no `physical/`, no `scripts/`.** All 182 commits of work live on branches.
+
+So anyone following `12_RUNBOOK.md` from a fresh clone — which is precisely the
+scenario the whole "can this be done from the repository alone?" question is
+about — would get past step 0.1 and then have every single subsequent command
+fail with *"No such file or directory"*. That reads like a broken computer, not
+like a wrong branch, and nothing in 371 lines of troubleshooting mentions it.
+
+This has been true the entire time. Every gate passed throughout, because every
+gate ran in a working tree that was already on the right branch. The gates
+check the repository against itself; none of them had ever asked *what a
+stranger gets*.
+
+**Two responses, and the difference matters.**
+
+1. **Done tonight, a workaround:** every documented `git clone` in the four
+   documents that contain one now has a `git checkout` after it, with an
+   explanation of why. `69_command_check.py` gained a check that fails if any
+   documented clone is not followed by a checkout — verified by deleting one
+   and confirming the gate goes red, because a gate never seen to fail is not
+   known to work.
+2. **Not done, and not mine to do:** the actual fix is merging the work into
+   `main`, so a plain clone simply works. That changes what the repository's
+   front page shows to anyone who visits — including a judge — and it is
+   Gayathri's call. It is in the summary for her.
+
+The pattern is the same one this project keeps recording, in its largest form
+yet: *correct where it was computed, wrong where it was used, with nothing
+connecting the two.* Here the "computation" was the whole repository and the
+"use" was a stranger's first command.
+
 ### What is now outstanding
 
 The preregistration is closed, the documents agree with it, and every gate
-passes. **The only thing standing between this project and its schedule is the
-four critical parts, about $110.** Every dated row in `13_SCHEDULE.md` is
-downstream of them arriving; nothing on the list can start earlier by working
-harder.
+passes. **Two things now stand between this project and its schedule:**
+
+1. **The four critical parts, about $110.** Every dated row in
+   `13_SCHEDULE.md` is downstream of them arriving; nothing on the list can
+   start earlier by working harder.
+2. **Deciding whether to merge the work into `main`**, so that a plain clone
+   of this repository is the project rather than its first day. Costs nothing
+   and takes a minute; it is listed as a decision only because it changes what
+   a visitor sees first.
 
 Still true, and worth repeating because the freeze does not change it:
 **nothing here has been tested against a single real recording.** Every check

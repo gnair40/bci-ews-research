@@ -75,9 +75,12 @@ If missing: `sudo apt install git` (Linux/WSL) or install from git-scm.com.
 cd ~
 git clone https://github.com/gnair40/bci-ews-research.git
 cd bci-ews-research
+git checkout claude/isef-research-pipeline-9zt4uq
 ```
 `cd ~` moves you to your home folder. `git clone` copies the whole project,
-including its history. `cd bci-ews-research` moves you into it.
+including its history. `cd bci-ews-research` moves you into it. `git checkout` picks the branch the work is on.
+**The `git checkout` line is not optional.** A plain clone lands on `main`, which as of 24 September 2026 is the repository as it stood on 16 August — four files, no `physical/`. Every command after this one would fail. See `physical/docs/12_RUNBOOK.md` step 0.1.
+
 *Expect:* a message ending "done." and a new folder.
 
 **Procedure 5. Install the libraries the code needs.**
