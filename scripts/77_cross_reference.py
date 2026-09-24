@@ -154,7 +154,7 @@ SUPERSEDED = [
      "correct for the earlier parts list; the current one is ~$150-250"),
     ("physical code count", r"[Tt]hirteen files in `physical/code/`|"
                             r"[Ee]leven scripts",
-     "there are 16"),
+     "there are 17 (analyze_apparatus.py was added 21 Sep 2026)"),
     ("P-4 billed as the novel experiment", r"P-4 — Correlation against usability \*\(the novel experiment\)\*",
      "demoted 21 Sep 2026; the statistical point is not novel, the measurement is"),
     ("decision-rate question called unsettleable",

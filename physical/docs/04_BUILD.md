@@ -86,6 +86,7 @@ python3 physical/code/dryrun.py --clean --healthy 12 --degraded 8
 python3 physical/code/make_session_table.py --raw physical/data/dryrun/raw --tag _dryrun
 python3 physical/code/analyze_falsealarm.py --tag _dryrun
 python3 physical/code/analyze_leadtime.py --tag _dryrun
+python3 physical/code/analyze_decision_rate.py --tag _dryrun
 ```
 
 This manufactures twenty fake recordings and runs the entire analysis on them.

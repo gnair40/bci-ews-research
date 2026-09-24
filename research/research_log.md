@@ -6709,3 +6709,182 @@ cannot contain is the diagnosis for a failure nobody has seen yet — a margin
 that lands at 52° and will not move, a screen that passes the dither check on
 one setting and fails on another. That is a real but narrow gap, and it is not
 a reason to delay anything.
+
+---
+
+## 24 September 2026 — the preregistration is frozen
+
+**The instruction:** *"Freeze the pre registration with 101 sessions, get all
+the work you need done today. You have all night."*
+
+That closes the one decision the whole physical phase had been waiting on.
+`physical/docs/09_PREREGISTRATION.md` is frozen at commit **`f4dda04`**, and
+from here it changes only by appended amendment under its §9.
+
+### What 101 costs, written down before any data exist
+
+101 fault-free sessions is 8.4 hours of recording, of which the fit and
+threshold-selection groups take their share, leaving about **four held-out test
+hours**. The alternative — about 480 sessions over four unattended nights — is
+what PP-1 needed to be falsifiable.
+
+So the arm now has exactly two possible outcomes, and both are written into
+PP-1 in advance:
+
+| If the campaign | PP-1 is | and the report says |
+|---|---|---|
+| produces false alarms | **confirmed**, and quantified | the rate with its interval, paired with the lead time it bought |
+| produces none | **untested**, not falsified | "0 in ~4 h bounds the rate at ~0.75/hour, 7× the budget; this campaign cannot tell a monitor at 0.75/hour from one at 0.001/hour" |
+
+**The decision bets on PP-1 being right.** The prediction is that the monitor is
+noisy — it runs at 3.41/hour on T11 and 0.225/hour on T5 — and 101 sessions
+measure a noisy monitor perfectly well. The cost is only paid if the monitor
+turns out to be quiet, and then the cost is the whole point of the arm. That is
+a real bet and it is recorded here as one rather than as a scheduling detail.
+
+### Three things were settled at freeze time, because leaving them open would have let the outcome be chosen later
+
+1. **§1 now says the false-alarm comparison uses the 95% upper bound**, not the
+   observed rate. `analyze_falsealarm.py` already decided it that way
+   (`within_budget = hi <= budget`); the prose did not say so. With ~4 test
+   hours the difference is decisive: a quiet monitor's observed rate is exactly
+   0, and reading that 0 as "within budget" reports the shortness of the
+   campaign as a property of the monitor. Two places that must agree, agreeing
+   only by accident — the same shape as every other failure this project has
+   logged.
+2. **PP-1 carries the outcome table above.** Written before recording so a quiet
+   monitor cannot later be reported as a monitor shown to be quiet.
+3. **§0.2 no longer says the document is not yet the researcher's.** §10.1
+   records the instruction verbatim, and what it settled explicitly (call 1)
+   versus by default (calls 2, 5, 6, 7, which stand at their drafted values).
+   Calls 3, 4 and 8 were never open — they are inherited so the two phases stay
+   comparable. All ten are now closed.
+
+### The freeze happened out of order, and that is better
+
+The runbook puts the freeze at stage 6, after calibration. It happened first.
+That is the stronger ordering: gate G-e — margin within 6° of 36.1° — was fixed
+before anyone knows what margin this box will produce, so the gate cannot drift
+toward whatever the apparatus happens to do. §7 already says what to report if
+the box cannot meet it, and §7 was written before the box existed.
+
+### A header saying "do not edit" is not a lock
+
+The frozen file says it must not be edited. That protects nothing by itself,
+and relying on it would be a pretence — especially since the §10 procedure
+*requires* one post-freeze edit, to write the hash into the header it names.
+
+So `scripts/79_preregistration_freeze.py` enforces it from outside the file:
+the freeze commit must exist, must contain the file, and its copy must already
+have said FROZEN; every commit touching the file since must appear in a new
+§12.1 ledger; and the frozen numbers must still match the other documents and
+the code. A non-substantive edit is fine. An *undisclosed* one is not.
+
+**Two bugs in that gate, both caught by running it rather than reading it.**
+
+- It compared thresholds as text, so the silence-gate bar failed: `0.10` in the
+  code against `0.1` in the document. Same number, two spellings. A gate that
+  cries wolf gets switched off, so it compares numerically now.
+- **The ledger could not work as designed.** It was keyed on commit hashes, and
+  a hash row can never name the commit that adds it: writing the row changes
+  the file, which makes a new commit, which needs a new row, without end. Keyed
+  on commit *subject lines* instead, which are known before the commit exists,
+  so a commit discloses itself. The commit `Propagate the frozen 101-session
+  decision through the repository` is its own ledger row.
+
+The second is worth dwelling on. The first version passed its own test suite and
+would have passed every day until the second edit, at which point it would have
+demanded a row that was impossible to write. A design that cannot be satisfied
+is not a strict gate; it is a gate that will be switched off the first time it
+matters.
+
+### Two stale numbers found while propagating the decision
+
+Neither was the decision's fault; both were found because changing one number
+meant reading every document that quoted it.
+
+- **`02_EXPERIMENTS.md`'s recording-cost table did not include the row above the
+  total.** It gave 217 sessions and ~18 hours, which is P-1 to P-5. P-7's own
+  row — 120 sessions, ~10 hours — sat directly above the total and was not in
+  it. Correct: **337 sessions, ~28 hours.**
+- **Two documents still said "six experiments"** after P-7 made it seven.
+
+This is the fourth instance of the pattern this project has now logged: *a
+quantity correct where it was computed and wrong where it was used, with
+nothing connecting the two.* It is recorded again rather than treated as
+solved, because four instances in three weeks is a property of how the
+repository is written, not a run of bad luck.
+
+### The three saved days were already spent
+
+The schedule was written on 21 September assuming four nights of fault-free
+recording and finishing 31 October. Choosing one night pulls the finish in by
+three days. Freezing on the 24th rather than the 21st pushes it back by three.
+**Net change: none — still 31 October, still 31 days of slack.**
+
+`13_SCHEDULE.md` says it that way rather than quietly showing 34 days. The
+three days were real, they were spent on deciding, and that is a legitimate use
+of them but not a free one.
+
+### The gate list became a script
+
+The README listed nine gate commands in prose. That list had already failed
+once — `69_command_check.py` was missing from it for several days, which is
+exactly how a gate stops being a gate. `tools/check_all.py` runs all eleven
+checks in one command, keeps going after a failure instead of stopping at the
+first, and prints what each failure would mean. The README's count of unit
+tests was also wrong: 45, when there are 50.
+
+### The rehearsal was rehearsing half the analysis
+
+Ran the Stage 0.4 dry run end to end, as someone following the runbook would.
+It produced **five** figures. The runbook's success line said six.
+
+The chain was missing `analyze_decision_rate.py`. That is not a missing
+picture: **P-6 was promoted to co-primary with P-2 on 21 September**, so the
+rehearsal that exists to prove the analysis chain works was not touching half
+of what the phase is now built around. The same four-command chain is quoted in
+`physical/README.md`, `04_BUILD.md`, `10_TROUBLESHOOTING.md` and
+`12_RUNBOOK.md`; all four were missing it, because the step was added to the
+experiment and never to the rehearsal.
+
+Fixed in all four, and re-run from a clean state: six figures, the last being
+`decision_rate_dryrun.png`.
+
+Worth noting how it was found. No gate caught it — `69_command_check.py`
+verifies that documented commands *work*, and every one of those four commands
+worked. Nothing checked that the chain was *complete*. The only way it surfaced
+was running the thing a reader would run and counting what came out against
+what the document promised. That is the third failure this week that reading
+would not have found.
+
+### An AI-involvement record, which is not the AI disclosure
+
+`research/AI_INVOLVEMENT_RECORD.md` collects the facts: 181 of 187 commits
+authored by the assistant, what the researcher decided (with dates and the
+decisions made *against* the assistant's drafts), what the assistant did, and
+a table of nine errors it made with how each was caught.
+
+It deliberately contains **no disclosure prose**. The standing decision from 8
+September stands — *"a disclosure that an AI wrote about itself is not a
+disclosure"* — so the statement for the ISEF form is Gayathri's to write, and
+this file is the evidence she writes it from. December open item 2 now points
+at it.
+
+While updating that table, item 1 was closed and a wrong figure inside it
+corrected: it read "approximately 360" fault-free sessions, where the
+repository's own cost table gives **480** for 30 held-out hours. The 360 had
+appeared in two documents with no derivation behind it.
+
+### What is now outstanding
+
+The preregistration is closed, the documents agree with it, and every gate
+passes. **The only thing standing between this project and its schedule is the
+four critical parts, about $110.** Every dated row in `13_SCHEDULE.md` is
+downstream of them arriving; nothing on the list can start earlier by working
+harder.
+
+Still true, and worth repeating because the freeze does not change it:
+**nothing here has been tested against a single real recording.** Every check
+that passes today passes against synthetic sessions from `dryrun.py`. That is
+recorded in the frozen document itself, as §10.2.

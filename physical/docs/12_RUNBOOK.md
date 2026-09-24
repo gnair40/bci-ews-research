@@ -39,14 +39,29 @@ Where a step needs more explanation than fits here, it names the document.
   python3 physical/code/make_session_table.py --raw physical/data/dryrun/raw --tag _dryrun
   python3 physical/code/analyze_falsealarm.py --tag _dryrun
   python3 physical/code/analyze_leadtime.py --tag _dryrun
+  python3 physical/code/analyze_decision_rate.py --tag _dryrun
   python3 physical/code/figures.py all --tag _dryrun
   ```
-  **Success:** six figures in `physical/data/figures/`. Look at them.
+  **Success:** **six** figures in `physical/data/figures/`, the last of them
+  `decision_rate_dryrun.png`. Look at them.
   **None of those numbers are results** — the fakes come from a formula.
+
+  *(Until 24 September 2026 this list omitted `analyze_decision_rate.py`, so
+  following it exactly produced five figures while this line promised six.
+  P-6 is co-primary with P-2, so the missing step was not just a missing
+  picture — the rehearsal skipped half of what it is meant to rehearse.)*
 - [ ] **0.5** Delete the fakes.
   ```bash
   rm -rf physical/data/dryrun
   ```
+- [ ] **0.6** Confirm the repository still agrees with itself.
+  ```bash
+  python3 tools/check_all.py
+  ```
+  **Success:** `PASS — every gate is green` (about two minutes). This runs all
+  eleven checks, including `79_preregistration_freeze.py`, which confirms the
+  frozen preregistration has not drifted since its timestamp. Run it again
+  before every commit you make from here on.
 
 **If Stage 0 passes, the money is safe to spend.**
 

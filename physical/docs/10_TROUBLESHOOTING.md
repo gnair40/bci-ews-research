@@ -356,6 +356,7 @@ python3 physical/code/health_check.py                # is the campaign sound?
 python3 physical/code/bench.py check --session 0 --block 1   # is the box right?
 python3 physical/code/bench.py darkframe             # is it dark? (Pi only)
 python3 physical/code/run_campaign.py status --session 10    # what is left?
+python3 tools/check_all.py                           # every gate, one command
 python3 scripts/31_verify_claims.py                  # do the numbers still hold?
 ```
 
@@ -366,6 +367,7 @@ python3 physical/code/dryrun.py --clean --healthy 12 --degraded 8 --undesigned 4
 python3 physical/code/make_session_table.py --raw physical/data/dryrun/raw --tag _dryrun
 python3 physical/code/analyze_falsealarm.py --tag _dryrun
 python3 physical/code/analyze_leadtime.py --tag _dryrun
+python3 physical/code/analyze_decision_rate.py --tag _dryrun
 python3 physical/code/figures.py all --tag _dryrun
 rm -rf physical/data/dryrun
 ```

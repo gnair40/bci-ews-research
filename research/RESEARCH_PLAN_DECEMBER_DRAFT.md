@@ -385,14 +385,21 @@ script it names, and that every statistical claim has a recorded justification.
 
 ## Open items
 
-| | Item | Needed for |
-|---|---|---|
-| 1 | Campaign length: 101 fault-free sessions, or approximately 360 | Stage 11, and the calendar |
-| 2 | AI disclosure wording, checked against the 2026-27 form and with the SRC | Section C |
-| 3 | Bibliography: first authors only, or full author lists | Section D |
-| 4 | Supervision location for the build | Risk and Safety |
-| 5 | Category confirmation (currently Systems Software / Biomedical Engineering) | Cover page |
-| 6 | Whether `research/ISEF_RESEARCH_PLAN.md` is retired or becomes the base document | Assembly |
+| | Item | Needed for | Status |
+|---|---|---|---|
+| 1 | Campaign length: 101 fault-free sessions, or approximately 480 | Stage 11, and the calendar | **CLOSED 24 Sep 2026 — 101.** Frozen at commit `f4dda04`; see `physical/docs/09_PREREGISTRATION.md` §11 call 1 |
+| 2 | AI disclosure wording, checked against the 2026-27 form and with the SRC | Section C | open — **yours to write.** The facts to write it from are collected in `research/AI_INVOLVEMENT_RECORD.md` |
+| 3 | Bibliography: first authors only, or full author lists | Section D | open. APA does not permit abbreviating author lists in the reference list, so this is expansion work, not a choice |
+| 4 | Supervision location for the build | Risk and Safety | open — depends on where the box will physically live |
+| 5 | Category confirmation (currently Systems Software / Biomedical Engineering) | Cover page | open |
+| 6 | Whether `research/ISEF_RESEARCH_PLAN.md` is retired or becomes the base document | Assembly | open |
 
-Item 1 is the only one that changes what is recorded. The remainder are
-administrative and do not block the build.
+**Item 1 was the only one that changed what is recorded, and it is now
+closed.** Items 2 to 6 are administrative and do not block the build; none of
+them needs to be settled before parts are ordered.
+
+*(Item 1 previously read "approximately 360". The repository's own cost table
+gives 480 sessions for 30 held-out hours, and 360 appeared in two documents
+without a derivation. Corrected here on 24 September 2026 for the record, even
+though the item is closed — a closed item quoting a wrong figure is still a
+wrong figure in the file.)*

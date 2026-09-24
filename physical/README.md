@@ -87,6 +87,7 @@ python3 physical/code/make_session_table.py --raw physical/data/dryrun/raw --tag
 python3 physical/code/analyze_falsealarm.py --tag _dryrun
 python3 physical/code/analyze_leadtime.py --tag _dryrun
 python3 physical/code/analyze_leadtime.py --tag _dryrun --undesigned
+python3 physical/code/analyze_decision_rate.py --tag _dryrun
 rm -rf physical/data/dryrun
 ```
 

@@ -48,7 +48,7 @@ Then, by eye:
 
 ---
 
-## The four rules
+## The five rules
 
 1. **Draw before you record.** Every session's plan is decided and checksummed
    before the recording exists. The script refuses otherwise.
@@ -58,6 +58,11 @@ Then, by eye:
    number and note why.
 4. **Log the mistakes too.** A log that records only successes is not a record
    of the research.
+5. **Stop at the count that was frozen.** 101 fault-free, 101 degraded, 10
+   undesigned. Recording *more* after seeing a result is the same mistake as
+   stopping early because of one. If you decide to extend, write the amendment
+   in `09_PREREGISTRATION.md` §9 **first**, before running any analysis — that
+   is allowed and disclosed; the other order is not.
 
 ---
 
