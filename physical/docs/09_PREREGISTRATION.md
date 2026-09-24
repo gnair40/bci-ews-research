@@ -1,8 +1,14 @@
 # Preregistration — the physical-validation phase
 
 **Drafted:** 20 September 2026.
-**Status: DRAFT — NOT FROZEN. Nothing has been built and nothing measured.**
-**Frozen at commit:** `[[RESEARCHER — fill in after running the freeze in §10]]`
+**Frozen:** 24 September 2026, by the researcher's instruction recorded in §10.1.
+**Status: FROZEN. Nothing has been built and nothing has been measured.**
+**Frozen at commit:** `[[FREEZE_HASH]]`
+
+> **This file must not be edited from here on.** Corrections and changes are
+> made only as appended amendments under §9, which preserve the original
+> wording and state whether the data had been seen. The freeze commit above is
+> what makes every "before" in this document checkable rather than asserted.
 
 ---
 
@@ -29,9 +35,12 @@ per §9.
 ### 0.2 Who wrote this draft, and what that means
 
 **This draft was written by an AI assistant from findings already in this
-repository. It is not yet the researcher's preregistration, and it must not be
-frozen until the researcher has read every prediction and either accepted it or
-changed it.**
+repository.** It became the researcher's preregistration on 24 September 2026,
+when they set the one open scheduling decision (§11, call 1) and instructed
+that the document be frozen with the remaining judgement calls at their drafted
+values. That instruction, quoted in full, is §10.1. **From that moment the
+predictions below are the researcher's own**, and responsibility for them is
+theirs rather than the assistant's.
 
 The distinction that matters:
 
@@ -75,10 +84,21 @@ Judged by a rule fixed here, computed by
 | | Condition | Measured by |
 |---|---|---|
 | **Strong correlation** | any of \|raw\|, \|partial\|, \|differences\| ≥ **0.70** | DV5 |
-| **Unusable** | median lead time ≤ 0 **or** false-alarm rate above budget | DV1, DV2 |
+| **Unusable** | median lead time ≤ 0 **or** the **95% upper bound** on the false-alarm rate is above budget | DV1, DV2 |
 | **Supported** | strong **and** unusable | both |
 | **Falsified** | strong **and** usable on both counts | both |
 | **Inconclusive** | no measure reaches 0.70 | DV5 |
+
+**The false-alarm comparison uses the upper end of the interval, not the
+observed rate.** This is fixed here because the campaign length chosen in §4
+makes it decisive, and it would otherwise be decided after looking at the
+result. A campaign of 101 fault-free sessions leaves roughly four held-out test
+hours; a monitor that produces zero false alarms in four hours has an observed
+rate of exactly 0, which is not a rate at all but an upper bound of about 0.75
+per hour — seven times the budget. Reading that 0 as "within budget" would
+report the shortness of the campaign as a property of the monitor.
+`analyze_falsealarm.py` already decides it this way (`within_budget = hi <=
+budget`); this line fixes the wording so the two cannot drift apart.
 
 **"Inconclusive" is a real outcome and will be reported as one.** A weakly
 correlated monitor says nothing about whether correlation-based validation is
@@ -111,6 +131,25 @@ fault-free recording** (rule of three; see `02_EXPERIMENTS.md` P-2). **With less
 recording than that, this prediction cannot be falsified**, only left untested —
 which is itself a result about the campaign rather than about the monitor, and
 will be reported in those words.
+
+**What the frozen campaign length means for this prediction, stated before any
+data exist.** §4 fixes the fault-free arm at **101 sessions**. That is about
+8.4 hours in total, of which the fit and threshold-selection groups take their
+share, leaving roughly **4 held-out test hours**. So, in advance:
+
+| If the campaign produces | PP-1 is | and the report says |
+|---|---|---|
+| **any** false alarm at a rate whose lower bound clears 0.1/hour | **confirmed**, and quantified | the rate, with its interval, and the lead time it bought |
+| **zero** false alarms | **untested** — not falsified | "0 in ~4 h bounds the rate at ~0.75/hour, seven times the budget; this campaign cannot distinguish a monitor at 0.75/hour from one at 0.001/hour" |
+
+**The second row is the likelier one to be uncomfortable, and it is written
+here so that it cannot later be reported as a success.** A quiet monitor on
+four hours is not a monitor shown to be quiet. Reaching the falsifiable regime
+needs ~480 fault-free sessions (~40 recording hours, ~30 held out), about four
+unattended nights instead of one. That was offered and **not** chosen; the
+reason is in §11, call 1. Nothing prevents extending the arm later — but an
+extension after any analysis has been run is an amendment under §9 and is
+disclosed as one.
 
 **Either way.** Above budget quantifies by how much, which nobody currently
 knows for any monitor of this class. Within budget would be the first
@@ -365,7 +404,7 @@ cannot be brought within tolerance, §7 applies.
 | Arm | Sessions | Fixed in advance because |
 |---|---|---|
 | Calibration (P-1) | 5 minimum, more permitted | These also build the decoder; more is strictly better and costs nothing later |
-| Fault-free (P-2) | **`[[RESEARCHER — 101 floor, or ~360 to make PP-1 falsifiable]]`** | See PP-1 |
+| Fault-free (P-2) | **101** | Researcher's decision, 24 Sept 2026 (§11, call 1). Enough to catch a noisy monitor; **not** enough to falsify PP-1 — see the table in PP-1 |
 | Degraded (P-3) | **101**, spread across 4 types and 3 severities | Gives ~8 sessions per type-severity cell |
 | Undesigned (P-5) | **10** | See PP-8 |
 | Apparatus variation (P-7) | **3 × 40** (20 fault-free + 20 degraded each) | Enough to see a sign reversal (PP-9) or a large shift (PP-10); not enough to estimate either precisely, and the report says so |
@@ -482,6 +521,9 @@ This document may be amended after freezing. It may not be edited.
 
 ## 10. Freeze procedure
 
+**Executed 24 September 2026.** The steps are kept below as the record of what
+was done, not as work remaining.
+
 1. The researcher reads every prediction in §2 and every judgement call in §11,
    and edits anything they do not accept **as their own**.
 2. Fill in the two `[[RESEARCHER]]` fields: the fault-free campaign length in §4
@@ -498,6 +540,34 @@ git rev-parse HEAD
    timestamp on that commit is what makes every "before" in this document
    checkable rather than asserted.**
 
+### 10.1 The instruction this document was frozen on
+
+Recorded verbatim, because the freeze is an act by the researcher and not by
+the assistant that holds the keyboard:
+
+> *"Freeze the pre registration with 101 sessions, get all the work you need
+> done today. You have all night."*
+> — Gayathri Nair, 24 September 2026
+
+**What that instruction settled, and what it did not.**
+
+| | |
+|---|---|
+| **Settled explicitly** | §11 call 1, the fault-free campaign length: **101**. |
+| **Settled by default** | §11 calls 2, 5, 6 and 7 — the four genuinely open thresholds — stand at their drafted values (0.70; 10 points; 20 points; 1.0 vs 0.25). The instruction to freeze is what makes them the researcher's. |
+| **Not settled here** | Calls 3, 4 and 8 were never open: they are inherited unchanged from the computational half so the two phases stay comparable. |
+
+If any of calls 2, 5, 6 or 7 is wrong, it is now changed by an appended
+amendment under §9, in public, and not by editing the table in §11.
+
+### 10.2 What this freeze does not license
+
+Freezing the predictions is not permission to start recording. The gate in §3
+still has to pass on a built apparatus, and `11_SHOPPING_LIST.md` still has
+four unordered parts. **Nothing in this document has been tested against a
+single real recording**; every check that passes today passes against
+synthetic sessions from `dryrun.py`.
+
 **After that commit exists, building may begin. Not before.**
 
 Calibration sessions may be recorded before the freeze — they set the apparatus
@@ -512,7 +582,7 @@ count as interesting, and each is the researcher's to make.
 
 | # | Call | Drafted at | Why that value |
 |---|---|---|---|
-| 1 | Fault-free campaign length | **undecided** | 101 is a floor; ~360 makes PP-1 falsifiable. This is the only one that changes what gets recorded. |
+| 1 | Fault-free campaign length | **101** — decided 24 Sept 2026 | The cost of the falsifiable alternative is ~480 sessions and four unattended nights against a fixed fair date; 101 is one night and still catches a noisy monitor. The researcher accepted, in advance, that a quiet result is then reported as **untested** (PP-1). |
 | 2 | "Strong" correlation threshold | **0.70** | Just below the weaker of the two published MINDFUL values (0.72), so clearing it puts the monitor in the same range as the state of the art |
 | 3 | False-alarm budget | **0.1/hour** | Inherited unchanged from the computational design. Never relaxed. |
 | 4 | Silence-gate bar | **10%** | Inherited unchanged, so the two phases are comparable |
@@ -524,11 +594,19 @@ count as interesting, and each is the researcher's to make.
 | 10 | Number of P-7 configurations | **4** | Three extra is ~10 unattended hours; a fifth adds 3.5 h for little extra discrimination |
 
 **Values 3, 4 and 8 are inherited and changing them would break comparability
-with the computational half.** Values 2, 5, 6 and 7 are genuinely open. Value 1
-is the scheduling decision.
+with the computational half.** Values 2, 5, 6 and 7 were genuinely open and
+**stand at the drafted values by the researcher's decision to freeze**
+(§10.1) — they are now the researcher's, not the drafter's. Value 1 was the
+scheduling decision and was made explicitly.
+
+**All ten are now closed.** Any later change to any of them is an amendment
+under §9, appended and dated, stating whether the data had been seen.
 
 ---
 
 ## 12. Amendment log
 
-*(No amendments. This document has not yet been frozen.)*
+*(No amendments. Frozen 24 September 2026; nothing has been amended since.)*
+
+Amendments are appended as new numbered sections after §12 and listed here in
+the same commit, per §9.5.
