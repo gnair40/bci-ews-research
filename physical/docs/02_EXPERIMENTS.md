@@ -86,10 +86,15 @@ anyone, ever. This experiment exists to fix exactly that.
 ### Protocol
 
 1. Seal the box. Verify darkness with `bench.py darkframe`.
-2. Record **101 healthy sessions minimum** — nothing touched, nothing degraded,
+2. Record **101 healthy sessions** — nothing touched, nothing degraded,
    nothing adjusted. 5 minutes each, about 8.4 hours, unattended overnight.
-3. **Then record about four times more.** 101 is a floor, and the arithmetic
-   below says how far above it the campaign needs to go.
+   **This count is frozen** (`09_PREREGISTRATION.md` §4, frozen at `f4dda04`)
+   and is not a target to be exceeded opportunistically: recording extra
+   fault-free sessions after any analysis has been run is an amendment under
+   §9 of that document, and is disclosed as one.
+3. **Understand what 101 can and cannot show before recording it.** The
+   arithmetic below is not a suggestion to record more; it is the stated limit
+   of the campaign that was chosen.
 4. **Change nothing during the campaign.** No cleaning, no refocusing, no
    re-seating cables. If something is changed anyway, write it in the log with
    the date — an undocumented mid-campaign intervention cannot be detected
@@ -99,7 +104,9 @@ anyone, ever. This experiment exists to fix exactly that.
 
 *Added after the analysis code was written and the arithmetic was done
 properly. The original figure of 101 sessions was chosen for the effort it
-costs, not for what it can demonstrate, and those are different questions.*
+costs, not for what it can demonstrate, and those are different questions.
+**The researcher then chose 101 anyway, on 24 September 2026, knowing this
+section** — the reasoning is in `09_PREREGISTRATION.md` §11, call 1.*
 
 Suppose the monitor is perfect and produces **zero** false alarms. Zero is not
 a rate; it is an upper bound. Seeing no events in H hours puts a 95% upper
@@ -115,9 +122,20 @@ supports an upper bound of about **0.75/hour** — seven times the budget.
 show that a quiet monitor meets the budget.** The two are different claims and
 the write-up must make whichever one the data supports.
 
-Thirty hours is about four unattended nights rather than one.
-`make_session_table.py` and `analyze_falsealarm.py` both print the arithmetic
-for whatever has actually been recorded; use their number, not this paragraph.
+Thirty hours is about four unattended nights rather than one. **That was the
+alternative, and it was not chosen** — the fair date is fixed and the nights
+are not free. So the outcome of this arm is fixed in advance, and there are
+only two:
+
+| Outcome | What the write-up says |
+|---|---|
+| The monitor produces false alarms | The rate, with its interval, paired with the lead time it bought. A real measurement. |
+| The monitor produces none | "Zero in ~4 held-out hours bounds the rate at ~0.75/hour. This campaign cannot tell a monitor at 0.75/hour from one at 0.001/hour." **Untested, not passed.** |
+
+Writing the second row down before recording is the whole point of having
+frozen it. `make_session_table.py` and `analyze_falsealarm.py` both print the
+arithmetic for whatever has actually been recorded; use their number, not this
+paragraph.
 
 ### Outcomes
 
@@ -375,16 +393,24 @@ arm narrows the objection rather than closing it.
 | Experiment | Sessions | Time | Attended? |
 |---|---|---|---|
 | P-1 calibration | 5 | 25 min | yes |
-| P-2 healthy campaign | 101 floor, ~360 to demonstrate the budget | 8.4 h floor, ~30 h to demonstrate the budget | **no — overnight** |
+| P-2 healthy campaign | **101** (frozen); ~480 would have been needed to demonstrate the budget | 8.4 h; ~40 h to demonstrate the budget | **no — overnight** |
 | P-3 degraded sessions | 101 | 8.4 h | partly |
 | P-4 correlation analysis | 0 | minutes | analysis only |
 | P-5 undesigned faults | 10 | 50 min | yes, by hand |
 | P-6 decision-rate curve | 0 | minutes | analysis only |
 | **P-7 apparatus variation** | **120 (3 × 40)** | **~10 h** | **no — overnight** |
-| **Total recording** | **~217 at the floor, ~480 to demonstrate the budget** | **~18 h at the floor, ~40 h to demonstrate the budget** | mostly unattended |
+| **Total recording, P-1 to P-5** | **217** | **~18 h** | mostly unattended |
+| **Total recording, including P-7** | **337** | **~28 h** | mostly unattended |
 
-Two of the six experiments need no recording at all, because the decision rate
-and the correlation are analysis choices. That is what makes this affordable.
+*Corrected 24 September 2026. The totals row previously read 217 / ~18 h — the
+figure for P-1 to P-5 — while P-7's own row, 120 sessions and ~10 hours, sat
+directly above it. The column did not include the line above it. Same failure
+as the others this project has recorded: a number right where it was computed
+and wrong where it was used.*
+
+Two of the **seven** experiments need no recording at all, because the decision
+rate and the correlation are analysis choices. That is what makes this
+affordable.
 
 **Cut order, revised 21 September 2026: P-5, then P-7, then P-3's middle
 severity. P-2 and P-6 are co-primary and are not cut.** P-6 costs no recording

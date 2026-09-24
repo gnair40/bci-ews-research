@@ -8,25 +8,49 @@ takes, what happens if one slips, and what to cut if you run out of time.**
 > your real dates — the arithmetic below shifts with them, and the slack figure
 > is the number to watch.
 
-**Written 21 September 2026.** 71 days to December, 161 to the fair.
+**Written 21 September 2026. Revised 24 September 2026** after the
+preregistration was frozen. **68 days to December, 158 to the fair.**
 
 ---
 
-## The decision that sets the schedule
+## The decision that set the schedule — made 24 September 2026
 
-Everything else is fixed. This one is yours, and it changes the calendar by
-about three days.
+This was the one open decision. It is now closed and frozen
+(`09_PREREGISTRATION.md` §11, call 1, commit `f4dda04`).
 
-| | 101 fault-free sessions | ~360 fault-free sessions |
+| | **101 fault-free sessions — CHOSEN** | ~480 fault-free sessions |
 |---|---|---|
-| Recording | 1 unattended night | 4 unattended nights |
-| Held-out fault-free hours | ~4 | ~30 |
-| What you can claim with zero false alarms | "probably below 0.75/hour" — **7× the budget** | "**within the 0.1/hour budget**" |
-| Calendar cost | — | **+3 days** |
+| Recording | **1 unattended night** | 4 unattended nights |
+| Held-out fault-free hours | **~4** | ~30 |
+| What zero false alarms lets you claim | **"bounded at 0.75/hour" — 7× the budget, and PP-1 is reported as untested** | "within the 0.1/hour budget" |
+| Calendar cost | **—** | +3 days |
 
-**Three days buys the difference between "we could not measure it precisely
-enough" and the measurement the whole phase exists for.** The schedule below
-assumes the longer campaign.
+**What choosing 101 costs, in one sentence:** if the monitor turns out to be
+quiet, this campaign cannot tell that apart from a monitor that is merely
+untested, and the write-up has to say so. If the monitor turns out to be
+*noisy* — which is what PP-1 predicts, from 3.41/hour on T11 and 0.225/hour on
+T5 — 101 sessions measure it fine. The decision bets on the prediction being
+right, and the cost of losing that bet is written into PP-1 in advance.
+
+### The three days it saved are already spent
+
+The schedule was written on 21 September assuming four nights and finishing 31
+October. Choosing one night pulls the finish in by three days; freezing three
+days later than the schedule assumed pushes it back by three. **Net change:
+none. Still 31 October, still 31 days of slack.**
+
+This is worth stating rather than quietly showing a better number. The three
+days were real and they were spent on deciding — which is a legitimate use of
+them, but not a free one.
+
+### One thing happened out of order, and it is an improvement
+
+The runbook puts the freeze at stage 6, *after* calibration. It happened first
+instead. That is the stronger ordering: gate G-e (margin within 6° of 36.1°)
+was fixed before anyone knows what margin this box will actually produce, so
+the gate cannot drift toward whatever the apparatus happens to do. If the box
+cannot meet it, `09_PREREGISTRATION.md` §7 already says what to report, and it
+was written before the box existed.
 
 ---
 
@@ -34,19 +58,23 @@ assumes the longer campaign.
 
 | Week | Dates | What happens | Who is needed |
 |---|---|---|---|
-| 1 | 21 Sep – 2 Oct | Order parts, wait for shipping. **Read 00 and 01 while waiting.** | nobody |
-| 2 | 2 – 5 Oct | Set up the Pi, build the box | you, two afternoons |
-| 2–3 | 5 – 8 Oct | Bench checks, then calibrate to 36.1° (P-1) | you, iterative |
-| 3 | 8 – 9 Oct | **Freeze the preregistration** | you, 30 min |
-| 3–4 | 9 – 15 Oct | P-2: the fault-free campaign, 4 nights | **nobody — it runs while you sleep** |
-| 4–5 | 15 – 20 Oct | P-3: 101 degraded sessions | partly attended |
-| 5 | 20 – 21 Oct | P-5: the five undesigned faults | you, one hour |
-| 5–6 | 21 – 25 Oct | **P-7: three more apparatus configurations** | mostly unattended |
-| 5 | 21 – 22 Oct | Analysis and figures | laptop, 20 min |
-| 6 | 22 – 27 Oct | Write the December section with real numbers | you |
+| — | **24 Sep — done** | **Preregistration frozen** (`f4dda04`), 18 days ahead of checkpoint 1 | — |
+| 1 | 24 Sep – 5 Oct | **Order the four critical parts**, wait for shipping. **Read 00 and 01 while waiting.** | nobody |
+| 2 | 5 – 8 Oct | Set up the Pi, build the box | you, two afternoons |
+| 2–3 | 8 – 12 Oct | Bench checks, then calibrate to 36.1° (P-1) | you, iterative |
+| 3 | 12 – 13 Oct | P-2: the fault-free campaign, **one night** | **nobody — it runs while you sleep** |
+| 3–4 | 13 – 19 Oct | P-3: 101 degraded sessions | partly attended |
+| 4 | 19 – 20 Oct | P-5: the five undesigned faults | you, one hour |
+| 4–5 | 20 – 25 Oct | **P-7: three more apparatus configurations** | mostly unattended |
+| 5 | 25 – 26 Oct | Analysis and figures | laptop, 20 min |
+| 5–6 | 26 – 31 Oct | Write the December section with real numbers | you |
 
 **Finishes 31 October with P-7 included. That leaves 31 days of slack before
 1 December.**
+
+**The critical path now runs through the post, not through you.** Every dated
+row above is downstream of parts arriving; nothing in the list can start
+earlier by working harder. That is the argument for ordering this week.
 
 *(P-7 was added on 21 September and costs about 10 hours of mostly unattended
 recording plus three re-calibrations — four days of calendar, and four days of
@@ -63,13 +91,14 @@ it rather than a promise of data.
 
 Check these dates against reality, not against how it feels.
 
-### Checkpoint 1 — **preregistration frozen by 12 October**
+### Checkpoint 1 — **preregistration frozen by 12 October** — ✅ **met 24 September, 18 days early**
 
 *Why this one:* nothing that counts as data may be recorded before it. Every
 day late is a day lost from the end.
 
-**If you miss it:** you are not in trouble yet. Freeze it the day you can and
-carry on; the slack absorbs about two weeks here.
+Frozen at commit `f4dda04`. Nothing further is needed here, and **the 18 days
+are not slack you can spend** — they were always going to be spent waiting for
+parts, which is now the only thing on the critical path.
 
 ### Checkpoint 2 — **all recording done by 1 November**
 
@@ -146,9 +175,10 @@ Before you spend money, all four of these:
 
 Then:
 
-- [ ] **Order the four critical parts** (~$110, `11_SHOPPING_LIST.md`)
-- [ ] **Decide 101 or ~360** fault-free sessions
-- [ ] Put the three checkpoint dates in your calendar
+- [x] ~~Decide the fault-free campaign length~~ — **101, frozen 24 Sep**
+- [ ] **Order the four critical parts** (~$110, `11_SHOPPING_LIST.md`) — **this
+      is now the only thing standing between you and the whole schedule above**
+- [ ] Put the two remaining checkpoint dates in your calendar (1 Nov, 20 Nov)
 
 That is the whole of it. Everything after is `12_RUNBOOK.md`, in order.
 

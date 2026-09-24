@@ -3,7 +3,8 @@
 **Drafted:** 20 September 2026.
 **Frozen:** 24 September 2026, by the researcher's instruction recorded in §10.1.
 **Status: FROZEN. Nothing has been built and nothing has been measured.**
-**Frozen at commit:** [`f4dda0433d50`](../../commit/f4dda0433d50c489ae4f9f1309452d2782f8a019) — full hash `f4dda0433d50c489ae4f9f1309452d2782f8a019`
+**Frozen at commit:** `f4dda0433d50c489ae4f9f1309452d2782f8a019`
+(short: `f4dda04` — verify with `git show --stat f4dda04`)
 
 > **This file must not be edited from here on.** Corrections and changes are
 > made only as appended amendments under §9, which preserve the original
@@ -610,3 +611,34 @@ under §9, appended and dated, stating whether the data had been seen.
 
 Amendments are appended as new numbered sections after §12 and listed here in
 the same commit, per §9.5.
+
+### 12.1 Every commit that has touched this file since the freeze
+
+The header says this file must not be edited. That rule is worth nothing
+unless breaking it is visible, so **every commit touching this file after
+`f4dda04` is listed here, including the ones that change nothing of
+substance.** `scripts/79_preregistration_freeze.py` fails if this table and
+the git history disagree, so the list cannot go quietly out of date.
+
+To check the whole thing yourself, in one command:
+
+```bash
+git diff f4dda04 -- physical/docs/09_PREREGISTRATION.md
+```
+
+Everything that diff shows must appear below with a reason.
+
+Rows are keyed on the commit **subject line**, not the hash. That is
+deliberate: a row keyed on a hash can never name the commit that adds it —
+writing the row changes the file, which makes a new commit, which needs a new
+row, and so on without end. A subject is known before the commit exists, so a
+commit can disclose itself and the loop closes.
+
+| Commit subject | Date | What it changed | Substantive? |
+|---|---|---|---|
+| `Record the freeze commit hash in the preregistration header` | 24 Sep 2026 | Wrote the freeze hash into the header. This is step 4 of the §10 procedure and cannot be done in the commit it names. | no |
+| `Propagate the frozen 101-session decision through the repository` | 24 Sep 2026 | Replaced a relative markdown link to the freeze commit — which does not resolve on GitHub — with the plain hash and a `git show` command. Added this ledger. | no |
+
+**No commit in this table changed a prediction, a threshold, a sample size, or
+a falsification condition.** If one ever does, it is an amendment under §9 and
+belongs in the log above, not in this table.

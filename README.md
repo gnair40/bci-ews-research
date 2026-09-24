@@ -26,10 +26,13 @@ The field has spent a decade learning to *correct* that drift and almost no
 effort on *noticing it early enough to act*. There is not even a standard way to
 test whether such a warning system works.
 
-## Where this is, as of 21 September 2026
+## Where this is, as of 24 September 2026
 
 **The computational half is complete** and its result is below. **The physical
-half is specified, coded and preregistered, and waiting on parts.** It exists
+half is specified, coded, and preregistered — frozen on 24 September 2026 at
+commit `f4dda04`, so
+every prediction now has a timestamp that precedes any data. It is waiting on
+parts, and on nothing else.** It exists
 because two numbers that decide whether this class of monitor can be deployed —
 how early it warns, and how often it warns when nothing is wrong — cannot be
 measured on archived human recordings by anyone. Start at

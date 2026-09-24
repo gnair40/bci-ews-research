@@ -432,5 +432,8 @@ can be the one the data supports. If the honest answer is an upper bound rather
 than a rate, the write-up should say "upper bound" — the difference is the whole
 argument.
 
-Recording more is cheap: the healthy campaign is unattended and runs overnight.
-Thirty hours is about four nights.
+Thirty hours is about four unattended nights. **That option was considered and
+declined**: `09_PREREGISTRATION.md` §4 freezes the arm at 101, so if this
+campaign comes back quiet, the correct report is an upper bound and the words
+"untested", not a pass. Recording extra fault-free sessions after an analysis
+has been run is an amendment under §9 of that document.

@@ -3,9 +3,14 @@
 What to do, in order, on each day of recording. Assumes the apparatus has passed
 every check in `04_BUILD.md` Part 6.
 
-About **18 hours of recording** across roughly **217 sessions**, most of it
-unattended overnight. The calendar matters more than the clock: the healthy
-campaign is four nights of the box running by itself.
+About **28 hours of recording** across **337 sessions** (217 for P-1 to P-5,
+plus 120 for the P-7 apparatus arm), most of it unattended overnight. The
+calendar matters more than the clock.
+
+**The fault-free campaign is one night**, not four: 101 sessions at five
+minutes each is 8.4 hours, and that count is frozen
+(`09_PREREGISTRATION.md` §4, commit `f4dda04`). The P-7 arm is three more
+unattended nights on top.
 
 ---
 
@@ -13,7 +18,7 @@ campaign is four nights of the box running by itself.
 
 Not estimated — these are from full-length 15000-frame sessions.
 
-| | Per session | 101 (floor) | 217 (plan) | 480 (30 held-out hours) |
+| | Per session | **101 (the frozen P-2 arm)** | 337 (the whole plan) | 480 (what PP-1 would have needed) |
 |---|---|---|---|---|
 | Raw data on disk | **23.7 MB** | 2.4 GB | 5.2 GB | **11.4 GB** |
 | Recording time | 5 min | 8.4 h | 18 h | 40 h |
@@ -137,16 +142,26 @@ python3 physical/code/run_campaign.py status --session 10
 If it stopped early it says so, and running `record` again carries on where it
 left off.
 
-### Then record more
+### Do not record more
 
-**101 sessions is a floor, not a target.** After the fit and validation groups
-are taken out, 101 leaves about four test hours, which — even with zero false
-alarms — only supports an upper bound of about 0.75 per hour, seven times the
-budget. Demonstrating the 0.1 per hour budget needs roughly **30 hours of
-held-out healthy recording**.
+**101 is the frozen count, not a floor to beat.** `09_PREREGISTRATION.md` §4
+fixed it on 24 September 2026, and §9 of that document makes any extension an
+appended, dated amendment stating whether the data had been seen. The reason
+for that formality is specific: recording extra fault-free hours *after*
+seeing that the monitor was noisy, until the rate comes down, is the exact
+shape of the thing preregistration exists to prevent. Deciding to extend
+before running any analysis is fine — write the amendment first.
 
-That is about four nights instead of one. Nothing else in this project buys as
-much for as little effort, because nobody has to be present.
+**What 101 costs you, stated plainly.** After the fit and threshold groups are
+taken out, 101 leaves about four held-out test hours. Even with zero false
+alarms that supports an upper bound of only about 0.75 per hour, seven times
+the budget. Demonstrating the 0.1 per hour budget would need roughly **30
+hours of held-out** recording — about **480 sessions, four unattended nights**.
+
+So if this arm comes back quiet, the sentence in the write-up is *"the rate is
+bounded at 0.75/hour; this campaign cannot distinguish a quiet monitor from a
+noisy one"* — **not** *"the monitor met the budget"*. That wording is fixed in
+advance in PP-1 precisely so it cannot be softened later.
 
 ```bash
 python3 physical/code/run_campaign.py plan   --session 10 --healthy 200
@@ -276,7 +291,7 @@ Both are analyses of the sessions above. P-4 compares the correlation the field
 reports against the lead time and false-alarm rate on the same recordings; P-6
 re-scores everything at different decision rates. Neither needs the apparatus.
 
-That is what makes this affordable: two of the six experiments cost minutes.
+That is what makes this affordable: two of the seven experiments cost minutes.
 
 ---
 

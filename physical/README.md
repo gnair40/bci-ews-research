@@ -24,6 +24,13 @@ step and what success looks like. Tick the boxes as you go.
 
 Everything else in this folder explains *why*. That one is the order.
 
+> **Frozen 24 September 2026.** The preregistration
+> ([`docs/09_PREREGISTRATION.md`](docs/09_PREREGISTRATION.md)) is closed at
+> commit `f4dda04`. Runbook stage 6 is done; the fault-free arm is fixed at
+> **101 sessions, one unattended night**. From here that file is changed only
+> by appended amendments under its §9, never by editing. **The one remaining
+> action before the schedule can start is ordering the four critical parts.**
+
 > **Reassessed 21 September 2026.** The hypothesis was reframed from an
 > existence claim to a measurement claim, P-6 was promoted to co-primary, an
 > apparatus-variation arm (P-7) was added, and the comparison was retargeted
@@ -37,7 +44,7 @@ Everything else in this folder explains *why*. That one is the order.
 |---|---|---|
 | 00 | [`docs/00_WHY_THIS_PHASE_EXISTS.md`](docs/00_WHY_THIS_PHASE_EXISTS.md) | The argument. What is new, what is not, and an honest account of what already exists. **Start here.** |
 | 01 | [`docs/01_RESEARCH_DESIGN.md`](docs/01_RESEARCH_DESIGN.md) | An audit of the old design, the new hypothesis, the variables, and the limitations written in advance |
-| 02 | [`docs/02_EXPERIMENTS.md`](docs/02_EXPERIMENTS.md) | The six experiments P-1 to P-6, what each tests, and what every outcome would mean |
+| 02 | [`docs/02_EXPERIMENTS.md`](docs/02_EXPERIMENTS.md) | The seven experiments P-1 to P-7, what each tests, and what every outcome would mean |
 | 03 | [`docs/03_MATERIALS_AND_SAFETY.md`](docs/03_MATERIALS_AND_SAFETY.md) | What to buy, why each item, and the safety assessment |
 | 04 | [`docs/04_BUILD.md`](docs/04_BUILD.md) | From an empty box to a calibrated apparatus, assuming no prior knowledge |
 | 05 | [`docs/05_SOFTWARE.md`](docs/05_SOFTWARE.md) | Every script: what it does, what it needs, what it produces |

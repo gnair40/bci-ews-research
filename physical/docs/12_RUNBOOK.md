@@ -166,26 +166,32 @@ Full detail: `04_BUILD.md` Part 5. **Do not skip any of these.**
 
 ---
 
-## Stage 6 — freeze the preregistration *(30 minutes, and it blocks everything after)*
+## Stage 6 — freeze the preregistration — **DONE, 24 September 2026**
 
-- [ ] **6.1** Read `09_PREREGISTRATION.md` §2 (the eight predictions) and §11
-      (the eight judgement calls).
-- [ ] **6.2** Change anything you do not accept **as your own**. It is a draft
-      written by an assistant until you do this.
-- [ ] **6.3** Fill in the campaign length in §4: **101 fault-free sessions, or
-      about 360?** One unattended night or four. See `02_EXPERIMENTS.md` P-2
-      for what each can and cannot demonstrate.
-- [ ] **6.4** Freeze it:
-  ```bash
-  git add physical/docs/09_PREREGISTRATION.md
-  git commit -m "Freeze the physical-phase preregistration before building anything"
-  git rev-parse HEAD
-  ```
-- [ ] **6.5** Paste the printed commit ID into the header and commit again.
+**Frozen at commit `f4dda04`.**
+Nothing in this stage is outstanding. It is kept here in sequence so the
+runbook still reads as the order things happened in.
 
-> **After that commit exists, recording data may begin. Not before.** The
-> timestamp on it is what makes every "we predicted this beforehand"
-> checkable rather than asserted.
+- [x] **6.1** The ten predictions (PP-1 to PP-10) and the ten judgement calls
+      were read.
+- [x] **6.2** They were accepted as the researcher's own — see
+      `09_PREREGISTRATION.md` §10.1, which records the instruction verbatim.
+- [x] **6.3** Campaign length fixed at **101 fault-free sessions**: one
+      unattended night. The alternative, ~480 sessions over four nights, was
+      what PP-1 needed to be falsifiable and was declined against the fair
+      date. `02_EXPERIMENTS.md` P-2 has the arithmetic.
+- [x] **6.4 / 6.5** Frozen and the hash written into the header.
+
+> **Recording may now begin — once the apparatus exists and passes the §3
+> gate.** The freeze is what makes every "we predicted this beforehand"
+> checkable rather than asserted; it is not a substitute for the gate.
+
+**If you ever need to change a frozen value**, do not edit
+`09_PREREGISTRATION.md`. Append an amendment under its §9: a new numbered
+section quoting the original wording, saying what changed, why, on what date,
+and **whether the data had been seen**. An amendment made after seeing the data
+is allowed and is disclosed in bold. That disclosure is the price of changing
+your mind afterwards, and paying it is much better than quietly editing.
 
 ---
 
