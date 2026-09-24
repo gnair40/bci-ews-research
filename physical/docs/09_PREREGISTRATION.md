@@ -3,7 +3,7 @@
 **Drafted:** 20 September 2026.
 **Frozen:** 24 September 2026, by the researcher's instruction recorded in §10.1.
 **Status: FROZEN. Nothing has been built and nothing has been measured.**
-**Frozen at commit:** `[[FREEZE_HASH]]`
+**Frozen at commit:** [`f4dda0433d50`](../../commit/f4dda0433d50c489ae4f9f1309452d2782f8a019) — full hash `f4dda0433d50c489ae4f9f1309452d2782f8a019`
 
 > **This file must not be edited from here on.** Corrections and changes are
 > made only as appended amendments under §9, which preserve the original
