@@ -83,6 +83,11 @@ GATES: list[tuple[str, list[str], bool, str]] = [
      "to it was not disclosed. This is the most serious failure in the list: "
      "a preregistration that has drifted still looks like evidence of "
      "foresight."),
+    ("hardware pins",
+     ["scripts/81_hardware_pins.py"], False,
+     "A wiring table disagrees with the code that drives those pins, or a "
+     "GPIO is documented on the wrong physical pin. This is the one failure "
+     "in the list that costs you a rebuild rather than a rerun."),
     ("remote freshness",
      ["scripts/80_remote_freshness.py"], False,
      "A local branch ref is behind its remote, so anything you conclude by "

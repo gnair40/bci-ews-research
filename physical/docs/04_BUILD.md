@@ -263,22 +263,65 @@ reach in the dark.
 **Stepper motor** (optional, for the rotation fault by hand). Connect the ULN2003
 driver board to the Pi's pins with the jumper wires:
 
-| Driver board | Raspberry Pi pin |
-|---|---|
-| IN1 | GPIO 6 (physical pin 31) |
-| IN2 | GPIO 13 (physical pin 33) |
-| IN3 | GPIO 19 (physical pin 35) |
-| IN4 | GPIO 26 (physical pin 37) |
-| `-` (ground) | any GND, e.g. physical pin 39 |
-| `+` (power) | **5 V, physical pin 2** |
+| Driver board | GPIO (BCM) | Physical pin on the 40-pin header |
+|---|---|---|
+| IN1 | GPIO 17 | pin 11 |
+| IN2 | GPIO 27 | pin 13 |
+| IN3 | GPIO 22 | pin 15 |
+| IN4 | GPIO 23 | pin 16 |
+| `-` (ground) | — | pin 9 |
+| `+` (power) | — | **5 V, pin 2** |
 
 **5 V, not 3.3 V.** The 3.3 V rail cannot supply the motor and may be damaged.
 Count pins carefully: physical pin 1 is the corner nearest the SD card slot, and
 the odd numbers run down one side.
 
+> **Corrected 10 November 2026.** Until this date the table above gave
+> GPIO 6/13/19/26 on physical pins 31/33/35/37. **That was wrong and the motor
+> would never have turned**, because `rig/motor.py` — the only code in this
+> repository that drives the motor — hardcodes `PINS = [17, 27, 22, 23]`.
+> `research/RIG_CODE.md` and `research/RIG_PROCEDURE.md` both already gave
+> 17/27/22/23 as well, so this document was the sole outlier; it was written
+> fresh on 20 September without checking the code it describes.
+>
+> The old table was also ambiguous in a way worth naming: it labelled its
+> column "Raspberry Pi pin" while mixing GPIO numbers and physical pin numbers,
+> and "GPIO 13" and "physical pin 13" are two different holes in the header.
+> The table above now states both numbers for every wire, so there is nothing
+> to infer. The pin numbers in `rig/motor.py` are the authority; if they ever
+> change, this table changes in the same commit.
+
 The rotation fault is also available in software, which needs no motor at all.
 The motor exists so that P-5 can impose a *physical* rotation — a fault nobody
 designed the equation for.
+
+**Temperature sensor** (optional, DHT22 / AM2302 on a breakout board).
+`run_session.py` records the room temperature into every session's row by
+calling `rig/logtemp.py`, and skips it silently if no sensor is attached.
+
+| DHT22 breakout | GPIO (BCM) | Physical pin |
+|---|---|---|
+| DATA / OUT | GPIO 4 | pin 7 |
+| GND | — | pin 9 |
+| VCC | — | 3.3 V, pin 1 |
+
+**GPIO 4 is the only one of these three the repository fixes**:
+`rig/logtemp.py` defaults to `--pin 4` and says so in its own help text
+(`GPIO4 = header pin 7`). If you wire DATA anywhere else you must pass
+`--pin` to match, and `run_session.py` calls the script without arguments, so
+in practice use GPIO 4.
+
+**The power and ground pins above are a recommendation, not a repository
+specification** — no file here states them. A DHT22 breakout runs on 3.3–5 V;
+3.3 V is suggested because the Pi's GPIO inputs are 3.3 V and powering the
+sensor from the same rail keeps its data line inside that range without a
+level shifter. If your module's silkscreen says 5 V only, follow the module.
+
+**Why bother at all.** A camera sensor's dark current roughly doubles every
+6–8 °C, so a room that warms through the evening looks exactly like an array
+that is drifting. Log it and the two are separable afterwards; do not log it
+and they are not. If you have no sensor, skip it and **write in the research
+log that it is missing**, so that empty cells are never later read as zeros.
 
 ---
 

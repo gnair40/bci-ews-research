@@ -22,6 +22,7 @@ Exit code 0 if every live mutant was caught, 1 otherwise.
 """
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -157,13 +158,61 @@ MUTANTS = [
 ]
 
 
+INFLIGHT = REPO / "data" / "processed" / ".mutation_inflight.json"
+
+
+def recover_inflight() -> None:
+    """Undo a mutation left behind by a run that was killed mid-flight.
+
+    `try/finally` restores the file when the mutation raises, and when the
+    tests fail, and when the user presses Ctrl-C. It does NOT restore it when
+    the process is killed outright -- a timeout, an OOM kill, a closed
+    container. The `finally` never runs, and a deliberately broken file is left
+    sitting in the working tree.
+
+    That happened on 10 November 2026. A backgrounded gate run was killed
+    during the mutation check and left this line in research/RIG_PROCEDURE.md:
+
+        python3 scripts/17_fault_injector.py --participant RIG plan
+
+    which is the September bug the mutant exists to reintroduce -- a documented
+    command with its subcommand after an option, which argparse rejects. It
+    looks like ordinary prose. Nothing marks it as a mutant. The next gate run
+    reported a broken command in a document nobody had edited, and it would
+    have been committed had the gate not failed.
+
+    So the file being mutated is now recorded on disk BEFORE it is written,
+    and any run starting up restores what a dead run left behind.
+    """
+    if not INFLIGHT.exists():
+        return
+    try:
+        rec = json.loads(INFLIGHT.read_text())
+        target = REPO / rec["path"]
+        if target.read_text() != rec["original"]:
+            target.write_text(rec["original"])
+            print(f"recovered {rec['path']} — a previous run was killed while "
+                  f"it was mutated")
+        else:
+            print(f"note: {rec['path']} was already intact; clearing the "
+                  f"in-flight record")
+    except (OSError, ValueError, KeyError) as exc:
+        print(f"WARNING: could not read the in-flight record ({exc}). "
+              f"Check `git status` before trusting this run.")
+        return
+    INFLIGHT.unlink(missing_ok=True)
+
+
 def main() -> int:
+    recover_inflight()
     print(f"{'mutant':<64} {'test class':<22} result")
     print("-" * 104)
     missed, unexpected = 0, 0
     for desc, relpath, mutate, testclass, inert in MUTANTS:
         target = REPO / relpath
         backup = target.read_text()
+        INFLIGHT.parent.mkdir(parents=True, exist_ok=True)
+        INFLIGHT.write_text(json.dumps({"path": relpath, "original": backup}))
         try:
             mutated = mutate(backup)
             if mutated == backup:
@@ -180,6 +229,7 @@ def main() -> int:
             caught = r.returncode != 0
         finally:
             target.write_text(backup)
+            INFLIGHT.unlink(missing_ok=True)
 
         if inert:
             ok = not caught

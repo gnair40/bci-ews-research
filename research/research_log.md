@@ -7092,3 +7092,103 @@ Still true, and worth repeating because the freeze does not change it:
 **nothing here has been tested against a single real recording.** Every check
 that passes today passes against synthetic sessions from `dryrun.py`. That is
 recorded in the frozen document itself, as §10.2.
+
+
+---
+
+## 10 November 2026 — consolidation, and a pinout that would have cost a rebuild
+
+Asked to review every branch, commit, file and timestamp, resolve anything
+outdated or conflicting, and consolidate into one current branch.
+
+### The branch review found nothing to merge
+
+All six remote branches are **ancestors of `61fd150`** — zero unique commits,
+zero unique files. The duplicate-looking names (`physical-validation-phase`
+beside `claude/physical-validation-phase`, and so on) are the same work under
+two spellings, from the remote renaming branches on first push.
+
+The file-level check was run as well as the commit-level one, because an
+ancestor can still hold a file its descendant deleted. None did.
+
+So consolidation here is naming the verified tip and fixing what is *inside*
+it. Saying otherwise — describing merged branches and reconciled histories —
+would have been theatre, and the audit in
+`research/CONSOLIDATION_2026-11-10.md` says so in those words.
+
+### The conflict was in the content, and it was physical
+
+**Two stepper-motor pinouts in the tree at once.** `rig/motor.py` hardcodes
+`PINS = [17, 27, 22, 23]`; `research/RIG_CODE.md` and `research/RIG_PROCEDURE.md`
+agree. `physical/docs/04_BUILD.md` said GPIO 6/13/19/26. One outlier against
+three, and the outlier was the build manual — the document a person follows
+with wire in hand.
+
+Resolved to the code. Wire the board by the old table and **the motor never
+turns, and nothing reports an error**: the software would energise four pins
+with nothing attached to them. It surfaces as "the camera did not rotate",
+hours into a P-5 session.
+
+The old table had a second hazard: one column headed "Raspberry Pi pin" holding
+GPIO numbers, when GPIO 13 and physical pin 13 are different holes. Both
+numbers are now on every row.
+
+**No gate caught this.** All twelve passed with it sitting there. They check
+numbers against their data, documents against documents, the preregistration
+against its freeze — and not one looks at a GPIO number.
+`scripts/81_hardware_pins.py` now does, and was verified by restoring the wrong
+pinout and watching it go red.
+
+Its own first version printed a heading with no result under it whenever an
+earlier section failed, because section 3 tested the shared problem list. Found
+the same way: by running it against a failure rather than reading it.
+
+This is the same shape this project keeps recording — *correct where it was
+written, wrong where it was used* — but every earlier instance cost a rerun.
+**This is the first that costs a rebuild.** Which is the argument for the gate
+existing now, before the parts arrive, rather than after.
+
+### A gap, too
+
+`run_session.py` logs room temperature via `rig/logtemp.py`, which defaults to
+`--pin 4`. **No build document said how to wire the sensor at all.** Now
+documented: DATA on GPIO 4, physical pin 7 — the value the code actually uses.
+
+The power and ground pins are labelled **a recommendation, not a repository
+specification**, because no file here states them. Inventing a number and
+presenting it as verified is exactly the failure this consolidation exists to
+remove, and the honest move is to mark the boundary rather than blur it.
+
+### The mutation harness can leave a deliberately broken file behind
+
+Found by its consequence. A gate run reported a broken command in
+`research/RIG_PROCEDURE.md` — the subcommand-after-option bug from September —
+in a file nobody had edited.
+
+`tools/mutation_check.py` reintroduces that exact bug as one of its mutants,
+and restores the file in a `finally` block. `finally` covers an exception, a
+test failure, a Ctrl-C. **It does not cover the process being killed**, which
+is what happened to a backgrounded gate run earlier the same evening. The
+mutant was left sitting in the working tree, looking like ordinary prose, with
+nothing marking it as a mutant — and it would have been committed if the next
+gate run had not failed on it.
+
+The harness now writes the file and its original contents to
+`data/processed/.mutation_inflight.json` **before** mutating, and any run
+starting up restores what a dead run left behind. Verified by simulating a
+killed run — writing the mutant and the record, then starting the harness and
+watching it announce the recovery.
+
+A `finally` block is a promise about exceptions, not about processes. Worth
+naming, because the file it leaves behind is readable English that no reviewer
+would flag.
+
+### The environment, not the repository
+
+A fresh container failed six gates on `ModuleNotFoundError: numpy`. Cause:
+`pip` on this image is Python 3.13, `python3` is 3.11, so
+`pip install -r requirements.txt` fills an interpreter the scripts never use.
+`python3 -m pip install ...` is the working form, plus upgrading Pillow, whose
+system build matplotlib cannot import. All 12 gates green afterwards. Nothing
+was wrong with the repository — worth writing down, because six simultaneous
+failures look alarming and came from one missing package.

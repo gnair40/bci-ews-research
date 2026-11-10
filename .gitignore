@@ -63,3 +63,4 @@ physical/data/dryrun/
 physical/data/*_dryrun*
 physical/data/results/*_dryrun*
 physical/data/figures/*_dryrun*
+data/processed/.mutation_inflight.json

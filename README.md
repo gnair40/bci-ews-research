@@ -93,7 +93,7 @@ works — and the reason is now measured rather than guessed.**
 
 ## Checking the work
 
-Nine gates, a mutation check and a test suite — **one command**:
+Ten gates, a mutation check and a test suite — **one command**:
 
 ```
 python3 tools/check_all.py
@@ -117,9 +117,10 @@ stopping at the first, because stopping early hides how much is wrong.
 | 77 | `scripts/77_cross_reference.py` | do the documents agree with each other and the code? |
 | 79 | `scripts/79_preregistration_freeze.py` | is the frozen preregistration still frozen, and every edit to it disclosed? |
 | 80 | `scripts/80_remote_freshness.py` | is this working copy's view of the repository current, or is a local ref stale? |
+| 81 | `scripts/81_hardware_pins.py` | does every wiring table match the code that drives those pins? |
 | | `physical/code/monitor.py --selftest` | does the physical phase's pipeline run end to end? |
 
-**Each of the last four exists because something got through.**
+**Each of the last five exists because something got through.**
 `69_command_check.py` was missing from the README's list until 20 September
 2026, which is exactly the way a gate stops being run — and is why the list is
 now a script. `77_cross_reference.py` was added on 21 September after two
@@ -132,7 +133,12 @@ checking that two documents agree. `79_preregistration_freeze.py` was added on
 `main` branch was written into four documents and committed — a claim drawn
 from a *local* ref that had never been fetched and was five weeks stale. Every
 other gate compares the repository to itself, and from the inside a stale ref
-is indistinguishable from a current one.
+is indistinguishable from a current one. `81_hardware_pins.py` was added on
+10 November 2026, when the repository was found holding two different
+stepper-motor pinouts — the build manual said GPIO 6/13/19/26, the code that
+drives the motor says 17/27/22/23. All twelve other gates passed with that
+contradiction in the tree, because not one of them looks at a GPIO number. It
+is also the only failure in the list that costs a rebuild rather than a rerun.
 
 `tools/mutation_check.py` is the unusual one. A test suite that passes on its
 first run has demonstrated nothing, so it reintroduces eleven bugs this project
