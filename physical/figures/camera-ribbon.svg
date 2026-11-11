@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="Times New Roman, Liberation Serif, serif" aria-label="Three-step close-up of the CSI camera connector. Step one, the black plastic tab lifts straight up. Step two, the ribbon cable slides in with its silver contacts facing the HDMI ports and its blue plastic backing facing the USB ports. Step three, the tab presses back down and the cable is tugged gently to check it is gripped." width="1664" height="460" viewBox="0 0 1664 460">
+<defs>
+<linearGradient id="rpcb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C8A54"/><stop offset="1" stop-color="#0E6239"/></linearGradient>
+<linearGradient id="rtab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A5159"/><stop offset="1" stop-color="#20262B"/></linearGradient>
+<linearGradient id="rsock" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A3036"/><stop offset="1" stop-color="#101418"/></linearGradient>
+<linearGradient id="rblue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3C7FC4"/><stop offset="1" stop-color="#20568F"/></linearGradient>
+<linearGradient id="rsilver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAFBFC"/><stop offset="0.5" stop-color="#C6CCD2"/><stop offset="1" stop-color="#8F979F"/></linearGradient>
+<filter id="rsh" x="-25%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#0A1A12" flood-opacity="0.3"/></filter>
+</defs>
+<rect x="0" y="0" width="1664" height="460" fill="#F2F4F1"/>
+
+<text x="40" y="36" fill="#30414E" font-family="Times New Roman, Liberation Serif, serif" font-size="21" font-weight="700">1 · lift the tab straight up</text>
+<g filter="url(#rsh)">
+<rect x="40" y="200" width="420" height="150" rx="10" fill="url(#rpcb)" stroke="#0A4A2B" stroke-width="2"/>
+<rect x="110" y="214" width="280" height="54" rx="4" fill="url(#rsock)"/>
+<rect x="104" y="136" width="292" height="30" rx="5" fill="url(#rtab)"/>
+</g>
+<path d="M250 194 L250 176" stroke="#1B9E8F" stroke-width="4"/><path d="M250 168 l-9 15 h18 z" fill="#1B9E8F"/>
+<text x="250" y="428" fill="#5A6A76" font-family="Times New Roman, Liberation Serif, serif" font-size="19" text-anchor="middle">gently — do not lever it sideways</text>
+
+<text x="560" y="36" fill="#30414E" font-family="Times New Roman, Liberation Serif, serif" font-size="21" font-weight="700">2 · slide the cable fully home</text>
+<g filter="url(#rsh)">
+<rect x="560" y="200" width="520" height="150" rx="10" fill="url(#rpcb)" stroke="#0A4A2B" stroke-width="2"/>
+<rect x="612" y="214" width="400" height="54" rx="4" fill="url(#rsock)"/>
+<rect x="606" y="136" width="412" height="30" rx="5" fill="url(#rtab)"/>
+<rect x="628" y="186" width="372" height="56" rx="3" fill="url(#rblue)"/>
+<rect x="628" y="236" width="372" height="26" rx="2" fill="url(#rsilver)"/>
+<g fill="#9BA3AB"><rect x="640" y="240" width="12" height="18" rx="1"/><rect x="664" y="240" width="12" height="18" rx="1"/><rect x="688" y="240" width="12" height="18" rx="1"/><rect x="712" y="240" width="12" height="18" rx="1"/><rect x="736" y="240" width="12" height="18" rx="1"/><rect x="760" y="240" width="12" height="18" rx="1"/><rect x="784" y="240" width="12" height="18" rx="1"/><rect x="808" y="240" width="12" height="18" rx="1"/><rect x="832" y="240" width="12" height="18" rx="1"/><rect x="856" y="240" width="12" height="18" rx="1"/><rect x="880" y="240" width="12" height="18" rx="1"/><rect x="904" y="240" width="12" height="18" rx="1"/><rect x="928" y="240" width="12" height="18" rx="1"/><rect x="952" y="240" width="12" height="18" rx="1"/><rect x="976" y="240" width="12" height="18" rx="1"/></g>
+</g>
+<rect x="560" y="366" width="252" height="34" rx="6" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="572" y="375" width="26" height="16" rx="3" fill="#2E7BD4"/><text x="608" y="389" fill="#20568F" font-family="Times New Roman, Liberation Serif, serif" font-size="18" font-weight="700">blue backing → USB side</text>
+<rect x="826" y="366" width="254" height="34" rx="6" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="838" y="375" width="26" height="16" rx="3" fill="#C6CCD2"/><text x="874" y="389" fill="#4A5A66" font-family="Times New Roman, Liberation Serif, serif" font-size="18" font-weight="700">contacts → HDMI side</text>
+<text x="820" y="428" fill="#5A6A76" font-family="Times New Roman, Liberation Serif, serif" font-size="19" text-anchor="middle">push until the blue stops at the socket mouth</text>
+
+<text x="1180" y="36" fill="#30414E" font-family="Times New Roman, Liberation Serif, serif" font-size="21" font-weight="700">3 · press the tab down</text>
+<g filter="url(#rsh)">
+<rect x="1180" y="200" width="444" height="150" rx="10" fill="url(#rpcb)" stroke="#0A4A2B" stroke-width="2"/>
+<rect x="1226" y="214" width="340" height="54" rx="4" fill="url(#rsock)"/>
+<rect x="1242" y="186" width="308" height="34" rx="3" fill="url(#rblue)"/>
+<rect x="1220" y="196" width="352" height="30" rx="5" fill="url(#rtab)"/>
+</g>
+<path d="M1396 140 L1396 170" stroke="#1B9E8F" stroke-width="4"/><path d="M1396 178 l-9 -15 h18 z" fill="#1B9E8F"/>
+<text x="1396" y="428" fill="#5A6A76" font-family="Times New Roman, Liberation Serif, serif" font-size="19" text-anchor="middle">then tug gently — it must not move</text>
+</svg>

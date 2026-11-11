@@ -7192,3 +7192,85 @@ A fresh container failed six gates on `ModuleNotFoundError: numpy`. Cause:
 system build matplotlib cannot import. All 12 gates green afterwards. Nothing
 was wrong with the repository — worth writing down, because six simultaneous
 failures look alarming and came from one missing package.
+
+---
+
+## 11 November 2026 — one document for the physical phase, and the figures that go with it
+
+Asked for a single comprehensive document covering the physical validation
+phase, built from the repository rather than from memory, and then asked for it
+to live in the repository as an executive summary. It is now
+`physical/EXECUTIVE_SUMMARY.md`, with its nine figures in `physical/figures/`.
+
+### What it is, and what it is not
+
+Twenty-two sections drawn from the 15 specification documents, 17 programs and
+1 data-layout note under `physical/`. Every parameter in it was read from
+program source rather than from prose — 50 fps, 24 × 16 patches and depth
+0.00211 from `stimulus.py`; 36.1° and the ±6° tolerance from `bench.py`; the
+30 s / 5 s window from `monitor.py`; GPIO 17/27/22/23 from `rig/motor.py`;
+GPIO 4 from `rig/logtemp.py`. Reading the code rather than the documents is the
+direct consequence of the 10 November pinout finding: prose in this repository
+has been wrong about a number at least five times, and the code has not.
+
+Section 0 states that nothing has been built and nothing has been measured, and
+every procedural section carries one of four status labels: Implemented,
+Specified, Not specified, Not executed. Sections 8 through 18 are all Not
+executed. The document reports no experimental results because there are none.
+
+It also carries, as section 20, the list of what the repository does **not**
+say and an implementer would need: the DHT22 supply and ground pins, the camera
+exposure starting value, the camera-to-display separation. Those are marked as
+gaps, not filled with plausible numbers.
+
+Section 21 says plainly that the October build window has passed and the 31
+days of schedule slack are gone, because no parts have been ordered. The
+schedule table shows the plan beside what actually happened, row by row. There
+was a temptation to re-date the plan so it would read as on track. Re-dating a
+plan after missing it is the paper equivalent of moving a threshold after
+seeing the data.
+
+### A gate caught an error in it within a minute
+
+`scripts/69_command_check.py` rejected the verification command in section 9:
+I had written `rig/motor.py` with no arguments after it. The program takes a
+mutually exclusive required group, `--degrees` or `--steps`; invoked bare it
+exits with a usage error and never moves the shaft. A reader following the
+document literally would have concluded the motor was broken.
+
+The same mistake cannot be quoted in full here, because this log is one of the
+files the gate reads: writing the bad invocation out with its `python3` prefix
+makes the gate harvest it from this entry and fail again, which is precisely
+what happened on the first attempt at writing this paragraph. Naming the script
+and describing what was missing records the error without planting it.
+
+Corrected to `--degrees 2` and `--degrees -2`, with the requirement and the
+return-to-zero rule stated. Worth recording because the gate was written in
+September to check *existing* documents and has now caught a fresh mistake
+inside a new one on its first run against it — which is the only real evidence
+that a gate is doing work rather than passing by construction.
+
+### The figures
+
+Nine, drawn rather than photographed, because no apparatus exists to
+photograph. Four are workflow diagrams (signal chain, end-to-end sequence,
+calibration loop, onset sealing) and five are hardware diagrams (board layout,
+ribbon cable orientation, header allocation, stepper wiring, sensor wiring).
+Each is committed as both PNG and SVG so the source is editable.
+
+The hardware diagrams were corrected several times by rendering and looking at
+them rather than by reading the code that generated them: wire origins that did
+not sit on true pin positions, a ground wire drawn from the even-numbered row
+when pin 9 is odd, the CSI connector placed bottom-centre when it is inboard on
+the left edge. Every one of those would have been invisible in the generating
+script and misleading to someone holding a board.
+
+They are set in Times New Roman, by request, with Liberation Serif as the
+fallback, which is metric-compatible.
+
+### Still outstanding, and none of it mine
+
+Order the four critical parts. Open the pull request merging
+`claude/consolidated-2026-11-10` into `main`. Write the AI disclosure, which
+remains the researcher's to write for the reason recorded on 8 September: a
+disclosure an AI wrote about itself is not a disclosure.

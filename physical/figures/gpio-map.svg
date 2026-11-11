@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="Times New Roman, Liberation Serif, serif" aria-label="Close-up of the 40-pin header on its green board, drawn as two rows of gold pins in a black plastic block. Odd pins 1 to 39 run along the top row, even pins 2 to 40 along the bottom. Seven pins are ringed and labelled: pin 1 is 3.3 volts for the sensor, pin 2 is 5 volts for the motor, pin 7 is GPIO 4 for the sensor data line, pin 9 is ground, and pins 11, 13, 15 and 16 are GPIO 17, 27, 22 and 23 for the motor's four control lines." width="1664" height="540" viewBox="0 0 1664 540">
+<defs>
+<linearGradient id="hpcb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A8450"/><stop offset="1" stop-color="#0F6B40"/></linearGradient>
+<linearGradient id="hblk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#43484D"/><stop offset="0.5" stop-color="#23282C"/><stop offset="1" stop-color="#101315"/></linearGradient>
+<linearGradient id="hgold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF0BE"/><stop offset="0.45" stop-color="#E0B64A"/><stop offset="1" stop-color="#8F6A1C"/></linearGradient>
+<filter id="hsh" x="-20%" y="-30%" width="150%" height="180%"><feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#0A1A12" flood-opacity="0.35"/></filter>
+</defs>
+<rect x="0" y="0" width="1664" height="540" fill="#F2F4F1"/>
+<g filter="url(#hsh)">
+<rect x="40" y="150" width="1584" height="240" rx="14" fill="url(#hpcb)" stroke="#0A4A2B" stroke-width="2"/>
+<rect x="64" y="186" width="1536" height="168" rx="8" fill="url(#hblk)"/>
+<g fill="url(#hgold)">
+<rect x="84" y="206" width="22" height="42" rx="3"/><rect x="160" y="206" width="22" height="42" rx="3"/><rect x="236" y="206" width="22" height="42" rx="3"/><rect x="312" y="206" width="22" height="42" rx="3"/><rect x="388" y="206" width="22" height="42" rx="3"/><rect x="464" y="206" width="22" height="42" rx="3"/><rect x="540" y="206" width="22" height="42" rx="3"/><rect x="616" y="206" width="22" height="42" rx="3"/><rect x="692" y="206" width="22" height="42" rx="3"/><rect x="768" y="206" width="22" height="42" rx="3"/><rect x="844" y="206" width="22" height="42" rx="3"/><rect x="920" y="206" width="22" height="42" rx="3"/><rect x="996" y="206" width="22" height="42" rx="3"/><rect x="1072" y="206" width="22" height="42" rx="3"/><rect x="1148" y="206" width="22" height="42" rx="3"/><rect x="1224" y="206" width="22" height="42" rx="3"/><rect x="1300" y="206" width="22" height="42" rx="3"/><rect x="1376" y="206" width="22" height="42" rx="3"/><rect x="1452" y="206" width="22" height="42" rx="3"/><rect x="1528" y="206" width="22" height="42" rx="3"/>
+<rect x="84" y="292" width="22" height="42" rx="3"/><rect x="160" y="292" width="22" height="42" rx="3"/><rect x="236" y="292" width="22" height="42" rx="3"/><rect x="312" y="292" width="22" height="42" rx="3"/><rect x="388" y="292" width="22" height="42" rx="3"/><rect x="464" y="292" width="22" height="42" rx="3"/><rect x="540" y="292" width="22" height="42" rx="3"/><rect x="616" y="292" width="22" height="42" rx="3"/><rect x="692" y="292" width="22" height="42" rx="3"/><rect x="768" y="292" width="22" height="42" rx="3"/><rect x="844" y="292" width="22" height="42" rx="3"/><rect x="920" y="292" width="22" height="42" rx="3"/><rect x="996" y="292" width="22" height="42" rx="3"/><rect x="1072" y="292" width="22" height="42" rx="3"/><rect x="1148" y="292" width="22" height="42" rx="3"/><rect x="1224" y="292" width="22" height="42" rx="3"/><rect x="1300" y="292" width="22" height="42" rx="3"/><rect x="1376" y="292" width="22" height="42" rx="3"/><rect x="1452" y="292" width="22" height="42" rx="3"/><rect x="1528" y="292" width="22" height="42" rx="3"/>
+</g>
+</g>
+<g font-family="Times New Roman, Liberation Serif, serif" font-size="17" fill="#8CA399" text-anchor="middle">
+<text x="95" y="198">1</text><text x="171" y="198">3</text><text x="247" y="198">5</text><text x="323" y="198">7</text><text x="399" y="198">9</text><text x="475" y="198">11</text><text x="551" y="198">13</text><text x="627" y="198">15</text><text x="703" y="198">17</text><text x="779" y="198">19</text><text x="855" y="198">21</text><text x="931" y="198">23</text><text x="1007" y="198">25</text><text x="1083" y="198">27</text><text x="1159" y="198">29</text><text x="1235" y="198">31</text><text x="1311" y="198">33</text><text x="1387" y="198">35</text><text x="1463" y="198">37</text><text x="1539" y="198">39</text>
+<text x="95" y="360">2</text><text x="171" y="360">4</text><text x="247" y="360">6</text><text x="323" y="360">8</text><text x="399" y="360">10</text><text x="475" y="360">12</text><text x="551" y="360">14</text><text x="627" y="360">16</text><text x="703" y="360">18</text><text x="779" y="360">20</text><text x="855" y="360">22</text><text x="931" y="360">24</text><text x="1007" y="360">26</text><text x="1083" y="360">28</text><text x="1159" y="360">30</text><text x="1235" y="360">32</text><text x="1311" y="360">34</text><text x="1387" y="360">36</text><text x="1463" y="360">38</text><text x="1539" y="360">40</text>
+</g>
+<g fill="none" stroke-width="5">
+<rect x="78" y="198" width="34" height="58" rx="8" stroke="#1B9E8F"/>
+<rect x="78" y="284" width="34" height="58" rx="8" stroke="#E8453A"/>
+<rect x="306" y="198" width="34" height="58" rx="8" stroke="#E8A33D"/>
+<rect x="382" y="198" width="34" height="58" rx="8" stroke="#6E7C86"/>
+<rect x="458" y="198" width="34" height="58" rx="8" stroke="#8B5CD6"/>
+<rect x="534" y="198" width="34" height="58" rx="8" stroke="#8B5CD6"/>
+<rect x="610" y="198" width="34" height="58" rx="8" stroke="#8B5CD6"/>
+<rect x="610" y="284" width="34" height="58" rx="8" stroke="#8B5CD6"/>
+</g>
+<g font-family="Times New Roman, Liberation Serif, serif" font-size="19" font-weight="700" text-anchor="middle">
+<text x="95" y="126" fill="#1B9E8F">3V3</text><text x="323" y="126" fill="#E8A33D">GPIO 4</text><text x="399" y="126" fill="#6E7C86">GND</text>
+<text x="475" y="126" fill="#8B5CD6">G17</text><text x="551" y="126" fill="#8B5CD6">G27</text><text x="627" y="126" fill="#8B5CD6">G22</text>
+<text x="95" y="432" fill="#E8453A">5V</text><text x="627" y="432" fill="#8B5CD6">GPIO 23</text>
+</g>
+<text x="40" y="88" fill="#30414E" font-family="Times New Roman, Liberation Serif, serif" font-size="20" font-weight="700">Pin 1 is the corner nearest the microSD slot · odd numbers on the top row, even on the bottom</text>
+<g font-family="Times New Roman, Liberation Serif, serif" font-size="19">
+<rect x="760" y="406" width="282" height="44" rx="8" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="774" y="419" width="26" height="18" rx="4" fill="#8B5CD6"/><text x="812" y="435" fill="#13202C" font-weight="700">motor IN1–IN4</text>
+<rect x="1058" y="406" width="282" height="44" rx="8" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="1072" y="419" width="26" height="18" rx="4" fill="#E8453A"/><text x="1110" y="435" fill="#13202C" font-weight="700">motor 5 V</text>
+<rect x="1356" y="406" width="268" height="44" rx="8" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="1370" y="419" width="26" height="18" rx="4" fill="#E8A33D"/><text x="1408" y="435" fill="#13202C" font-weight="700">sensor DATA</text>
+<rect x="760" y="462" width="282" height="44" rx="8" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="774" y="475" width="26" height="18" rx="4" fill="#1B9E8F"/><text x="812" y="491" fill="#13202C" font-weight="700">sensor 3.3 V</text>
+<rect x="1058" y="462" width="282" height="44" rx="8" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="1072" y="475" width="26" height="18" rx="4" fill="#6E7C86"/><text x="1110" y="491" fill="#13202C" font-weight="700">ground</text>
+</g>
+<text x="40" y="492" fill="#6E8292" font-family="Times New Roman, Liberation Serif, serif" font-size="19">“GPIO 13” and “physical pin 13” are</text>
+<text x="40" y="518" fill="#6E8292" font-family="Times New Roman, Liberation Serif, serif" font-size="19">different holes. Both numbers, always.</text>
+</svg>

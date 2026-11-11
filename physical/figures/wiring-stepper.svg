@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="Times New Roman, Liberation Serif, serif" aria-label="Realistic board view. A Raspberry Pi 4 on the left with its 40-pin header along the top edge. Six coloured jumper wires run to a blue ULN2003 driver board: red from pin 2 to plus, black from pin 9 to minus, and orange, yellow, green and blue from pins 11, 13, 15 and 16 to IN1 to IN4. The red and blue wires leave from the lower row of the header and dip below it. The driver board's white socket connects to a 28BYJ-48 stepper motor." width="1664" height="680" viewBox="0 0 1664 680">
+<defs>
+<linearGradient id="pcb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A8450"/><stop offset="1" stop-color="#0D5E37"/></linearGradient>
+<linearGradient id="pcbblue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A6FB8"/><stop offset="1" stop-color="#1B4E88"/></linearGradient>
+<linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0F2F4"/><stop offset="0.45" stop-color="#B8BFC6"/><stop offset="0.55" stop-color="#9AA2AA"/><stop offset="1" stop-color="#CFD5DA"/></linearGradient>
+<linearGradient id="blk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3F44"/><stop offset="1" stop-color="#15181B"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9A8"/><stop offset="0.5" stop-color="#D9A93C"/><stop offset="1" stop-color="#9C7420"/></linearGradient>
+<linearGradient id="motorbody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDEFF1"/><stop offset="0.3" stop-color="#C2C8CE"/><stop offset="0.75" stop-color="#8E959C"/><stop offset="1" stop-color="#B4BAC0"/></linearGradient>
+<radialGradient id="shaft" cx="0.35" cy="0.3"><stop offset="0" stop-color="#E8EBEE"/><stop offset="1" stop-color="#7C848C"/></radialGradient>
+<filter id="sh" x="-20%" y="-20%" width="150%" height="170%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#0A1A12" flood-opacity="0.32"/></filter>
+</defs>
+<rect x="0" y="0" width="1664" height="680" fill="#F2F4F1"/>
+
+<g filter="url(#sh)">
+<rect x="40" y="120" width="560" height="372" rx="22" fill="url(#pcb)" stroke="#0A4A2B" stroke-width="2"/>
+<g fill="#F2F4F1" stroke="#8FA39A" stroke-width="2"><circle cx="78" cy="158" r="11"/><circle cx="562" cy="158" r="11"/><circle cx="78" cy="454" r="11"/><circle cx="562" cy="454" r="11"/></g>
+<rect x="104" y="136" width="428" height="46" rx="5" fill="url(#blk)"/>
+<g fill="url(#gold)">
+<rect x="114" y="144" width="9" height="13" rx="1.5"/><rect x="135" y="144" width="9" height="13" rx="1.5"/><rect x="156" y="144" width="9" height="13" rx="1.5"/><rect x="177" y="144" width="9" height="13" rx="1.5"/><rect x="198" y="144" width="9" height="13" rx="1.5"/><rect x="219" y="144" width="9" height="13" rx="1.5"/><rect x="240" y="144" width="9" height="13" rx="1.5"/><rect x="261" y="144" width="9" height="13" rx="1.5"/><rect x="282" y="144" width="9" height="13" rx="1.5"/><rect x="303" y="144" width="9" height="13" rx="1.5"/><rect x="324" y="144" width="9" height="13" rx="1.5"/><rect x="345" y="144" width="9" height="13" rx="1.5"/><rect x="366" y="144" width="9" height="13" rx="1.5"/><rect x="387" y="144" width="9" height="13" rx="1.5"/><rect x="408" y="144" width="9" height="13" rx="1.5"/><rect x="429" y="144" width="9" height="13" rx="1.5"/><rect x="450" y="144" width="9" height="13" rx="1.5"/><rect x="471" y="144" width="9" height="13" rx="1.5"/><rect x="492" y="144" width="9" height="13" rx="1.5"/><rect x="513" y="144" width="9" height="13" rx="1.5"/>
+<rect x="114" y="162" width="9" height="13" rx="1.5"/><rect x="135" y="162" width="9" height="13" rx="1.5"/><rect x="156" y="162" width="9" height="13" rx="1.5"/><rect x="177" y="162" width="9" height="13" rx="1.5"/><rect x="198" y="162" width="9" height="13" rx="1.5"/><rect x="219" y="162" width="9" height="13" rx="1.5"/><rect x="240" y="162" width="9" height="13" rx="1.5"/><rect x="261" y="162" width="9" height="13" rx="1.5"/><rect x="282" y="162" width="9" height="13" rx="1.5"/><rect x="303" y="162" width="9" height="13" rx="1.5"/><rect x="324" y="162" width="9" height="13" rx="1.5"/><rect x="345" y="162" width="9" height="13" rx="1.5"/><rect x="366" y="162" width="9" height="13" rx="1.5"/><rect x="387" y="162" width="9" height="13" rx="1.5"/><rect x="408" y="162" width="9" height="13" rx="1.5"/><rect x="429" y="162" width="9" height="13" rx="1.5"/><rect x="450" y="162" width="9" height="13" rx="1.5"/><rect x="471" y="162" width="9" height="13" rx="1.5"/><rect x="492" y="162" width="9" height="13" rx="1.5"/><rect x="513" y="162" width="9" height="13" rx="1.5"/>
+</g>
+<rect x="258" y="274" width="104" height="104" rx="6" fill="#121619"/><rect x="266" y="282" width="88" height="88" rx="3" fill="#1E2429"/>
+<text x="310" y="332" fill="#5A646D" font-family="Times New Roman, Liberation Serif, serif" font-size="15" text-anchor="middle">BCM2711</text>
+<rect x="392" y="286" width="76" height="52" rx="4" fill="#15191D"/><text x="430" y="316" fill="#5A646D" font-family="Times New Roman, Liberation Serif, serif" font-size="12" text-anchor="middle">LPDDR4</text>
+<rect x="150" y="292" width="62" height="42" rx="4" fill="#15191D"/>
+<rect x="24" y="210" width="34" height="30" rx="4" fill="url(#metal)"/><rect x="31" y="218" width="20" height="14" rx="7" fill="#2A2F34"/>
+<rect x="24" y="274" width="30" height="40" rx="3" fill="url(#metal)"/><rect x="24" y="330" width="30" height="40" rx="3" fill="url(#metal)"/>
+<circle cx="40" cy="418" r="15" fill="#15181B"/>
+<rect x="296" y="402" width="18" height="86" rx="3" fill="#1C2126"/><rect x="300" y="408" width="10" height="74" rx="2" fill="#4A535B"/>
+<rect x="586" y="176" width="46" height="86" rx="4" fill="url(#metal)"/><rect x="594" y="190" width="30" height="24" rx="2" fill="#1C4B86"/><rect x="594" y="224" width="30" height="24" rx="2" fill="#1C4B86"/>
+<rect x="586" y="280" width="46" height="86" rx="4" fill="url(#metal)"/><rect x="594" y="294" width="30" height="24" rx="2" fill="#17191C"/><rect x="594" y="328" width="30" height="24" rx="2" fill="#17191C"/>
+<rect x="586" y="384" width="46" height="90" rx="4" fill="url(#metal)"/><rect x="594" y="406" width="30" height="42" rx="3" fill="#17191C"/>
+<circle cx="468" cy="206" r="6" fill="#D6453C"/><circle cx="490" cy="206" r="6" fill="#49B15A"/>
+<rect x="196" y="468" width="130" height="22" rx="3" fill="#0B4D2D" stroke="#0A4024" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="261" y="484" fill="#9FD6B8" font-family="Times New Roman, Liberation Serif, serif" font-size="12" text-anchor="middle">microSD (underside)</text>
+</g>
+<text x="40" y="50" fill="#30414E" font-family="Times New Roman, Liberation Serif, serif" font-size="21" font-weight="700">Raspberry Pi 4 Model B</text>
+<circle cx="118" cy="150" r="13" fill="none" stroke="#E04A38" stroke-width="3"/>
+<path d="M118 190 L118 232" stroke="#E04A38" stroke-width="2.5"/>
+<text x="118" y="254" fill="#E04A38" font-family="Times New Roman, Liberation Serif, serif" font-size="16" font-weight="700" text-anchor="middle">pin 1</text>
+
+<g filter="url(#sh)">
+<rect x="1024" y="176" width="300" height="320" rx="14" fill="url(#pcbblue)" stroke="#143C6B" stroke-width="2"/>
+<rect x="1060" y="206" width="132" height="54" rx="4" fill="#15181B"/>
+<circle cx="1070" cy="218" r="4" fill="#3A4046"/>
+<text x="1126" y="240" fill="#6B757E" font-family="Times New Roman, Liberation Serif, serif" font-size="14" text-anchor="middle">ULN2003</text>
+<g><circle cx="1084" cy="288" r="9" fill="#E8453A"/><circle cx="1118" cy="288" r="9" fill="#E8453A"/><circle cx="1152" cy="288" r="9" fill="#E8453A"/><circle cx="1186" cy="288" r="9" fill="#E8453A"/></g>
+<rect x="1222" y="206" width="80" height="140" rx="5" fill="#F4F6F7" stroke="#C2C8CE" stroke-width="2"/>
+<g fill="#D8DDE1" stroke="#AEB5BB"><rect x="1232" y="220" width="12" height="18" rx="2"/><rect x="1250" y="220" width="12" height="18" rx="2"/><rect x="1268" y="220" width="12" height="18" rx="2"/><rect x="1286" y="220" width="12" height="18" rx="2"/></g>
+<text x="1262" y="330" fill="#8A9299" font-family="Times New Roman, Liberation Serif, serif" font-size="12" text-anchor="middle">motor</text>
+<rect x="1008" y="330" width="34" height="156" rx="5" fill="#0F2E52"/>
+<g fill="url(#gold)"><rect x="1019" y="342" width="13" height="9" rx="1.5"/><rect x="1019" y="366" width="13" height="9" rx="1.5"/><rect x="1019" y="390" width="13" height="9" rx="1.5"/><rect x="1019" y="414" width="13" height="9" rx="1.5"/><rect x="1019" y="438" width="13" height="9" rx="1.5"/><rect x="1019" y="462" width="13" height="9" rx="1.5"/></g>
+</g>
+<text x="1024" y="150" fill="#30414E" font-family="Times New Roman, Liberation Serif, serif" font-size="21" font-weight="700">ULN2003 driver board</text>
+<g font-family="Times New Roman, Liberation Serif, serif" font-size="16" font-weight="700" fill="#BBD9F0">
+<text x="1050" y="352">+</text><text x="1050" y="376">−</text><text x="1050" y="400">IN1</text><text x="1050" y="424">IN2</text><text x="1050" y="448">IN3</text><text x="1050" y="472">IN4</text>
+</g>
+
+<g filter="url(#sh)">
+<ellipse cx="1510" cy="300" rx="106" ry="106" fill="url(#motorbody)" stroke="#6E767E" stroke-width="3"/>
+<ellipse cx="1510" cy="300" rx="70" ry="70" fill="none" stroke="#9AA2AA" stroke-width="3"/>
+<circle cx="1510" cy="300" r="24" fill="url(#shaft)" stroke="#6E767E" stroke-width="2"/>
+<rect x="1497" y="289" width="26" height="11" rx="2" fill="#5E666E"/>
+<path d="M1412 384 h196 a14 14 0 0 1 14 14 v28 a14 14 0 0 1 -14 14 h-196 a14 14 0 0 1 -14 -14 v-28 a14 14 0 0 1 14 -14 z" fill="#2A6FB8" stroke="#1B4E88" stroke-width="2"/>
+<rect x="1436" y="394" width="66" height="34" rx="4" fill="#F4F6F7" stroke="#C2C8CE" stroke-width="2"/>
+</g>
+<text x="1510" y="490" fill="#30414E" font-family="Times New Roman, Liberation Serif, serif" font-size="21" font-weight="700" text-anchor="middle">28BYJ-48 stepper</text>
+<path d="M1324 300 C 1352 300, 1364 300, 1400 300" stroke="#8A8F94" stroke-width="10" fill="none" stroke-linecap="round"/>
+
+<g fill="none" stroke-linecap="round">
+<path d="M202.5 136 C 202.5 92, 700 78, 1012 374" stroke="#15181B" stroke-width="15"/><path d="M202.5 136 C 202.5 92, 700 78, 1012 374" stroke="#3C4248" stroke-width="11"/><path d="M202.5 136 C 202.5 92, 700 78, 1012 374" stroke="#FFFFFF" stroke-width="2.5" opacity="0.2"/>
+<path d="M223.5 136 C 223.5 84, 712 66, 1012 398" stroke="#8A4A12" stroke-width="15"/><path d="M223.5 136 C 223.5 84, 712 66, 1012 398" stroke="#F08A2A" stroke-width="11"/><path d="M223.5 136 C 223.5 84, 712 66, 1012 398" stroke="#FFFFFF" stroke-width="2.5" opacity="0.28"/>
+<path d="M244.5 136 C 244.5 76, 724 56, 1012 422" stroke="#8A7A10" stroke-width="15"/><path d="M244.5 136 C 244.5 76, 724 56, 1012 422" stroke="#F0D32A" stroke-width="11"/><path d="M244.5 136 C 244.5 76, 724 56, 1012 422" stroke="#FFFFFF" stroke-width="2.5" opacity="0.28"/>
+<path d="M265.5 136 C 265.5 68, 736 46, 1012 446" stroke="#145C2E" stroke-width="15"/><path d="M265.5 136 C 265.5 68, 736 46, 1012 446" stroke="#2FA84F" stroke-width="11"/><path d="M265.5 136 C 265.5 68, 736 46, 1012 446" stroke="#FFFFFF" stroke-width="2.5" opacity="0.28"/>
+<path d="M118.5 182 C 118.5 238, 232 246, 430 250 C 700 256, 860 300, 1012 350" stroke="#7A1C16" stroke-width="15"/><path d="M118.5 182 C 118.5 238, 232 246, 430 250 C 700 256, 860 300, 1012 350" stroke="#E8453A" stroke-width="11"/><path d="M118.5 182 C 118.5 238, 232 246, 430 250 C 700 256, 860 300, 1012 350" stroke="#FFFFFF" stroke-width="2.5" opacity="0.28"/>
+<path d="M265.5 182 C 265.5 240, 420 290, 640 318 C 820 340, 900 420, 1012 470" stroke="#133E70" stroke-width="15"/><path d="M265.5 182 C 265.5 240, 420 290, 640 318 C 820 340, 900 420, 1012 470" stroke="#2E7BD4" stroke-width="11"/><path d="M265.5 182 C 265.5 240, 420 290, 640 318 C 820 340, 900 420, 1012 470" stroke="#FFFFFF" stroke-width="2.5" opacity="0.28"/>
+</g>
+
+<g font-family="Times New Roman, Liberation Serif, serif" font-size="19">
+<rect x="40" y="540" width="300" height="40" rx="6" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="52" y="551" width="30" height="18" rx="3" fill="#E8453A"/><text x="94" y="566" fill="#13202C" font-weight="700">pin 2 · 5 V</text><text x="214" y="566" fill="#5A6A76">→ +</text>
+<rect x="356" y="540" width="300" height="40" rx="6" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="368" y="551" width="30" height="18" rx="3" fill="#3C4248"/><text x="410" y="566" fill="#13202C" font-weight="700">pin 9 · GND</text><text x="546" y="566" fill="#5A6A76">→ −</text>
+<rect x="672" y="540" width="300" height="40" rx="6" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="684" y="551" width="30" height="18" rx="3" fill="#F08A2A"/><text x="726" y="566" fill="#13202C" font-weight="700">pin 11 · GPIO 17</text><text x="900" y="566" fill="#5A6A76">→ IN1</text>
+<rect x="40" y="596" width="300" height="40" rx="6" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="52" y="607" width="30" height="18" rx="3" fill="#F0D32A"/><text x="94" y="622" fill="#13202C" font-weight="700">pin 13 · GPIO 27</text><text x="268" y="622" fill="#5A6A76">→ IN2</text>
+<rect x="356" y="596" width="300" height="40" rx="6" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="368" y="607" width="30" height="18" rx="3" fill="#2FA84F"/><text x="410" y="622" fill="#13202C" font-weight="700">pin 15 · GPIO 22</text><text x="584" y="622" fill="#5A6A76">→ IN3</text>
+<rect x="672" y="596" width="300" height="40" rx="6" fill="#FFFFFF" stroke="#D5DBDE"/><rect x="684" y="607" width="30" height="18" rx="3" fill="#2E7BD4"/><text x="726" y="622" fill="#13202C" font-weight="700">pin 16 · GPIO 23</text><text x="900" y="622" fill="#5A6A76">→ IN4</text>
+</g>
+<rect x="1010" y="540" width="614" height="96" rx="10" fill="#FBEFE6" stroke="#E0B998" stroke-width="2"/>
+<text x="1317" y="576" fill="#8A3B14" font-family="Times New Roman, Liberation Serif, serif" font-size="22" font-weight="700" text-anchor="middle">5 V (pin 2), NOT 3.3 V</text>
+<text x="1317" y="608" fill="#5C3317" font-family="Times New Roman, Liberation Serif, serif" font-size="18" text-anchor="middle">the 3.3 V rail cannot supply the motor and may be damaged</text>
+<text x="40" y="668" fill="#6E8292" font-family="Times New Roman, Liberation Serif, serif" font-size="17">Red and blue leave the lower (even) row. Pin numbers from rig/motor.py — PINS = [17, 27, 22, 23].</text>
+</svg>

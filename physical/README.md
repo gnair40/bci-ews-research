@@ -10,6 +10,21 @@ recordings have neither. A sealed box with a screen and a camera has both.
 
 ---
 
+## If you want the whole phase in one document
+
+**[`EXECUTIVE_SUMMARY.md`](EXECUTIVE_SUMMARY.md)** is every document in this
+folder condensed into one technical reference: 22 sections, nine diagrams, and
+a status label on every procedure saying whether it is implemented, specified,
+unspecified or not yet executed. Written 11 November 2026 for a reader who
+needs the whole phase without opening 15 files, and for anyone assessing the
+work. Its figures are in [`figures/`](figures/), as PNG for viewing and SVG for
+editing.
+
+It is a *summary of* the documents below, not a replacement for them. The
+runbook is still the thing to work from at the bench.
+
+---
+
 ## If you just want to know what to do next
 
 **[`docs/13_SCHEDULE.md`](docs/13_SCHEDULE.md)** is the plan: week by week
