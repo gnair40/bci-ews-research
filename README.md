@@ -90,6 +90,7 @@ works — and the reason is now measured rather than guessed.**
 | [`reports/INVARIANT_ATTRIBUTION.md`](reports/INVARIANT_ATTRIBUTION.md) | The other half fails too — and what that says about supervised probes |
 | [`research/ORIGINAL_DATA_COLLECTION_DESIGN.md`](research/ORIGINAL_DATA_COLLECTION_DESIGN.md) | Why archived data cannot close certain gaps, and the options rejected. **Its recommendation is superseded** by the physical phase, which asks a different question |
 | [`physical/README.md`](physical/README.md) | **The physical-validation phase** — an apparatus whose failures are scheduled in advance, so lead time and false-alarm rate have a fixed value for the first time |
+| [`poster/README.md`](poster/README.md) | **The trifold poster** — both validations on one board; computational charts drawn from stored results by script, physical charts shown empty until there is something to put in them |
 
 ## Checking the work
 

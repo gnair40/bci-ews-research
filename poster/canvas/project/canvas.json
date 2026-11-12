@@ -1,0 +1,50 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-12T01:35:36Z"
+ },
+ "title": "Decoder-Health Monitor Trifold Poster",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 1232,
+   "y": 0,
+   "w": 2304,
+   "h": 3456,
+   "title": "Centre panel, 24 x 36 in"
+  },
+  "Left.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1152,
+   "h": 3456,
+   "title": "Left panel, 12 x 36 in"
+  },
+  "Right.dc.html": {
+   "x": 3616,
+   "y": 0,
+   "w": 1152,
+   "h": 3456,
+   "title": "Right panel, 12 x 36 in"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Left.dc.html",
+  "Right.dc.html"
+ ],
+ "notes": {
+  "board": {
+   "x": 0,
+   "y": -300,
+   "kind": "title1",
+   "maxW": 4768,
+   "text": "Trifold, 48 x 36 in: left 12 in, centre 24 in, right 12 in"
+  }
+ },
+ "designSystems": []
+}

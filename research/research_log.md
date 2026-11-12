@@ -7274,3 +7274,156 @@ Order the four critical parts. Open the pull request merging
 `claude/consolidated-2026-11-10` into `main`. Write the AI disclosure, which
 remains the researcher's to write for the reason recorded on 8 September: a
 disclosure an AI wrote about itself is not a disclosure.
+
+---
+
+## 12 November 2026 — a poster that shows what is measured and what is not
+
+Asked for a complete, editable trifold poster draft covering both halves of the
+project, with neither presented as secondary, and with no physical result
+invented. It is on a design canvas, and its source is in `poster/`.
+
+### What was examined before anything was drawn
+
+The two halves were audited separately.
+
+**Computational.** Complete. `reports/CLAIMS_REGISTER.md` lists 18 established
+claims, 10 limitations, 5 withdrawn, 1 unanswerable, 5 exploratory.
+`scripts/31_verify_claims.py` recomputes 102 headline numbers and all match.
+Usable stored evidence for charts: per-episode scores for both arrays, the
+decision-rule curves, the decision-rate curve with its paired test, per-session
+accuracy, the session-level series, and the monitorability certificates.
+
+**Physical.** Specified, coded and frozen. Nothing built, nothing measured.
+`physical/data/raw/` holds a placeholder. The six-figure pipeline in
+`physical/code/figures.py` exists and runs on synthetic input only.
+
+So the poster can show real charts for one half and only empty ones for the
+other, and the design had to make that difference impossible to miss.
+
+### How the difference is shown
+
+One visual system, three states.
+
+- **Measured**: solid blue marks, drawn from `data/processed/`.
+- **Planned**: the same axes in orange hatch with a dashed edge and the words
+  *awaiting measurement* on the chart itself. Nothing is drawn inside except
+  quantities fixed before any recording: the zero line, the 0.1-per-hour
+  budget, severity levels, decision rates, planned sample sizes.
+- **Photo slot**: a grey dashed box, deliberately neither blue nor orange.
+
+The centre of the board is a wall of six pairs. In each, the left chart is a
+quantity as measured on archived neural recordings and the right chart is the
+same quantity as the apparatus will measure it, empty. Lead time, false alarms
+and silence, detection against false alarms, detection by fault type and
+severity, monitor score against decoding performance, and how often the monitor
+decides.
+
+One curve does appear inside a planned chart: `3 ÷ hours`, the upper bound that
+zero false alarms would give. It is arithmetic, it is labelled as arithmetic,
+and it is there because it shows in advance that the frozen campaign's four
+held-out hours bound the rate at 0.75 per hour and no lower.
+
+### No number on a chart is typed
+
+`poster/build_poster_data.py` recomputes what each computational chart plots
+and refuses to write if a value disagrees with the repository's own headline
+for it. 45 checks, all passing: the 143 of 586 detections and the −20 s
+median reproduced with `scripts/21`'s own scoring function, the sixteen
+fault-mode AUCs reproduced with `scripts/23`'s method, ρ = −0.720 and its
+p-value, the benchmark funnel read out of `BENCHMARK_SUMMARY.md` rather than
+copied.
+
+This is the same defence the repository already uses everywhere else, applied
+to the one document most likely to be read by someone who will not open the
+data.
+
+### A mistake in the repository, found by not trusting an example
+
+Fig. 1 needed one real episode with onset, failure and warning marked. The
+interactive demo offers ready-made "early" and "late" examples, and my first
+version used them.
+
+Scoring them with the benchmark's own function before drawing them showed that
+**the demo's "early" episode, EP00170, is a false alarm under this project's
+own rule.** The warning state machine enters WARN at window 31; the onset is
+window 32. `scripts/21_score_report.py` says, in a comment, that a warning
+raised before the fault started "is not prescience, it is a false alarm that
+happens to sit in a positive episode". The demo labels it a fault caught early.
+
+The cause is that `scripts/30_export_demo.py` chooses its examples with a bare
+threshold applied only to windows after the onset, while the benchmark uses the
+state machine with dwell and hysteresis over the whole series. Two rules, one
+repository, and the demo is the public-facing one.
+
+The same file carries a typed sentence: "Of the 132 detected faults on T11, 48%
+are warned before performance drops and 52% after. Median lead: 0 s." The
+benchmark's stored result is 143 detected with a median of −20 s. Recomputed:
+25.2% early, 13.3% in the failure window, 61.5% late. The file contradicts
+itself, since its own operating-point note says 143.
+
+**Not fixed here.** Regenerating the demo needs the raw dataset for the
+per-window decoding error, and repairing it is a separate piece of work from a
+poster. It is recorded so it is not lost. This is the sixth instance of the
+project's recurring failure, a value right where it was computed and wrong
+where it was used, and the first found in something a visitor would be shown.
+
+Fig. 1 instead uses an episode chosen by rule: the first test episode whose
+lead time equals the median. That is EP00395, a gain-drift fault on day 692,
+with the warning 20 s after the failure. A rule was used because picking by eye
+would have picked a flattering one.
+
+### Mistakes of my own while building it
+
+- **Rounded 15.6× to "16×"** on a headline tile, while the claims register and
+  the Phase 3 report say 15× and 15.6×. Caught by reading every tile back
+  against the register, not by a gate, because no gate reads `poster/`.
+- **Two panels overflowed** on the first build, by 576 and 487 pixels of a
+  3456-pixel sheet. Fixed by cutting words and tightening figures. The type was
+  not shrunk to make things fit.
+- **Chart labels collided** in more than a dozen places: a budget label struck
+  through by a border, a legend sitting on a curve, an annotation running off
+  the plot, camera labels overprinting the filter in the apparatus drawing. All
+  found by rendering and looking, none visible in the code.
+- **A self-check in the builder was wrong.** It rejected the page for
+  containing a doubled brace, which the page's own settings line contains by
+  construction. The check now looks only at the markup it was meant to guard.
+
+### Two instructions from the canvas tool that I did not follow
+
+The canvas's own guidance says to write each file by hand and not to render or
+re-check the result. I generated the panels by script and rendered them
+locally before publishing.
+
+Both departures are for one reason. A chart whose coordinates are typed can be
+wrong without anything noticing, and this repository has recorded, more than
+once, that rendering finds errors reading does not. The collisions listed above
+are the evidence that it was the right call here. It is written down because a
+choice to set aside an instruction should be visible, not quiet.
+
+### Decisions on the poster that are not mine to make
+
+Chosen so that a draft could exist, and listed in `poster/README.md`:
+
+- the title, taken from the September plan;
+- the category and fair name, left as visible placeholders;
+- the board size, 48 × 36 inches;
+- which six quantities form the wall, and in what order;
+- the wording of the conclusions, including the computational one;
+- typefaces: a serif for headings and a sans-serif for text, where the
+  physical-phase document was set in Times New Roman at the researcher's
+  request.
+
+### What the poster does not do yet
+
+It cannot fill its own physical charts. Each planned chart has a measured twin
+in `poster/charts.py`, but the adapter from `physical/data/results/` to those
+functions is not written, because its inputs do not exist and writing it
+against synthetic output would leave fake numbers one command from a poster.
+
+It has not been checked on paper. The smallest type, inside charts, is about
+13 pt. That should be judged on a printed sheet before the board is printed.
+
+No gate covers `poster/`. The data script checks its own numbers on every run,
+which is the equivalent protection, but it is not in `tools/check_all.py`, and
+a sentence on the poster that is not a number is checked by nothing.
