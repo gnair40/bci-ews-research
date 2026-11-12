@@ -1,32 +1,43 @@
 # The trifold poster
 
-**Second design, 12 November 2026.** A 48 × 36 inch science-fair trifold in
-three panels: left 12 in, centre 24 in, right 12 in.
-
-![The three panels side by side](preview/trifold.png)
-
-The editable poster lives on a design canvas:
+A 48 × 36 inch science-fair trifold: left 12 in, centre 24 in, right 12 in.
+The canvas holds **three drafts on three pages**, so the designs can be
+compared side by side:
 <https://claude.ai/artifact/FRdqcb8LDn5hR2nhjJTEy3> (private until shared from
-its Share menu). Everything needed to rebuild it is in this folder.
+its Share menu).
+
+| Page | What it is | Status |
+|---|---|---|
+| **Draft 1** | the first design: thirteen figures, a measured chart beside an empty template for each quantity | kept as a record; type too small to read |
+| **Draft 2** | "the project in one minute": a dark band in the centre, the method prominent, data at the side | superseded |
+| **Draft 3** | the data and its analysis in the centre, the discussion on the right | **current** |
+
+![Draft 3](preview/draft3.png)
+
+Earlier drafts: [Draft 1](preview/draft1.png), [Draft 2](preview/draft2.png).
 
 ---
 
-## How it is organised
-
-The board follows one line of argument: the problem, why it matters, what the
-project proposes, how the system works, how it was tested, what the data show,
-what that means, and what is still unknown. The standard section names a judge
-looks for are all present.
+## How Draft 3 is organised
 
 | Panel | Sections |
 |---|---|
-| **Left** | Abstract (top-left), Introduction, Why it matters, Purpose, Hypothesis / Engineering goal, References |
-| **Centre** | Title, *The whole project in one minute*, Materials and methods, Pictures, Hardware, Real code and real output |
-| **Right** | Methods (the two test beds compared), Results and data, Analysis, Discussion, Conclusion |
+| **Left** | Abstract (top-left), Introduction, Why it matters, Purpose, Hypothesis / Engineering goal, Materials and methods |
+| **Centre** | Title, The project in one minute, **Results and data**, **Analysis** |
+| **Right** | **Discussion**, What is shown and what is not, Conclusion, Next steps, Pictures and hardware, References |
 
-The centre panel is the way in. Its dark band explains the project in four
-steps with no background assumed, then states the result so far in three large
-numbers. Everything technical sits around it.
+The centre carries six real charts and the four numbers they support. The
+method is one compact block on the left. Colour is the first draft's: white,
+ink, blue for what was measured, orange for what is still to be measured.
+There is no dark band and no yellow.
+
+### Why each draft was replaced
+
+- **Draft 1 to Draft 2.** The type was too small and the board was crowded.
+  The size check below counts 625 pieces of text under 24 pt in Draft 1.
+- **Draft 2 to Draft 3.** The researcher's review: the method took the centre
+  and the data and analysis were pushed to one side, and the navy band and
+  yellow highlighter did not fit the rest of the board.
 
 ## The size rule
 
@@ -36,7 +47,7 @@ program, not by eye:
 
 ```
 python3 poster/render_check/preview.py
-node poster/render_check/measure.js poster/render_check/out
+node poster/render_check/measure.js poster/render_check/out draft3
 ```
 
 The second command renders each panel, measures every piece of text (including
@@ -48,13 +59,12 @@ needs Node with Playwright.
 
 | On the board | Status |
 |---|---|
-| Charts (Figs 1, 4, 5) | **real**, drawn from `data/processed/` by script |
-| The three large numbers in the dark band | **real**, same source |
-| Wiring diagram (Fig. 3) | **real**: the repository's own `physical/figures/wiring-stepper.svg`, with its small labels removed and large ones added |
-| The five lines of code | **real**: copied from `scripts/21_score_report.py`; the build stops if those lines are no longer in that file |
-| "All 102 headline claims match the data files." | **real** output of `scripts/31_verify_claims.py` |
-| Bench drawing (Fig. 2) | a drawing of a **specification**; nothing is built |
+| Charts (Figs 2 to 7) | **real**, drawn from `data/processed/` by script |
+| The four large numbers above the charts | **real**, same source |
+| Wiring diagram (Fig. 9) | **real**: the repository's own `physical/figures/wiring-stepper.svg`, with its small labels removed and large ones added |
+| Bench drawing (Fig. 1) | a drawing of a **specification**; nothing is built |
 | Photographs and the screenshot | **grey placeholders**, labelled "to add" |
+| Real code and verifier output | on Draft 2 only; left off Draft 3 to give the data the room |
 | Bench results | **blanks**; there is no physical measurement |
 
 ## Where every number comes from
@@ -67,10 +77,10 @@ recomputes what each chart plots and **refuses to write** if a value disagrees
 with the headline the repository already publishes for it (45 checks).
 
 ```
-python3 poster/build_poster.py
+python3 poster/build_draft3.py
 ```
 
-assembles the three panels. Sentences that need a measured number take it from
+assembles Draft 3. Sentences that need a measured number take it from
 `poster_data.json`.
 
 | File | What it is |
@@ -78,12 +88,16 @@ assembles the three panels. Sentences that need a measured number take it from
 | `build_poster_data.py` | recomputes and checks every plotted value |
 | `poster_data.json` | the checked values, each with the file it came from |
 | `charts.py` | the charts |
-| `build_poster.py` | the words, diagrams and layout |
-| `assets/` | the relabel-ready wiring drawing, derived from `physical/figures/` |
-| `assets.json` | where each uploaded asset lives on the canvas |
-| `canvas/project/` | the built panels, exactly as published |
+| `build_draft3.py` | Draft 3: words, diagrams and layout |
+| `build_draft2.py` | Draft 2, and the components both drafts share |
+| `assets/`, `assets.json` | the relabel-ready wiring drawing, and where it lives on the canvas |
+| `canvas/project/` | every artboard exactly as published, and the canvas index |
 | `render_check/` | the fit-and-size check |
-| `preview/` | pictures of the panels |
+| `preview/` | one picture per draft |
+
+Draft 1 has no builder here. Its three files in `canvas/project/` (`D1-*`) are
+the first design exactly as published, restored from the commit that recorded
+it (`68f2f30`), where its builder can also be found.
 
 ## What other people's work is cited, and what was checked
 
@@ -128,23 +142,21 @@ far is that the monitor does not pass.
 - **The title**, from the September research plan, and the subtitle.
 - **The category and fair name**, shown as `[CATEGORY]` and `[FAIR AND YEAR]`.
 - **The board size**, 48 × 36 inches.
-- **The four-step story** in the dark band, and its everyday comparisons
-  (a warning light, alarms that cry wolf).
-- **The abstract.** It is a draft of about 110 words. A fair's official
-  abstract form has its own rules and word limit.
-- **The wording of the conclusion and discussion.**
-- **The dark band.** It is the one large area of solid ink on the board.
+- **Which six charts** sit in the centre, their order, and the sentence over
+  each one. Those sentences are claims about the data and should be checked
+  against it.
+- **The thin "project in one minute" row** above the results. It is the only
+  part of the centre that is not data or analysis, and it can go.
+- **The abstract.** A draft of about 110 words, not a fair's official form.
+- **The wording of the discussion and conclusion.**
 - **Type.** Source Serif 4 headings, IBM Plex Sans text.
 
-## What was cut to reach 24 pt
+## What is not on Draft 3
 
-The first design held thirteen figures at about half this type size. Raising
-the floor to 24 pt and giving room to photographs and the wiring diagram meant
-cutting. Gone from the board, and still in the repository: the six empty
-"awaiting measurement" chart templates, the five-gate dashboard, the variables
-table, the seven-experiment table, the decision-rate chart and the monitor's
-four-component diagram. `charts.py` still contains the template functions, for
-when there are bench results to draw.
+Still in the repository, and on the earlier drafts: the empty "awaiting
+measurement" chart templates, the five-gate dashboard, the variables and
+experiment tables (Draft 1); the numbered account of how the bench works, the
+real code and verifier output (Draft 2).
 
 ## Known limits
 

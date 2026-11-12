@@ -7542,3 +7542,86 @@ pointed at, and one panel 62 pixels too tall.
 The four-step story and its everyday comparisons. The abstract, which is a
 draft and not the fair's official form. The framing above. The dark band, which
 is the one large area of solid ink. All are listed in `poster/README.md`.
+
+---
+
+## 12 November 2026 (third draft) — the data moved to the centre
+
+The researcher reviewed the redesign and asked for three things.
+
+1. Put the first design back on the canvas as **Draft 1**, so the drafts can be
+   compared.
+2. The redesign, now **Draft 2**, gave the method too much room and pushed the
+   data and analysis to one side. The data and analysis belong in the middle,
+   and their discussion on the right.
+3. The navy band and yellow highlighter did not fit the rest of the board. Make
+   the new version **Draft 3**, on its own page.
+
+### Draft 1 was restored, not redrawn
+
+The first design had been overwritten in place when Draft 2 was published. It
+was recovered from the commit that recorded it (`68f2f30`) and put on the page
+the researcher had already made for it. The three PDFs supplied with the
+request match it. Nothing about it was altered.
+
+That it could be recovered at all is because every published version had been
+committed. Had the canvas been the only copy, Draft 1 would have survived only
+as those three PDFs.
+
+### What was wrong with Draft 2, and it was my reading of the brief
+
+The second brief asked for the centre panel to be the accessible way in, and
+for the method to follow. I took "how it works" to mean the method deserved
+the centre, and gave the centre to a bench drawing, a wiring diagram, a code
+excerpt and a row of photo slots. The actual results ended up on a 12 inch
+panel as two charts.
+
+For a project whose contribution is a measurement, that put the least
+important thing in the most important place. The researcher saw it at once.
+
+The colour was a separate misjudgement. A dark band is an easy way to make a
+panel eye-catching, and I reached for it. It made the centre look like a
+different poster from its own side panels.
+
+### Draft 3
+
+- **Centre:** the title, a thin "project in one minute" row, then results,
+  data and analysis: four headline numbers, and six real charts (detection by
+  fault type, lead time, false alarms and silence, detection against false
+  alarms, the score reached against the score needed, and the decision-rate
+  curve).
+- **Right:** discussion of those results, what is and is not shown, how the
+  bench result will be judged, conclusion, next steps, then pictures, hardware
+  and references.
+- **Left:** abstract, introduction, why it matters, purpose, hypothesis, and
+  the method reduced to one block: the two test beds compared, and a drawing
+  of the bench.
+- **Colour:** the first draft's. White, ink, blue for what was measured,
+  orange for what is still to be measured. The build refuses to write a
+  Draft 3 file containing the navy, the amber or the yellow.
+- **The 24 pt floor is kept.** The size check reports zero pieces of text
+  under 24 pt in Draft 3, and 625 in Draft 1.
+
+One new chart was drawn for it: the session score each array reached (0.673
+and 0.742) against the score needed to stay inside the false-alarm budget
+(0.990). Those three numbers were already checked by the data script.
+
+### A mistake caught before publishing
+
+Shortening the "why it matters" text for Draft 3 removed the sentence about
+smoke alarms and left reference [5] in the list with nothing citing it. Found
+on reading the rendered panel against its own reference list, and restored.
+A reference that nothing cites is a small thing, and it is exactly what a
+judge who checks references finds.
+
+### Decisions that are the researcher's
+
+Which six charts hold the centre, and the sentence over each, since each of
+those sentences is a claim about the data. Whether the thin "project in one
+minute" row stays, now that the centre is meant for data. Listed in
+`poster/README.md`.
+
+### Left as it was
+
+Draft 2 is unchanged on its page. The blank artboard the researcher made on
+the Draft 1 page was not touched; the three Draft 1 panels sit beside it.

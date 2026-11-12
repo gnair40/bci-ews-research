@@ -1,13 +1,19 @@
 // measure.js -- does every panel fit, and is any text below 24 pt (32 px)?
 //   python3 poster/render_check/preview.py
-//   node poster/render_check/measure.js poster/render_check/out
+//   node poster/render_check/measure.js poster/render_check/out draft3
 // Needs Node with Playwright. Exits non-zero if a panel overflows or any text is too small.
 const { chromium } = require('playwright');
 (async () => {
   const dir = require('path').resolve(process.argv[2]);
   let bad = 0;
   const b = await chromium.launch();
-  for (const [n, w] of [['Left',1152],['Main',2304],['Right',1152]]) {
+  // which draft: "draft2" (default) or "draft3". Draft 1 is kept as a record of the
+  // first design and is not checked: its small type is the reason it was replaced.
+  const which = process.argv[3] || 'draft2';
+  const sets = { draft2: [['Left',1152],['Main',2304],['Right',1152]],
+                 draft3: [['D3-Left',1152],['D3-Centre',2304],['D3-Right',1152]],
+                 draft1: [['D1-Left',1152],['D1-Centre',2304],['D1-Right',1152]] };
+  for (const [n, w] of sets[which]) {
     const p = await b.newPage({ viewport: { width: w, height: 3456 }, deviceScaleFactor: 1 });
     await p.goto('file://' + dir + '/' + n + '.html');
     await p.waitForLoadState('networkidle');

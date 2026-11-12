@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """
-build_poster.py -- assemble the three trifold panels from poster_data.json.
+build_draft2.py -- Draft 2 of the trifold: the "project in one minute" design.
 
     python3 poster/build_poster_data.py     # recompute and check every number
-    python3 poster/build_poster.py          # write poster/canvas/project/*.dc.html
+    python3 poster/build_draft2.py          # write Main, Left and Right .dc.html
+
+The canvas now holds three drafts on three pages. This file builds Draft 2 and
+also supplies the shared components that build_draft3.py imports. The canvas
+index, canvas/project/canvas.json, is not written here: pages and positions are
+arranged on the canvas itself.
 
 THE BOARD
 ---------
@@ -40,7 +45,6 @@ a set of blanks, and the board says so in words wherever it matters.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from pathlib import Path
 
 import charts as C
@@ -800,33 +804,6 @@ def right_panel() -> str:
 # ===========================================================================
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
-    boards = {
-        "Main.dc.html": {"x": PW_SIDE + 80, "y": 0, "w": PW_MAIN, "h": PH,
-                         "title": "Centre panel, 24 x 36 in"},
-        "Left.dc.html": {"x": 0, "y": 0, "w": PW_SIDE, "h": PH,
-                         "title": "Left panel, 12 x 36 in"},
-        "Right.dc.html": {"x": PW_SIDE + 80 + PW_MAIN + 80, "y": 0, "w": PW_SIDE, "h": PH,
-                          "title": "Right panel, 12 x 36 in"},
-    }
-    index_path = OUT / "canvas.json"
-    created = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    if index_path.exists():          # keep the creation stamp across rebuilds
-        created = json.loads(index_path.read_text())["createdOnFiles"]["at"]
-    index = {
-        "v": 3,
-        "createdOnFiles": {"v": 1, "at": created},
-        "title": "Decoder-Health Monitor Trifold Poster",
-        "launch": {"view": "canvas"},
-        "pages": [],
-        "boards": boards,
-        "order": ["Main.dc.html", "Left.dc.html", "Right.dc.html"],
-        "notes": {
-            "board": {"x": 0, "y": -300, "kind": "title1", "maxW": 4768,
-                      "text": "Trifold, 48 x 36 in: left 12 in, centre 24 in, right 12 in"},
-        },
-        "designSystems": [],
-    }
-    index_path.write_text(json.dumps(index, indent=1))
     for name, fn in (("Main.dc.html", main_panel), ("Left.dc.html", left_panel),
                      ("Right.dc.html", right_panel)):
         html = fn()

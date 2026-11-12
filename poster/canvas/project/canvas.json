@@ -1,50 +1,146 @@
 {
  "v": 3,
- "createdOnFiles": {
-  "v": 1,
-  "at": "2026-11-12T01:35:36Z"
- },
- "title": "Decoder-Health Monitor Trifold Poster",
- "launch": {
-  "view": "canvas"
- },
- "pages": [],
+ "attachments": {},
  "boards": {
+  "Artboard-hred.dc.html": {
+   "h": 600,
+   "handmade": true,
+   "page": "page-yiflc7",
+   "title": "Artboard 1",
+   "w": 800,
+   "x": 0,
+   "y": 0
+  },
+  "Left.dc.html": {
+   "h": 3456,
+   "title": "Left panel, 12 x 36 in",
+   "w": 1152,
+   "x": 0,
+   "y": 0
+  },
   "Main.dc.html": {
+   "h": 3456,
+   "title": "Centre panel, 24 x 36 in",
+   "w": 2304,
    "x": 1232,
+   "y": 0
+  },
+  "Right.dc.html": {
+   "h": 3456,
+   "title": "Right panel, 12 x 36 in",
+   "w": 1152,
+   "x": 3616,
+   "y": 0
+  },
+  "D1-Left.dc.html": {
+   "x": 880,
+   "y": 0,
+   "w": 1152,
+   "h": 3456,
+   "page": "page-yiflc7",
+   "title": "Draft 1, left panel"
+  },
+  "D1-Centre.dc.html": {
+   "x": 2112,
    "y": 0,
    "w": 2304,
    "h": 3456,
-   "title": "Centre panel, 24 x 36 in"
+   "page": "page-yiflc7",
+   "title": "Draft 1, centre panel"
   },
-  "Left.dc.html": {
+  "D1-Right.dc.html": {
+   "x": 4496,
+   "y": 0,
+   "w": 1152,
+   "h": 3456,
+   "page": "page-yiflc7",
+   "title": "Draft 1, right panel"
+  },
+  "D3-Left.dc.html": {
    "x": 0,
    "y": 0,
    "w": 1152,
    "h": 3456,
-   "title": "Left panel, 12 x 36 in"
+   "page": "page-draft3",
+   "title": "Draft 3, left panel, 12 x 36 in"
   },
-  "Right.dc.html": {
+  "D3-Centre.dc.html": {
+   "x": 1232,
+   "y": 0,
+   "w": 2304,
+   "h": 3456,
+   "page": "page-draft3",
+   "title": "Draft 3, centre panel, 24 x 36 in"
+  },
+  "D3-Right.dc.html": {
    "x": 3616,
    "y": 0,
    "w": 1152,
    "h": 3456,
-   "title": "Right panel, 12 x 36 in"
+   "page": "page-draft3",
+   "title": "Draft 3, right panel, 12 x 36 in"
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-11-12T01:35:36Z",
+  "v": 1
+ },
+ "designSystems": [],
+ "launch": {
+  "view": "canvas",
+  "page": "page-draft3"
+ },
+ "notes": {
+  "board": {
+   "kind": "title1",
+   "maxW": 4768,
+   "text": "Trifold, 48 x 36 in: left 12 in, centre 24 in, right 12 in",
+   "w": 240,
+   "x": 0,
+   "y": -300
+  },
+  "d1": {
+   "x": 880,
+   "y": -300,
+   "kind": "title1",
+   "maxW": 4768,
+   "page": "page-yiflc7",
+   "text": "Draft 1: the first design, thirteen figures in small type"
+  },
+  "d3": {
+   "x": 0,
+   "y": -300,
+   "kind": "title1",
+   "maxW": 4768,
+   "page": "page-draft3",
+   "text": "Draft 3: data and analysis in the centre, discussion on the right"
   }
  },
  "order": [
   "Main.dc.html",
   "Left.dc.html",
-  "Right.dc.html"
+  "Right.dc.html",
+  "Artboard-hred.dc.html",
+  "D1-Left.dc.html",
+  "D1-Centre.dc.html",
+  "D1-Right.dc.html",
+  "D3-Left.dc.html",
+  "D3-Centre.dc.html",
+  "D3-Right.dc.html"
  ],
- "notes": {
-  "board": {
-   "x": 0,
-   "y": -300,
-   "kind": "title1",
-   "maxW": 4768,
-   "text": "Trifold, 48 x 36 in: left 12 in, centre 24 in, right 12 in"
+ "pages": [
+  {
+   "id": "page-1",
+   "name": "Draft 2"
+  },
+  {
+   "id": "page-yiflc7",
+   "name": "Draft 1"
+  },
+  {
+   "id": "page-draft3",
+   "name": "Draft 3"
   }
- },
- "designSystems": []
+ ],
+ "title": "Decoder-Health Monitor Trifold Poster"
 }

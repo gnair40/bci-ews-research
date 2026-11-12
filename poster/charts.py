@@ -645,3 +645,36 @@ def drift_line(W, H, series, fail_deg):
     return svg(W, H, b, f"Median cursor error by session over {series[-1]['trial_day'] - d0} "
                "days with a fixed decoder. Error stays near 20 to 35 degrees, then rises above "
                "the failure level to around 100 degrees.")
+
+
+# ---------------------------------------------------------------------------
+# Analysis -- the score the monitor reached, and the score it would need
+# ---------------------------------------------------------------------------
+def auc_gap(W, H, achieved, needed):
+    x0, x1 = 20, W - 20
+    X = lin(0.5, 1.0, x0, x1)
+    y = H - 46
+    b = [R(X(max(achieved.values())), y - 16, X(min(needed.values())) - X(max(achieved.values())),
+           32, fill="#F7E6EB")]
+    b.append(L(x0, y, x1, y, RULE, 2))
+    for v in (0.5, 0.6, 0.7, 0.8, 0.9, 1.0):
+        b.append(L(X(v), y - 6, X(v), y + 6, RULE, 1.5))
+        b.append(T(X(v), y + 30, f"{v:.1f}", anchor="middle",
+                   weight=700 if v == 0.5 else 400, fill=INK if v == 0.5 else INK2))
+    b.append(T(X(0.5), y - 54, "coin flip", size=17, fill=INK2, anchor="start"))
+    b.append(L(X(0.5), y - 46, X(0.5), y - 8, INK2, 1.5, dash="4 4"))
+    for part, dy in (("T11", -54), ("T5", -54)):
+        v = achieved[part]
+        b.append(f'<circle cx="{X(v):.1f}" cy="{y}" r="10" fill="{BLUE}" stroke="#FFFFFF" '
+                 f'stroke-width="2"/>')
+        b.append(T(X(v), y + dy + 22, f"{v:.3f}", size=18, fill=BLUE, anchor="middle",
+                   weight=700))
+        b.append(T(X(v), y + dy, part, size=17, fill=BLUE, anchor="middle"))
+    n = min(needed.values())
+    b.append(L(X(n), y - 62, X(n), y + 8, INK, 3))
+    b.append(T(X(n) - 10, y - 54, "needed", size=17, fill=INK, anchor="end", weight=600))
+    b.append(T(X(n) - 10, y - 32, f"{n:.3f}", size=18, fill=INK, anchor="end", weight=700))
+    mid = (X(max(achieved.values())) + X(n)) / 2
+    b.append(T(mid, y + 6, "the gap", size=17, fill=WINE, anchor="middle", weight=600))
+    return svg(W, H, b, f"Session score reached, {achieved['T11']:.3f} and "
+               f"{achieved['T5']:.3f}, against the {n:.3f} needed at one decision per session.")

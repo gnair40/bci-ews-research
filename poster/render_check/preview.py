@@ -7,8 +7,11 @@ src = root / "canvas" / "project"
 assets = json.loads((root / "assets.json").read_text())
 out = pathlib.Path(__file__).resolve().parent / "out"
 out.mkdir(exist_ok=True)
-for name in ("Left", "Main", "Right"):
-    h = (src / f"{name}.dc.html").read_text()
+for path in sorted(src.glob("*.dc.html")):
+    name = path.name[:-len(".dc.html")]
+    h = path.read_text()
+    if "<x-dc>" not in h or "</x-dc>" not in h:
+        continue
     body = h[h.index("<x-dc>") + 6:h.index("</x-dc>")]
     body = body.replace("<helmet>", "").replace("</helmet>", "")
     for fname, blob in assets.items():
