@@ -31,8 +31,13 @@ ORG, ORG_M, ORG_T = "#B24E0A", "#E9C3A0", "#FDF3E9"
 WINE = "#8C1D3B"
 SANS = "IBM Plex Sans, Arial, sans-serif"
 MONO = "IBM Plex Mono, Consolas, monospace"
-TICK = 18          # px; 13.5 pt on a 96 px/in sheet
+TICK = 18
 LABEL = 19
+# Charts are drawn in "source units" and displayed SCALE times larger. The
+# builder sets SCALE so that the smallest label, 17 units, prints at 32 px,
+# which is 24 pt on a 96 px/in sheet. Nothing on the board may be smaller.
+SCALE = 1.0
+MIN_UNITS = 17
 
 
 def esc(s: str) -> str:
@@ -71,8 +76,9 @@ def logs(d0, d1, r0, r1):
 
 
 def svg(W, H, body, label):
-    return (f'<svg role="img" aria-label="{esc(label)}" width="{W}" height="{H}" '
-            f'viewBox="0 0 {W} {H}" style="display: block; width: {W}px; height: {H}px">'
+    dw, dh = round(W * SCALE), round(H * SCALE)
+    return (f'<svg role="img" aria-label="{esc(label)}" width="{dw}" height="{dh}" '
+            f'viewBox="0 0 {W} {H}" style="display: block; width: {dw}px; height: {dh}px">'
             + "".join(body) + "</svg>")
 
 
@@ -397,20 +403,20 @@ def mode_dumbbell(W, H, values, modes, names):
     c1, c2 = x1 + 40, x1 + 96
     b.append(f'<circle cx="{c1}" cy="{y0 - 20}" r="8" fill="{BLUE}"/>')
     b.append(R(c2 - 7, y0 - 27, 14, 14, fill="#FFFFFF", stroke=INK, sw=2.5))
-    b.append(T(c1, y0 - 38, "monitor", size=15, fill=BLUE, anchor="middle", weight=600))
-    b.append(T(c2, y0 - 38, "count", size=15, fill=INK2, anchor="middle", weight=600))
+    b.append(T(c1 - 4, y0 - 36, "monitor", size=17, fill=BLUE, anchor="middle", weight=600))
+    b.append(T(c2, y0 - 36, "count", size=17, fill=INK2, anchor="middle", weight=600))
     for gi, m in enumerate(modes):
         gy = y0 + group * gi
         if gi:
             b.append(L(0, gy, W, gy, GRID, 1))
         a, c = names[m]
-        b.append(T(0, gy + group / 2 - 3, a, size=17, fill=INK, weight=600))
-        b.append(T(0, gy + group / 2 + 15, c, size=15, fill=INK2))
+        b.append(T(0, gy + group / 2 - 4, a, size=18, fill=INK, weight=600))
+        b.append(T(0, gy + group / 2 + 16, c, size=17, fill=INK2))
         for pi, part in enumerate(("T11", "T5")):
-            y = gy + group / 2 + (pi - 0.5) * 24
+            y = gy + group / 2 + (pi - 0.5) * 21
             g = values[part]["decoder_guard"][gi]
             k = values[part]["mean_activity"][gi]
-            b.append(T(x0 - 12, y + 6, part, size=16, fill=INK2, anchor="end"))
+            b.append(T(x0 - 12, y + 6, part, size=17, fill=INK2, anchor="end"))
             b.append(L(X(min(g, k)), y, X(max(g, k)), y, BLUE_M, 4))
             b.append(R(X(k) - 7, y - 7, 14, 14, fill="#FFFFFF", stroke=INK, sw=2.5))
             b.append(f'<circle cx="{X(g):.1f}" cy="{y:.1f}" r="8" fill="{BLUE}"/>')
@@ -603,3 +609,39 @@ def configs_planned(W, H, uid):
                    weight=700, anchor="middle"))
     return svg(W, H, b, "Empty template comparing four apparatus configurations on median "
                "lead time and false-alarm rate. No data.")
+
+
+# ---------------------------------------------------------------------------
+# Introduction -- one decoder left fixed for 142 days (real, archived)
+# ---------------------------------------------------------------------------
+def drift_line(W, H, series, fail_deg):
+    x0, x1, y0, y1 = 66, W - 18, 20, H - 56
+    d0 = series[0]["trial_day"]
+    X = lin(0, 150, x0, x1)
+    Y = lin(0, 130, y1, y0)
+    b = [R(x0, y0, x1 - x0, Y(fail_deg) - y0, fill="#F7E6EB")]
+    for v in (0, 40, 80, 120):
+        b.append(L(x0, Y(v), x1, Y(v), GRID, 1))
+        b.append(T(x0 - 10, Y(v) + 6, f"{v}", anchor="end"))
+    for v in (0, 50, 100, 150):
+        b.append(L(X(v), y1, X(v), y1 + 7, RULE, 1.5))
+        b.append(T(X(v), y1 + 27, f"{v}", anchor="middle"))
+    b.append(frame(x0, y0, x1, y1))
+    b.append(L(x0, Y(fail_deg), x1, Y(fail_deg), INK, 2, dash="7 5"))
+    b.append(T(x0 + 10, y0 + 22, "above the dashed line: failure", size=17, fill=WINE,
+               weight=600))
+    b.append(T(x0 + 10, y0 + 43, "(twice the day-1 error)", size=17, fill=INK2))
+    pts = [(X(q["trial_day"] - d0), Y(q["median_error_deg"])) for q in series]
+    b.append('<polyline points="' + " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+             + f'" fill="none" stroke="{BLUE}" stroke-width="3" stroke-linejoin="round"/>')
+    for (x, y), q in zip(pts, series):
+        over = q["median_error_deg"] > fail_deg
+        b.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="7" fill="{WINE if over else BLUE}" '
+                 f'stroke="#FFFFFF" stroke-width="2"/>')
+    b.append(T(x0 + (x1 - x0) / 2, H - 6, "days since the first session", size=LABEL,
+               anchor="middle"))
+    b.append(T(18, y0 + (y1 - y0) / 2, "cursor error (°)", size=LABEL, anchor="middle",
+               rot=-90))
+    return svg(W, H, b, f"Median cursor error by session over {series[-1]['trial_day'] - d0} "
+               "days with a fixed decoder. Error stays near 20 to 35 degrees, then rises above "
+               "the failure level to around 100 degrees.")

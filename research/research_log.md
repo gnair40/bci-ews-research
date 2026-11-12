@@ -7427,3 +7427,118 @@ It has not been checked on paper. The smallest type, inside charts, is about
 No gate covers `poster/`. The data script checks its own numbers on every run,
 which is the equivalent protection, but it is not in `tools/check_all.py`, and
 a sentence on the poster that is not a number is checked by nothing.
+
+---
+
+## 12 November 2026 (redesign) — the poster rebuilt for a reader who knows nothing yet
+
+The first poster came back with two rounds of feedback from the researcher, and
+both were right.
+
+**First:** the type was far too small, there was too much on the board, the
+smallest type should be 24, there had to be room for pictures and the
+breadboard diagrams, and the board should carry the standard sections, with
+the abstract in the top-left corner.
+
+**Second, at length:** the board read like a research paper. It should first
+say what the project is, why it matters and how it works, with the centre
+panel as the way in for someone with no background, and only then give the
+method, data and analysis. It asked for the rationale to be established from
+evidence, and it said plainly not to adopt the researcher's own "prevention
+versus intervention" reasoning as the justification without checking it.
+
+### What was wrong with the first design, and it was my doing
+
+- **The smallest type was about 13 pt.** I checked that the panels fitted and
+  that nothing overlapped. I did not check that a person could read them from
+  where a person stands. Fitting is not the same as legible.
+- **Thirteen figures.** Every one was defensible and together they were noise.
+- **It opened with the method.** A judge had to already understand the project
+  to find out what the project was.
+- **It cited a reference I had not checked.** Swanson et al. (2026) went onto
+  the board from the September bibliography. See below: I could not confirm it.
+
+### What the literature search found
+
+Run on 12 November 2026, to answer one question: what is the strongest honest
+reason this project is worth doing?
+
+| Claim | Source | Result |
+|---|---|---|
+| Decoders often need daily recalibration, and the device cannot be used freely during it | Wilson et al., *Nat. Biomed. Eng.* (2025) | found |
+| Automatic correction exists, and some forms of it accumulate error | Wilson et al. (2025); Karpowicz et al., *Nat. Commun.* (2025) | found |
+| An instability score was validated by correlation with performance, r = 0.93 and 0.72 | Pun et al., *Commun. Biol.* (2024) | found; matches the repository |
+| 72 to 99% of hospital monitor alarms are false | Sendelbach & Funk (2013) | found as reported in a federal patient-safety report; paper not opened |
+| Nuisance alarms are the leading reason smoke alarms are disconnected | NFPA, Ahrens (2015) | found |
+| Nearly 5.4 million people in the United States live with paralysis | Armour et al. (2016) | found |
+| A decoder-health monitor with a published lead time or false-alarm rate | targeted search | **none found** |
+
+**Not confirmed, and therefore removed from the board:**
+
+- **Swanson et al. (2026).** A search did not find the review. Its DOI resolves
+  to the publisher, but the page could not be opened from this environment, so
+  the title and authors remain unconfirmed. It is still in the September plan's
+  bibliography and needs checking before December.
+- **"Many users would not accept daily retraining."** Repeated in the
+  literature and attributed to a survey that I could not confirm contains it.
+  Not used.
+
+### The rationale, after checking it
+
+The researcher's framing was prevention versus intervention. Checked against
+the evidence, the defensible claim is narrower, and I think stronger.
+
+"Catching it early is better than fixing it late" is true only when the warning
+is early and can be trusted. The alarm literature says an untrustworthy warning
+is not a weaker version of a good one: people stop responding to it, or switch
+it off. So a decoder-health monitor cannot be justified by the idea of
+prevention. It can only be justified by two measured numbers, how early and how
+often wrong, and for this kind of monitor no published value of either was
+found.
+
+That is what the board now argues. It also means the project's own result is
+not an embarrassment to be explained away: the monitor fails the test, and the
+test is the contribution.
+
+This is a judgement about how to frame the work, so it is the researcher's to
+accept or reject. It is written here so the reasoning can be checked.
+
+### What changed on the board
+
+- **A floor of 24 pt for everything**, including axis numbers and labels inside
+  diagrams. Charts are drawn in source units and enlarged so their smallest
+  label lands on the floor. `poster/render_check/measure.js` measures every
+  piece of text after scaling and fails if any is under 32 px. It reports zero.
+- **The centre panel is the way in.** A dark band tells the project in four
+  steps (the decoder goes stale, add a warning light, test the warning, build
+  the test) and then gives the result so far as three large numbers.
+- **Standard sections**, abstract top-left.
+- **Real material:** the repository's own wiring diagram, with its small labels
+  stripped and large ones added; five lines of code copied from
+  `scripts/21_score_report.py`, with the build refusing to run if those lines
+  leave that file; one line of real verifier output; a real chart of a decoder
+  left fixed for 142 days.
+- **Placeholders** for three photographs and a screenshot, grey and labelled.
+- **Three tiers stated outright** in the discussion: shown so far (archived
+  recordings only), not shown yet (anything on the bench), not claimed (any
+  clinical rate or benefit).
+
+### What it cost
+
+Reaching 24 pt on a 48 × 36 inch board meant cutting. Off the board and still
+in the repository: the six empty chart templates, the gate dashboard, the
+variables table, the seven-experiment table, the decision-rate chart, the
+monitor's component diagram. The first design answered "is everything here?".
+This one answers "can it be read?", and those pull in opposite directions.
+
+### Mistakes while rebuilding
+
+Found by rendering, as before: chart rows packed tighter than their own text, a
+label printed on top of a data point, a callout number covering the word it
+pointed at, and one panel 62 pixels too tall.
+
+### Decisions that are the researcher's
+
+The four-step story and its everyday comparisons. The abstract, which is a
+draft and not the fair's official form. The framing above. The dark band, which
+is the one large area of solid ink. All are listed in `poster/README.md`.

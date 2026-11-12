@@ -1,7 +1,7 @@
 # The trifold poster
 
-**Draft of 12 November 2026.** A 48 × 36 inch science-fair trifold in three
-panels: left 12 in, centre 24 in, right 12 in.
+**Second design, 12 November 2026.** A 48 × 36 inch science-fair trifold in
+three panels: left 12 in, centre 24 in, right 12 in.
 
 ![The three panels side by side](preview/trifold.png)
 
@@ -11,132 +11,145 @@ its Share menu). Everything needed to rebuild it is in this folder.
 
 ---
 
-## What is on it, and what is not
+## How it is organised
 
-The poster presents two validations of one monitor, and neither is secondary.
+The board follows one line of argument: the problem, why it matters, what the
+project proposes, how the system works, how it was tested, what the data show,
+what that means, and what is still unknown. The standard section names a judge
+looks for are all present.
 
-| | Computational validation | Physical validation |
-|---|---|---|
-| Status | complete | specified, coded, preregistered; **not built** |
-| What the poster shows | charts drawn from stored results | the same charts, **empty** |
-| Colour | blue, solid | orange, hatched, dashed edge |
+| Panel | Sections |
+|---|---|
+| **Left** | Abstract (top-left), Introduction, Why it matters, Purpose, Hypothesis / Engineering goal, References |
+| **Centre** | Title, *The whole project in one minute*, Materials and methods, Pictures, Hardware, Real code and real output |
+| **Right** | Methods (the two test beds compared), Results and data, Analysis, Discussion, Conclusion |
 
-**There is no physical measurement anywhere on this poster, because none
-exists.** Every chart of the physical phase carries the words *awaiting
-measurement* on its face and contains only things fixed before any recording:
-the zero line, the 0.1-per-hour budget, the severity levels, the decision
-rates, the planned sample sizes. The one curve drawn inside a planned chart
-(Fig. 6, right) is the rule of three, `3 ÷ hours`, which is arithmetic and not
-a result.
+The centre panel is the way in. Its dark band explains the project in four
+steps with no background assumed, then states the result so far in three large
+numbers. Everything technical sits around it.
 
-Grey dashed boxes with a camera glyph are slots for photographs that have not
-been taken. They are grey on purpose, so a photo slot cannot be mistaken for
-either kind of chart.
+## The size rule
 
-## The three visual states
+**Nothing on the board is smaller than 24 pt (32 px at 96 px per inch).** That
+includes axis numbers, captions and labels inside diagrams. It is checked by
+program, not by eye:
 
-| State | Looks like | Means |
-|---|---|---|
-| **Measured** | solid blue marks | drawn from `data/processed/` by script |
-| **Planned** | orange hatch, dashed edge, "awaiting measurement" | axes and reference lines from the frozen preregistration; no data |
-| **Photo slot** | grey dashed box with a camera | a photograph to take after the build |
+```
+python3 poster/render_check/preview.py
+node poster/render_check/measure.js poster/render_check/out
+```
+
+The second command renders each panel, measures every piece of text (including
+text inside charts, after scaling), and fails if any is under 32 px, if a panel
+overflows its 36 inches, or if anything runs past a panel's right edge. It
+needs Node with Playwright.
+
+## What is real and what is not
+
+| On the board | Status |
+|---|---|
+| Charts (Figs 1, 4, 5) | **real**, drawn from `data/processed/` by script |
+| The three large numbers in the dark band | **real**, same source |
+| Wiring diagram (Fig. 3) | **real**: the repository's own `physical/figures/wiring-stepper.svg`, with its small labels removed and large ones added |
+| The five lines of code | **real**: copied from `scripts/21_score_report.py`; the build stops if those lines are no longer in that file |
+| "All 102 headline claims match the data files." | **real** output of `scripts/31_verify_claims.py` |
+| Bench drawing (Fig. 2) | a drawing of a **specification**; nothing is built |
+| Photographs and the screenshot | **grey placeholders**, labelled "to add" |
+| Bench results | **blanks**; there is no physical measurement |
 
 ## Where every number comes from
-
-Nothing on the computational charts is typed.
 
 ```
 python3 poster/build_poster_data.py
 ```
 
-reads the stored results, recomputes what each chart plots, and **refuses to
-write** if a recomputed value disagrees with the headline the repository
-already publishes for it. It prints one line per check; all of them must say
-`ok`. Its output is `poster_data.json`.
+recomputes what each chart plots and **refuses to write** if a value disagrees
+with the headline the repository already publishes for it (45 checks).
 
 ```
 python3 poster/build_poster.py
 ```
 
-assembles the three panels from that file into `canvas/project/`. Sentences
-that need a measured number take it from `poster_data.json`, so the text cannot
-drift away from the data it summarises.
-
-Numbers fixed by the preregistration (0.1 per hour, 101 sessions, 36.1°) are
-design constants and are written in place.
+assembles the three panels. Sentences that need a measured number take it from
+`poster_data.json`.
 
 | File | What it is |
 |---|---|
 | `build_poster_data.py` | recomputes and checks every plotted value |
 | `poster_data.json` | the checked values, each with the file it came from |
-| `charts.py` | the charts, each in a measured and a planned form |
-| `build_poster.py` | the words, tables, diagrams and layout |
-| `canvas/project/` | the built panels, exactly as published to the canvas |
-| `preview/` | pictures of the panels, for reading without the canvas |
+| `charts.py` | the charts |
+| `build_poster.py` | the words, diagrams and layout |
+| `assets/` | the relabel-ready wiring drawing, derived from `physical/figures/` |
+| `assets.json` | where each uploaded asset lives on the canvas |
+| `canvas/project/` | the built panels, exactly as published |
+| `render_check/` | the fit-and-size check |
+| `preview/` | pictures of the panels |
 
-## The figures
+## What other people's work is cited, and what was checked
 
-| Fig. | Shows | State |
+Each statement about outside work was looked up on 12 November 2026.
+
+| Ref | Used for | Checked |
 |---|---|---|
-| 1 | one archived episode with onset, failure and warning marked | measured |
-| 2 | the monitor's four named components | diagram |
-| 3 | the two validations side by side: inputs, outputs, what each establishes | diagram |
-| 4 | the apparatus signal chain | diagram of a specification |
-| 5 | lead time | measured, and planned |
-| 6 | false-alarm rate and the silence gate | measured, and planned |
-| 7 | detection against false alarms per hour | measured, and planned |
-| 8 | detection by fault type, and by type and severity | measured, and planned |
-| 9 | monitor score against decoding performance | measured, and planned |
-| 10 | how often the monitor decides | measured, and planned |
-| 11 | the apparatus, side view | diagram of a specification |
-| 12 | the experimental workflow, with what is done and what is not | diagram |
-| 13 | apparatus configurations (P-7) | planned |
+| [1] Pun et al., *Communications Biology* 7 (2024) | the dataset; a decoder left fixed for 142 days; the correlations r = 0.93 and 0.72 | found; abstract confirms both correlations |
+| [2] Wilson et al., *Nature Biomedical Engineering* (2025) | decoders often need daily recalibration; the device cannot be used freely during it; automatic correction | found; wording taken from the paper |
+| [3] Armour et al., *Am. J. Public Health* 106 (2016) | nearly 5.4 million people in the United States live with paralysis | found |
+| [4] Sendelbach & Funk, *AACN Adv. Crit. Care* 24 (2013) | 72 to 99% of hospital monitor alarms are false | found **as reported** in a federal patient-safety report; the paper itself was not opened |
+| [5] Ahrens, *Smoke Alarms in U.S. Home Fires*, NFPA (2015) | nuisance alarms are the leading reason smoke alarms are disconnected | found in the NFPA fact sheet |
+| [6] Karpowicz et al., *Nature Communications* 16 (2025) | automatic correction of drift | found |
 
-Fig. 1 shows the first test episode whose lead time equals the median. It was
-chosen by that rule and not by eye, because the typical case is a late warning
-and a hand-picked example would have been an early one.
+**Two things that could not be confirmed, and so are not on the board:**
 
-## When physical results exist
+- *Swanson et al. (2026)*, the recalibration review in the September
+  bibliography. A web search did not find it. Its DOI does resolve to the
+  publisher's site, but the page could not be opened from here, so its title
+  and authors are unconfirmed. **Check it before the December plan.**
+- The claim that many potential users would not accept daily retraining. It is
+  repeated in the literature, but the survey it is attributed to could not be
+  confirmed to contain it.
 
-This part is **not yet automatic**, and that is deliberate.
+**"No published lead time or false-alarm rate was found."** That sentence is a
+statement about a search, not a proof of absence. A targeted search for a
+decoder-health monitor reporting either number returned none; the closest
+work, [1], says such a monitor would be useful and reports a correlation.
 
-Each planned chart has a measured twin in `charts.py` (`lead_dots`,
-`fa_measured`, `dfa_measured`, `scatter_measured`, `decision_measured`). Turning
-a planned chart into a measured one means reading the real results from
-`physical/data/results/` and passing them to the matching function. That small
-adapter has not been written, because its inputs do not exist, and writing it
-against the synthetic dry-run output would leave fake numbers one command away
-from a poster.
+## Why "early warning" is argued the way it is
 
-Until then there are two honest ways to fill a slot:
-
-1. drop the figure that `physical/code/figures.py` produces from real
-   recordings into the slot on the canvas, or
-2. ask for the adapter to be written once the first real results are in.
-
-Either way, **a chart produced by `dryrun.py` must never go on the poster.**
-Those figures carry a "NOT DATA" watermark for exactly this reason.
+The intuitive argument is that preventing a failure beats repairing one. The
+evidence supports something narrower. In fields that rely on alarms, a warning
+that is late or often wrong is not merely less useful, it gets ignored or
+switched off [4, 5]. So the case for a decoder-health monitor cannot rest on
+"prevention is better". It has to rest on two measured numbers: how early, and
+how often wrong. That is the gap the project addresses, and its own result so
+far is that the monitor does not pass.
 
 ## Things on the poster that are the researcher's to confirm
 
-These were chosen so that a draft could exist. None is settled.
-
-- **The title.** Taken from the September research plan.
+- **The title**, from the September research plan, and the subtitle.
 - **The category and fair name**, shown as `[CATEGORY]` and `[FAIR AND YEAR]`.
-- **The board size**, 48 × 36 inches. A different board changes the layout.
-- **Which six quantities** form the measured-and-planned wall, and their order.
-- **The wording of the conclusions**, including the computational one.
-- **Type and colour.** Source Serif 4 for headings, IBM Plex Sans for text.
-  The physical-phase document was set in Times New Roman at the researcher's
-  request; the poster uses a sans-serif body for reading at a distance.
+- **The board size**, 48 × 36 inches.
+- **The four-step story** in the dark band, and its everyday comparisons
+  (a warning light, alarms that cry wolf).
+- **The abstract.** It is a draft of about 110 words. A fair's official
+  abstract form has its own rules and word limit.
+- **The wording of the conclusion and discussion.**
+- **The dark band.** It is the one large area of solid ink on the board.
+- **Type.** Source Serif 4 headings, IBM Plex Sans text.
 
-## Known limits of this draft
+## What was cut to reach 24 pt
 
-- The panels were checked by rendering them locally with the same fonts. They
-  were not checked on a printed sheet, and small type (13 pt inside charts)
-  should be judged on paper before printing.
-- The apparatus drawing (Fig. 11) shows the computer outside the enclosure. The
-  repository does not fix where it sits, or the display-to-camera distance, and
-  the caption says so.
-- Reference author lists are abbreviated to the first author, as in the
-  September plan.
+The first design held thirteen figures at about half this type size. Raising
+the floor to 24 pt and giving room to photographs and the wiring diagram meant
+cutting. Gone from the board, and still in the repository: the six empty
+"awaiting measurement" chart templates, the five-gate dashboard, the variables
+table, the seven-experiment table, the decision-rate chart and the monitor's
+four-component diagram. `charts.py` still contains the template functions, for
+when there are bench results to draw.
+
+## Known limits
+
+- Checked by rendering locally, not on paper. Print one panel at full size
+  before printing the board.
+- The bench drawing shows the computer outside the enclosure. The repository
+  does not fix where it sits.
+- References are abbreviated to the first author.

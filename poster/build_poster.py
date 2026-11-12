@@ -9,26 +9,33 @@ THE BOARD
 ---------
 A standard 48 x 36 inch trifold, at 96 px per inch:
 
-    Left.dc.html     12 x 36 in   1152 x 3456 px   problem, question, approach
-    Main.dc.html     24 x 36 in   2304 x 3456 px   title, architecture, evidence
-    Right.dc.html    12 x 36 in   1152 x 3456 px   physical design and protocol
+    Left.dc.html     12 x 36 in   abstract, introduction, why it matters,
+                                  purpose, hypothesis, engineering goal
+    Main.dc.html     24 x 36 in   title, the project in four steps, how the
+                                  test bench works, pictures, hardware, code
+    Right.dc.html    12 x 36 in   methods compared, results and data, analysis,
+                                  discussion, conclusion
 
-WHAT IS HAND-WRITTEN AND WHAT IS NOT
-------------------------------------
-The words, tables and diagrams below are written here by hand, from the
-repository's documents. Every number that comes from a stored result is NOT
-typed here: it is read from poster_data.json, which build_poster_data.py
-recomputes and checks. If a sentence below needs a measured number, it takes it
-from `D`, so the poster cannot disagree with the data it summarises.
+THE ONE RULE ABOUT SIZE
+-----------------------
+Nothing on the board is smaller than 24 pt, which is 32 px here. That includes
+axis numbers, captions and labels inside diagrams. `MIN` below is that floor,
+and the render check in poster/README.md measures every piece of text against
+it. Charts are drawn in source units and enlarged by charts.SCALE so their
+smallest label lands exactly on the floor.
 
-Numbers fixed by the frozen preregistration (the 0.1 per hour budget, 101
-sessions, 36.1 degrees) are design constants, not results, and are written in
-place. scripts/77_cross_reference.py checks those against the code.
+WHERE THE NUMBERS COME FROM
+---------------------------
+Every measured number is read from poster_data.json, which
+build_poster_data.py recomputes and checks against the repository. Numbers
+fixed by the frozen preregistration (0.1 per hour, 337 sessions) are design
+constants and are written in place. Statements about other people's work carry
+a reference number and are listed in REFS.
 
 NOTHING HERE IS A PHYSICAL RESULT
 ---------------------------------
-No apparatus exists. Every chart of the physical phase is drawn in its planned
-state, and each one says so on its face.
+No apparatus exists. Photographs are grey placeholders, the physical result is
+a set of blanks, and the board says so in words wherever it matters.
 """
 from __future__ import annotations
 
@@ -39,17 +46,24 @@ from pathlib import Path
 import charts as C
 
 HERE = Path(__file__).resolve().parent
+REPO = HERE.parent
 OUT = HERE / "canvas" / "project"
 D = json.loads((HERE / "poster_data.json").read_text())
 S = D["scalars"]
+ASSETS = json.loads((HERE / "assets.json").read_text())
+
+MIN = 32                               # px: 24 pt at 96 px/in
+C.SCALE = MIN / C.MIN_UNITS            # 17 source units print at 32 px
 
 INK, INK2, INK3 = C.INK, C.INK2, C.INK3
 RULE, GRID = C.RULE, C.GRID
 BLUE, BLUE_T, BLUE_M = C.BLUE, C.BLUE_T, C.BLUE_M
 ORG, ORG_T, ORG_M = C.ORG, C.ORG_T, C.ORG_M
-WINE, WINE_T = C.WINE, "#F7E6EB"
-TEAL, TEAL_T = "#0D6B5D", "#E0F1ED"
-WASH = "#F3F5F7"
+WINE = C.WINE
+NAVY = "#0E2236"
+AMBER = "#FFC55C"                      # the one accent on the dark band
+MARK = "#FFE27A"                       # highlighter, for the few key findings
+WASH = "#F1F4F6"
 SERIF = "'Source Serif 4', Georgia, 'Times New Roman', serif"
 SANS = "'IBM Plex Sans', Arial, sans-serif"
 MONO = "'IBM Plex Mono', Consolas, monospace"
@@ -58,6 +72,15 @@ FONTS = ("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;60
          "&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap")
 
 PH, PW_SIDE, PW_MAIN = 3456, 1152, 2304
+
+REFS = [
+    "Pun et al., Communications Biology 7 (2024)",
+    "Wilson et al., Nature Biomedical Engineering (2025)",
+    "Armour et al., Am. J. Public Health 106 (2016)",
+    "Sendelbach &amp; Funk, AACN Adv. Crit. Care 24 (2013)",
+    "Ahrens, Smoke Alarms in U.S. Home Fires, NFPA (2015)",
+    "Karpowicz et al., Nature Communications 16 (2025)",
+]
 
 
 def minus(x: str) -> str:
@@ -69,9 +92,9 @@ def num(v: float, nd: int = 2) -> str:
 
 
 # ---------------------------------------------------------------------------
-# small components
+# components
 # ---------------------------------------------------------------------------
-def page(title: str, w: int, h: int, body: str, pad: int, gap: int = 24) -> str:
+def page(title: str, w: int, h: int, body: str, pad: int, gap: int = 28) -> str:
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -103,107 +126,84 @@ return {{}};
 """
 
 
-def kicker(text: str, color: str = INK3) -> str:
-    return (f'<div style="font-family: {MONO}; font-size: 19px; line-height: 24px; '
-            f'font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; '
+def label(text: str, color: str = INK, rule: bool = True) -> str:
+    """The standard section name a judge looks for: ABSTRACT, RESULTS, ..."""
+    top = f"border-top: 4px solid {INK}; padding-top: 10px; " if rule else ""
+    return (f'<div style="{top}font-family: {MONO}; font-size: {MIN}px; line-height: 40px; '
+            f'font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; '
             f'color: {color}">{text}</div>')
 
 
-def h2(n: str, text: str, size: int = 42) -> str:
-    return (f'<div style="display: flex; align-items: baseline; gap: 16px; '
-            f'border-top: 3px solid {INK}; padding-top: 12px">'
-            f'<span style="font-family: {MONO}; font-size: 20px; font-weight: 500; '
-            f'color: {INK3}">{n}</span>'
-            f'<h2 style="margin: 0; font-family: {SERIF}; font-size: {size}px; '
-            f'line-height: 1.12; font-weight: 600; color: {INK}; text-wrap: balance">{text}</h2>'
-            f'</div>')
+def head(text: str, size: int = 50, color: str = INK) -> str:
+    return (f'<h2 style="margin: 0; font-family: {SERIF}; font-size: {size}px; '
+            f'line-height: {round(size * 1.14)}px; font-weight: 600; color: {color}; '
+            f'text-wrap: balance">{text}</h2>')
 
 
-def p(html: str, size: int = 25, lh: int = 35, color: str = INK2, weight: int = 400) -> str:
+def p(html: str, size: int = MIN, lh: int = 44, color: str = INK2, weight: int = 400) -> str:
     return (f'<p style="margin: 0; font-size: {size}px; line-height: {lh}px; color: {color}; '
             f'font-weight: {weight}; text-wrap: pretty">{html}</p>')
 
 
-def sec(*parts: str, gap: int = 16) -> str:
+def sec(*parts: str, gap: int = 14) -> str:
     return (f'<section style="display: flex; flex-direction: column; gap: {gap}px">'
             + "".join(parts) + "</section>")
 
 
-def chip(text: str, kind: str) -> str:
-    st = {
-        "measured": f"background: {BLUE}; color: #FFFFFF; border: 2px solid {BLUE}",
-        "complete": f"background: {INK}; color: #FFFFFF; border: 2px solid {INK}",
-        "frozen": f"background: {TEAL}; color: #FFFFFF; border: 2px solid {TEAL}",
-        "planned": f"background: #FFFFFF; color: {ORG}; border: 2px dashed {ORG}",
-        "none": f"background: #FFFFFF; color: {INK2}; border: 2px dashed {INK3}",
-    }[kind]
-    return (f'<span style="display: inline-block; {st}; font-family: {MONO}; font-size: 17px; '
-            f'line-height: 22px; font-weight: 600; letter-spacing: 0.06em; '
-            f'text-transform: uppercase; padding: 3px 10px; border-radius: 4px; '
-            f'white-space: nowrap">{text}</span>')
-
-
-def cap(n: str, title: str, text: str = "", size: int = 20) -> str:
-    return (f'<p style="margin: 0; font-size: {size}px; line-height: {size + 8}px; '
-            f'color: {INK2}; text-wrap: pretty"><b style="color: {INK}">Fig. {n}. {title}</b> '
-            f'{text}</p>')
-
-
-def src(text: str) -> str:
-    return (f'<span style="font-family: {MONO}; font-size: 16px; color: {INK3}">{text}</span>')
+def hi(text: str) -> str:
+    """Highlighter. Used on a handful of findings, never as decoration."""
+    return (f'<mark style="background: {MARK}; color: {INK}; font-weight: 600; '
+            f'padding: 0 6px; border-radius: 3px">{text}</mark>')
 
 
 def b(text: str, color: str = INK) -> str:
     return f'<b style="color: {color}; font-weight: 600">{text}</b>'
 
 
-def table(head: list[str], rows: list[list[str]], widths: list[str], size: int = 20,
-          lh: int = 27, pad: str = "8px 10px") -> str:
-    th = "".join(
-        f'<th style="width: {w}; text-align: left; padding: {pad}; font-size: {size - 2}px; '
-        f'line-height: {lh - 3}px; font-weight: 600; color: {INK}; background: {WASH}; '
-        f'border-bottom: 2px solid {INK}; vertical-align: bottom">{h}</th>'
-        for h, w in zip(head, widths))
-    body = ""
-    for r in rows:
-        body += "<tr>" + "".join(
-            f'<td style="padding: {pad}; font-size: {size}px; line-height: {lh}px; '
-            f'color: {INK2}; border-bottom: 1px solid {RULE}; vertical-align: top">{c}</td>'
-            for c in r) + "</tr>"
-    return (f'<table style="width: 100%; border-collapse: collapse; table-layout: fixed; '
-            f'font-family: {SANS}"><thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>')
+def cap(n: str, text: str) -> str:
+    return (f'<p style="margin: 0; font-size: {MIN}px; line-height: 42px; color: {INK2}; '
+            f'text-wrap: pretty"><b style="color: {INK}; font-weight: 600">Fig. {n}.</b> '
+            f'{text}</p>')
 
 
-CAMERA_GLYPH = (
-    '<svg aria-hidden="true" width="44" height="44" viewBox="0 0 24 24" fill="none" '
-    f'stroke="{INK3}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+def status(text: str, kind: str) -> str:
+    st = {
+        "done": f"background: {BLUE}; color: #FFFFFF; border: 3px solid {BLUE}",
+        "todo": f"background: #FFFFFF; color: {ORG}; border: 3px dashed {ORG}",
+    }[kind]
+    return (f'<span style="display: inline-block; {st}; font-family: {MONO}; '
+            f'font-size: {MIN}px; line-height: 40px; font-weight: 600; letter-spacing: 0.04em; '
+            f'text-transform: uppercase; padding: 2px 14px; border-radius: 4px; '
+            f'white-space: nowrap">{text}</span>')
+
+
+CAMERA = (
+    '<svg aria-hidden="true" width="64" height="64" viewBox="0 0 24 24" fill="none" '
+    f'stroke="{INK3}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
     '<path d="M3 8h3.5l1.5-2.5h8L17.5 8H21v11H3z"/><circle cx="12" cy="13.2" r="3.6"/></svg>')
 
 
-def photo(n: int, what: str, h: int = 168) -> str:
-    """A slot for a photograph that does not exist yet. Grey, never orange or blue."""
-    return (f'<div style="height: {h}px; box-sizing: border-box; border: 2px dashed {INK3}; '
-            f'background: {WASH}; border-radius: 4px; display: flex; flex-direction: column; '
-            f'align-items: center; justify-content: center; gap: 4px; padding: 10px; '
-            f'text-align: center">{CAMERA_GLYPH}'
-            f'<span style="font-family: {MONO}; font-size: 16px; font-weight: 600; '
-            f'letter-spacing: 0.08em; color: {INK2}">PHOTO SLOT {n}</span>'
-            f'<span style="font-size: 18px; line-height: 23px; color: {INK2}">{what}</span>'
+def photo(what: str, h: int, kind: str = "PHOTO TO ADD") -> str:
+    """A slot for a real photograph that does not exist yet. Grey, and it says so."""
+    return (f'<div style="height: {h}px; box-sizing: border-box; border: 3px dashed {INK3}; '
+            f'background: {WASH}; border-radius: 6px; display: flex; flex-direction: column; '
+            f'align-items: center; justify-content: center; gap: 6px; padding: 16px; '
+            f'text-align: center">{CAMERA}'
+            f'<span style="font-family: {MONO}; font-size: {MIN}px; line-height: 40px; '
+            f'font-weight: 600; letter-spacing: 0.08em; color: {INK2}">{kind}</span>'
+            f'<span style="font-size: {MIN}px; line-height: 42px; color: {INK2}">{what}</span>'
             f'</div>')
 
 
-# ---------------------------------------------------------------------------
-# diagram primitives: separate placed elements, one small svg per straight arrow
-# ---------------------------------------------------------------------------
 _arrow_id = [0]
 
 
-def arrow(x1: int, y1: int, x2: int, y2: int, color: str = INK2, head: bool = True,
-          dash: str | None = None, sw: int = 3) -> str:
+def arrow(x1: int, y1: int, x2: int, y2: int, color: str = INK2, head_: bool = True,
+          dash: str | None = None, sw: int = 4) -> str:
     """One straight segment from (x1,y1) to its tip (x2,y2); horizontal or vertical."""
     _arrow_id[0] += 1
     mid = f"dc-arrow-head-filled-{_arrow_id[0]}"
-    hl = 2 * sw if head else 0
+    hl = 2 * sw if head_ else 0
     horiz = y1 == y2
     n = abs(x2 - x1) if horiz else abs(y2 - y1)
     if horiz:
@@ -216,8 +216,8 @@ def arrow(x1: int, y1: int, x2: int, y2: int, color: str = INK2, head: bool = Tr
     defs = (f'<defs><marker id="{mid}" orient="auto" markerWidth="5" markerHeight="5" '
             f'refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="{color}" '
             f'stroke="none" style="stroke: none; fill: {color}; fill: context-stroke"/>'
-            f'</marker></defs>') if head else ""
-    me = f' marker-end="url(#{mid})"' if head else ""
+            f'</marker></defs>') if head_ else ""
+    me = f' marker-end="url(#{mid})"' if head_ else ""
     return (f'<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}" preserveAspectRatio="none" '
             f'style="position: absolute; left: {left}px; top: {top}px; width: {w}px; '
             f'height: {h}px; overflow: visible; fill: none; stroke: {color}; '
@@ -225,877 +225,576 @@ def arrow(x1: int, y1: int, x2: int, y2: int, color: str = INK2, head: bool = Tr
             f'{defs}<path d="{d}"{me}></path></svg>')
 
 
-def card(x: int, y: int, w: int, h: int, title: str, lines: str, kind: str,
-         mono: bool = False, tsize: int = 22) -> str:
-    look = {
-        "soft": f"background: {BLUE_T}; border: 2px solid {BLUE}",
-        "phys": f"background: {ORG_T}; border: 2px solid {ORG}",
-        "seal": f"background: {TEAL_T}; border: 2px solid {TEAL}",
-        "fault": f"background: {WINE_T}; border: 2px solid {WINE}",
-        "fixed": f"background: #FFFFFF; border: 2px solid {INK}",
-        "out": f"background: {INK}; border: 2px solid {INK}",
-        "data": f"background: {WASH}; border: 2px dashed {INK3}",
-    }[kind]
-    tcol = {"soft": BLUE, "phys": ORG, "seal": TEAL, "fault": WINE, "fixed": INK,
-            "out": "#FFFFFF", "data": INK}[kind]
-    lcol = "#E6EBEF" if kind == "out" else INK2
-    fam = MONO if mono else SANS
+def box(x: int, y: int, w: int, h: int, html: str, look: str, color: str = INK,
+        weight: int = 600) -> str:
     return (f'<div style="position: absolute; left: {x}px; top: {y}px; width: {w}px; '
-            f'height: {h}px; box-sizing: border-box; padding: 10px 12px; display: flex; '
+            f'height: {h}px; box-sizing: border-box; padding: 8px 14px; display: flex; '
             f'align-items: center; justify-content: center; text-align: center; {look}; '
-            f'border-radius: 6px"><span style="font-size: 18px; line-height: 23px; '
-            f'color: {lcol}"><b style="font-family: {fam}; font-size: {tsize}px; '
-            f'line-height: 28px; font-weight: 600; color: {tcol}">{title}</b><br>{lines}</span>'
-            f'</div>')
+            f'border-radius: 8px"><span style="font-size: {MIN}px; line-height: 40px; '
+            f'font-weight: {weight}; color: {color}">{html}</span></div>')
 
 
 def note(x: int, y: int, w: int, text: str, align: str = "center", color: str = INK2,
-         size: int = 17) -> str:
+         weight: int = 400) -> str:
     return (f'<div style="position: absolute; left: {x}px; top: {y}px; width: {w}px; '
-            f'text-align: {align}; font-size: {size}px; line-height: {size + 5}px; '
-            f'color: {color}">{text}</div>')
+            f'text-align: {align}; font-size: {MIN}px; line-height: 38px; color: {color}; '
+            f'font-weight: {weight}">{text}</div>')
 
 
 # ===========================================================================
-# LEFT PANEL -- problem, question, hypothesis, the monitor, the computational build
+# LEFT PANEL -- abstract, introduction, why it matters, purpose, hypothesis
 # ===========================================================================
-def tile(title: str, body: str, color: str) -> str:
-    return (f'<div style="flex: 1; box-sizing: border-box; border: 2px solid {INK}; '
-            f'border-radius: 4px; padding: 16px 18px; display: flex; flex-direction: column; '
-            f'gap: 6px"><span style="font-family: {SERIF}; font-size: 31px; line-height: 36px; '
-            f'font-weight: 600; color: {color}">{title}</span>'
-            f'<span style="font-size: 22px; line-height: 30px; color: {INK2}">{body}</span></div>')
-
-
-def claim(label: str, text: str, falsified: str) -> str:
-    return (f'<div style="display: flex; flex-direction: column; gap: 8px">'
-            f'<div style="display: flex; gap: 12px; align-items: baseline">'
-            f'<span style="font-family: {MONO}; font-size: 18px; font-weight: 600; '
-            f'letter-spacing: 0.06em; text-transform: uppercase; color: {INK}; '
-            f'white-space: nowrap">{label}</span></div>'
-            + p(text, 24, 33, INK)
-            + f'<p style="margin: 0; font-size: 21px; line-height: 29px; color: {INK2}">'
-              f'<b style="color: {WINE}; font-weight: 600">Falsified if</b> {falsified}</p></div>')
-
-
-def comp(name: str, meaning: str) -> str:
-    return (f'<div style="box-sizing: border-box; border: 2px solid {BLUE}; background: {BLUE_T}; '
-            f'border-radius: 4px; padding: 8px 12px; display: flex; flex-direction: column">'
-            f'<span style="font-family: {MONO}; font-size: 20px; line-height: 26px; '
-            f'font-weight: 600; color: {BLUE}">{name}</span>'
-            f'<span style="font-size: 18px; line-height: 23px; color: {INK2}">{meaning}</span>'
-            f'</div>')
-
-
-CHEV = (f'<svg aria-hidden="true" width="22" height="40" viewBox="0 0 22 40" fill="none" '
-        f'stroke="{INK2}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
-        f'<path d="M5 6 L17 20 L5 34"/></svg>')
-
-
-def bullet(html: str, size: int = 22, lh: int = 30) -> str:
-    return (f'<li style="font-size: {size}px; line-height: {lh}px; color: {INK2}; '
-            f'text-wrap: pretty">{html}</li>')
-
-
-def bullets(items: list[str], size: int = 22, lh: int = 30) -> str:
-    return (f'<ul style="margin: 0; padding-left: 26px; display: flex; flex-direction: column; '
-            f'gap: 6px">' + "".join(bullet(i, size, lh) for i in items) + "</ul>")
+def quadrant() -> str:
+    """Early or late, trustworthy or not: the two things that decide a warning's worth."""
+    L11 = D["lead_time"]["T11"]
+    over = S["false_alarms_per_hour"]["T11"] / S["budget_per_hour"]
+    cell = (f"box-sizing: border-box; padding: 12px 16px; display: flex; "
+            f"flex-direction: column; gap: 2px; font-size: {MIN}px; line-height: 40px; "
+            f"color: {INK2}")
+    name = f"font-family: {SERIF}; font-size: 42px; line-height: 48px; font-weight: 700"
+    hd = (f"font-family: {MONO}; font-size: {MIN}px; line-height: 40px; font-weight: 600; "
+          f"letter-spacing: 0.04em; color: {INK}; display: flex; align-items: center")
+    return (
+        f'<div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) '
+        f'minmax(0, 1fr); border: 3px solid {INK}; border-radius: 6px; overflow: hidden">'
+        f'<div style="border-bottom: 3px solid {INK}"></div>'
+        f'<div style="{hd}; justify-content: center; border-bottom: 3px solid {INK}; '
+        f'border-left: 3px solid {INK}; padding: 6px">WARNS EARLY</div>'
+        f'<div style="{hd}; justify-content: center; border-bottom: 3px solid {INK}; '
+        f'border-left: 3px solid {INK}; padding: 6px">WARNS LATE</div>'
+        f'<div style="{hd}; padding: 10px 14px; border-bottom: 3px solid {INK}">RARELY WRONG'
+        f'</div>'
+        f'<div style="{cell}; background: {MARK}; border-left: 3px solid {INK}; '
+        f'border-bottom: 3px solid {INK}"><span style="{name}; color: {INK}">Useful</span>'
+        f'<span style="color: {INK}">time to act before control is lost</span></div>'
+        f'<div style="{cell}; border-left: 3px solid {INK}; border-bottom: 3px solid {INK}">'
+        f'<span style="{name}; color: {INK}">Too late</span>the failure has already happened'
+        f'</div>'
+        f'<div style="{hd}; padding: 10px 14px">OFTEN WRONG</div>'
+        f'<div style="{cell}; border-left: 3px solid {INK}"><span style="{name}; color: {INK}">'
+        f'Ignored</span>in hospitals, 72 to 99% of monitor alarms are false [4]</div>'
+        f'<div style="{cell}; border-left: 3px solid {INK}"><span style="{name}; '
+        f'color: {WINE}">This monitor, so far</span><span style="color: {INK}">'
+        f'{abs(L11["median_s"]):.0f} s late and {over:.0f}× its false-alarm budget</span></div>'
+        f'</div>')
 
 
 def left_panel() -> str:
-    ep = D["median_episode"]
     L11 = D["lead_time"]["T11"]
-    day = ep["block"].split("/")[1].replace("day_", "")
-    parts = [kicker("Panel 1 of 3 &middot; Problem, question, approach")]
-
-    parts.append(sec(
-        h2("01", "A decoder fails quietly"),
-        p("An intracortical brain-computer interface turns recorded neural activity into "
-          "cursor movement through software called a decoder. Over weeks the recording "
-          "changes: electrodes drift and neurons drop out. The decoder keeps producing "
-          "confident output from a signal it was not trained on, until it has to be "
-          "recalibrated, which is slow and disruptive [4]. Methods exist to correct the "
-          "drift. A warning that it has begun, early enough to act on, has no agreed test.")))
-
-    parts.append(sec(
-        h2("02", "Two quantities decide whether a warning is usable"),
-        '<div style="display: flex; gap: 18px">'
-        + tile("Lead time", "Seconds from the first warning to the moment decoding "
-               "performance crosses its failure level. Positive means the warning came "
-               "first.", INK)
-        + tile("False-alarm rate", "Warnings per hour while nothing is wrong. Budget fixed "
-               "in advance: 0.1 per hour.", INK)
-        + "</div>",
-        p("The published state of the art validates a decoder-health monitor by its "
-          "correlation with performance, r = 0.93 and 0.72 [1]. Neither quantity above has "
-          "been reported for a monitor of this class: both need a recorded moment at which "
-          "degradation began, and archived recordings do not contain one.", 23, 32)))
-
-    parts.append(sec(
-        h2("03", "Research question"),
-        f'<p style="margin: 0; font-family: {SERIF}; font-size: 33px; line-height: 43px; '
-        f'font-weight: 400; color: {INK}; text-wrap: pretty">How early, and at what cost in '
-        f'false alarms, can a decoder-health monitor warn that a sensor array is degrading? '
-        f'Does the correlation-based validation now in use support the claims made from it?</p>'))
-
-    parts.append(sec(
-        h2("04", "Hypotheses, frozen before any physical data"),
-        claim("Primary: a measurement",
-              "For this class of monitor, lead time and false-alarm rate are measurable. "
-              "Measured against onsets fixed in advance, with enough fault-free recording to "
-              "bound the rate, they fall outside what a deployed system could use.",
-              "the median lead time is above zero and the 95% upper bound on the false-alarm "
-              "rate is within 0.1 per hour, at the threshold needed for 80% detection."),
-        claim("Secondary: a comparison",
-              "A monitor can reach the correlation with performance that the field reports as "
-              "evidence (r above 0.7) while those two quantities say it is unusable.",
-              "r is above 0.7 together with a positive median lead time and a false-alarm "
-              "rate within budget. Inconclusive if no correlation measure reaches 0.70."),
-        '<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">'
-        + chip("Preregistration frozen 24 Sep 2026", "frozen")
-        + src("commit f4dda04 &middot; physical/docs/09_PREREGISTRATION.md") + "</div>",
-        gap=14))
-
-    parts.append(sec(
-        C.episode_trace(ep, 1040, 392),
-        cap("1", "One archived episode, scored.",
-            f"Array T11, day {day}, gain-drift fault. Chosen by rule: the first test episode "
-            f"whose lead time equals the median of all {L11['n_detected']} detected faults, so "
-            f"it is the typical case and not the best one. Lead time is failure minus warning. "
-            f"Detection delay, warning minus onset, is the quantity the physical phase adds, "
-            f"measured against an onset sealed before each recording."),
-        gap=8))
-
-    grid = ('<div style="flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
-            'gap: 8px">'
-            + comp("level", "total activity has moved")
-            + comp("silence", "channels have gone quiet")
-            + comp("dispersion", "channels drift apart, total unchanged")
-            + comp("profile", "shape across channels has changed") + "</div>")
-    io = (f'box-sizing: border-box; border: 2px solid {INK}; border-radius: 4px; '
-          f'padding: 10px 12px; display: flex; flex-direction: column; justify-content: center; '
-          f'font-size: 18px; line-height: 24px; color: {INK2}')
-    parts.append(sec(
-        h2("05", "The monitor: decoder-guard"),
-        '<div style="display: flex; align-items: stretch; gap: 10px">'
-        f'<div style="width: 196px; {io}"><b style="font-size: 20px; color: {INK}">384 channels'
-        f'</b>log activity in each 30 s window, one window every 5 s</div>'
-        f'<div style="display: flex; align-items: center">{CHEV}</div>' + grid +
-        f'<div style="display: flex; align-items: center">{CHEV}</div>'
-        f'<div style="width: 212px; {io}"><b style="font-size: 20px; color: {INK}">Risk score'
-        f'</b>largest component, cause named; warning needs dwell and hysteresis</div></div>',
-        cap("2", "Four named components instead of one opaque number.",
-            "Source: scripts/22_decoder_guard.py."),
-        bullets([
-            "Fitted on healthy windows only. It never sees the decoder output, the task, the "
-            "performance number or a fault label.",
-            "Works in log space: a uniform gain change becomes an additive shift and separates "
-            "from a change in shape across channels.",
-            "The physical analysis imports this detector and its warning logic unmodified, so "
-            "a difference between phases cannot come from a retuned monitor."]),
-        gap=12))
-
-    e, c = S["decoder_error_deg"], S["decoder_chance_deg"]
     n = S["episodes"]
+    sl = S["session_level_correlation_T11"]
+    span = sl["series"][-1]["trial_day"] - sl["series"][0]["trial_day"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    parts = []
+
     parts.append(sec(
-        h2("06", "Computational phase: grading built first"),
-        table(["Component", "What was built"], [
-            [b("Recordings"), "Pun et al. 2024, public and de-identified [1, 2]. Two implanted "
-             "arrays, labelled T11 and T5 by the source researchers. No participants were "
-             "recruited for this project."],
-            [b("Constructed faults"), f"{n['T11'] + n['T5']:,} episodes ({n['T11']:,} on T11, "
-             f"{n['T5']} on T5): four fault types, three rates, three severities. Onsets drawn "
-             f"and sealed under SHA-256 before any detector existed."],
-            [b("Reference decoder"), f"Ridge regression, fitted once and frozen. Median error "
-             f"{e['T11']:.1f}° against {c['T11']:.1f}° measured chance (T11); {e['T5']:.1f}° "
-             f"against {c['T5']:.1f}° (T5). Used for grading only."],
-            [b("Evaluation harness"), "Lead time and false-alarm rate reported as a pair. Five "
-             "gates, silence first. Fit, validation and test split by block; test read once."],
-            [b("Earlier phase"), "Early-warning-signal theory [3] under a frozen design: "
-             "negative. The indicator rose faster during healthy performance than overall."],
-        ], ["24%", "76%"], size=20, lh=27),
+        label("Abstract"),
+        p(f"Brain-computer interface decoders lose accuracy as the recorded signal drifts. A "
+          f"monitor could warn before control is lost, but no accepted test shows whether such "
+          f"a warning comes early enough or is right often enough. This project builds that "
+          f"test. On archived recordings from two implanted arrays, with {n['T11'] + n['T5']:,} "
+          f"planted faults whose start times were sealed in advance, the monitor detected "
+          f"faults that counting activity misses, yet warned a median "
+          f"{abs(L11['median_s']):.0f} s after decoding failed and gave {fa:.2f} false alarms "
+          f"per hour against a budget of 0.1. A preregistered optical test bench, specified "
+          f"but not yet built, will measure both quantities where failure times are known.",
+          MIN, 43)))
+
+    parts.append(sec(
+        label("Introduction"),
+        head("A decoder that fails without saying so"),
+        p("Nearly 5.4 million people in the United States live with paralysis [3]. For some, "
+          "an implanted brain-computer interface restores control of a cursor by intent. "
+          "Software called a decoder translates the recorded activity, but the recording "
+          "drifts, so decoders often need daily recalibration, and the device cannot be used "
+          "freely while that happens [2].", MIN, 43),
+        C.drift_line(552, 226, sl["series"], sl["failure_threshold_deg"]),
+        cap("1", f"A real decoder left fixed for {span} days: cursor error by session, array "
+                 f"T11. Archived data [1]."),
         gap=12))
 
-    refs = [
-        "[1] Pun, T. K., et al. (2024). Measuring instability in chronic human intracortical "
-        "neural recordings toward stable, long-term brain-computer interfaces. "
-        "<i>Communications Biology, 7</i>. doi:10.1038/s42003-024-06784-4",
-        "[2] Pun, T. K., et al. (2024). Data from [1]. Dryad. doi:10.5061/dryad.n2z34tn5s",
-        "[3] Scheffer, M., et al. (2009). Early-warning signals for critical transitions. "
-        "<i>Nature, 461</i>, 53&ndash;59.",
-        "[4] Swanson, E., et al. (2026). Recalibration of implantable brain-computer "
-        "interfaces to enable long-term independent use: a systematic review. "
-        "<i>J. Neural Engineering, 23</i>(3).",
-    ]
+    parts.append(sec(
+        label("Why it matters"),
+        head("A warning helps only if it is early and rarely wrong"),
+        quadrant(),
+        p("Alarms that cry wolf get switched off: nuisance alarms are the leading reason smoke "
+          "alarms are disconnected [5]. Decoder research either corrects drift automatically "
+          "[2, 6] or scores it and reports a correlation with performance, r = 0.93 and 0.72 "
+          "[1]. No published lead time or false-alarm rate was found for such a monitor.",
+          MIN, 43),
+        gap=12))
+
+    parts.append(sec(
+        label("Purpose"),
+        p("To measure how early a decoder-health monitor warns, and how often it warns when "
+          "nothing is wrong, on test beds where the moment of failure is known in advance.",
+          MIN, 43, INK)))
+
+    parts.append(sec(
+        label("Hypothesis / Engineering goal"),
+        p(b("Hypothesis.") + " Measured against failure times fixed in advance, the monitor's "
+          "lead time and false-alarm rate will fall outside what a deployed system could use. "
+          + b("Falsified if", WINE) + " the median lead time is above zero and the 95% upper "
+          "bound on false alarms is within 0.1 per hour, at the threshold that detects 80% of "
+          "faults.", MIN, 43),
+        p(b("Engineering goal.") + " Build the monitor, the benchmark and the test bench that "
+          "make both quantities measurable. Success is a trustworthy measurement, whatever "
+          "the numbers are. It is not a claim that the monitor works.", MIN, 43),
+        gap=12))
+
     parts.append(
-        f'<section style="display: flex; flex-direction: column; gap: 5px; '
-        f'border-top: 1px solid {RULE}; padding-top: 12px; margin-top: auto">'
-        + "".join(f'<p style="margin: 0; font-size: 17px; line-height: 23px; color: {INK2}">'
-                  f'{r}</p>' for r in refs)
-        + f'<p style="margin: 4px 0 0; font-size: 17px; line-height: 23px; color: {INK2}">'
-          f'Code, data pipeline and dated research log: '
-          f'<span style="font-family: {MONO}">github.com/gnair40/bci-ews-research</span></p>'
-          f'</section>')
-    return page("Left panel: problem, question, approach", PW_SIDE, PH, "\n".join(parts), 56)
+        f'<section style="display: flex; flex-direction: column; gap: 0; margin-top: auto">'
+        + label("References")
+        + "".join(f'<p style="margin: 0; font-size: {MIN}px; line-height: 40px; '
+                  f'color: {INK2}; white-space: nowrap; overflow: hidden">[{i}] {r}</p>'
+                  for i, r in enumerate(REFS, 1))
+        + "</section>")
+    return page("Left panel: abstract, introduction, purpose, hypothesis", PW_SIDE, PH,
+                "\n".join(parts), 56, gap=26)
 
 
 # ===========================================================================
-# CENTRE PANEL -- title, the two validations, the signal chain, the figure wall
+# CENTRE PANEL -- the entry point: title, the project in four steps, the bench
 # ===========================================================================
-def status_row(kind_chip: str, text: str) -> str:
-    return (f'<div style="display: flex; gap: 14px; align-items: flex-start">'
-            f'<div style="width: 218px; flex: none; padding-top: 2px">{kind_chip}</div>'
-            f'<span style="font-size: 21px; line-height: 28px; color: {INK2}">{text}</span></div>')
+def picto(body: str) -> str:
+    return (f'<svg aria-hidden="true" width="320" height="150" viewBox="0 0 320 150" '
+            f'fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" '
+            f'stroke-linejoin="round" style="display: block">{body}</svg>')
 
 
-def title_block() -> str:
-    key = lambda sw, t: (f'<div style="display: flex; gap: 10px; align-items: center">{sw}'
-                         f'<span style="font-size: 18px; line-height: 22px; color: {INK2}">{t}'
-                         f'</span></div>')
-    sw_m = f'<span style="width: 34px; height: 20px; background: {BLUE}; flex: none"></span>'
-    sw_p = (f'<span style="width: 30px; height: 16px; flex: none; border: 2px dashed {ORG}; '
-            f'background: repeating-linear-gradient(45deg, {ORG_T}, {ORG_T} 6px, {ORG_M} 6px, '
-            f'{ORG_M} 9px)"></span>')
-    sw_f = (f'<span style="width: 30px; height: 16px; flex: none; border: 2px dashed {INK3}; '
-            f'background: {WASH}"></span>')
-    left = (
-        '<div style="flex: 1; display: flex; flex-direction: column; gap: 14px">'
-        + kicker("Research poster &middot; draft of 12 November 2026 &middot; "
-                 "physical results pending")
-        + f'<h1 style="margin: 0; font-family: {SERIF}; font-size: 100px; line-height: 1.04; '
-          f'font-weight: 700; letter-spacing: -0.012em; color: {INK}">Seeing Failure Before It '
-          f'Shows</h1>'
-        + f'<p style="margin: 0; font-family: {SERIF}; font-size: 38px; line-height: 47px; '
-          f'color: {INK2}; text-wrap: balance">Building and validating a decoder-health monitor '
-          f'for neural interfaces, in two phases: on archived intracortical recordings, and on '
-          f'a controlled optical apparatus</p>'
-        + f'<p style="margin: 6px 0 0; font-size: 26px; line-height: 34px; color: {INK}">'
-          f'<b style="font-weight: 600">Gayathri Nair</b> &middot; Central Bucks High School '
-          f'South &middot; [CATEGORY] &middot; [FAIR AND YEAR]</p></div>')
-    right = (
-        f'<div style="width: 800px; flex: none; box-sizing: border-box; border: 2px solid {INK}; '
-        f'border-radius: 4px; padding: 14px 20px; display: flex; flex-direction: column; '
-        f'gap: 9px">'
-        + f'<span style="font-family: {MONO}; font-size: 18px; font-weight: 600; '
-          f'letter-spacing: 0.08em; text-transform: uppercase; color: {INK}">Status of the work'
-          f'</span>'
-        + status_row(chip("Complete", "complete"),
-                     "<b style=\"font-weight: 600; color: " + INK + "\">Computational "
-                     "validation.</b> Two archived arrays; 102 headline numbers recomputed "
-                     "by script.")
-        + status_row(chip("Frozen, not built", "frozen"),
-                     "<b style=\"font-weight: 600; color: " + INK + "\">Physical validation."
-                     "</b> Specified, coded, preregistered 24 Sep 2026. No apparatus exists "
-                     "yet.")
-        + status_row(chip("None recorded", "none"),
-                     "<b style=\"font-weight: 600; color: " + INK + "\">Physical measurements."
-                     "</b> Every physical chart here is an empty template.")
-        + f'<div style="display: flex; gap: 18px; flex-wrap: wrap; border-top: 1px solid '
-          f'{RULE}; padding-top: 9px">'
-        + key(sw_m, "measured, from stored data") + key(sw_p, "planned, no data yet")
-        + key(sw_f, "photo to be taken") + "</div></div>")
-    return (f'<header style="display: flex; gap: 48px; align-items: flex-end">{left}{right}'
-            f'</header>')
+def picto_problem() -> str:
+    # a screen, a target, the path the user meant and the path the stale decoder drew
+    return picto(
+        '<rect x="20" y="10" width="230" height="124" rx="8"/>'
+        f'<circle cx="208" cy="42" r="15" stroke="{AMBER}"/>'
+        f'<path d="M52 110 L196 50" stroke="{AMBER}" stroke-dasharray="3 12"/>'
+        '<path d="M52 110 C92 104 118 96 128 70 C134 54 122 40 104 34"/>'
+        '<path d="M104 34 l22 4 l-10 6 l-2 12 z" fill="#FFFFFF" stroke-width="3"/>'
+        '<path d="M272 40 v70 M272 40 l-10 12 M272 40 l10 12" stroke-width="4"/>')
 
 
-def compare_fig() -> str:
-    n = S["episodes"]
-    ff = S["fault_free_episodes"]
-    rows = [
-        ("Signal source",
-         "Archived intracortical recordings from two implanted arrays (T11, T5), binned at "
-         "20 ms.",
-         "384 screen patches imaged by a camera at 50 frames per second in a sealed enclosure. "
-         "One frame stands in for one 20 ms bin."),
-        ("Degradation",
-         "Injected into the recordings in software: four fault types, three rates, three "
-         "severities.",
-         "Imposed on the apparatus, optically (ND 0.6 filter, rotation stage) or in software: "
-         "four types at severity 0.25, 0.5 and 1.0, plus faults nobody designed (P-5)."),
-        ("Onset ground truth",
-         f"Drawn and sealed before any detector existed: {n['T11'] + n['T5']:,} episodes.",
-         "Drawn by program and sealed with SHA-256 before each recording starts."),
-        ("Fault-free record",
-         f"{ff['T11']} + {ff['T5']} episodes, about 1.4 h. Too little to bound a rate of 0.1 "
-         f"per hour.",
-         "101 sessions, about 8.4 h, of which about 4 h are held out. Recorded unattended."),
-        ("Produces",
-         "AUC by fault type; lead time; false alarms per hour at the operating point; five "
-         "gate results; a decision-rate curve.",
-         "Lead time and detection delay; false-alarm rate with a 95% bound; detection by type "
-         "and severity; silence-gate rate; correlation; decision-rate curve in four "
-         "configurations."),
-        ("Establishes",
-         "The monitor separates faults that activity counting cannot. At the 0.1 per hour "
-         "budget no configuration is deployable, and the cause is measured.",
-         "Whether the late warning and the restless risk score persist on a non-biological "
-         "system with known onsets, and whether the numbers depend on the apparatus."),
-        ("Cannot establish",
-         "A bounded false-alarm rate. Agreement beyond two arrays, which disagree on several "
-         "questions.",
-         "Clinical performance. A camera in a sealed box is not an implanted electrode array."),
-    ]
-    cell = (f'padding: 6px 16px; font-size: 21px; line-height: 27px; color: {INK2}; '
-            f'border-bottom: 1px solid {RULE}')
-    out = ['<div style="display: grid; grid-template-columns: minmax(0, 1fr) 300px '
-           'minmax(0, 1fr); border: 2px solid ' + INK + '; border-radius: 4px; '
-           'overflow: hidden">']
-    out.append(
-        f'<div style="padding: 14px 16px; background: {BLUE}; display: flex; '
-        f'align-items: center; justify-content: space-between; gap: 12px">'
-        f'<span style="font-family: {SERIF}; font-size: 32px; font-weight: 600; '
-        f'color: #FFFFFF">Computational validation</span>'
-        f'<span style="font-family: {MONO}; font-size: 17px; font-weight: 600; '
-        f'letter-spacing: 0.06em; color: #FFFFFF">COMPLETE</span></div>'
-        f'<div style="padding: 10px 12px; background: {INK}; display: flex; '
-        f'align-items: center; justify-content: center; text-align: center; '
-        f'font-family: {MONO}; font-size: 17px; line-height: 22px; font-weight: 600; '
-        f'letter-spacing: 0.06em; color: #FFFFFF">ONE MONITOR, UNCHANGED</div>'
-        f'<div style="padding: 14px 16px; background: {ORG}; display: flex; '
-        f'align-items: center; justify-content: space-between; gap: 12px">'
-        f'<span style="font-family: {SERIF}; font-size: 32px; font-weight: 600; '
-        f'color: #FFFFFF">Physical validation</span>'
-        f'<span style="font-family: {MONO}; font-size: 17px; font-weight: 600; '
-        f'letter-spacing: 0.06em; color: #FFFFFF">PREREGISTERED, NOT EXECUTED</span></div>')
-    for i, (lab, a, c) in enumerate(rows):
-        last = "border-bottom: none; " if i == len(rows) - 1 else ""
-        out.append(
-            f'<div style="{cell}; {last}background: #FFFFFF">{a}</div>'
-            f'<div style="{cell}; {last}background: {WASH}; text-align: center; '
-            f'font-weight: 600; color: {INK}; display: flex; align-items: center; '
-            f'justify-content: center; border-left: 1px solid {RULE}; '
-            f'border-right: 1px solid {RULE}">{lab}</div>'
-            f'<div style="{cell}; {last}background: #FFFFFF">{c}</div>')
-    out.append("</div>")
-    shared = (
-        f'<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; '
-        f'font-size: 20px; line-height: 26px; color: {INK2}">'
-        f'<b style="font-weight: 600; color: {INK}">Held identical in both phases:</b>'
-        + "".join(f'<span style="border: 1.5px solid {INK3}; border-radius: 4px; '
-                  f'padding: 2px 10px; white-space: nowrap">{t}</span>' for t in (
-                      "decoder-guard monitor", "30 s window, 5 s step",
-                      "warning state machine", "0.1 per hour budget",
-                      "frozen ridge decoder", "lead time and false alarms as a pair"))
-        + "</div>")
-    open_q = (
-        f'<div style="display: grid; grid-template-columns: 250px repeat(3, minmax(0, 1fr)); '
-        f'gap: 0; border: 2px solid {INK}; border-radius: 4px; overflow: hidden">'
-        f'<div style="background: {INK}; color: #FFFFFF; padding: 12px 16px; font-family: '
-        f'{SERIF}; font-size: 25px; line-height: 30px; font-weight: 600; display: flex; '
-        f'align-items: center">Open until both are read together</div>'
-        + "".join(
-            f'<div style="padding: 10px 16px; font-size: 21px; line-height: 28px; '
-            f'color: {INK2}; border-left: 1px solid {RULE}">{t}</div>' for t in (
-                "Whether the late warning belongs to neural recordings or to the monitoring "
-                "method itself " + src("PP-2, PP-3"),
-                "How large the false-alarm rate is once enough fault-free recording exists "
-                "to bound it " + src("PP-1"),
-                "Whether deciding less often helps: on archived data T11 rises and T5 falls "
-                + src("PP-7, PP-9")))
-        + "</div>")
-    return sec(
-        "".join(out), shared, open_q,
-        cap("3", "Two validations of one monitor.",
-            "Each phase supplies what the other cannot. Left column from reports/ and "
-            "data/processed/; right column from the frozen preregistration."),
-        gap=12)
+def picto_idea() -> str:
+    # a gauge, and a warning light that has come on
+    return picto(
+        '<path d="M40 118 A82 82 0 0 1 204 118"/>'
+        '<path d="M122 118 L170 60" stroke-width="6"/><circle cx="122" cy="118" r="8" '
+        'fill="#FFFFFF"/>'
+        f'<path d="M258 28 L300 104 L216 104 Z" fill="{AMBER}" stroke="{AMBER}"/>'
+        f'<path d="M258 54 V80" stroke="{NAVY}" stroke-width="7"/>'
+        f'<circle cx="258" cy="93" r="4" fill="{NAVY}" stroke="{NAVY}" stroke-width="2"/>')
 
 
-def grid_thumb() -> str:
-    cells = "".join(
-        f'<rect x="{c * 4 + 0.5}" y="{r * 4 + 0.5}" width="3" height="3" fill="{ORG_M}"/>'
-        for r in range(16) for c in range(24))
-    return (f'<svg aria-hidden="true" width="96" height="64" viewBox="0 0 96 64" '
-            f'style="position: absolute; left: 309px; top: 166px; width: 96px; height: 64px; '
-            f'background: #FFFFFF; border: 1.5px solid {ORG}">{cells}</svg>')
+def picto_catch() -> str:
+    # a timeline: fault starts, control is lost; a warning before it and one after
+    bell = ('<path d="M-17 12 Q-17 -20 0 -20 Q17 -20 17 12 L24 20 L-24 20 Z"/>'
+            '<path d="M-5 28 a5 5 0 0 0 10 0" stroke-width="4"/>')
+    return picto(
+        '<path d="M14 120 H306"/><path d="M60 106 V134"/><path d="M228 106 V134"/>'
+        '<path d="M214 106 L242 134 M242 106 L214 134" stroke-width="4"/>'
+        f'<g transform="translate(144 62)" stroke="{AMBER}">{bell}</g>'
+        f'<g transform="translate(284 62)" opacity="0.45">{bell}</g>')
 
 
-def chain_fig() -> str:
-    y1, hh = 40, 120
-    xs = [0, 253, 506, 759, 1012, 1265, 1518, 1771, 2006]
-    ws = [208, 208, 208, 208, 208, 208, 208, 190, 170]
-    cards = [
-        ("stimulus.py", "24 × 16 patch grid, modulation depth 0.00211", "soft", True),
-        ("Display", "384 independent patches, fixed manual brightness", "phys", False),
-        ("Sealed enclosure", "matte black, light-tight optical path", "phys", False),
-        ("Camera", "50 frames per second, exposure and gain fixed", "phys", False),
-        ("capture.py", "frames and timestamps, raw files never modified", "soft", True),
-        ("Frozen decoder", "ridge, fitted once on fault-free sessions", "soft", False),
-        ("monitor.py", "30 s window every 5 s, one risk score each", "soft", True),
-        ("Threshold", "fixed on held-out fault-free sessions", "fixed", False),
-        ("Warning", "time of first warning", "out", False),
-    ]
-    el = []
-    # arrows first, then cards, then labels (paint order = click order)
-    for i in range(len(xs) - 1):
-        el.append(arrow(xs[i] + ws[i], y1 + hh // 2, xs[i + 1] - 1, y1 + hh // 2))
-    y2, h2_ = 236, 100
-    el.append(arrow(300, y2 + h2_ // 2, 399, y2 + h2_ // 2, TEAL))            # plan -> fault
-    el.append(arrow(610, y2, 610, y1 + hh + 1, WINE))                           # optical fault
-    el.append(arrow(1116, y2, 1116, y1 + hh + 1, WINE))                         # software fault
-    el.append(arrow(1180, y2 + h2_ // 2, 1264, y2 + h2_ // 2, WINE))            # onset -> score
-    el.append(arrow(1369, y1 + hh, 1369, y2 - 1))                               # failure time
-    el.append(arrow(2091, y1 + hh, 2091, y2 - 1))                               # warning time
-    for (t, l, k, m), x, w in zip(cards, xs, ws):
-        el.append(card(x, y1, w, hh, t, l, k, mono=m, tsize=21 if m else 22))
-    el.append(card(0, y2, 300, h2_, "draw_onset.py",
-                   "onset, type and severity drawn, then sealed with SHA-256", "seal", True, 21))
-    el.append(card(400, y2, 780, h2_, "Fault imposed at the sealed onset",
-                   "optical: ND 0.6 filter, rotation stage (acts on the light path)<br>"
-                   "software: gain drift, channel dropout (acts on recorded frames)", "fault"))
-    el.append(card(1265, y2, 911, h2_, "Scoring against the sealed onset",
-                   "lead time = failure time − warning time (positive: the warning came first)"
-                   "<br>detection delay = warning time − sealed onset", "fixed"))
-    el.append(grid_thumb())
-    el.append(note(412, 176, 96, "24 × 16<br>= 384", "left", ORG))
-    el.append(note(306, y2 + 20, 90, "plan", "center", TEAL))
-    el.append(note(622, 186, 130, "light path", "left", WINE))
-    el.append(note(1128, 186, 130, "frames", "left", WINE))
-    el.append(note(1180, y2 + 20, 86, "onset", "center", WINE))
-    el.append(note(1381, 176, 380, "failure time: decoding error crosses<br>its failure level",
-                   "left"))
-    el.append(note(1890, 186, 190, "warning time", "right"))
-    el.append(note(759, 8, 208, "1 frame = one 20 ms bin", "center", ORG))
-    el.append(note(1448, 8, 348, "same code as the neural analysis", "center", BLUE))
-    host = (f'<div style="position: relative; width: 2192px; height: 340px">'
-            + "".join(el) + "</div>")
-    legend = (
-        '<div style="display: flex; gap: 26px; flex-wrap: wrap; align-items: center">'
-        + "".join(
-            f'<div style="display: flex; gap: 8px; align-items: center">'
-            f'<span style="width: 26px; height: 18px; flex: none; {st}"></span>'
-            f'<span style="font-size: 18px; line-height: 22px; color: {INK2}">{t}</span></div>'
-            for st, t in (
-                (f"background: {BLUE_T}; border: 2px solid {BLUE}", "software process"),
-                (f"background: {ORG_T}; border: 2px solid {ORG}", "physical component"),
-                (f"background: {TEAL_T}; border: 2px solid {TEAL}", "sealed before recording"),
-                (f"background: {WINE_T}; border: 2px solid {WINE}", "imposed fault"),
-                (f"background: #FFFFFF; border: 2px solid {INK}", "fixed rule or constant")))
-        + "</div>")
-    return sec(
-        host, legend,
-        cap("4", "Signal chain of the apparatus.",
-            "A known direction is encoded across 384 patches, imaged, decoded by a decoder "
-            "that is never refitted, and watched by the monitor. The fault path degrades the "
-            "signal, and its sealed onset is the ground truth each warning is scored "
-            "against. Specified, not yet built."),
-        gap=10)
+def picto_build() -> str:
+    # a sealed box with a screen and a camera, and a padlock on the start time
+    return picto(
+        '<rect x="14" y="26" width="196" height="108" rx="6"/>'
+        '<rect x="30" y="46" width="12" height="68"/>'
+        f'<path d="M44 50 L150 80 L44 110" stroke="{AMBER}" stroke-width="3" '
+        f'stroke-dasharray="4 9"/>'
+        '<rect x="152" y="66" width="34" height="28" rx="4"/>'
+        f'<rect x="244" y="66" width="56" height="48" rx="6" stroke="{AMBER}"/>'
+        f'<path d="M256 66 V52 a16 16 0 0 1 32 0 V66" stroke="{AMBER}"/>'
+        f'<circle cx="272" cy="90" r="5" fill="{AMBER}" stroke="{AMBER}" stroke-width="2"/>')
 
 
-def stat(big: str, text: str, ref: str) -> str:
-    return (f'<div style="box-sizing: border-box; border-top: 4px solid {BLUE}; '
-            f'padding: 10px 0 0; display: flex; flex-direction: column; gap: 4px">'
-            f'<span style="font-family: {SERIF}; font-size: 50px; line-height: 54px; '
-            f'font-weight: 700; color: {BLUE}; white-space: nowrap">{big}</span>'
-            f'<span style="font-size: 20px; line-height: 27px; color: {INK2}">{text}</span>'
-            f'<span style="font-family: {MONO}; font-size: 15px; color: {INK3}">{ref}</span>'
+def step(n: int, tag: str, art: str, title: str, text: str) -> str:
+    return (f'<div style="display: flex; flex-direction: column; gap: 10px">'
+            f'<div style="display: flex; align-items: center; gap: 14px">'
+            f'<span style="width: 56px; height: 56px; flex: none; border-radius: 50%; '
+            f'background: {AMBER}; color: {NAVY}; font-family: {SERIF}; font-size: 38px; '
+            f'font-weight: 700; display: flex; align-items: center; justify-content: center">'
+            f'{n}</span><span style="font-family: {MONO}; font-size: {MIN}px; '
+            f'line-height: 40px; font-weight: 600; letter-spacing: 0.08em; color: {AMBER}">'
+            f'{tag}</span></div>{art}'
+            f'<span style="font-family: {SERIF}; font-size: 46px; line-height: 52px; '
+            f'font-weight: 700; color: #FFFFFF">{title}</span>'
+            f'<span style="font-size: {MIN}px; line-height: 43px; color: #DDE5EC">{text}</span>'
             f'</div>')
 
 
-def stat_strip() -> str:
+def sofar(big: str, text: str, todo: bool = False) -> str:
+    edge = f"border-top: 4px dashed {AMBER}" if todo else f"border-top: 4px solid {AMBER}"
+    return (f'<div style="{edge}; padding-top: 10px; display: flex; flex-direction: column; '
+            f'gap: 2px"><span style="font-family: {SERIF}; font-size: 84px; line-height: 90px; '
+            f'font-weight: 700; color: {AMBER}; white-space: nowrap">{big}</span>'
+            f'<span style="font-size: {MIN}px; line-height: 42px; color: #FFFFFF">{text}</span>'
+            f'</div>')
+
+
+def hero() -> str:
     v = D["fault_mode_auc"]["values"]
     g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
     k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
-    f = S["funnel"]
-    sep = S["task_change_separation"]
-    sc = D["session_scatter"]
-    tiles = [
-        stat(f"{min(g):.2f} to {max(g):.2f}",
-             f"AUC on the two faults that leave total activity unchanged. Counting activity "
-             f"scores {min(k):.2f} to {max(k):.2f}.", "claim C02, C15"),
-        stat(f"{sep['658']:.1f}× and {sep['665']:.0f}×",
-             "separation between a change of task and a real fault, on two days. A task "
-             "change is not mistaken for a fault.", "claim C05"),
-        stat(f"{f['all_gates']} of {f['run']}",
-             f"configurations pass all five gates. {f['positive_lead']} reach a positive "
-             f"median lead time; {f['met_budget']} meet the budget; none stays silent.",
-             "claim C03"),
-        stat(f"{S['lag1_pooled']['T11']:.3f}",
-             f"lag-1 autocorrelation of the risk score within a faulted session (T11; "
-             f"{S['lag1_pooled']['T5']:.3f} on T5): about one independent measurement.",
-             "claim C04, C18"),
-        stat(f"{S['auc_needed_at_budget']['T11']:.3f}",
-             f"session AUC needed at one decision per session inside the budget (T11; "
-             f"{S['auc_needed_at_budget']['T5']:.3f} on T5). Achieved: "
-             f"{S['auc_session']['T11']:.3f} and {S['auc_session']['T5']:.3f}.",
-             "reports/OPERATING_POINT_BOUND.md"),
-        stat(f"{sc['auc_min']:.2f} to {sc['auc_max']:.2f}",
-             f"monitor AUC by session across {sc['n_sessions']} sessions of T11, tracking "
-             f"that day's decoder error (ρ = {num(sc['spearman_rho'], 3)}, preregistered).",
-             "claim C08, C09"),
-    ]
-    return sec(
-        f'<div style="display: flex; align-items: baseline; gap: 16px; border-top: 3px solid '
-        f'{INK}; padding-top: 12px"><h2 style="margin: 0; font-family: {SERIF}; '
-        f'font-size: 42px; line-height: 1.12; font-weight: 600; color: {INK}">Computational '
-        f'findings, each recomputed from stored results</h2></div>',
-        '<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); '
-        'gap: 26px">' + "".join(tiles) + "</div>", gap=14)
-
-
-def pair(n: str, title: str, dv: str, m_svg: str, m_note: str, p_svg: str, p_note: str) -> str:
-    def side(label_chip: str, where: str, svg_: str, note_: str, edge: str) -> str:
-        return (f'<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; '
-                f'gap: 6px; border-top: {edge}; padding-top: 8px">'
-                f'<div style="display: flex; gap: 10px; align-items: center">{label_chip}'
-                f'<span style="font-size: 17px; line-height: 22px; color: {INK2}">{where}'
-                f'</span></div>{svg_}'
-                f'<p style="margin: 0; font-size: 18px; line-height: 23px; color: {INK2}; '
-                f'text-wrap: pretty">{note_}</p></div>')
+    L11 = D["lead_time"]["T11"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    steps = (
+        step(1, "THE PROBLEM", picto_problem(), "The decoder goes stale",
+             "An implant lets a paralysed person move a cursor by intent. The brain signal "
+             "drifts, and the decoder goes wrong without saying so.")
+        + step(2, "THE IDEA", picto_idea(), "Add a warning light",
+               "A monitor watches the signal itself and warns before control is lost, so the "
+               "user recalibrates only when it is needed.")
+        + step(3, "THE CATCH", picto_catch(), "Test the warning",
+               "A warning is only useful if it comes early and is rarely wrong. For this kind "
+               "of monitor, neither had been measured.")
+        + step(4, "THIS PROJECT", picto_build(), "Build the test",
+               "One monitor and two test beds where the moment of failure is fixed in "
+               "advance: brain recordings with planted faults, and a camera-and-screen "
+               "bench."))
+    found = (
+        sofar(f"{min(g):.2f} to {max(g):.2f}",
+              f"score for spotting faults that plain activity counting scores "
+              f"{min(k):.2f} to {max(k):.2f} on (0.5 is a coin flip)")
+        + sofar(f"{abs(L11['median_s']):.0f} s late",
+                "the typical warning arrives after decoding has already failed")
+        + sofar(f"{fa / S['budget_per_hour']:.0f}× too often",
+                f"{fa:.2f} false alarms per hour, against a budget of 0.1")
+        + sofar("Next", "the test bench: designed, coded and preregistered. Not yet built.",
+                todo=True))
+    grid = ("display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px")
     return (
-        f'<div style="box-sizing: border-box; border: 1.5px solid {RULE}; border-radius: 4px; '
-        f'padding: 10px 18px 12px; display: flex; flex-direction: column; gap: 6px">'
-        f'<div style="display: flex; align-items: baseline; justify-content: space-between; '
-        f'gap: 12px"><h3 style="margin: 0; font-family: {SERIF}; font-size: 30px; '
-        f'line-height: 36px; font-weight: 600; color: {INK}">Fig. {n}. {title}</h3>'
-        f'<span style="font-family: {MONO}; font-size: 16px; color: {INK3}; '
-        f'white-space: nowrap">{dv}</span></div>'
-        f'<div style="display: flex; gap: 28px">'
-        + side(chip("Measured", "measured"), "archived neural recordings", m_svg, m_note,
-               f"4px solid {BLUE}")
-        + side(chip("Planned", "planned"), "optical apparatus", p_svg, p_note,
-               f"4px dashed {ORG}")
-        + "</div></div>")
+        f'<section style="background: {NAVY}; border-radius: 10px; padding: 28px 44px 32px; '
+        f'display: flex; flex-direction: column; gap: 18px">'
+        f'<div style="font-family: {MONO}; font-size: {MIN}px; line-height: 40px; '
+        f'font-weight: 600; letter-spacing: 0.12em; color: #FFFFFF">THE WHOLE PROJECT IN ONE '
+        f'MINUTE</div>'
+        f'<div style="{grid}">{steps}</div>'
+        f'<div style="font-family: {MONO}; font-size: {MIN}px; line-height: 40px; '
+        f'font-weight: 600; letter-spacing: 0.08em; color: {AMBER}; border-top: 2px solid '
+        f'#3B5068; padding-top: 18px">RESULT SO FAR, MEASURED ON ARCHIVED BRAIN RECORDINGS'
+        f'</div>'
+        f'<div style="{grid}">{found}</div></section>')
 
 
-NAMES = {"RATE_LOSS": ("Overall signal loss", "total activity falls"),
-         "CHANNEL_DROPOUT": ("Channel dropout", "channels go silent"),
-         "GAIN_DRIFT": ("Gain drift", "total unchanged"),
-         "GEOMETRY_ROTATION": ("Geometric rotation", "total unchanged")}
+def title_block() -> str:
+    return (
+        '<header style="display: flex; flex-direction: column; gap: 10px">'
+        f'<h1 style="margin: 0; font-family: {SERIF}; font-size: 138px; line-height: 144px; '
+        f'font-weight: 700; letter-spacing: -0.014em; color: {INK}; white-space: nowrap">'
+        f'Seeing Failure Before It Shows</h1>'
+        f'<p style="margin: 0; font-family: {SERIF}; font-size: 48px; line-height: 58px; '
+        f'color: {INK2}; text-wrap: balance">An early-warning monitor for brain-computer '
+        f'interface decoders, and the test bench that shows whether its warnings can be '
+        f'trusted</p>'
+        f'<p style="margin: 4px 0 0; font-size: 36px; line-height: 44px; color: {INK}">'
+        f'<b style="font-weight: 600">Gayathri Nair</b> &middot; Central Bucks High School '
+        f'South &middot; [CATEGORY] &middot; [FAIR AND YEAR]</p></header>')
 
 
-def wall() -> str:
-    W, H = 500, 296
-    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
-    ci = L11["ci95_s"]
-    dvf = D["detection_vs_fa"]
-    sl = S["session_level_correlation_T11"]
-    pr = D["decision_rate"]["paired"]["participants"]
-    a, t5 = pr["T11"]["own_range"], pr["T5"]["own_range"]
-    pct = lambda x: minus(f"{x * 100:+.1f}")
-    cards = [
-        pair("5", "Lead time", "DV1 &middot; P-3",
-             C.lead_dots(W, H, L11["leads_s"], L11["median_s"]),
-             f"T11: {L11['n_detected']} of {L11['n_degraded']} faults detected. Median "
-             f"{num(L11['median_s'], 0)} s (95% CI {num(ci[0], 0)} to {num(ci[1], 0)}); "
-             f"{L11['fraction_negative'] * 100:.0f}% warned late, "
-             f"{L11['fraction_positive'] * 100:.0f}% early. T5: {L5['n_detected']} of "
-             f"{L5['n_degraded']}, median {num(L5['median_s'], 0)} s.",
-             C.lead_planned(W, H, "lead"),
-             "PP-3 predicts a median at or below 0 s; falsified by a positive median whose "
-             "95% interval excludes zero. Detection delay is reported beside it."),
-        pair("6", "False alarms and silence", "DV2, DV4 &middot; P-2",
-             C.fa_measured(W, H, S["false_alarms_per_hour"], S["budget_per_hour"],
-                           S["silence_fault_free_fraction"], S["fault_free_episodes"]),
-             f"Rates at the operating point chosen on validation data. Only "
-             f"{S['fault_free_episodes']['T11']} + {S['fault_free_episodes']['T5']} episodes, "
-             f"about 1.4 h, are genuinely fault-free.",
-             C.fa_planned(W, H, "fa"),
-             "PP-1: rate above 0.1 per hour. PP-2: over 10% of fault-free sessions trend. "
-             "The curve is arithmetic (3 ÷ hours), not data: zero alarms would be reported as "
-             "untested, not as a pass."),
-        pair("7", "Detection against false alarms", "DV3 &middot; P-2, P-3",
-             C.dfa_measured(W, H, dvf["curves"], {"T11": dvf["best_inside_budget_T11"],
-                                                  "T5": dvf["best_inside_budget_T5"]}),
-             "The warning threshold swept over its whole range. Detection is high only where "
-             "false alarms run at several per hour.",
-             C.dfa_planned(W, H, "dfa"),
-             "Same axes. The curve is read at the budget line: a usable monitor reaches the "
-             "80% target to the left of it."),
-        pair("8", "Detection by fault type and severity", "DV3 &middot; IV3, IV4",
-             C.mode_dumbbell(W, H, D["fault_mode_auc"]["values"], D["fault_mode_auc"]["modes"],
-                             NAMES),
-             "The monitor wins on the two faults that conserve total activity and loses on "
-             "overall signal loss, on both arrays. Descriptive: no interval is attached.",
-             C.severity_planned(W, H, "sev", ["Overall signal loss", "Channel dropout",
-                                             "Per-channel gain drift", "Geometric rotation"]),
-             "PP-6: detection at severity 1.0 exceeds detection at 0.25. If not, PP-1 to "
-             "PP-5 are reported but not read as being about degradation."),
-        pair("9", "Monitor score against decoding performance", "DV5 &middot; P-4",
-             C.scatter_measured(W, H, sl["series"], sl["failure_threshold_deg"]),
-             f"{sl['n_sessions']} sessions of T11. Spearman ρ: raw {num(sl['raw'], 3)}; time "
-             f"trend removed {num(sl['partial'], 3)}; first differences {num(sl['diff'], 3)}. "
-             f"Exploratory, not preregistered.",
-             C.scatter_planned(W, H, "sc"),
-             "PP-4: at least one of the three measures reaches 0.70 in magnitude. PP-5: raw "
-             "exceeds partial. Published for comparison: 0.93 and 0.72 [1]."),
-        pair("10", "How often the monitor decides", "P-6 &middot; co-primary",
-             C.decision_measured(W, H, D["decision_rate"]["curves"]),
-             f"At a 10% false-flag rate, paired test. T11: {pct(a['change'])} points (95% CI "
-             f"{pct(a['ci95'][0])} to {pct(a['ci95'][1])}; not established). T5: "
-             f"{pct(t5['change'])} points ({pct(t5['ci95'][0])} to {pct(t5['ci95'][1])}; "
-             f"established).",
-             C.decision_planned(W, H, "dr"),
-             "PP-7: at least +10 points at one decision per session. PP-9: the same sign in "
-             "all four configurations. Re-scored from the same recordings."),
-    ]
-    head = (
-        f'<div style="display: flex; align-items: baseline; gap: 16px; border-top: 3px solid '
-        f'{INK}; padding-top: 12px"><h2 style="margin: 0; font-family: {SERIF}; '
-        f'font-size: 42px; line-height: 1.12; font-weight: 600; color: {INK}">The same six '
-        f'quantities, measured and to be measured</h2></div>'
-        )
-    return sec(head,
-               '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
-               'gap: 20px">' + "".join(cards) + "</div>", gap=12)
-
-
-def main_panel() -> str:
-    return page("Centre panel: architecture and evidence", PW_MAIN, PH,
-                "\n".join([title_block(), compare_fig(), chain_fig(), stat_strip(), wall()]),
-                56)
-
-
-# ===========================================================================
-# RIGHT PANEL -- the physical validation: apparatus, protocol, gates, design
-# ===========================================================================
-def apparatus_svg() -> str:
+def bench_svg() -> str:
+    """Side view of the test bench, in source units (17 units print at 32 px)."""
     T, Ln, R = C.T, C.L, C.R
-    W, H = 1040, 350
-    s = []
-    s.append(T(40, 22, "Sealed enclosure: cardboard, at least 40 × 30 × 30 cm", 19, INK,
-               weight=600))
-    s.append(T(40, 44, "matte black lining, taped seams, darkness verified by measurement "
-               "(gate G-a)", 17, INK2))
-    # enclosure: outline plus an inner band for the matte lining (little ink, reads as a box)
-    s.append(R(40, 56, 760, 236, fill="#FFFFFF", stroke=INK, sw=3))
-    s.append(R(48, 64, 744, 220, fill="none", stroke="#39424B", sw=8))
-    # light path
-    s.append(f'<path d="M92 104 L632 177 L92 250 Z" fill="{ORG_T}" stroke="{ORG_M}" '
-             f'stroke-width="2" stroke-dasharray="8 6"/>')
-    # display
-    s.append(R(70, 100, 22, 154, fill=ORG_T, stroke=ORG, sw=3))
-    for i in range(1, 8):
-        s.append(Ln(92, 100 + i * 19.25, 86, 100 + i * 19.25, ORG, 1.5))
-    s.append(T(110, 94, "Display", 19, ORG, weight=600))
-    s.append(T(184, 94, "384 patches (24 × 16), brightness fixed", 17, INK2))
-    # filter
-    s.append(R(556, 126, 8, 102, fill=WINE_T, stroke=WINE, sw=2.5, dash="6 4"))
-    s.append(T(548, 252, "ND 0.6 gel filter slides into the light path:", 17, WINE,
-               anchor="end"))
-    s.append(T(548, 273, "optical signal-loss fault", 17, WINE, anchor="end", weight=600))
-    # camera on its stage
-    s.append(R(640, 159, 40, 36, fill=ORG_T, stroke=ORG, sw=3, rx=3))
-    s.append(R(630, 169, 10, 16, fill=ORG, stroke=ORG, sw=1))
-    s.append(Ln(660, 195, 660, 246, INK, 4))
-    s.append(R(626, 246, 68, 12, fill=WINE_T, stroke=WINE, sw=2.5, rx=2))
-    s.append(T(784, 94, "Camera Module 3", 19, ORG, anchor="end", weight=600))
-    s.append(T(784, 116, "50 fps, fixed exposure", 17, INK2, anchor="end"))
-    s.append(T(704, 240, "rotation", 17, WINE))
-    s.append(T(704, 260, "stage", 17, WINE))
-    # cable aperture and computer
-    s.append(R(795, 168, 10, 18, fill="#FFFFFF", stroke=INK, sw=1.5))
-    s.append(Ln(680, 177, 850, 177, BLUE, 3))
-    s.append(T(740, 168, "ribbon", 17, BLUE, anchor="middle"))
-    s.append(T(812, 104, "taped cable", 17, INK2))
-    s.append(T(812, 124, "aperture", 17, INK2))
-    s.append(Ln(826, 130, 804, 164, INK2, 1.5))
-    s.append(R(850, 138, 182, 84, fill=BLUE_T, stroke=BLUE, sw=3, rx=4))
-    s.append(T(941, 164, "Raspberry Pi 4", 19, BLUE, anchor="middle", weight=600))
-    s.append(T(941, 186, "stimulus.py", 17, INK2, anchor="middle", family=C.MONO))
-    s.append(T(941, 208, "capture.py", 17, INK2, anchor="middle", family=C.MONO))
-    s.append(Ln(980, 222, 980, 244, INK2, 2))
-    s.append(R(850, 244, 182, 50, fill="#FFFFFF", stroke=INK2, sw=2, rx=4))
-    s.append(T(941, 265, "DHT22 sensor", 18, INK, anchor="middle", weight=600))
-    s.append(T(941, 285, "room temperature", 17, INK2, anchor="middle"))
-    # HDMI
-    s.append(f'<path d="M850 200 L826 200 L826 316 L81 316 L81 254" fill="none" '
-             f'stroke="{BLUE}" stroke-width="3" stroke-linejoin="round"/>')
-    s.append(T(450, 340, "HDMI: the computer draws the patch grid on the display", 17, BLUE,
-               anchor="middle"))
-    return C.svg(W, H, s, "Side view of the apparatus. A display at one end of a sealed "
-                 "matte black enclosure faces a camera at the other. A neutral density filter "
-                 "can slide into the light path, and the camera sits on a rotation stage. A "
-                 "Raspberry Pi outside drives the display and reads the camera.")
+    W, H = 700, 292
+    s = [T(30, 24, "sealed dark box", 18, INK, weight=600)]
+    s.append(R(30, 34, 474, 208, fill="#FFFFFF", stroke=INK, sw=2.5))
+    s.append(R(36, 40, 462, 196, fill="none", stroke="#39424B", sw=6))
+    s.append(f'<path d="M70 66 L418 140 L70 214 Z" fill="{ORG_T}" stroke="{ORG_M}" '
+             f'stroke-width="1.5" stroke-dasharray="6 5"/>')
+    s.append(R(54, 62, 16, 156, fill=ORG_T, stroke=ORG, sw=2.5))
+    s.append(T(82, 60, "screen", 18, ORG, weight=600))
+    s.append(R(330, 96, 7, 88, fill="#F7E6EB", stroke=WINE, sw=2, dash="5 4"))
+    s.append(T(333, 210, "filter", 18, WINE, anchor="middle", weight=600))
+    s.append(R(426, 126, 32, 28, fill=ORG_T, stroke=ORG, sw=2.5, rx=3))
+    s.append(R(418, 133, 8, 14, fill=ORG, stroke=ORG, sw=1))
+    s.append(Ln(442, 154, 442, 196, INK, 3))
+    s.append(R(416, 196, 52, 10, fill="#F7E6EB", stroke=WINE, sw=2, rx=2))
+    s.append(T(442, 228, "camera", 18, ORG, anchor="middle", weight=600))
+    s.append(Ln(458, 140, 560, 140, BLUE, 2.5))
+    s.append(R(499, 133, 8, 14, fill="#FFFFFF", stroke=INK, sw=1.2))
+    s.append(R(560, 104, 130, 72, fill=BLUE_T, stroke=BLUE, sw=2.5, rx=4))
+    s.append(T(625, 136, "Raspberry", 18, BLUE, anchor="middle", weight=600))
+    s.append(T(625, 158, "Pi 4", 18, BLUE, anchor="middle", weight=600))
+    s.append(f'<path d="M600 176 L600 268 L62 268 L62 218" fill="none" stroke="{BLUE}" '
+             f'stroke-width="2.5" stroke-linejoin="round"/>')
+    for n, x, y in ((1, 62, 88), (2, 442, 104), (5, 333, 78)):
+        s.append(f'<circle cx="{x}" cy="{y}" r="15" fill="{INK}" stroke="#FFFFFF" '
+                 f'stroke-width="2"/>')
+        s.append(T(x, y + 6.5, str(n), 18, "#FFFFFF", anchor="middle", weight=700))
+    return C.svg(W, H, s, "Side view of the test bench: a screen at one end of a sealed dark "
+                 "box faces a camera at the other. A filter can slide into the light path and "
+                 "the camera sits on a rotation stage. A Raspberry Pi outside drives the "
+                 "screen and records the camera.")
 
 
-def step(n: str, title: str, text: str, status: str, kind: str) -> str:
-    return (f'<div style="box-sizing: border-box; border: 1.5px solid {RULE}; '
-            f'border-radius: 4px; padding: 10px 12px; display: flex; flex-direction: column; '
-            f'gap: 4px"><div style="display: flex; gap: 8px; align-items: baseline">'
-            f'<span style="font-family: {MONO}; font-size: 22px; font-weight: 600; '
-            f'color: {INK}">{n}</span>'
-            f'<span style="font-size: 20px; line-height: 25px; font-weight: 600; color: {INK}">'
-            f'{title}</span></div>'
-            f'<span style="font-size: 17px; line-height: 22px; color: {INK2}; flex: 1">{text}'
-            f'</span><div>{chip(status, kind)}</div></div>')
+def numbered(n: int, text: str) -> str:
+    return (f'<div style="display: flex; gap: 16px; align-items: flex-start">'
+            f'<span style="width: 52px; height: 52px; flex: none; border-radius: 50%; '
+            f'background: {INK}; color: #FFFFFF; font-size: 34px; font-weight: 700; '
+            f'display: flex; align-items: center; justify-content: center; margin-top: 2px">'
+            f'{n}</span><span style="font-size: {MIN}px; line-height: 42px; color: {INK2}">'
+            f'{text}</span></div>')
 
 
-def var_list(title: str, color: str, items: list[tuple[str, str]]) -> str:
+def how_it_works() -> str:
+    steps = "".join((
+        numbered(1, "The " + b("screen") + " shows 384 patches whose brightness encodes a "
+                    "known direction."),
+        numbered(2, "A " + b("camera") + " films them at 50 frames a second, in the dark."),
+        numbered(3, "A " + b("decoder") + ", fitted once and then frozen, reads the direction "
+                    "back from the video."),
+        numbered(4, "The " + b("monitor") + " scores risk every 5 s from the last 30 s of "
+                    "signal."),
+        numbered(5, "A " + b("fault", WINE) + " begins at a moment drawn and " + hi("sealed "
+                    "before recording") + "."),
+        numbered(6, "Each warning is " + b("scored") + " against that sealed moment: how "
+                    "early, and how many false alarms."),
+    ))
+    return sec(
+        label("Materials and methods"),
+        head("How the test bench works"),
+        f'<div style="display: flex; gap: 40px; align-items: flex-start">'
+        f'<div style="flex: none">{bench_svg()}</div>'
+        f'<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px">'
+        f'{steps}</div></div>',
+        cap("2", "The bench as specified; nothing shown is built yet. 1, 2 and 5 are marked on "
+                 "the drawing; 3, 4 and 6 run on the recording afterwards. Parts: Raspberry "
+                 "Pi 4, Camera Module 3, display, cardboard enclosure, ND 0.6 filter, stepper "
+                 "motor, DHT22 sensor."),
+        gap=12)
+
+
+def pictures() -> str:
+    return sec(
+        label("Pictures"),
+        '<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); '
+        'gap: 22px">'
+        + photo("the assembled test bench, sealed", 244)
+        + photo("inside: screen, light path, camera", 244)
+        + photo("Raspberry Pi 4, camera and wiring", 244)
+        + photo("a recording session running", 244, "SCREENSHOT TO ADD") + "</div>", gap=12)
+
+
+WIRES = [("#E8453A", "pin 2 &middot; 5 V", "+"), ("#3C4248", "pin 9 &middot; ground", "&minus;"),
+         ("#F08A2A", "pin 11 &middot; GPIO 17", "IN1"),
+         ("#F0D32A", "pin 13 &middot; GPIO 27", "IN2"),
+         ("#2FA84F", "pin 15 &middot; GPIO 22", "IN3"),
+         ("#2E7BD4", "pin 16 &middot; GPIO 23", "IN4")]
+
+
+def hardware(local: bool = False) -> str:
+    name = "wiring-stepper-unlabelled.svg"
+    src_ = f"../../assets/{name}" if local else ASSETS[name]
+    iw, ih = 1210, 327                      # 1664 x 450 drawing, scaled to fit
+    host = (
+        f'<div style="position: relative; width: {iw}px; height: 372px; flex: none">'
+        f'<img src="{src_}" alt="Raspberry Pi 4 wired to a ULN2003 driver board and a 28BYJ-48 '
+        f'stepper motor by six coloured jumper wires" style="position: absolute; left: 0; '
+        f'top: 0; width: {iw}px; height: {ih}px">'
+        + note(20, 326, 380, "Raspberry Pi 4", "left", INK, 600)
+        + note(590, 326, 300, "driver board", "center", INK, 600)
+        + note(880, 326, 320, "stepper motor", "center", INK, 600)
+        + "</div>")
+    td = (f"padding: 3px 12px; font-size: {MIN}px; line-height: 42px; color: {INK2}; "
+          f"border-bottom: 1.5px solid {RULE}")
     rows = "".join(
-        f'<div style="display: flex; gap: 10px; align-items: baseline; padding: 5px 0; '
-        f'border-bottom: 1px solid {RULE}"><span style="font-family: {MONO}; font-size: 17px; '
-        f'font-weight: 600; color: {INK}; width: 44px; flex: none">{k}</span>'
-        f'<span style="font-size: 19px; line-height: 25px; color: {INK2}">{v}</span></div>'
-        for k, v in items)
-    return (f'<div style="flex: 1; min-width: 0; display: flex; flex-direction: column">'
-            f'<div style="font-size: 20px; line-height: 26px; font-weight: 600; color: {color}; '
-            f'border-bottom: 2px solid {INK}; padding-bottom: 4px">{title}</div>{rows}</div>')
+        f'<tr><td style="{td}; width: 60px"><span style="display: inline-block; width: 44px; '
+        f'height: 22px; background: {c}; border-radius: 3px; vertical-align: -2px"></span></td>'
+        f'<td style="{td}">{pin}</td><td style="{td}; font-weight: 600; color: {INK}">{to}</td>'
+        f'</tr>' for c, pin, to in WIRES)
+    th = (f"padding: 3px 12px; font-size: {MIN}px; line-height: 42px; font-weight: 600; "
+          f"color: {INK}; text-align: left; border-bottom: 3px solid {INK}")
+    tbl = (f'<table style="flex: 1; border-collapse: collapse; font-family: {SANS}">'
+           f'<thead><tr><th style="{th}">wire</th><th style="{th}">from the Pi</th>'
+           f'<th style="{th}">to the driver</th></tr></thead><tbody>{rows}</tbody></table>')
+    return sec(
+        label("Hardware: wiring the rotation stage"),
+        f'<div style="display: flex; gap: 40px; align-items: flex-start">{host}{tbl}</div>',
+        cap("3", "The repository's wiring diagram, relabelled at poster size. Pin numbers are "
+                 "read from rig/motor.py and checked on every run by "
+                 "scripts/81_hardware_pins.py. The motor takes 5 V, never 3.3 V."),
+        gap=12)
 
 
-BLANK = (f'<span style="display: inline-block; width: 100%; height: 24px; box-sizing: '
-         f'border-box; border-bottom: 2px dashed {ORG}"></span>')
-BOXES = (f'<span style="display: inline-flex; gap: 8px; align-items: center; font-size: 17px; '
-         f'color: {INK2}; white-space: nowrap"><span style="width: 18px; height: 18px; '
-         f'box-sizing: border-box; border: 2px solid {INK}"></span>pass'
-         f'<span style="width: 18px; height: 18px; box-sizing: border-box; border: 2px solid '
-         f'{INK}; margin-left: 6px"></span>fail</span>')
+def real_code() -> str:
+    """Five lines copied from scripts/21_score_report.py, checked against the file."""
+    want = [
+        "# A warning raised before the fault even started is not prescience, it is a",
+        "# false alarm that happens to sit in a positive episode. Counting it as a",
+        "# very early detection would be the most flattering possible error.",
+        "if warn_w < onset_w:",
+        '    return {"false_alarm": True, "warn_w": warn_w, "lead_s": np.nan, '
+        '"detected": False}',
+    ]
+    source = (REPO / "scripts" / "21_score_report.py").read_text().splitlines()
+    have = [ln[4:] if ln.startswith("    ") else ln for ln in source]
+    for ln in want:
+        if ln not in have:
+            raise SystemExit("the code shown on the poster is no longer in "
+                             f"scripts/21_score_report.py: {ln!r}")
+    esc = lambda t: t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    lines = "".join(
+        f'<div style="white-space: pre; color: {INK3 if ln.startswith("#") else INK}">'
+        f'{esc(ln)}</div>' for ln in want)
+    code = (f'<div style="flex: none; box-sizing: border-box; background: {WASH}; '
+            f'border: 2px solid {RULE}; border-radius: 6px; padding: 16px 22px; '
+            f'font-family: {MONO}; font-size: {MIN}px; line-height: 42px; font-weight: 500">'
+            f'{lines}</div>')
+    side = (f'<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; '
+            f'gap: 6px; font-size: {MIN}px; line-height: 42px; color: {INK2}">'
+            f'<span>{hi("A warning before the fault starts is a false alarm")}, never an '
+            f'early catch.</span><span style="font-family: {MONO}; color: {INK}; '
+            f'font-weight: 500">All 102 headline claims match the data files.</span></div>')
+    return sec(
+        label("Real code and real output"),
+        f'<div style="display: flex; gap: 32px; align-items: stretch">{code}{side}</div>',
+        gap=12)
+
+
+def main_panel(local: bool = False) -> str:
+    return page("Centre panel: the project in one minute", PW_MAIN, PH,
+                "\n".join([title_block(), hero(), how_it_works(), pictures(),
+                           hardware(local), real_code()]), 56, gap=24)
+
+
+# ===========================================================================
+# RIGHT PANEL -- methods compared, results and data, analysis, discussion
+# ===========================================================================
+def compare() -> str:
+    n = S["episodes"]
+    cell = (f"padding: 8px 14px; font-size: {MIN}px; line-height: 40px; color: {INK2}; "
+            f"border-top: 1.5px solid {RULE}")
+    lab = f"{cell}; font-weight: 600; color: {INK}"
+    rows = [
+        ("Signal", "two implanted arrays [1]", "384 screen patches, filmed"),
+        ("Faults", f"{n['T11'] + n['T5']:,} planted in software",
+         "optical and software, 337 sessions"),
+        ("Start time", "sealed before any detector existed", "sealed before each recording"),
+    ]
+    out = [f'<div style="display: grid; grid-template-columns: 178px minmax(0, 1fr) '
+           f'minmax(0, 1fr); border: 3px solid {INK}; border-radius: 6px; overflow: hidden">']
+    out.append(
+        f'<div></div>'
+        f'<div style="padding: 8px 14px; background: {BLUE}; color: #FFFFFF; '
+        f'font-size: {MIN}px; line-height: 40px; font-weight: 600">Archived brain recordings'
+        f'</div>'
+        f'<div style="padding: 8px 14px; background: {ORG}; color: #FFFFFF; '
+        f'font-size: {MIN}px; line-height: 40px; font-weight: 600">Optical test bench</div>')
+    for a, x, y in rows:
+        out.append(f'<div style="{lab}">{a}</div><div style="{cell}">{x}</div>'
+                   f'<div style="{cell}">{y}</div>')
+    out.append(f'<div style="{lab}">Status</div>'
+               f'<div style="{cell}; color: {BLUE}; font-weight: 600">complete, re-checked'
+               f'</div><div style="{cell}; color: {ORG}; font-weight: 600">not built yet</div>')
+    out.append("</div>")
+    return "".join(out)
+
+
+def finding(text: str) -> str:
+    return (f'<h3 style="margin: 0; font-family: {SERIF}; font-size: 44px; line-height: 50px; '
+            f'font-weight: 700; color: {INK}">{text}</h3>')
+
+
+def verdict_tree() -> str:
+    """How the bench result will be read, as fixed in the preregistration."""
+    L11 = D["lead_time"]["T11"]
+    q = f"background: #FFFFFF; border: 3px solid {INK}"
+    bad = f"background: #F7E6EB; border: 3px solid {WINE}"
+    good = f"background: {MARK}; border: 3px solid {INK}"
+    el = [
+        arrow(520, 46, 639, 46), arrow(260, 92, 260, 157),
+        arrow(520, 222, 639, 222), arrow(260, 286, 260, 345),
+        box(0, 0, 520, 92, "Median lead time above 0 s?", q),
+        box(640, 0, 400, 92, "Not usable: too late", bad, WINE),
+        box(0, 158, 520, 128, "False-alarm upper bound within 0.1 per hour?", q),
+        box(640, 176, 400, 92, "Not usable: too noisy", bad, WINE),
+        box(0, 346, 520, 92, "Usable: hypothesis falsified", good),
+        note(540, 4, 80, "no", "center", INK, 600),
+        note(540, 180, 80, "no", "center", INK, 600),
+        note(276, 104, 80, "yes", "left", INK, 600),
+        note(276, 294, 80, "yes", "left", INK, 600),
+        note(640, 100, 400, f"archived data: {abs(L11['median_s']):.0f} s late", "center",
+             BLUE, 600),
+        note(640, 352, 400, "bench result:", "left", ORG, 600),
+        f'<div style="position: absolute; left: 640px; top: 396px; width: 400px; height: 40px; '
+        f'box-sizing: border-box; border-bottom: 3px dashed {ORG}"></div>',
+    ]
+    return (f'<div style="position: relative; width: 1040px; height: 440px">'
+            + "".join(el) + "</div>")
+
+
+def bullets(items: list[str]) -> str:
+    return (f'<ul style="margin: 0; padding-left: 34px; display: flex; flex-direction: column; '
+            f'gap: 8px">'
+            + "".join(f'<li style="font-size: {MIN}px; line-height: 42px; color: {INK2}; '
+                      f'text-wrap: pretty">{i}</li>' for i in items) + "</ul>")
 
 
 def right_panel() -> str:
-    parts = [kicker("Panel 3 of 3 &middot; Physical validation: design and protocol")]
-
-    photos = ('<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); '
-              'gap: 10px">'
-              + photo(1, "Assembled enclosure, lid sealed", 106)
-              + photo(2, "Raspberry Pi 4 and Camera Module 3", 106)
-              + photo(3, "Interior: lining, display, camera mount", 106)
-              + photo(4, "Patch grid as the camera sees it", 106)
-              + photo(5, "Bench check B-2: dark frame", 106)
-              + photo(6, "Unattended overnight recording", 106) + "</div>")
-    parts.append(sec(
-        h2("07", "A sealed optical loop with a known input", 38),
-        p("Archived recordings supply neither a recorded onset nor enough fault-free hours. "
-          "An apparatus does: failures start at sealed moments and it records unattended. No "
-          "person is measured.", 21, 28),
-        apparatus_svg(),
-        cap("11", "Apparatus, side view, as specified.",
-            "Nothing shown has been built. Computer placement and display-to-camera distance "
-            "are not fixed by the repository."),
-        photos, gap=10))
-
-    steps = ('<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); '
-             'gap: 8px">'
-             + step("0", "Software check", "self-test and dry run on synthetic input",
-                    "Rehearsed", "measured")
-             + step("1", "Procure", "four critical parts, about 110 USD", "Not started",
-                    "planned")
-             + step("2", "Computer", "card, libraries, camera ribbon, wiring",
-                    "Not started", "planned")
-             + step("3", "Enclosure", "lining, display, camera mount, seal",
-                    "Not started", "planned")
-             + step("4", "Checks and gates", "B-0 to B-7, G-a to G-e; halt if G-e fails",
-                    "Not started", "planned")
-             + step("5", "Preregister", "predictions and sample sizes frozen",
-                    "Done 24 Sep 2026", "frozen")
-             + step("6", "Record", "seal each plan first; 337 sessions, about 28 h",
-                    "Not started", "planned")
-             + step("7", "Analyse", "three disjoint groups, fixed criteria",
-                    "Not started", "planned")
-             + "</div>")
-    parts.append(sec(
-        h2("08", "Protocol: the order is enforced by the programs", 38),
-        steps,
-        cap("12", "Experimental workflow.",
-            "run_session.py refuses to record a session that has no sealed plan."),
-        gap=10))
-
-    gates = table(
-        ["Gate", "Must hold before any experiment is read", "Check", "Measured", "Result"],
-        [[b("G-a"), "light-tight: mean pixel below 2, maximum below 5 (of 255)",
-          src("darkframe"), BLANK, BOXES],
-         [b("G-b"), "intact: under 1% late frames, 5% dead channels, 1% clipped",
-          src("frames"), BLANK, BOXES],
-         [b("G-c"), "display-to-camera delay agrees across three recordings",
-          src("lag"), BLANK, BOXES],
-         [b("G-d"), "sub-level signal survives: over 0.02, on over 80% of channels",
-          src("dither"), BLANK, BOXES],
-         [b("G-e"), "decoding margin within 6° of 36.1° (neural: 90.7° − 54.6°)",
-          src("margin"), BLANK, BOXES]],
-        ["7%", "55%", "11%", "11%", "16%"], size=19, lh=25, pad="6px 8px")
-    parts.append(sec(
-        h2("09", "Acceptance gates: no result is read before these pass", 38),
-        p("On an apparatus that is too easy, a monitor has nothing to detect. Modulation "
-          "depth is tuned until the decoder is as far above chance as the neural decoder was; "
-          "if it cannot be, the phase stops.", 20, 27),
-        gates, gap=10))
-
-    parts.append(sec(
-        h2("10", "Variables", 38),
-        '<div style="display: flex; gap: 22px">'
-        + var_list("Changed (independent)", ORG, [
-            ("IV1", "onset time: drawn at random, sealed"),
-            ("IV2", "degradation present or absent"),
-            ("IV3", "type: signal loss, dropout, gain drift, rotation"),
-            ("IV4", "severity: 0, 0.25, 0.5, 1.0"),
-            ("IV5", "decision rate: 720 per hour to 1 per session")])
-        + var_list("Measured (dependent)", ORG, [
-            ("DV1", "lead time (s)"),
-            ("DV2", "false alarms per fault-free hour"),
-            ("DV3", "detection rate at a stated false-alarm rate"),
-            ("DV4", "silence-gate pass rate"),
-            ("DV5", "correlation with performance, raw and detrended")])
-        + "</div>",
-        p(b("Held fixed:") + " 30 s window and 5 s step; ridge decoder fitted once; camera "
-          "exposure and gain; screen brightness; modulation depth after calibration; ambient "
-          "light (sealed and verified); camera position.", 19, 26),
-        gap=10))
-
-    exps = table(
-        ["", "Measures", "Sessions", "Recording"],
-        [[b("P-1"), "calibration: the difficulty match (gate G-e)", "5 or more", "25 min"],
-         [b("P-2"), "false-alarm rate and silence, fault-free sessions", "101", "8.4 h"],
-         [b("P-3"), "lead time and detection from a sealed onset", "101", "8.4 h"],
-         [b("P-4"), "correlation against usability", "0", "analysis"],
-         [b("P-5"), "faults nobody designed, imposed by hand", "10", "50 min"],
-         [b("P-6"), "decision-rate curve, re-scored from P-2 and P-3", "0", "analysis"],
-         [b("P-7"), "three more configurations: exposure, patch size, 96 channels", "120",
-          "about 10 h"],
-         [b("All"), b("planned; none recorded"), b("337"), b("about 28 h")]],
-        ["9%", "55%", "17%", "19%"], size=19, lh=25, pad="5px 8px")
-    parts.append(sec(
-        h2("11", "Seven experiments, sizes frozen in advance", 38),
-        exps,
-        C.configs_planned(1040, 184, "cfg"),
-        cap("13", "Apparatus configurations (P-7), planned.",
-            "PP-10: lead time differs by over 10 s, or false alarms by over twofold."),
-        gap=10))
-
-    parts.append(sec(
-        h2("12", "Limits of inference, stated in advance", 38),
-        bullets([
-            "A camera in a sealed box is not an implanted array. A false-alarm rate measured "
-            "here is not an estimate of the clinical rate.",
-            "Matching the decoding margin makes the problem comparably hard. It does not make "
-            "the noise, the drift mechanism or the failure modes comparable.",
-            "One apparatus, one room, one family of monitor. P-7 narrows that objection and "
-            "does not close it. The computational results rest on two arrays that disagree."],
-            20, 27),
-        gap=10))
-
-    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
+    L11 = D["lead_time"]["T11"]
+    ci = L11["ci95_s"]
     f = S["funnel"]
-    field = (f'<span style="display: inline-block; width: 120px; height: 22px; box-sizing: '
-             f'border-box; border-bottom: 2px dashed {ORG}; vertical-align: baseline"></span>')
-    box = (f'<span style="display: inline-block; width: 18px; height: 18px; box-sizing: '
-           f'border-box; border: 2px solid {INK}; vertical-align: -2px; margin-right: 6px">'
-           f'</span>')
+    fa = S["false_alarms_per_hour"]
+    blank = (f'<span style="display: inline-block; width: 150px; height: 34px; box-sizing: '
+             f'border-box; border-bottom: 3px dashed {ORG}; vertical-align: baseline"></span>')
+    parts = []
+
     parts.append(sec(
-        h2("13", "Conclusions", 38),
-        f'<div style="box-sizing: border-box; border-top: 4px solid {BLUE}; padding-top: 8px; '
-        f'display: flex; flex-direction: column; gap: 6px">'
-        + f'<div>{chip("Computational: established", "measured")}</div>'
-        + p(f"The monitor detects faults that counting activity cannot and does not mistake a "
-            f"task change for a fault. It is not deployable at the budget: {f['all_gates']} of "
-            f"{f['run']} configurations pass, the median warning arrives "
-            f"{abs(L11['median_s']):.0f} s (T11) and {abs(L5['median_s']):.0f} s (T5) after "
-            f"the failure, and the risk score is never quiet within a session.",
-            20, 27, INK)
-        + "</div>"
-        f'<div style="box-sizing: border-box; border: 2px dashed {ORG}; border-radius: 4px; '
-        f'padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; '
-        f'margin-top: 4px">'
-        + f'<div>{chip("Physical: to be written after analysis", "planned")}</div>'
-        + f'<p style="margin: 0; font-size: 20px; line-height: 32px; color: {INK2}">Median '
-          f'lead time {field} s (95% CI {field}). False-alarm rate {field} per hour (95% '
-          f'upper bound {field}). Strongest correlation {field}.</p>'
-        + f'<p style="margin: 0; font-size: 20px; line-height: 28px; color: {INK2}">'
-          f'Preregistered verdict: &nbsp;{box}supported &nbsp;&nbsp;{box}falsified '
-          f'&nbsp;&nbsp;{box}inconclusive &nbsp;&nbsp;{box}halted at gate G-e</p>'
-        + "</div>",
-        gap=8))
-    return page("Right panel: physical validation design", PW_SIDE, PH, "\n".join(parts), 56,
-                gap=20)
+        label("Methods: two test beds, one monitor"),
+        compare(), gap=12))
+
+    names = {"RATE_LOSS": ("Signal loss", "total falls"),
+             "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
+             "GAIN_DRIFT": ("Gain drift", "total unchanged"),
+             "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
+    parts.append(sec(
+        label("Results and data"),
+        finding("It sees faults that counting misses"),
+        C.mode_dumbbell(552, 286, D["fault_mode_auc"]["values"], D["fault_mode_auc"]["modes"],
+                        names),
+        cap("4", "Detection score by fault type. Filled: monitor. Open: counting."),
+        finding("But the warning comes late, and too often"),
+        C.lead_dots(552, 232, L11["leads_s"], L11["median_s"]),
+        cap("5", f"Each dot is one detected fault (array T11, {L11['n_detected']} of "
+                 f"{L11['n_degraded']}). Median {num(L11['median_s'], 0)} s, 95% CI "
+                 f"{num(ci[0], 0)} to {num(ci[1], 0)}. False alarms: "
+                 + hi(f"{fa['T11']:.2f} per hour against a budget of 0.1") + "."),
+        gap=10))
+
+    parts.append(sec(
+        label("Analysis"),
+        p(f"Risk scores inside one session are near-copies of each other (lag\u20111 "
+          f"autocorrelation {S['lag1_pooled']['T11']:.3f}), so 720 decisions an hour rest on "
+          f"about one independent measurement. {f['all_gates']} of {f['run']} monitor "
+          f"configurations pass all five gates.", MIN, 42),
+        verdict_tree(),
+        cap("6", "How the bench result will be judged, fixed in advance."),
+        gap=10))
+
+    parts.append(sec(
+        label("Discussion"),
+        bullets([
+            b("Shown so far") + ", on archived recordings only: the results above.",
+            b("Not shown yet:") + " anything on the bench. " + b("Not claimed:") + " any "
+            "clinical rate or benefit to patients.",
+            b("Limits:") + " two arrays that sometimes disagree, one bench, one family of "
+            "monitor.",
+            b("Next:") + " build the bench, pass five acceptance gates, record 337 "
+            "sessions."]),
+        gap=10))
+
+    parts.append(sec(
+        label("Conclusion"),
+        p("On archived recordings the monitor " + hi("detects real faults but warns too late "
+          "and too often") + " to be relied on. The bench will show whether that belongs to "
+          "brain recordings or to the method.", MIN, 42, INK),
+        f'<p style="margin: 0; font-size: {MIN}px; line-height: 50px; color: {INK2}; '
+        f'border: 3px dashed {ORG}; border-radius: 6px; padding: 8px 16px">'
+        f'<b style="color: {ORG}; font-weight: 600">Bench, to be measured:</b> lead time '
+        f'{blank} s, false alarms {blank} per hour.</p>',
+        gap=10))
+    return page("Right panel: methods, results, analysis, conclusion", PW_SIDE, PH,
+                "\n".join(parts), 56, gap=22)
 
 
 # ===========================================================================
