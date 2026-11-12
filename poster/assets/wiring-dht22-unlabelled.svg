@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="Realistic board view. A Raspberry Pi 4 header at the left with three coloured jumper wires: red from pin 1 which is 3.3 volts to the sensor's VCC, yellow from pin 7 which is GPIO 4 to the sensor's DATA pin, and black from pin 9 to GND. The DHT22 sits on a small blue breakout board with a white plastic grille." width="1080" height="390" viewBox="0 66 1080 390">
+<defs>
+<linearGradient id="pcb2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A8450"/><stop offset="1" stop-color="#0D5E37"/></linearGradient>
+<linearGradient id="dhtpcb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F6FA8"/><stop offset="1" stop-color="#1E4F7C"/></linearGradient>
+<linearGradient id="blk2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3F44"/><stop offset="1" stop-color="#15181B"/></linearGradient>
+<linearGradient id="gold2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9A8"/><stop offset="0.5" stop-color="#D9A93C"/><stop offset="1" stop-color="#9C7420"/></linearGradient>
+<linearGradient id="grille" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDFEFE"/><stop offset="1" stop-color="#D2D8DC"/></linearGradient>
+<filter id="sh2" x="-20%" y="-20%" width="150%" height="170%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#0A1A12" flood-opacity="0.32"/></filter>
+</defs>
+
+
+<g filter="url(#sh2)">
+<rect x="20" y="120" width="330" height="330" rx="20" fill="url(#pcb2)" stroke="#0A4A2B" stroke-width="2"/>
+<g fill="#F2F4F1" stroke="#8FA39A" stroke-width="2"><circle cx="56" cy="156" r="10"/><circle cx="314" cy="156" r="10"/><circle cx="56" cy="414" r="10"/></g>
+<rect x="84" y="136" width="250" height="46" rx="5" fill="url(#blk2)"/>
+<g fill="url(#gold2)">
+<rect x="94" y="144" width="9" height="13" rx="1.5"/><rect x="115" y="144" width="9" height="13" rx="1.5"/><rect x="136" y="144" width="9" height="13" rx="1.5"/><rect x="157" y="144" width="9" height="13" rx="1.5"/><rect x="178" y="144" width="9" height="13" rx="1.5"/><rect x="199" y="144" width="9" height="13" rx="1.5"/><rect x="220" y="144" width="9" height="13" rx="1.5"/><rect x="241" y="144" width="9" height="13" rx="1.5"/><rect x="262" y="144" width="9" height="13" rx="1.5"/><rect x="283" y="144" width="9" height="13" rx="1.5"/><rect x="304" y="144" width="9" height="13" rx="1.5"/>
+<rect x="94" y="162" width="9" height="13" rx="1.5"/><rect x="115" y="162" width="9" height="13" rx="1.5"/><rect x="136" y="162" width="9" height="13" rx="1.5"/><rect x="157" y="162" width="9" height="13" rx="1.5"/><rect x="178" y="162" width="9" height="13" rx="1.5"/><rect x="199" y="162" width="9" height="13" rx="1.5"/><rect x="220" y="162" width="9" height="13" rx="1.5"/><rect x="241" y="162" width="9" height="13" rx="1.5"/><rect x="262" y="162" width="9" height="13" rx="1.5"/><rect x="283" y="162" width="9" height="13" rx="1.5"/><rect x="304" y="162" width="9" height="13" rx="1.5"/>
+</g>
+<rect x="160" y="250" width="96" height="96" rx="6" fill="#121619"/><rect x="168" y="258" width="80" height="80" rx="3" fill="#1E2429"/>
+
+<rect x="6" y="206" width="30" height="28" rx="4" fill="#C8CFD5"/>
+<rect x="6" y="266" width="28" height="38" rx="3" fill="#C8CFD5"/>
+
+</g>
+<circle cx="98" cy="150" r="13" fill="none" stroke="#E04A38" stroke-width="3"/>
+
+
+<g filter="url(#sh2)">
+<rect x="740" y="150" width="260" height="240" rx="12" fill="url(#dhtpcb)" stroke="#164263" stroke-width="2"/>
+<rect x="836" y="176" width="124" height="150" rx="8" fill="url(#grille)" stroke="#B9C1C7" stroke-width="2"/>
+<g fill="#C3CBD1"><rect x="850" y="196" width="96" height="7" rx="3"/><rect x="850" y="214" width="96" height="7" rx="3"/><rect x="850" y="232" width="96" height="7" rx="3"/><rect x="850" y="250" width="96" height="7" rx="3"/><rect x="850" y="268" width="96" height="7" rx="3"/><rect x="850" y="286" width="96" height="7" rx="3"/></g>
+
+<rect x="716" y="196" width="32" height="118" rx="5" fill="#0F2E52"/>
+<g fill="url(#gold2)"><rect x="726" y="212" width="13" height="9" rx="1.5"/><rect x="726" y="250" width="13" height="9" rx="1.5"/><rect x="726" y="288" width="13" height="9" rx="1.5"/></g>
+</g>
+
+<g font-family="Times New Roman, Liberation Serif, serif" font-size="16" font-weight="700" fill="#BBD9F0">
+
+</g>
+
+<g fill="none" stroke-linecap="round">
+<path d="M98 136 C 98 72, 560 56, 720 216" stroke="#7A1C16" stroke-width="15"/><path d="M98 136 C 98 72, 560 56, 720 216" stroke="#E8453A" stroke-width="11"/><path d="M98 136 C 98 72, 560 56, 720 216" stroke="#FFFFFF" stroke-width="2.5" opacity="0.28"/>
+<path d="M161 136 C 161 86, 570 110, 720 254" stroke="#8A7A10" stroke-width="15"/><path d="M161 136 C 161 86, 570 110, 720 254" stroke="#F0D32A" stroke-width="11"/><path d="M161 136 C 161 86, 570 110, 720 254" stroke="#FFFFFF" stroke-width="2.5" opacity="0.28"/>
+<path d="M182.5 136 C 182.5 96, 400 150, 540 220 C 640 270, 660 300, 720 292" stroke="#15181B" stroke-width="15"/><path d="M182.5 136 C 182.5 96, 400 150, 540 220 C 640 270, 660 300, 720 292" stroke="#3C4248" stroke-width="11"/><path d="M182.5 136 C 182.5 96, 400 150, 540 220 C 640 270, 660 300, 720 292" stroke="#FFFFFF" stroke-width="2.5" opacity="0.2"/>
+</g>
+
+<g font-family="Times New Roman, Liberation Serif, serif" font-size="18">
+
+
+
+</g>
+</svg>

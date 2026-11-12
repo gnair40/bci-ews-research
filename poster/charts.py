@@ -169,8 +169,10 @@ def episode_trace(ep, W=1040, H=400, win_s=30.0, step_s=5.0):
 # ---------------------------------------------------------------------------
 # Fig. 5 -- lead time. One dot per detected fault.
 # ---------------------------------------------------------------------------
-def lead_dots(W, H, leads, median, xlim=(-180, 140)):
-    x0, x1, y0, y1 = 28, W - 20, 54, H - 60
+def lead_dots(W, H, leads, median, xlim=(-180, 140), top=54, label_gap=8, label_dy=56):
+    """`top` is the empty band above the plot; `label_gap` and `label_dy` place the median
+    label clear of its line and of the dots. The defaults reproduce the earlier drafts."""
+    x0, x1, y0, y1 = 28, W - 20, top, H - 60
     X = lin(xlim[0], xlim[1], x0, x1)
     counts: dict[float, int] = {}
     for v in leads:
@@ -195,7 +197,9 @@ def lead_dots(W, H, leads, median, xlim=(-180, 140)):
     b.append(T(x0 + (x1 - x0) / 2, H - 6, "lead time (s); one dot per detected fault",
                size=LABEL, anchor="middle"))
     b.append(L(X(median), y0 + 34, X(median), y1, BLUE, 2, dash="6 5"))
-    b.append(T(X(median) - 8, y0 + 56, f"median {median:+.0f} s".replace("-", "−"), size=18,
+    b.append(T(X(median) - label_gap, y0 + label_dy,
+               f"median {median:+.0f} s".replace("-", "−"),
+               size=18,
                fill=BLUE, anchor="end", weight=700))
     return svg(W, H, b, f"Dot plot of {len(leads)} lead times. The median is {median:.0f} "
                f"seconds, left of zero.")
@@ -678,3 +682,44 @@ def auc_gap(W, H, achieved, needed):
     b.append(T(mid, y + 6, "the gap", size=17, fill=WINE, anchor="middle", weight=600))
     return svg(W, H, b, f"Session score reached, {achieved['T11']:.3f} and "
                f"{achieved['T5']:.3f}, against the {n:.3f} needed at one decision per session.")
+
+
+# ---------------------------------------------------------------------------
+# One archived episode, for a narrow column: events lettered, explained in the caption
+# ---------------------------------------------------------------------------
+def episode_compact(ep, W, H, win_s=30.0, step_s=5.0):
+    x0, x1, y0, y1 = 62, W - 18, 46, H - 54
+    t = [i * step_s + win_s for i in range(len(ep["risk"]))]     # window END time
+    X = lin(t[0], t[-1], x0, x1)
+    ymax = 120.0
+    Y = lin(0, ymax, y1, y0)
+    b = []
+    for v in (0, 40, 80, 120):
+        b.append(L(x0, Y(v), x1, Y(v), GRID, 1))
+        b.append(T(x0 - 10, Y(v) + 6, f"{v}", anchor="end"))
+    for s in range(60, 301, 60):
+        b.append(L(X(s), y1, X(s), y1 + 7, RULE, 1.5))
+        b.append(T(X(s), y1 + 27, f"{s}", anchor="middle"))
+    b.append(frame(x0, y0, x1, y1))
+    b.append(T(x0 + (x1 - x0) / 2, H - 6, "time at the end of each 30 s window (s)", size=LABEL,
+               anchor="middle"))
+    b.append(T(18, y0 + (y1 - y0) / 2, "risk score", size=LABEL, anchor="middle", rot=-90))
+    th = ep["warn_threshold"]
+    b.append(L(x0, Y(th), x1, Y(th), INK, 1.5, dash="7 5"))
+    b.append(T(x1 - 4, Y(th) + 22, "warning threshold", size=17, fill=INK, anchor="end"))
+    t_on = ep["onset_w"] * step_s
+    t_fail = ep["crossing_w"] * step_s + win_s
+    t_warn = ep["warn_w"] * step_s + win_s
+    b.append(R(X(t_fail), y0, X(t_warn) - X(t_fail), y1 - y0, fill=BLUE_T))
+    pts = " ".join(f"{X(a):.1f},{Y(min(v, ymax)):.1f}" for a, v in zip(t, ep["risk"]))
+    b.append(f'<polyline points="{pts}" fill="none" stroke="{BLUE}" stroke-width="3.5" '
+             f'stroke-linejoin="round" stroke-linecap="round"/>')
+    for tx, col, letter in ((t_on, WINE, "A"), (t_fail, INK, "B"), (t_warn, BLUE, "C")):
+        b.append(L(X(tx), y0 - 8, X(tx), y1, col, 2.5))
+        b.append(f'<circle cx="{X(tx):.1f}" cy="{y0 - 22}" r="13" fill="{col}"/>')
+        b.append(T(X(tx), y0 - 16, letter, size=17, fill="#FFFFFF", anchor="middle", weight=700))
+    b.append(T(X(t_warn) + 22, y0 - 16, f"lead time = {ep['lead_s']:+.0f} s".replace("-", "−"),
+               size=19, fill=INK, weight=700))
+    return svg(W, H, b, f"Risk score over one archived episode. The fault starts at "
+               f"{t_on:.0f} seconds, decoding fails at {t_fail:.0f} seconds and the monitor "
+               f"warns at {t_warn:.0f} seconds, a lead time of {ep['lead_s']:.0f} seconds.")

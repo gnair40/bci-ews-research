@@ -7625,3 +7625,170 @@ minute" row stays, now that the centre is meant for data. Listed in
 
 Draft 2 is unchanged on its page. The blank artboard the researcher made on
 the Draft 1 page was not touched; the three Draft 1 panels sit beside it.
+
+---
+
+## 12 November 2026 (fourth draft) — a larger board, and both validations shown with their own material
+
+### What was asked
+
+A fourth draft. The first half of the board introduces the system and explains
+the computational and the physical validation, each with real project material
+(photographs, breadboard diagrams, hardware configurations, code, workflow
+visuals, output) placed beside the explanation it supports and clearly marked
+as one or the other. The second half holds the data, results and analysis. The
+right-hand panel is for discussion and interpretation, with diagrams. Existing
+research information was to be preserved, not shortened to make it fit, and
+the board was to read as a research presentation, not a product pitch.
+
+### The brief and the board disagreed, so I asked
+
+The brief said to widen the board "from 36 inches to 48 inches while
+maintaining the 36-inch height". The board was already 48 inches wide and 36
+tall. Guessing which number was meant would have fixed the layout on a guess,
+so I asked two questions before drawing anything:
+
+- **Board size.** The researcher's answer: 48 wide by 48 tall.
+- **What to do if the board is too full at 24 pt.** Her answer: 20 pt for
+  captions and axis labels.
+
+Both are her decisions. Everything below follows from them.
+
+### Draft 4
+
+Left 12 in, centre 24 in, right 12 in, all 48 in tall. The centre is two
+12 inch columns, so the board reads as four columns:
+
+1. **Left panel.** Abstract, introduction, why it matters, purpose,
+   hypothesis and engineering goal, the system, what is measured (Figs 1 to 3).
+2. **Centre, left half.** Computational validation: a five-step workflow, six
+   real lines of the scoring code, real verifier output. Then physical
+   validation: the bench drawing, two wiring diagrams with their pin lists,
+   three photograph spaces and one screenshot space, the five acceptance gates
+   as a blank table (Figs 4 to 9).
+3. **Centre, right half.** Four headline numbers, four charts, the data table,
+   and the analysis with two more charts (Figs 10 to 16).
+4. **Right panel.** Discussion, how the two validations relate, how the bench
+   result will be judged, limitations, broader significance, future
+   directions, conclusion, references (Figs 17 to 19).
+
+Blue marks what was measured on archived recordings. Orange marks what is
+planned on the bench. The colours are Draft 3's.
+
+The taller board brought back what Drafts 2 and 3 had left off: the monitor's
+four components, the definition of lead time on a real episode, the real code
+and output, the acceptance gates, the seven experiments and their variables,
+the secondary hypothesis, and a table of what each validation can and cannot
+establish.
+
+### What on it is real, and how that was made sure of
+
+- **The code** is quoted from `scripts/21_score_report.py`. The build looks
+  for those exact lines in that file and stops if they are gone, so the poster
+  cannot quietly show code the repository no longer contains.
+- **The output** is the final line of the claims verifier and of the poster
+  data script. I had typed those two lines into the builder from memory. Before
+  recording this I ran both commands and compared: "All 102 headline claims
+  match the data files." and "PASS -- every recomputed value matches its stored
+  headline." Both match.
+- **The second wiring diagram** (room-temperature sensor) is the repository's
+  own `physical/figures/wiring-dht22.svg` with its small labels removed, made
+  the same way as the stepper drawing on Draft 3. The pin list beside it says
+  that only the DATA pin is fixed by `rig/logtemp.py` and that power and
+  ground are a recommendation.
+- **Every number** comes from `poster/poster_data.json`, whose 45 checks pass.
+- **No physical result exists.** Photographs are grey spaces. The gates table,
+  the verdict and the conclusion box are blanks. The conclusion box asks only
+  for the quantities the frozen verdict is read from: median lead time with
+  its interval, and false alarms per hour with its upper bound.
+
+### Mistakes in this draft
+
+**1. I shortened too much, and one cut removed the unfavourable half of a
+finding.** The first build overflowed the centre panel by 224 px. My first
+fitting pass shortened sentences in both centre columns. The caption of the
+fault-type chart went from "It wins where total activity is unchanged and
+loses on plain signal loss, as designed" to "It wins where total activity is
+unchanged, as designed". The chart still showed the loss, but a caption that
+states the win and drops the loss is exactly the kind of edit this project
+does not make. I found it when writing out the list of what had been
+shortened, and restored it. The instruction was not to shorten in order to
+fit, and my first reflex was to shorten.
+
+**2. The size check passed on two charts that were unreadable.** To save
+height I made the fault-type chart and the false-alarm chart shorter. The
+program reported that everything fitted and nothing was under 20 pt. On the
+rendered panel, the row labels of the fault-type chart were printed over each
+other, and the "gate: at most 10%" label of the false-alarm chart was cut off
+at the bottom. The program measures size and fit. It does not detect one label
+on top of another. Both charts got their height back, and the room came from
+an empty band above the lead-time plot, which loses nothing.
+
+**3. Smaller collisions found the same way.** The "median" label of the
+lead-time chart touched the dots beneath it, and was moved up. The caption of
+the sensor wiring diagram sat under a photograph space and read as that
+photograph's caption, so it now begins "Left:".
+
+**4. The check's own message claimed more than it checks.** I had it print
+"20 pt captions, 24 pt body". It only tests that nothing is under 20 pt, and
+counts the text between 20 and 24 pt (410 pieces). It cannot tell a paragraph
+from a caption. The message now says what is tested, and the README says the
+24 pt rule for paragraphs rests on the builder having only two sizes.
+
+**5. I used 20 pt for more than "captions and axis labels".** Also table
+cells, the code and output blocks, the one-line descriptions under the
+workflow steps and under the four large numbers, pin lists, the reference
+list, and the note on when predictions were frozen. That is my extension of
+her answer, not her answer. It is listed in `poster/README.md` for her to
+accept or reverse.
+
+**6. A file path written from memory was wrong.** The README named a
+preregistration file that does not exist. Listing the repository's files
+showed the acceptance gates are in `physical/docs/09_PREREGISTRATION.md`.
+Corrected before committing.
+
+**7. A publishing call failed once.** It needed one file named as the main
+path in addition to the list of files. Nothing was published by the failed
+call. The second call published the three panels and the canvas index.
+
+### What was shortened and where the information still is
+
+Recorded in `poster/README.md` under "What is not on Draft 4": the decoder's
+error and chance level (now only in the workflow, not the data table), "0.5 is
+a coin flip", "about 1.4 h" in one caption, "silence first" in the workflow,
+and the briefer wording of the acceptance gates.
+
+### Checks
+
+- `poster/build_poster_data.py`: all 45 checks pass, and the data file it
+  writes is unchanged.
+- The render check for Draft 4: every panel fits its 48 inches, no text under
+  20 pt, nothing past a right edge.
+- Each panel was then read at full size, which is how the collisions above
+  were found.
+- The chart library gained options for Draft 4. Drafts 2 and 3 were rebuilt
+  afterwards and their files came out identical, so the earlier drafts are
+  untouched.
+
+### How this departs from the canvas tool's instructions
+
+As for Drafts 1 to 3: the panels are generated by a script from checked data
+and verified by rendering them locally, where the tool's instructions expect
+hand-authored boards. The reason is the same: a number typed by hand can drift
+from the data, and a generated one cannot.
+
+### Decisions that are the researcher's
+
+The board size against the fair's display rules, which were not looked up.
+What may be set at 20 pt. Which charts hold the results column and the
+sentence over each. The wording of the discussion, limitations, broader
+significance and conclusion, which are interpretation. Which code excerpt is
+shown. Listed in `poster/README.md`.
+
+### Left as it was
+
+Drafts 1, 2 and 3 are unchanged on their pages, and so is the blank artboard
+the researcher made. Draft 4 is on a new page. Two things recorded earlier are
+still open: the demo export that disagrees with the benchmark's scoring rule,
+and the Swanson (2026) reference, which is still unconfirmed and is not on the
+board.

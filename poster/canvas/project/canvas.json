@@ -79,6 +79,30 @@
    "h": 3456,
    "page": "page-draft3",
    "title": "Draft 3, right panel, 12 x 36 in"
+  },
+  "D4-Left.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1152,
+   "h": 4608,
+   "page": "page-draft4",
+   "title": "Draft 4, left panel, 12 x 48 in"
+  },
+  "D4-Centre.dc.html": {
+   "x": 1232,
+   "y": 0,
+   "w": 2304,
+   "h": 4608,
+   "page": "page-draft4",
+   "title": "Draft 4, centre panel, 24 x 48 in"
+  },
+  "D4-Right.dc.html": {
+   "x": 3616,
+   "y": 0,
+   "w": 1152,
+   "h": 4608,
+   "page": "page-draft4",
+   "title": "Draft 4, right panel, 12 x 48 in"
   }
  },
  "createdOnFiles": {
@@ -88,7 +112,7 @@
  "designSystems": [],
  "launch": {
   "view": "canvas",
-  "page": "page-draft3"
+  "page": "page-draft4"
  },
  "notes": {
   "board": {
@@ -114,6 +138,14 @@
    "maxW": 4768,
    "page": "page-draft3",
    "text": "Draft 3: data and analysis in the centre, discussion on the right"
+  },
+  "d4": {
+   "x": 0,
+   "y": -300,
+   "kind": "title1",
+   "maxW": 4768,
+   "page": "page-draft4",
+   "text": "Draft 4, 48 x 48 in: the system and its two validations, then the data and analysis, then the discussion"
   }
  },
  "order": [
@@ -126,7 +158,10 @@
   "D1-Right.dc.html",
   "D3-Left.dc.html",
   "D3-Centre.dc.html",
-  "D3-Right.dc.html"
+  "D3-Right.dc.html",
+  "D4-Left.dc.html",
+  "D4-Centre.dc.html",
+  "D4-Right.dc.html"
  ],
  "pages": [
   {
@@ -140,6 +175,10 @@
   {
    "id": "page-draft3",
    "name": "Draft 3"
+  },
+  {
+   "id": "page-draft4",
+   "name": "Draft 4"
   }
  ],
  "title": "Decoder-Health Monitor Trifold Poster"
