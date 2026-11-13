@@ -651,6 +651,39 @@ def drift_line(W, H, series, fail_deg):
                "the failure level to around 100 degrees.")
 
 
+def drift_compact(W, H, series, fail_deg):
+    """The same series as drift_line, for a narrow frame on a tinted background: the plot
+    has its own white ground, the ticks are fewer, and the axis title sits inside."""
+    x0, x1, y0, y1 = 46, W - 18, 8, H - 48
+    d0 = series[0]["trial_day"]
+    X = lin(0, 150, x0, x1)
+    Y = lin(0, 130, y1, y0)
+    b = [R(x0, y0, x1 - x0, y1 - y0, fill="#FFFFFF"),
+         R(x0, y0, x1 - x0, Y(fail_deg) - y0, fill="#F7E6EB")]
+    for v in (0, 60, 120):
+        b.append(L(x0, Y(v), x1, Y(v), GRID, 1))
+        b.append(T(x0 - 8, Y(v) + 6, f"{v}", anchor="end"))
+    for v in (0, 50, 100, 150):
+        b.append(L(X(v), y1, X(v), y1 + 6, RULE, 1.5))
+        b.append(T(X(v), y1 + 23, f"{v}", anchor="middle"))
+    b.append(frame(x0, y0, x1, y1))
+    b.append(L(x0, Y(fail_deg), x1, Y(fail_deg), INK, 2, dash="7 5"))
+    b.append(T(x0 + 8, y0 + 18, "cursor error (°)", size=17, fill=INK2))
+    b.append(T(x0 + 8, Y(fail_deg) - 6, "failure level", size=17, fill=WINE, weight=600))
+    pts = [(X(q["trial_day"] - d0), Y(q["median_error_deg"])) for q in series]
+    b.append('<polyline points="' + " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+             + f'" fill="none" stroke="{BLUE}" stroke-width="3" stroke-linejoin="round"/>')
+    for (x, y), q in zip(pts, series):
+        over = q["median_error_deg"] > fail_deg
+        b.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="6" fill="{WINE if over else BLUE}" '
+                 f'stroke="#FFFFFF" stroke-width="2"/>')
+    b.append(T(x0 + (x1 - x0) / 2, H - 5, "days with the same decoder", size=LABEL,
+               anchor="middle"))
+    return svg(W, H, b, f"Median cursor error by session over {series[-1]['trial_day'] - d0} "
+               "days with a fixed decoder. Error stays near 20 to 35 degrees for about two "
+               "months, then rises above the failure level to around 100 degrees.")
+
+
 # ---------------------------------------------------------------------------
 # Analysis -- the score the monitor reached, and the score it would need
 # ---------------------------------------------------------------------------

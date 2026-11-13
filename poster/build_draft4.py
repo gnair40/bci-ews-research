@@ -74,6 +74,9 @@ SIDE_U = round(1040 / C.SCALE)                   # chart width, in source units,
 COL = 1068                                       # one centre column, px
 COL_U = round(COL / C.SCALE)
 
+# Figure numbers by name. Draft 4's order; a later draft renumbers before it builds.
+FIG = {"drift": "1", "monitor": "2", "episode": "3", "workflow": "4", "code": "5", "bench": "6", "stepper": "7", "sensor": "8", "gates": "9", "modes": "10", "lead": "11", "fa": "12", "dfa": "13", "data": "14", "gap": "15", "decision": "16", "relate": "17", "verdict": "18", "experiments": "19"}
+
 REFS = [
     "Pun et al., Communications Biology 7 (2024)",
     "Wilson et al., Nature Biomedical Engineering (2025)",
@@ -333,7 +336,7 @@ def monitor_fig() -> str:
             f'Risk score</b>largest component, cause named</div></div>')
 
 
-def left_panel() -> str:
+def s_abstract() -> str:
     L11 = D["lead_time"]["T11"]
     n = S["episodes"]
     sl = S["session_level_correlation_T11"]
@@ -341,9 +344,7 @@ def left_panel() -> str:
     fa = S["false_alarms_per_hour"]["T11"]
     ep = D["median_episode"]
     day = ep["block"].split("/")[1].replace("day_", "")
-    parts = []
-
-    parts.append(sec(
+    return sec(
         label("Abstract"),
         p(f"Brain-computer interface decoders lose accuracy as the recorded signal drifts. A "
           f"monitor could warn before control is lost, but no accepted test shows whether such "
@@ -353,9 +354,18 @@ def left_panel() -> str:
           f"faults that counting activity misses, yet warned a median "
           f"{abs(L11['median_s']):.0f} s after decoding failed and gave {fa:.2f} false alarms "
           f"per hour against a budget of 0.1. A preregistered optical test bench, specified "
-          f"but not yet built, will measure both quantities where failure times are known.")))
+          f"but not yet built, will measure both quantities where failure times are known."))
 
-    parts.append(sec(
+
+def s_introduction() -> str:
+    L11 = D["lead_time"]["T11"]
+    n = S["episodes"]
+    sl = S["session_level_correlation_T11"]
+    span = sl["series"][-1]["trial_day"] - sl["series"][0]["trial_day"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    ep = D["median_episode"]
+    day = ep["block"].split("/")[1].replace("day_", "")
+    return sec(
         label("Introduction"),
         head("A decoder that fails without saying so"),
         p("Nearly 5.4 million people in the United States live with paralysis [3]. For some, "
@@ -364,25 +374,52 @@ def left_panel() -> str:
           "drifts, so decoders often need daily recalibration, and the device cannot be used "
           "freely while that happens [2]."),
         C.drift_line(SIDE_U, 212, sl["series"], sl["failure_threshold_deg"]),
-        cap("1", f"A real decoder left fixed for {span} days: median cursor error by session, "
-                 f"array T11. Archived data [1].")))
+        cap(FIG["drift"], f"A real decoder left fixed for {span} days: median cursor error by session, "
+                 f"array T11. Archived data [1]."))
 
-    parts.append(sec(
+
+def s_why() -> str:
+    L11 = D["lead_time"]["T11"]
+    n = S["episodes"]
+    sl = S["session_level_correlation_T11"]
+    span = sl["series"][-1]["trial_day"] - sl["series"][0]["trial_day"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    ep = D["median_episode"]
+    day = ep["block"].split("/")[1].replace("day_", "")
+    return sec(
         label("Why it matters"),
         head("A warning helps only if it is early and rarely wrong"),
         quadrant(),
         p("Alarms that cry wolf get switched off: nuisance alarms are the leading reason smoke "
           "alarms are disconnected [5]. Existing decoder research corrects drift automatically "
           "[2, 6], or scores it and reports a correlation with performance, r = 0.93 and 0.72 "
-          "[1]. No published lead time or false-alarm rate was found for such a monitor.")))
+          "[1]. No published lead time or false-alarm rate was found for such a monitor."))
 
-    parts.append(sec(
+
+def s_purpose() -> str:
+    L11 = D["lead_time"]["T11"]
+    n = S["episodes"]
+    sl = S["session_level_correlation_T11"]
+    span = sl["series"][-1]["trial_day"] - sl["series"][0]["trial_day"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    ep = D["median_episode"]
+    day = ep["block"].split("/")[1].replace("day_", "")
+    return sec(
         label("Purpose"),
         p("To measure how early a decoder-health monitor warns, and how often it warns when "
           "nothing is wrong, on test beds where the moment of failure is known in advance.",
-          INK)))
+          INK))
 
-    parts.append(sec(
+
+def s_hypothesis() -> str:
+    L11 = D["lead_time"]["T11"]
+    n = S["episodes"]
+    sl = S["session_level_correlation_T11"]
+    span = sl["series"][-1]["trial_day"] - sl["series"][0]["trial_day"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    ep = D["median_episode"]
+    day = ep["block"].split("/")[1].replace("day_", "")
+    return sec(
         label("Hypothesis / Engineering goal"),
         p(b("Primary hypothesis.") + " Measured against failure times fixed in advance, with "
           "enough fault-free recording to bound the rate, the monitor's lead time and "
@@ -398,13 +435,22 @@ def left_panel() -> str:
           "the numbers are. It is not a claim that the monitor works."),
         cap_plain("Predictions and sample sizes were frozen on 24 September 2026, before any "
                   "bench data existed (commit f4dda04)."),
-        gap=10))
+        gap=10)
 
-    parts.append(sec(
+
+def s_system() -> str:
+    L11 = D["lead_time"]["T11"]
+    n = S["episodes"]
+    sl = S["session_level_correlation_T11"]
+    span = sl["series"][-1]["trial_day"] - sl["series"][0]["trial_day"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    ep = D["median_episode"]
+    day = ep["block"].split("/")[1].replace("day_", "")
+    return sec(
         label("The system"),
         head("One monitor, used unchanged in both validations"),
         monitor_fig(),
-        cap("2", "The monitor, decoder-guard: four named components in place of one opaque "
+        cap(FIG["monitor"], "The monitor, decoder-guard: four named components in place of one opaque "
                  "number (scripts/22_decoder_guard.py)."),
         bullets([
             "It is fitted on healthy windows only. It never sees the decoder output, the task, "
@@ -412,18 +458,31 @@ def left_panel() -> str:
             "It works in log space, so a uniform gain change becomes a shift and separates "
             "from a change in shape across channels.",
             "A warning needs the risk score to stay above its threshold, not touch it once."]),
-        gap=12))
+        gap=12)
 
-    parts.append(sec(
+
+def s_measured(H: int = 236) -> str:
+    L11 = D["lead_time"]["T11"]
+    n = S["episodes"]
+    sl = S["session_level_correlation_T11"]
+    span = sl["series"][-1]["trial_day"] - sl["series"][0]["trial_day"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    ep = D["median_episode"]
+    day = ep["block"].split("/")[1].replace("day_", "")
+    return sec(
         label("What is measured"),
-        C.episode_compact(ep, SIDE_U, 236),
-        cap("3", f"One archived episode (array T11, day {day}, gain drift), chosen by rule as "
+        C.episode_compact(ep, SIDE_U, H),
+        cap(FIG["episode"], f"One archived episode (array T11, day {day}, gain drift), chosen by rule as "
                  f"the first whose lead time equals the median. A: the fault begins, at a time "
                  f"sealed in advance. B: decoding fails, its error 10° above the healthy "
                  f"baseline. C: the monitor warns. Lead time is B minus C, so a negative value "
                  f"means the warning came too late. Detection delay, C minus A, is what the "
                  f"bench adds."),
-        gap=10))
+        gap=10)
+
+
+def left_panel() -> str:
+    parts = [s_abstract(), s_introduction(), s_why(), s_purpose(), s_hypothesis(), s_system(), s_measured()]
     return page("Draft 4, left panel: the problem and the system", PW_SIDE, PH,
                 "\n".join(parts), 56, gap=24)
 
@@ -615,11 +674,10 @@ TICKS = (f'<span style="display: inline-flex; gap: 8px; align-items: center; whi
          f'</span>')
 
 
-def validation_column() -> str:
+def s_computational() -> str:
     n = S["episodes"]
     e, c = S["decoder_error_deg"], S["decoder_chance_deg"]
-    parts = []
-    parts.append(sec(
+    return sec(
         label("Computational validation", BLUE, chip("complete", "done")),
         p("Archived recordings do not say when a failure began, so the failures were built: "
           "faults planted in real recordings at start times sealed before any detector "
@@ -638,7 +696,7 @@ def validation_column() -> str:
             ("Scoring harness", "lead time and false alarms as a pair; five gates; test data "
              "read once."),
         ], BLUE),
-        cap("4", "The computational workflow (scripts/17 to scripts/22). The grading was "
+        cap(FIG["workflow"], "The computational workflow (scripts/17 to scripts/22). The grading was "
                  "built and committed before the monitor existed, so the measure could not be "
                  "chosen to flatter it."),
         code_block("scripts/21_score_report.py", [
@@ -650,12 +708,16 @@ def validation_column() -> str:
             '"detected": False}',
         ], 4),
         output_block(),
-        cap("5", "Real code and real output. A warning before the fault begins is scored as a "
+        cap(FIG["code"], "Real code and real output. A warning before the fault begins is scored as a "
                  "false alarm, never as an early catch. Every headline number is recomputed "
                  "from the data files by script."),
-        gap=12))
+        gap=12)
 
-    parts.append(sec(
+
+def s_physical() -> str:
+    n = S["episodes"]
+    e, c = S["decoder_error_deg"], S["decoder_chance_deg"]
+    return sec(
         label("Physical validation", ORG, chip("preregistered, not built", "todo")),
         p("Archived data cannot supply a recorded start time or enough fault-free hours. A "
           "bench can: its faults begin at sealed moments and it records unattended. The "
@@ -671,16 +733,16 @@ def validation_column() -> str:
                          "sealed moment.")
         + legend_line(6, b("Scoring:") + " each warning against that sealed moment.")
         + "</div>",
-        cap("6", "The optical test bench as specified. Nothing shown is built yet. Parts: "
+        cap(FIG["bench"], "The optical test bench as specified. Nothing shown is built yet. Parts: "
                  "Raspberry Pi 4, Camera Module 3, display, cardboard enclosure, ND 0.6 "
                  "filter, stepper motor and driver, DHT22 sensor."),
         stepper_fig(),
-        cap("7", "Breadboard view: wiring of the rotation stage. Pin numbers are read from "
+        cap(FIG["stepper"], "Breadboard view: wiring of the rotation stage. Pin numbers are read from "
                  "rig/motor.py and checked on every run. The motor takes 5 V, never 3.3 V."),
         f'<div style="display: flex; gap: 28px; align-items: stretch">{sensor_fig()}'
         f'<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px">'
         + photo("Raspberry Pi 4, camera and wiring", 200)
-        + cap("8", "Left: breadboard view of the room-temperature sensor. Only the DATA pin "
+        + cap(FIG["sensor"], "Left: breadboard view of the room-temperature sensor. Only the DATA pin "
                    "is fixed by the repository (rig/logtemp.py); VCC and GND are a "
                    "recommendation.")
         + "</div></div>",
@@ -696,9 +758,13 @@ def validation_column() -> str:
                [b("G-d"), "sub-level signal on over 80% of channels", BLANK, TICKS],
                [b("G-e"), "margin within 6° of the neural value, 36.1°", BLANK, TICKS]],
               ["9%", "55%", "14%", "22%"]),
-        cap("9", "Acceptance gates, blank until the bench exists. If G-e cannot be met the "
+        cap(FIG["gates"], "Acceptance gates, blank until the bench exists. If G-e cannot be met the "
                  "phase stops and reports that."),
-        gap=12))
+        gap=12)
+
+
+def validation_column() -> str:
+    parts = [s_computational(), s_physical()]
     return (f'<div style="width: {COL}px; flex: none; display: flex; flex-direction: column; '
             f'gap: 22px">' + "".join(parts) + "</div>")
 
@@ -717,7 +783,7 @@ def chart(title: str, svg_: str, n: str, caption: str) -> str:
             + finding(title) + svg_ + cap(n, caption) + "</div>")
 
 
-def results_column() -> str:
+def r_keys(W: int = COL_U) -> str:
     v = D["fault_mode_auc"]["values"]
     g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
     k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
@@ -736,7 +802,6 @@ def results_column() -> str:
              "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
              "GAIN_DRIFT": ("Gain drift", "total unchanged"),
              "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
-    W = COL_U
     numbers = (
         '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
         'gap: 14px 32px">'
@@ -765,50 +830,400 @@ def results_column() -> str:
           f"{S['lag1_pooled']['T5']:.3f}", "near 0"],
          ],
         ["40%", "21%", "21%", "18%"])
-    parts = [
-        sec(label("Results and data", BLUE, chip("archived recordings", "done")), numbers,
-            gap=12),
-        chart("It sees faults that counting misses",
-              C.mode_dumbbell(W, 290, v, D["fault_mode_auc"]["modes"], names), "10",
+    return sec(label("Results and data", BLUE, chip("archived recordings", "done")), numbers,
+            gap=12)
+
+
+def r_modes(W: int = COL_U) -> str:
+    v = D["fault_mode_auc"]["values"]
+    g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
+    k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
+    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
+    ci = L11["ci95_s"]
+    fa = S["false_alarms_per_hour"]
+    f = S["funnel"]
+    dvf = D["detection_vs_fa"]
+    sil, nff = S["silence_fault_free_fraction"], S["fault_free_episodes"]
+    pr = D["decision_rate"]["paired"]["participants"]
+    a, t5 = pr["T11"]["own_range"], pr["T5"]["own_range"]
+    pct = lambda x: minus(f"{x * 100:+.1f}")
+    sc = D["session_scatter"]
+    sep = S["task_change_separation"]
+    names = {"RATE_LOSS": ("Signal loss", "total falls"),
+             "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
+             "GAIN_DRIFT": ("Gain drift", "total unchanged"),
+             "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
+    numbers = (
+        '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
+        'gap: 14px 32px">'
+        + key(f"{min(g):.2f} to {max(g):.2f}",
+              f"detection score on faults where counting activity scores {min(k):.2f} to "
+              f"{max(k):.2f}")
+        + key(f"{abs(L11['median_s']):.0f} s late",
+              "the typical warning arrives after decoding has already failed")
+        + key(f"{fa['T11'] / S['budget_per_hour']:.0f}× too often",
+              f"{fa['T11']:.2f} false alarms per hour against a budget of 0.1")
+        + key(f"{f['all_gates']} of {f['run']}",
+              "monitor configurations pass all five acceptance gates")
+        + "</div>")
+    data = table(
+        ["Measured", "Array T11", "Array T5", "Needed"],
+        [["Faults detected", f"{L11['n_detected']} of {L11['n_degraded']}",
+          f"{L5['n_detected']} of {L5['n_degraded']}", "80%"],
+         ["Median lead time", f"{num(L11['median_s'], 0)} s", f"{num(L5['median_s'], 0)} s",
+          "above 0 s"],
+         ["False alarms per hour", f"{fa['T11']:.2f}", f"{fa['T5']:.3f}", "at most 0.1"],
+         ["Fault-free episodes drifting", f"{sil['T11'] * 100:.1f}%", f"{sil['T5'] * 100:.0f}%",
+          "at most 10%"],
+         ["Session score (AUC)", f"{S['auc_session']['T11']:.3f}",
+          f"{S['auc_session']['T5']:.3f}", f"{S['auc_needed_at_budget']['T11']:.3f}"],
+         ["Risk autocorrelation, lag 1", f"{S['lag1_pooled']['T11']:.3f}",
+          f"{S['lag1_pooled']['T5']:.3f}", "near 0"],
+         ],
+        ["40%", "21%", "21%", "18%"])
+    return chart("It sees faults that counting misses",
+              C.mode_dumbbell(W, 290, v, D["fault_mode_auc"]["modes"], names), FIG["modes"],
               "Detection score by fault type. Filled: the monitor. Open: counting activity. "
               "It wins where total activity is unchanged and loses on plain signal loss, as "
-              "designed."),
-        chart("But the warning comes after the failure",
-              C.lead_dots(W, 166, L11["leads_s"], L11["median_s"], top=16, label_gap=12, label_dy=46), "11",
+              "designed.")
+
+
+def r_lead(W: int = COL_U) -> str:
+    v = D["fault_mode_auc"]["values"]
+    g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
+    k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
+    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
+    ci = L11["ci95_s"]
+    fa = S["false_alarms_per_hour"]
+    f = S["funnel"]
+    dvf = D["detection_vs_fa"]
+    sil, nff = S["silence_fault_free_fraction"], S["fault_free_episodes"]
+    pr = D["decision_rate"]["paired"]["participants"]
+    a, t5 = pr["T11"]["own_range"], pr["T5"]["own_range"]
+    pct = lambda x: minus(f"{x * 100:+.1f}")
+    sc = D["session_scatter"]
+    sep = S["task_change_separation"]
+    names = {"RATE_LOSS": ("Signal loss", "total falls"),
+             "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
+             "GAIN_DRIFT": ("Gain drift", "total unchanged"),
+             "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
+    numbers = (
+        '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
+        'gap: 14px 32px">'
+        + key(f"{min(g):.2f} to {max(g):.2f}",
+              f"detection score on faults where counting activity scores {min(k):.2f} to "
+              f"{max(k):.2f}")
+        + key(f"{abs(L11['median_s']):.0f} s late",
+              "the typical warning arrives after decoding has already failed")
+        + key(f"{fa['T11'] / S['budget_per_hour']:.0f}× too often",
+              f"{fa['T11']:.2f} false alarms per hour against a budget of 0.1")
+        + key(f"{f['all_gates']} of {f['run']}",
+              "monitor configurations pass all five acceptance gates")
+        + "</div>")
+    data = table(
+        ["Measured", "Array T11", "Array T5", "Needed"],
+        [["Faults detected", f"{L11['n_detected']} of {L11['n_degraded']}",
+          f"{L5['n_detected']} of {L5['n_degraded']}", "80%"],
+         ["Median lead time", f"{num(L11['median_s'], 0)} s", f"{num(L5['median_s'], 0)} s",
+          "above 0 s"],
+         ["False alarms per hour", f"{fa['T11']:.2f}", f"{fa['T5']:.3f}", "at most 0.1"],
+         ["Fault-free episodes drifting", f"{sil['T11'] * 100:.1f}%", f"{sil['T5'] * 100:.0f}%",
+          "at most 10%"],
+         ["Session score (AUC)", f"{S['auc_session']['T11']:.3f}",
+          f"{S['auc_session']['T5']:.3f}", f"{S['auc_needed_at_budget']['T11']:.3f}"],
+         ["Risk autocorrelation, lag 1", f"{S['lag1_pooled']['T11']:.3f}",
+          f"{S['lag1_pooled']['T5']:.3f}", "near 0"],
+         ],
+        ["40%", "21%", "21%", "18%"])
+    return chart("But the warning comes after the failure",
+              C.lead_dots(W, 166, L11["leads_s"], L11["median_s"], top=16, label_gap=12, label_dy=46), FIG["lead"],
               f"One dot per detected fault, array T11 ({L11['n_detected']} of "
               f"{L11['n_degraded']}). Median {num(L11['median_s'], 0)} s, 95% CI "
               f"{num(ci[0], 0)} to {num(ci[1], 0)}: {L11['fraction_negative'] * 100:.0f}% late, "
-              f"{L11['fraction_positive'] * 100:.0f}% early."),
-        chart("And it warns far too often",
-              C.fa_measured(W, 278, fa, S["budget_per_hour"], sil, nff), "12",
+              f"{L11['fraction_positive'] * 100:.0f}% early.")
+
+
+def r_fa(W: int = COL_U) -> str:
+    v = D["fault_mode_auc"]["values"]
+    g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
+    k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
+    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
+    ci = L11["ci95_s"]
+    fa = S["false_alarms_per_hour"]
+    f = S["funnel"]
+    dvf = D["detection_vs_fa"]
+    sil, nff = S["silence_fault_free_fraction"], S["fault_free_episodes"]
+    pr = D["decision_rate"]["paired"]["participants"]
+    a, t5 = pr["T11"]["own_range"], pr["T5"]["own_range"]
+    pct = lambda x: minus(f"{x * 100:+.1f}")
+    sc = D["session_scatter"]
+    sep = S["task_change_separation"]
+    names = {"RATE_LOSS": ("Signal loss", "total falls"),
+             "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
+             "GAIN_DRIFT": ("Gain drift", "total unchanged"),
+             "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
+    numbers = (
+        '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
+        'gap: 14px 32px">'
+        + key(f"{min(g):.2f} to {max(g):.2f}",
+              f"detection score on faults where counting activity scores {min(k):.2f} to "
+              f"{max(k):.2f}")
+        + key(f"{abs(L11['median_s']):.0f} s late",
+              "the typical warning arrives after decoding has already failed")
+        + key(f"{fa['T11'] / S['budget_per_hour']:.0f}× too often",
+              f"{fa['T11']:.2f} false alarms per hour against a budget of 0.1")
+        + key(f"{f['all_gates']} of {f['run']}",
+              "monitor configurations pass all five acceptance gates")
+        + "</div>")
+    data = table(
+        ["Measured", "Array T11", "Array T5", "Needed"],
+        [["Faults detected", f"{L11['n_detected']} of {L11['n_degraded']}",
+          f"{L5['n_detected']} of {L5['n_degraded']}", "80%"],
+         ["Median lead time", f"{num(L11['median_s'], 0)} s", f"{num(L5['median_s'], 0)} s",
+          "above 0 s"],
+         ["False alarms per hour", f"{fa['T11']:.2f}", f"{fa['T5']:.3f}", "at most 0.1"],
+         ["Fault-free episodes drifting", f"{sil['T11'] * 100:.1f}%", f"{sil['T5'] * 100:.0f}%",
+          "at most 10%"],
+         ["Session score (AUC)", f"{S['auc_session']['T11']:.3f}",
+          f"{S['auc_session']['T5']:.3f}", f"{S['auc_needed_at_budget']['T11']:.3f}"],
+         ["Risk autocorrelation, lag 1", f"{S['lag1_pooled']['T11']:.3f}",
+          f"{S['lag1_pooled']['T5']:.3f}", "near 0"],
+         ],
+        ["40%", "21%", "21%", "18%"])
+    return chart("And it warns far too often",
+              C.fa_measured(W, 278, fa, S["budget_per_hour"], sil, nff), FIG["fa"],
               f"False alarms per hour against the budget, and how often the risk score drifts "
-              f"when nothing is wrong ({nff['T11']} + {nff['T5']} fault-free episodes)."),
-        chart("No threshold fixes both at once",
-              C.dfa_measured(W, 228, dvf["curves"], {"T11": dvf["best_inside_budget_T11"],
+              f"when nothing is wrong ({nff['T11']} + {nff['T5']} fault-free episodes).")
+
+
+def r_dfa(W: int = COL_U, H: int = 228) -> str:
+    v = D["fault_mode_auc"]["values"]
+    g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
+    k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
+    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
+    ci = L11["ci95_s"]
+    fa = S["false_alarms_per_hour"]
+    f = S["funnel"]
+    dvf = D["detection_vs_fa"]
+    sil, nff = S["silence_fault_free_fraction"], S["fault_free_episodes"]
+    pr = D["decision_rate"]["paired"]["participants"]
+    a, t5 = pr["T11"]["own_range"], pr["T5"]["own_range"]
+    pct = lambda x: minus(f"{x * 100:+.1f}")
+    sc = D["session_scatter"]
+    sep = S["task_change_separation"]
+    names = {"RATE_LOSS": ("Signal loss", "total falls"),
+             "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
+             "GAIN_DRIFT": ("Gain drift", "total unchanged"),
+             "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
+    numbers = (
+        '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
+        'gap: 14px 32px">'
+        + key(f"{min(g):.2f} to {max(g):.2f}",
+              f"detection score on faults where counting activity scores {min(k):.2f} to "
+              f"{max(k):.2f}")
+        + key(f"{abs(L11['median_s']):.0f} s late",
+              "the typical warning arrives after decoding has already failed")
+        + key(f"{fa['T11'] / S['budget_per_hour']:.0f}× too often",
+              f"{fa['T11']:.2f} false alarms per hour against a budget of 0.1")
+        + key(f"{f['all_gates']} of {f['run']}",
+              "monitor configurations pass all five acceptance gates")
+        + "</div>")
+    data = table(
+        ["Measured", "Array T11", "Array T5", "Needed"],
+        [["Faults detected", f"{L11['n_detected']} of {L11['n_degraded']}",
+          f"{L5['n_detected']} of {L5['n_degraded']}", "80%"],
+         ["Median lead time", f"{num(L11['median_s'], 0)} s", f"{num(L5['median_s'], 0)} s",
+          "above 0 s"],
+         ["False alarms per hour", f"{fa['T11']:.2f}", f"{fa['T5']:.3f}", "at most 0.1"],
+         ["Fault-free episodes drifting", f"{sil['T11'] * 100:.1f}%", f"{sil['T5'] * 100:.0f}%",
+          "at most 10%"],
+         ["Session score (AUC)", f"{S['auc_session']['T11']:.3f}",
+          f"{S['auc_session']['T5']:.3f}", f"{S['auc_needed_at_budget']['T11']:.3f}"],
+         ["Risk autocorrelation, lag 1", f"{S['lag1_pooled']['T11']:.3f}",
+          f"{S['lag1_pooled']['T5']:.3f}", "near 0"],
+         ],
+        ["40%", "21%", "21%", "18%"])
+    return chart("No threshold fixes both at once",
+              C.dfa_measured(W, H, dvf["curves"], {"T11": dvf["best_inside_budget_T11"],
                                                      "T5": dvf["best_inside_budget_T5"]}),
-              "13", "Sweeping the warning threshold: detection is high only where false "
-                    "alarms run at several per hour."),
-        sec(label("Data"), data,
-            cap("14", f"Also measured: a change of task is not mistaken for a fault "
-                      f"({sep['658']:.1f}× and {sep['665']:.0f}× separation), and accuracy by "
-                      f"session ranges {sc['auc_min']:.2f} to {sc['auc_max']:.2f}, tracking "
-                      f"that day's decoder error (ρ = {num(sc['spearman_rho'], 3)})."),
-            gap=10),
-        sec(label("Analysis"),
+              FIG["dfa"], "Sweeping the warning threshold: detection is high only where false "
+                    "alarms run at several per hour.")
+
+
+def data_parts() -> tuple[str, str]:
+    """The data table, and the sentence on what else was measured."""
+    v = D["fault_mode_auc"]["values"]
+    g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
+    k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
+    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
+    ci = L11["ci95_s"]
+    fa = S["false_alarms_per_hour"]
+    f = S["funnel"]
+    dvf = D["detection_vs_fa"]
+    sil, nff = S["silence_fault_free_fraction"], S["fault_free_episodes"]
+    pr = D["decision_rate"]["paired"]["participants"]
+    a, t5 = pr["T11"]["own_range"], pr["T5"]["own_range"]
+    pct = lambda x: minus(f"{x * 100:+.1f}")
+    sc = D["session_scatter"]
+    sep = S["task_change_separation"]
+    names = {"RATE_LOSS": ("Signal loss", "total falls"),
+             "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
+             "GAIN_DRIFT": ("Gain drift", "total unchanged"),
+             "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
+    numbers = (
+        '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
+        'gap: 14px 32px">'
+        + key(f"{min(g):.2f} to {max(g):.2f}",
+              f"detection score on faults where counting activity scores {min(k):.2f} to "
+              f"{max(k):.2f}")
+        + key(f"{abs(L11['median_s']):.0f} s late",
+              "the typical warning arrives after decoding has already failed")
+        + key(f"{fa['T11'] / S['budget_per_hour']:.0f}× too often",
+              f"{fa['T11']:.2f} false alarms per hour against a budget of 0.1")
+        + key(f"{f['all_gates']} of {f['run']}",
+              "monitor configurations pass all five acceptance gates")
+        + "</div>")
+    data = table(
+        ["Measured", "Array T11", "Array T5", "Needed"],
+        [["Faults detected", f"{L11['n_detected']} of {L11['n_degraded']}",
+          f"{L5['n_detected']} of {L5['n_degraded']}", "80%"],
+         ["Median lead time", f"{num(L11['median_s'], 0)} s", f"{num(L5['median_s'], 0)} s",
+          "above 0 s"],
+         ["False alarms per hour", f"{fa['T11']:.2f}", f"{fa['T5']:.3f}", "at most 0.1"],
+         ["Fault-free episodes drifting", f"{sil['T11'] * 100:.1f}%", f"{sil['T5'] * 100:.0f}%",
+          "at most 10%"],
+         ["Session score (AUC)", f"{S['auc_session']['T11']:.3f}",
+          f"{S['auc_session']['T5']:.3f}", f"{S['auc_needed_at_budget']['T11']:.3f}"],
+         ["Risk autocorrelation, lag 1", f"{S['lag1_pooled']['T11']:.3f}",
+          f"{S['lag1_pooled']['T5']:.3f}", "near 0"],
+         ],
+        ["40%", "21%", "21%", "18%"])
+    also = (f"a change of task is not mistaken for a fault "
+            f"({sep['658']:.1f}× and {sep['665']:.0f}× separation), and accuracy by "
+            f"session ranges {sc['auc_min']:.2f} to {sc['auc_max']:.2f}, tracking "
+            f"that day's decoder error (ρ = {num(sc['spearman_rho'], 3)}).")
+    return data, also
+
+
+def r_data(W: int = COL_U) -> str:
+    data, also = data_parts()
+    return sec(label("Data"), data, cap(FIG["data"], "Also measured: " + also), gap=10)
+
+
+def r_analysis(W: int = COL_U) -> str:
+    v = D["fault_mode_auc"]["values"]
+    g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
+    k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
+    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
+    ci = L11["ci95_s"]
+    fa = S["false_alarms_per_hour"]
+    f = S["funnel"]
+    dvf = D["detection_vs_fa"]
+    sil, nff = S["silence_fault_free_fraction"], S["fault_free_episodes"]
+    pr = D["decision_rate"]["paired"]["participants"]
+    a, t5 = pr["T11"]["own_range"], pr["T5"]["own_range"]
+    pct = lambda x: minus(f"{x * 100:+.1f}")
+    sc = D["session_scatter"]
+    sep = S["task_change_separation"]
+    names = {"RATE_LOSS": ("Signal loss", "total falls"),
+             "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
+             "GAIN_DRIFT": ("Gain drift", "total unchanged"),
+             "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
+    numbers = (
+        '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
+        'gap: 14px 32px">'
+        + key(f"{min(g):.2f} to {max(g):.2f}",
+              f"detection score on faults where counting activity scores {min(k):.2f} to "
+              f"{max(k):.2f}")
+        + key(f"{abs(L11['median_s']):.0f} s late",
+              "the typical warning arrives after decoding has already failed")
+        + key(f"{fa['T11'] / S['budget_per_hour']:.0f}× too often",
+              f"{fa['T11']:.2f} false alarms per hour against a budget of 0.1")
+        + key(f"{f['all_gates']} of {f['run']}",
+              "monitor configurations pass all five acceptance gates")
+        + "</div>")
+    data = table(
+        ["Measured", "Array T11", "Array T5", "Needed"],
+        [["Faults detected", f"{L11['n_detected']} of {L11['n_degraded']}",
+          f"{L5['n_detected']} of {L5['n_degraded']}", "80%"],
+         ["Median lead time", f"{num(L11['median_s'], 0)} s", f"{num(L5['median_s'], 0)} s",
+          "above 0 s"],
+         ["False alarms per hour", f"{fa['T11']:.2f}", f"{fa['T5']:.3f}", "at most 0.1"],
+         ["Fault-free episodes drifting", f"{sil['T11'] * 100:.1f}%", f"{sil['T5'] * 100:.0f}%",
+          "at most 10%"],
+         ["Session score (AUC)", f"{S['auc_session']['T11']:.3f}",
+          f"{S['auc_session']['T5']:.3f}", f"{S['auc_needed_at_budget']['T11']:.3f}"],
+         ["Risk autocorrelation, lag 1", f"{S['lag1_pooled']['T11']:.3f}",
+          f"{S['lag1_pooled']['T5']:.3f}", "near 0"],
+         ],
+        ["40%", "21%", "21%", "18%"])
+    return sec(label("Analysis"),
             finding("Why: one measurement, 720 decisions"),
             p(f"Risk scores within a session are near-copies of each other, so 720 decisions "
               f"an hour rest on about one independent measurement. Deciding once per session "
               f"would still need a score of {S['auc_needed_at_budget']['T11']:.3f}."),
             C.auc_gap(W, 122, S["auc_session"], S["auc_needed_at_budget"]),
-            cap("15", "Session score reached on each array against the score needed to stay "
+            cap(FIG["gap"], "Session score reached on each array against the score needed to stay "
                       "inside the false-alarm budget."),
-            gap=8),
-        chart("Deciding less often: the arrays disagree",
-              C.decision_measured(W, 232, D["decision_rate"]["curves"]), "16",
+            gap=8)
+
+
+def r_decision(W: int = COL_U, H: int = 232) -> str:
+    v = D["fault_mode_auc"]["values"]
+    g = [v[a]["decoder_guard"][i] for a in ("T11", "T5") for i in (2, 3)]
+    k = [v[a]["mean_activity"][i] for a in ("T11", "T5") for i in (2, 3)]
+    L11, L5 = D["lead_time"]["T11"], D["lead_time"]["T5"]
+    ci = L11["ci95_s"]
+    fa = S["false_alarms_per_hour"]
+    f = S["funnel"]
+    dvf = D["detection_vs_fa"]
+    sil, nff = S["silence_fault_free_fraction"], S["fault_free_episodes"]
+    pr = D["decision_rate"]["paired"]["participants"]
+    a, t5 = pr["T11"]["own_range"], pr["T5"]["own_range"]
+    pct = lambda x: minus(f"{x * 100:+.1f}")
+    sc = D["session_scatter"]
+    sep = S["task_change_separation"]
+    names = {"RATE_LOSS": ("Signal loss", "total falls"),
+             "CHANNEL_DROPOUT": ("Dropout", "channels go silent"),
+             "GAIN_DRIFT": ("Gain drift", "total unchanged"),
+             "GEOMETRY_ROTATION": ("Rotation", "total unchanged")}
+    numbers = (
+        '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); '
+        'gap: 14px 32px">'
+        + key(f"{min(g):.2f} to {max(g):.2f}",
+              f"detection score on faults where counting activity scores {min(k):.2f} to "
+              f"{max(k):.2f}")
+        + key(f"{abs(L11['median_s']):.0f} s late",
+              "the typical warning arrives after decoding has already failed")
+        + key(f"{fa['T11'] / S['budget_per_hour']:.0f}× too often",
+              f"{fa['T11']:.2f} false alarms per hour against a budget of 0.1")
+        + key(f"{f['all_gates']} of {f['run']}",
+              "monitor configurations pass all five acceptance gates")
+        + "</div>")
+    data = table(
+        ["Measured", "Array T11", "Array T5", "Needed"],
+        [["Faults detected", f"{L11['n_detected']} of {L11['n_degraded']}",
+          f"{L5['n_detected']} of {L5['n_degraded']}", "80%"],
+         ["Median lead time", f"{num(L11['median_s'], 0)} s", f"{num(L5['median_s'], 0)} s",
+          "above 0 s"],
+         ["False alarms per hour", f"{fa['T11']:.2f}", f"{fa['T5']:.3f}", "at most 0.1"],
+         ["Fault-free episodes drifting", f"{sil['T11'] * 100:.1f}%", f"{sil['T5'] * 100:.0f}%",
+          "at most 10%"],
+         ["Session score (AUC)", f"{S['auc_session']['T11']:.3f}",
+          f"{S['auc_session']['T5']:.3f}", f"{S['auc_needed_at_budget']['T11']:.3f}"],
+         ["Risk autocorrelation, lag 1", f"{S['lag1_pooled']['T11']:.3f}",
+          f"{S['lag1_pooled']['T5']:.3f}", "near 0"],
+         ],
+        ["40%", "21%", "21%", "18%"])
+    return chart("Deciding less often: the arrays disagree",
+              C.decision_measured(W, H, D["decision_rate"]["curves"]), FIG["decision"],
               f"Detection against how often the monitor decides, at a 10% false-flag rate. "
               f"T11 {pct(a['change'])} points (not established); T5 {pct(t5['change'])} "
-              f"points (established)."),
-    ]
+              f"points (established).")
+
+
+def results_column() -> str:
+    parts = [r_keys(), r_modes(), r_lead(), r_fa(), r_dfa(), r_data(), r_analysis(), r_decision()]
     return (f'<div style="width: {COL}px; flex: none; display: flex; flex-direction: column; '
             f'gap: 16px">' + "".join(parts) + "</div>")
 
@@ -890,33 +1305,43 @@ def verdict_tree() -> str:
             + "".join(el) + "</div>")
 
 
-def right_panel() -> str:
+def discussion_points() -> list[str]:
     L11 = D["lead_time"]["T11"]
     fa = S["false_alarms_per_hour"]["T11"]
     blank = (f'<span style="display: inline-block; width: 140px; height: 34px; box-sizing: '
              f'border-box; border-bottom: 3px dashed {ORG}; vertical-align: baseline"></span>')
-    parts = []
-    parts.append(sec(
-        label("Discussion"),
-        head("What the results mean"),
+    box_ = (f'<span style="width: 24px; height: 24px; flex: none; box-sizing: border-box; '
+            f'border: 2.5px solid {INK}; margin-left: 10px"></span>')
+    return [
         point("The monitor carries real information.", "It beats plain counting on exactly "
-              "the faults counting cannot see, on both arrays (Fig. 10). It also does not "
+              f"the faults counting cannot see, on both arrays (Fig. {FIG['modes']}). It also does not "
               "mistake a change of task for a fault."),
         point("A real signal is not yet a usable warning.", f"It comes "
               f"{abs(L11['median_s']):.0f} s late and {fa / S['budget_per_hour']:.0f} times "
-              f"too often (Figs 11 to 13). The binding problem is not detection but silence: "
+              f"too often (Figs {FIG['lead']} to {FIG['dfa']}). The binding problem is not detection but silence: "
               f"the risk score is never quiet during healthy use."),
         point("The cause is measured, not guessed.", "One session holds about one "
               "independent measurement, so neither a different threshold nor averaging "
-              "rescues it (Fig. 15)."),
+              f"rescues it (Fig. {FIG['gap']})."),
         point("One question stays open.", "Deciding less often helps on one array and hurts "
-              "on the other (Fig. 16). Two arrays cannot settle it."),
-        gap=12))
+              f"on the other (Fig. {FIG['decision']}). Two arrays cannot settle it.")]
 
-    parts.append(sec(
+
+def s_discussion() -> str:
+    return sec(label("Discussion"), head("What the results mean"), *discussion_points(), gap=12)
+
+
+def s_relate() -> str:
+    L11 = D["lead_time"]["T11"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    blank = (f'<span style="display: inline-block; width: 140px; height: 34px; box-sizing: '
+             f'border-box; border-bottom: 3px dashed {ORG}; vertical-align: baseline"></span>')
+    box_ = (f'<span style="width: 24px; height: 24px; flex: none; box-sizing: border-box; '
+            f'border: 2.5px solid {INK}; margin-left: 10px"></span>')
+    return sec(
         label("How the two validations relate"),
         relate(),
-        cap("17", "Each validation supplies what the other cannot. Held identical in both: "
+        cap(FIG["relate"], "Each validation supplies what the other cannot. Held identical in both: "
                   "the monitor, the 30 s window and 5 s step, the warning logic, the 0.1 per "
                   "hour budget and the frozen decoder, so a difference between them cannot "
                   "come from a retuned monitor."),
@@ -924,16 +1349,32 @@ def right_panel() -> str:
           "brain recordings or to the method itself; how large the false-alarm rate is once "
           "there is enough fault-free recording to bound it; and whether deciding less often "
           "helps."),
-        gap=12))
+        gap=12)
 
-    parts.append(sec(
+
+def s_verdict() -> str:
+    L11 = D["lead_time"]["T11"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    blank = (f'<span style="display: inline-block; width: 140px; height: 34px; box-sizing: '
+             f'border-box; border-bottom: 3px dashed {ORG}; vertical-align: baseline"></span>')
+    box_ = (f'<span style="width: 24px; height: 24px; flex: none; box-sizing: border-box; '
+            f'border: 2.5px solid {INK}; margin-left: 10px"></span>')
+    return sec(
         label("How the bench result will be judged"),
         verdict_tree(),
-        cap("18", "Fixed before any recording. A result is read only after the five "
-                  "acceptance gates pass (Fig. 9)."),
-        gap=10))
+        cap(FIG["verdict"], "Fixed before any recording. A result is read only after the five "
+                  f"acceptance gates pass (Fig. {FIG['gates']})."),
+        gap=10)
 
-    parts.append(sec(
+
+def s_limits() -> str:
+    L11 = D["lead_time"]["T11"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    blank = (f'<span style="display: inline-block; width: 140px; height: 34px; box-sizing: '
+             f'border-box; border-bottom: 3px dashed {ORG}; vertical-align: baseline"></span>')
+    box_ = (f'<span style="width: 24px; height: 24px; flex: none; box-sizing: border-box; '
+            f'border: 2.5px solid {INK}; margin-left: 10px"></span>')
+    return sec(
         label("Limitations"),
         bullets([
             "A camera in a sealed box is not an implanted array. A false-alarm rate measured "
@@ -944,20 +1385,28 @@ def right_panel() -> str:
             "family of monitor.",
             "About 4 held-out fault-free hours cannot show a rate below 0.75 per hour. "
             "Reaching the 0.1 budget needs about 30 h."]),
-        gap=10))
+        gap=10)
 
-    parts.append(sec(
+
+def s_broader() -> str:
+    L11 = D["lead_time"]["T11"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    blank = (f'<span style="display: inline-block; width: 140px; height: 34px; box-sizing: '
+             f'border-box; border-bottom: 3px dashed {ORG}; vertical-align: baseline"></span>')
+    box_ = (f'<span style="width: 24px; height: 24px; flex: none; box-sizing: border-box; '
+            f'border: 2.5px solid {INK}; margin-left: 10px"></span>')
+    return sec(
         label("Broader significance"),
         p("The two questions, how early and how often wrong, are not specific to brain "
           "implants. They apply to any many-channel sensor that drifts and is watched by a "
           "statistic, and the bench is one instance of that class. What carries over is the "
           "test: failures whose start times are sealed in advance, and timing and false "
           "alarms reported together. No clinical benefit is claimed."),
-        gap=10))
+        gap=10)
 
-    parts.append(sec(
-        label("Future directions"),
-        table(["", "Planned bench experiment", "Sessions", "Recording"],
+
+def experiments_parts() -> list[str]:
+    return [table(["", "Planned bench experiment", "Sessions", "Recording"],
               [[b("P-1"), "calibration: match decoding difficulty", "5 or more", "25 min"],
                [b("P-2"), "false-alarm rate and silence, fault-free", "101", "8.4 h"],
                [b("P-3"), "lead time from a sealed start time", "101", "8.4 h"],
@@ -967,31 +1416,43 @@ def right_panel() -> str:
                [b("P-7"), "three more bench configurations", "120", "about 10 h"],
                [b("All"), b("none recorded yet"), b("337"), b("about 28 h")]],
               ["9%", "55%", "17%", "19%"]),
-        cap("19", "The seven planned experiments, sizes frozen in advance. Changed: start "
+            cap(FIG["experiments"], "The seven planned experiments, sizes frozen in advance. Changed: start "
                   "time, fault present or absent, fault type, severity (0.25, 0.5, 1.0), "
                   "decision rate. Measured: lead time, false-alarm rate, detection rate, "
                   "silence, correlation with performance. Held fixed: window, decoder, camera "
-                  "exposure, screen brightness, modulation depth, ambient light, geometry."),
-        gap=10))
+                  "exposure, screen brightness, modulation depth, ambient light, geometry.")]
 
+
+def s_future() -> str:
+    return sec(label("Future directions"), *experiments_parts(), gap=10)
+
+
+def s_conclusion() -> str:
+    L11 = D["lead_time"]["T11"]
+    fa = S["false_alarms_per_hour"]["T11"]
+    blank = (f'<span style="display: inline-block; width: 140px; height: 34px; box-sizing: '
+             f'border-box; border-bottom: 3px dashed {ORG}; vertical-align: baseline"></span>')
     box_ = (f'<span style="width: 24px; height: 24px; flex: none; box-sizing: border-box; '
             f'border: 2.5px solid {INK}; margin-left: 10px"></span>')
-    parts.append(sec(
+    return sec(
         label("Conclusion"),
         p("On archived recordings the monitor detects real faults, but it warns too late and "
           "too often to be relied on, and the cause is measured. The bench will show whether "
           "that belongs to brain recordings or to the method.", INK),
-        # The blanks are the quantities the frozen verdict (Fig. 18) is read from, no others.
+        # The blanks are the quantities the frozen verdict figure is read from, no others.
         f'<div style="font-size: {BODY}px; line-height: 50px; color: {INK2}; '
         f'border: 3px dashed {ORG}; border-radius: 6px; padding: 8px 16px">'
         f'<b style="color: {ORG}; font-weight: 600">Bench result, to be measured</b><br>'
         f'median lead time {blank} s, 95% CI {blank} to {blank}<br>'
         f'false alarms {blank} per hour, upper bound {blank}<br>'
         f'<span style="display: inline-flex; gap: 12px; align-items: center; '
-        f'flex-wrap: wrap">verdict (Fig. 18): {box_}too late {box_}too noisy {box_}usable'
+        f'flex-wrap: wrap">verdict (Fig. {FIG["verdict"]}): {box_}too late {box_}too noisy {box_}usable'
         f'</span></div>',
-        gap=10))
-    parts.append(refs_block())
+        gap=10)
+
+
+def right_panel() -> str:
+    parts = [s_discussion(), s_relate(), s_verdict(), s_limits(), s_broader(), s_future(), s_conclusion(), refs_block()]
     return page("Draft 4, right panel: discussion and interpretation", PW_SIDE, PH,
                 "\n".join(parts), 56, gap=22)
 

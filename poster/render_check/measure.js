@@ -1,5 +1,5 @@
 // measure.js -- does every panel fit, and is any text below the floor?
-//   Drafts 2 and 3: 24 pt (32 px). Draft 4: 20 pt (27 px), and it reports how many
+//   Drafts 2 and 3: 24 pt (32 px). Drafts 4 and 5: 20 pt (27 px), and it reports how many
 //   pieces of text sit between 20 and 24 pt so that they can be looked at.
 //   python3 poster/render_check/preview.py
 //   node poster/render_check/measure.js poster/render_check/out draft4
@@ -9,17 +9,19 @@ const { chromium } = require('playwright');
   const dir = require('path').resolve(process.argv[2]);
   let bad = 0;
   const b = await chromium.launch();
-  // which draft: "draft2" (default), "draft3" or "draft4". Draft 1 is kept as a record of the
+  // which draft: "draft2" (default), "draft3", "draft4" or "draft5". Draft 1 is kept as a record of the
   // first design and is not checked: its small type is the reason it was replaced.
   const which = process.argv[3] || 'draft2';
   const sets = { draft2: [['Left',1152],['Main',2304],['Right',1152]],
                  draft3: [['D3-Left',1152],['D3-Centre',2304],['D3-Right',1152]],
                  draft4: [['D4-Left',1152],['D4-Centre',2304],['D4-Right',1152]],
+                 draft5: [['D5-Left',1152],['D5-Centre',2304],['D5-Right',1152]],
                  draft1: [['D1-Left',1152],['D1-Centre',2304],['D1-Right',1152]] };
-  // Draft 4 is 48 in tall, and allows captions, axis labels and table cells at 20 pt (27 px).
+  // Drafts 4 and 5 are 48 in tall, and allow captions, axis labels and table cells at 20 pt (27 px).
   // Every other draft is 36 in tall with a single floor of 24 pt (32 px).
-  const H = which === 'draft4' ? 4608 : 3456;
-  const FLOOR = which === 'draft4' ? 26.9 : 31.9;
+  const tall = which === 'draft4' || which === 'draft5';
+  const H = tall ? 4608 : 3456;
+  const FLOOR = tall ? 26.9 : 31.9;
   for (const [n, w] of sets[which]) {
     const p = await b.newPage({ viewport: { width: w, height: H }, deviceScaleFactor: 1 });
     await p.goto('file://' + dir + '/' + n + '.html');
@@ -54,6 +56,6 @@ const { chromium } = require('playwright');
     await p.close();
   }
   await b.close();
-  console.log(bad ? 'FAIL' : 'PASS -- every panel fits and no text is under ' + (which === 'draft4' ? '20 pt' : '24 pt'));
+  console.log(bad ? 'FAIL' : 'PASS -- every panel fits and no text is under ' + (tall ? '20 pt' : '24 pt'));
   process.exit(bad ? 1 : 0);
 })();

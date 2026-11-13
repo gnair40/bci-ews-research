@@ -7792,3 +7792,143 @@ the researcher made. Draft 4 is on a new page. Two things recorded earlier are
 still open: the demo export that disagrees with the benchmark's scoring rule,
 and the Swanson (2026) reference, which is still unconfirmed and is not on the
 board.
+
+---
+
+## 13 November 2026 — a plain-language introduction, and a title area that says what the project is
+
+### What was asked
+
+A fifth draft, as a refinement of the fourth and not a replacement. Two things:
+
+1. Under the title, at the top of the centre panel, a prominent light-blue
+   section that a person with no background can follow in about thirty
+   seconds: what the problem is, why it matters, and how this project
+   addresses it, told as a story with pictures. It was to explore the idea of
+   prevention against intervention with the actual mechanism, not a slogan,
+   and to keep apart established science, what the project has shown, and
+   what it might lead to.
+2. A title area that feels composed, with a meaningful drawing.
+
+All earlier requirements were to stay, and every draft was to be exported to
+an editable PowerPoint. The export is recorded in the entry after this one.
+
+### The size was ambiguous again, so I asked again
+
+The request said "48 × 36-inch trifold". Draft 4 is 48 × 48, by the
+researcher's own decision of the day before, and it is full. A new section
+with nothing removed does not fit on a 36 inch board at the type sizes she
+set. I put the three ways out to her: 48 × 48; 48 × 36 with content removed;
+48 × 36 with smaller type. **Her answer: 48 × 48.**
+
+### What was checked outside the repository
+
+- **Why recordings change.** Perge and colleagues, *Journal of Neural
+  Engineering* 10, 036004 (2013), read in its open-access copy. Its
+  introduction says instabilities "could have arisen from array movement,
+  tissue reaction, array material degradation inside the body, or connector
+  issues externally", and its abstract attributes 85% of within-day
+  firing-rate changes to physiological mechanisms. The drawing shows four of
+  those five: the array shifting, tissue reacting, parts wearing, neurons
+  changing. Connector problems are outside the body and are not drawn. The
+  paper is about changes within a day; the sentence on the board says only
+  that "the recording keeps changing". It is reference [7].
+- **A figure I wanted and did not use.** That a reported home fire is about
+  half as deadly where a smoke alarm works. It would have been the example of
+  an early warning that does work. A search summary gave the figure for
+  editions of the fire-protection report already cited as [5], but the report
+  could not be opened from this session (the sites are outside what it may
+  reach), so the figure is not on the board.
+- **The real example.** The stored 142-day series: error between 18.5° and
+  36.2° through day 57, 64.7° on day 69, 21.8° on day 93, then 95.7° to
+  121.4° from day 100, against a failure level of 45.3°. "Worked for about two
+  months, then failed" is a fair one-line reading of that, and the chart is
+  beside the sentence.
+
+### The reasoning mistake I caught before drawing it
+
+Asked to show prevention against intervention, I first planned two timelines:
+"today: the repair follows the failure" and "with a warning: the repair comes
+first". The first line is wrong. Decoders are often recalibrated every day,
+needed or not, which pauses use [2]. Waiting for a fixed decoder to fail is a
+second, different case. So there are three ways to time the same repair: on a
+schedule, after failure, and when warned. The drawing shows all three, and the
+sentence under it says what a warning would and would not do: it would not
+stop the drift, it would let the repair happen only when needed and before
+control is lost.
+
+This matters because the two-line version flatters the project. It makes
+today's practice look like neglect, and it is not.
+
+### Draft 5
+
+- **Title area.** The title, subtitle, name and school on the left; on the
+  right a drawing of the signal path: electrodes, decoder, cursor, and in
+  blue the monitor that watches the recorded activity and raises a warning.
+- **Introduction, on light blue.** One opening sentence built on the real
+  example, then three numbered frames. Each frame's heading line says how far
+  its claim goes: "established science", "not yet shown", "shown on archived
+  data". The third frame ends with what is not shown or claimed.
+- **Everything from Draft 4 is still on the board.** To make room, the
+  introduction absorbed the old Introduction, Why it matters and the four
+  headline numbers; Computational validation moved to the left panel; the
+  rule for judging the bench result moved under Physical validation; the
+  decision-rate chart moved beside the discussion point that cites it; and
+  the "also measured" caption became a discussion point. The table is in
+  `poster/README.md`.
+
+To be sure the words were moved and not retyped, the Draft 4 builder was
+first split into one function per section by a script that cut the text by
+position, and Draft 4 was rebuilt to confirm its three files came out
+identical. Draft 5 imports those functions.
+
+### Mistakes in this draft
+
+**1. Two facts thinned out while moving.** In the first published version of
+Draft 5, the label on the scheduled-repair timeline said "every day, needed or
+not [2]", which is my gloss, and had lost what the source says: that the
+device cannot be used freely meanwhile. And the caption of the 142-day chart
+had lost "array T11" and "median cursor error by session". Both were found by
+reading Draft 4's Introduction against Draft 5 line by line, and both were
+restored and republished. The same kind of slip as the caption in Draft 4:
+moving text is where it gets shorter.
+
+**2. A chart made unreadable to save height, again.** I shortened the
+threshold-sweep chart from 228 to 206 units. The size check passed. On the
+rendered panel the 80% line ran through two labels. Restored to 228; the room
+came from spacing. This is the second draft in a row where I made that
+mistake, so it is now in `poster/README.md` under "Known limits".
+
+**3. Two labels on top of each other in the new 142-day chart**, found by
+looking at the rendering, fixed by making the plot taller.
+
+**4. A heading that was a question without its question mark** ("When should
+the repair happen"). The board has no rhetorical questions. It now reads
+"Three ways to time the repair".
+
+**5. The title is smaller.** 78 pt, where Draft 4 had 104 pt, so that the
+drawing fits beside it on one line. That is a trade the researcher may not
+want. It is listed for her.
+
+### What is in the introduction that is new wording
+
+Every sentence in the light-blue section is new and is hers to rewrite. In
+particular: the opening sentence; "A decoder tuned to yesterday"; the three
+ways to time the repair; and "Not shown or claimed: a warning reliable enough
+to act on, or any benefit to a user." The phrase "In research trials" was
+added because the devices are investigational.
+
+### Checks
+
+- `poster/build_poster_data.py`: 45 checks pass.
+- The render check for Draft 5: every panel fits, nothing under 20 pt (432
+  pieces of text between 20 and 24 pt), nothing past a right edge.
+- Drafts 2, 3 and 4 rebuilt after the changes to the shared code: their files
+  are identical to the published ones.
+- Each panel read at full size.
+
+### Left as it was
+
+Drafts 1 to 4 and the researcher's blank artboard are untouched. Draft 5 is on
+a new page. Still open from before: the Swanson (2026) reference, and the demo
+export that disagrees with the benchmark's scoring rule.
