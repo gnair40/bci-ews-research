@@ -7932,3 +7932,76 @@ added because the devices are investigational.
 Drafts 1 to 4 and the researcher's blank artboard are untouched. Draft 5 is on
 a new page. Still open from before: the Swanson (2026) reference, and the demo
 export that disagrees with the benchmark's scoring rule.
+
+---
+
+## 13 November 2026 (export) — every draft as an editable PowerPoint file
+
+### What was asked
+
+All five drafts as editable PowerPoint, at the board's dimensions.
+
+### What was made
+
+Five files in `poster/export/`, one per draft. Each is a single slide the size
+of the whole board: 48 × 36 in for Drafts 1 to 3, 48 × 48 in for Drafts 4 and
+5, as the researcher chose when asked about the size. One file per draft,
+because a PowerPoint file has one slide size.
+
+### How, and why that way
+
+The boards already exist, checked. Rebuilding them a second time in PowerPoint
+would make a second copy that could drift from the first. So the export does
+not rebuild anything. A script opens each published panel in a browser, lists
+every piece of text, box, line and chart element with the position the browser
+gave it, and writes that list as PowerPoint objects: paragraphs as text boxes
+that re-wrap, labels as small text boxes, boxes and rules as shapes, and each
+chart as one group of shapes. The wiring drawings stay pictures.
+
+### The check that matters
+
+After writing each file the script opens it again and counts every letter,
+digit and symbol in it against the board it came from. All five match:
+16,872, 6,832, 6,697, 13,317 and 13,885 characters. So no text was lost and
+none was added.
+
+My first version of that check compared words and failed on every file. The
+files were right and the check was wrong: the board's own text has no spaces
+between neighbouring labels ("planned" next to "optical" reads as
+"plannedoptical"), so the words could not match. Counting characters does
+not have that problem.
+
+### What I found by looking, and fixed
+
+Each file was rendered to a picture and put beside its board.
+
+- **The title ran into the drawing next to it.** In the browser, Source Serif
+  4 is drawn narrower at large sizes. PowerPoint draws every size with the
+  standard shape, which is wider: about 15% wider at the size of the title. I
+  measured the installed font against the browser's and found it matches the
+  browser's font at one fixed setting, so the export now shrinks serif type by
+  exactly that ratio and the widths agree. The cost is that serif headings are
+  7 to 14% smaller in point size than on the canvas.
+- **Highlighter marks on Draft 2 came loose from their words** when the text
+  wrapped differently. They were separate yellow boxes. They are now a
+  property of the words, so they travel with them.
+
+### What is not exact, and is said in the README
+
+Charts are groups of shapes, not PowerPoint charts with data behind them.
+Line breaks can differ. Code and labels are one box per line. Dashes and the
+hatching on Draft 1 use PowerPoint's nearest equivalents.
+
+### What was not done
+
+**The files were not opened in PowerPoint.** This session has no PowerPoint.
+The rendering used LibreOffice, a different program that reads the same file
+format, and the files pass a format validator. That is good evidence and it
+is not the same as opening them. The three fonts must also be installed on the
+computer that opens them, or the text will shift.
+
+### Decisions that are the researcher's
+
+Whether one slide per board is the form she wants, or one slide per panel.
+Whether the smaller serif headings are acceptable, or she would rather have
+the canvas sizes and fix overlaps by hand.

@@ -22,6 +22,79 @@ Earlier drafts: [Draft 1](preview/draft1.png), [Draft 2](preview/draft2.png),
 
 ---
 
+## Editable PowerPoint files
+
+Every draft is also in `poster/export/` as a PowerPoint file. Each file is
+**one slide the size of the whole board**, with the three panels side by side.
+
+| File | Slide size |
+|---|---|
+| `trifold-draft1-48x36in.pptx` | 48 × 36 in |
+| `trifold-draft2-48x36in.pptx` | 48 × 36 in |
+| `trifold-draft3-48x36in.pptx` | 48 × 36 in |
+| `trifold-draft4-48x48in.pptx` | 48 × 48 in |
+| `trifold-draft5-48x48in.pptx` | 48 × 48 in |
+
+Drafts 4 and 5 are 48 × 48 in because that is the size of those boards. A
+single file cannot hold slides of two sizes, so there is one file per draft.
+
+**Install three fonts before opening them:** IBM Plex Sans, IBM Plex Mono and
+Source Serif 4, all free from Google Fonts. Without them PowerPoint substitutes
+other fonts and the text shifts. Opening the files in Google Slides was not
+tested.
+
+PowerPoint has only "bold" and "not bold", so the in-between weights are named
+as their own fonts in the file: IBM Plex Sans SemiBold, IBM Plex Sans Medium,
+IBM Plex Mono SemiBold, IBM Plex Mono Medium and Source Serif 4 SemiBold. They
+install with the families above. If semi-bold text looks wrong on a computer,
+this is the first thing to check.
+
+What is editable:
+
+- **Paragraphs** are text boxes. Click and type; the text re-wraps.
+- **Labels, table cells and chart numbers** are small text boxes, one per line.
+- **Boxes, rules and table lines** are rectangles and lines.
+- **Each chart or drawing is one group** of circles, lines and shapes. Move it
+  as one object, or ungroup it to change a part.
+- **The wiring drawings** are pictures, as they are on the board.
+
+What does not carry over exactly:
+
+- **Charts are drawings, not PowerPoint charts.** There is no data sheet behind
+  them. To change a plotted number, change the data and rebuild the board.
+- **Line breaks can differ.** PowerPoint wraps text its own way, so a
+  paragraph may break at a different word than on the canvas. Every paragraph
+  box is a little wider than its text to keep that from adding a line.
+- **Serif headings are 7 to 14% smaller in point size** than on the canvas
+  (the title most). The browser draws Source Serif 4 narrower at large sizes
+  and PowerPoint does not, so the size is reduced until the width matches.
+- **Code lines and labels are one box per line**, so editing a long line of
+  code does not re-wrap it.
+- **The hatched "awaiting measurement" areas on Draft 1** use PowerPoint's own
+  diagonal pattern, which is finer than the board's.
+- **Dashed lines** use PowerPoint's nearest dash style.
+
+How they were checked, and how they were not:
+
+- Each file passes a PowerPoint file validator.
+- After writing each file the script opens it again and counts every letter,
+  digit and symbol against the board's. All five match exactly.
+- Each file was rendered to a picture and compared with the board, panel by
+  panel.
+- **They were not opened in PowerPoint itself.** The rendering used
+  LibreOffice, which is not the same program. Open each file once and look it
+  over before relying on it.
+
+To rebuild them:
+
+```
+python3 poster/pptx/build_pptx.py
+```
+
+It needs Python with python-pptx and Node with Playwright. It reads the
+published artboards through a browser, so the files are the published boards
+read back, not a second copy of the design.
+
 ## How Draft 5 is organised
 
 | Where | Sections | Figures |
@@ -199,6 +272,8 @@ do the same for theirs). Sentences that need a measured number take it from
 | `assets/`, `assets.json` | the two relabel-ready wiring drawings, and where they live on the canvas |
 | `canvas/project/` | every artboard exactly as published, and the canvas index |
 | `render_check/` | the fit-and-size check |
+| `pptx/` | the PowerPoint export: `extract.js` reads a rendered panel, `build_pptx.py` writes the files |
+| `export/` | the five PowerPoint files |
 | `preview/` | one picture per draft |
 
 Draft 1 has no builder here. Its three files in `canvas/project/` (`D1-*`) are
