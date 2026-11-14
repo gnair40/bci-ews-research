@@ -43,7 +43,7 @@ if (!same(L.state.figUsed, L.REG.figures)) {
 if (!same(L.state.tabUsed, L.REG.tables)) {
   throw new Error('table order differs from registry.json:\n' + L.state.tabUsed.join(' '));
 }
-const manual = require('./doc2').build(meta);
+const { children: manual, sheets } = require('./doc2').build(meta);
 const missing = Object.values(L.state.reds).filter((r) => !L.state.anchors.has(r.see));
 if (missing.length) {
   throw new Error('placeholders that point to no section of the manual:\n'
@@ -65,6 +65,13 @@ const write = async (name, title, running, children) => {
     'Research Completion and Data Analysis Manual',
     `Research Completion and Data Analysis Manual  |  companion to the working paper  |  `
     + meta.date, manual);
+  // the five sheets of the bench logbook, as empty CSV files with the manual's columns
+  fs.mkdirSync(path.join(L.HERE, 'logbook'), { recursive: true });
+  for (const s of sheets) {
+    const file = s.name.replace(/^Sheet (\w): /, '$1_').replace(/[^A-Za-z0-9_]+/g, '_') + '.csv';
+    fs.writeFileSync(path.join(L.HERE, 'logbook', file), s.cols.join(',') + '\n');
+  }
+  console.log(`wrote ${sheets.length} logbook sheets to paper/logbook/`);
   const reds = Object.values(L.state.reds);
   fs.writeFileSync(path.join(L.HERE, 'placeholders.json'), JSON.stringify(reds, null, 1) + '\n');
   console.log(`${reds.length} red placeholders in the paper, every one explained in the manual`);

@@ -87,11 +87,11 @@ function build(meta) {
     + `\`${meta.branch}\`, at commit \`${meta.commit}\`. File and folder names in this paper `
     + 'refer to that repository.',
   ]));
-  add(H2('Contents'));
-  add(bullets(['1. Abstract', '2. Introduction', '3. Hypothesis and Research Questions',
-    '4. Materials', '5. Methods', '6. Results', '7. Analysis', '8. Discussion',
-    '9. Future Work', '10. Sources of Error', '11. Conclusion', '12. References',
-    '13. Acknowledgments']));
+  add(P('**Contents.** 1 Abstract \u00B7 2 Introduction \u00B7 3 Hypothesis and Research '
+    + 'Questions \u00B7 4 Materials \u00B7 5 Methods \u00B7 6 Results \u00B7 7 Analysis '
+    + '\u00B7 8 Discussion \u00B7 9 Future Work \u00B7 10 Sources of Error \u00B7 '
+    + '11 Conclusion \u00B7 12 References \u00B7 13 Acknowledgments',
+  { run: { font: L.SANS, size: 20 } }));
 
   // -------------------------------------------------------------------------
   sec(1, 'Abstract');
@@ -503,7 +503,7 @@ function build(meta) {
     + 'apparatus.', { width: 520 }));
   add(figure('benchflow', bench('fig-workflow'), 'The workflow of the physical validation.',
     'Drawing from `physical/figures/`. Build, verify, calibrate, record, analyse.',
-    { width: 400 }));
+    { width: 470 }));
   add(P(`**Wiring.** Two parts will be wired to the Raspberry Pi's 40-pin header with jumper `
     + `wires; the design uses no breadboard. ${F('wiring_stepper')} and ${F('wiring_dht22')} `
     + 'show the connections. The stepper driver inputs IN1 to IN4 will connect to GPIO 17, 27, '
@@ -525,7 +525,7 @@ function build(meta) {
     + `\`physical/data/onsets/\` (${F('onset')}). \`run_session.py\` will refuse to record a `
     + 'session that has no sealed plan.'));
   add(figure('onset', bench('fig-onset'), 'How the onset of each fault is fixed before recording.',
-    'Drawing from `physical/figures/`.', { width: 520 }));
+    'Drawing from `physical/figures/`.', { width: 610 }));
   add(P(`**Acceptance gates and calibration.** No result will be read until the apparatus has `
     + `passed five gates (${T('gates_bench')}). The last gate sets the difficulty of the `
     + 'decoding task. On T11 the margin between chance and decoding error was '
@@ -551,14 +551,14 @@ function build(meta) {
         + `${n(margin11, 1)}°`, '`bench.py margin`'],
     ]));
   add(figure('calib', bench('fig-calib'), 'The calibration loop that sets the difficulty.',
-    'Drawing from `physical/figures/`.', { width: 520 }));
+    'Drawing from `physical/figures/`.', { width: 610 }));
   add(P(`**Experiments.** Seven experiments are planned (${T('experiments')}), 337 sessions of `
     + 'five minutes (15,000 frames) each, about 28 hours of recording and about 8 GB of data. '
     + 'The number of fault-free sessions, 101, is frozen. If time runs short, experiments will '
     + 'be cut in a fixed order (P-5, then P-7, then the middle severity of P-3). P-2 and P-6 '
     + 'will not be cut.'));
   add(table('experiments', 'The seven experiments of the physical validation.',
-    [700, 3460, 1000, 1300, 2900],
+    [700, 3360, 1100, 1300, 2900],
     ['Code', 'Purpose', 'Sessions', 'Recording', 'How it is carried out'], [
       ['P-1', 'Calibration: set and record the modulation depth', '5', '25 min',
         'Attended; these sessions also fit the decoder and the monitor'],
@@ -853,7 +853,7 @@ function build(meta) {
   const leadHead = ['Sessions', 'Detected', 'Detection rate (95% interval)',
     'Warned before onset', 'Median detection delay, s (95% interval)',
     'Median lead time, s (95% interval)'];
-  const leadW = [1760, 900, 900, 1500, 1000, 1650, 1650];
+  const leadW = [1560, 1100, 1100, 1450, 1050, 1550, 1550];
   add(table('b_lead_type', 'Lead time and detection by fault type.', leadW,
     ['Fault type', ...leadHead],
     ['RATE_LOSS', 'CHANNEL_DROPOUT', 'GAIN_DRIFT', 'GEOMETRY_ROTATION', 'All types']
@@ -881,7 +881,7 @@ function build(meta) {
     'physical/data/figures/severity_response.png', 'V.2', { height: 2.6 }));
   add(H3('6.2.5 Experiment P-5: faults that nobody designed'));
   add(table('b_undesigned', 'Undesigned faults, with the sealed faults of P-3 for comparison.',
-    [2460, 900, 900, 1700, 1700, 1700],
+    [2260, 1100, 1100, 1650, 1650, 1600],
     ['Intervention', 'Sessions', 'Detected', 'Median detection delay (s)', 'Median lead time (s)',
       'Onset source'], [
       ['Connector loosened and re-seated', null, null, null, null, 'clock, by hand'],
@@ -928,7 +928,7 @@ function build(meta) {
     'physical/data/figures/decision_rate.png', 'V.2', { height: 2.6 }));
   add(H3('6.2.8 Experiment P-7: four apparatus configurations'));
   add(table('b_app', 'The main quantities in each apparatus configuration.',
-    [2560, 900, 1100, 1700, 1700, 1400],
+    [2360, 1100, 1100, 1700, 1700, 1400],
     ['Configuration', 'Sessions', 'Margin (°)', 'Median lead time, s (95% interval)',
       'False alarms per hour (upper bound)', 'Sign of the decision-rate change'], [
       ['A: baseline', null, null, null, null, null],

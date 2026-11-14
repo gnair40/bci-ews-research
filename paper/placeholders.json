@@ -1,0 +1,466 @@
+[
+ {
+  "id": "R1.1",
+  "section": 1,
+  "text": "INSERT THE BENCH RESULTS IN TWO OR THREE SENTENCES: THE NUMBER OF SESSIONS RECORDED AND ANALYSED, THE FALSE-ALARM RATE WITH ITS 95% UPPER BOUND, THE MEDIAN LEAD TIME WITH ITS 95% INTERVAL, AND THE LARGEST OF THE THREE CORRELATIONS.",
+  "plain": "Insert the bench results in two or three sentences: the number of sessions recorded and analysed, the false-alarm rate with its 95% upper bound, the median lead time with its 95% interval, and the largest of the three correlations.",
+  "from": "Tables 14, 15, 16 and 19 of this paper, once filled",
+  "see": "VI.2"
+ },
+ {
+  "id": "R1.2",
+  "section": 1,
+  "text": "INSERT ONE CLOSING SENTENCE THAT STATES THE VERDICT GIVEN BY THE PREREGISTERED JUDGING RULE (SUPPORTED, FALSIFIED OR INCONCLUSIVE) AND WHAT IT MEANS.",
+  "plain": "Insert one closing sentence that states the verdict given by the preregistered judging rule (supported, falsified or inconclusive) and what it means.",
+  "from": "physical/data/results/correlation_vs_usability.json, field hypothesis_supported; Section 11 of this paper",
+  "see": "VI.2"
+ },
+ {
+  "id": "R3.1",
+  "section": 3,
+  "text": "STATE ANSWERED OR NOT ANSWERED",
+  "plain": "State answered or not answered",
+  "from": "Section 11 of this paper",
+  "see": "VI.4"
+ },
+ {
+  "id": "R3.2",
+  "section": 3,
+  "text": "INSERT THE VERDICT",
+  "plain": "Insert the verdict",
+  "from": "physical/data/results/correlation_vs_usability.json",
+  "see": "IV.7"
+ },
+ {
+  "id": "R3.3",
+  "section": 3,
+  "text": "INSERT THE VERDICT",
+  "plain": "Insert the verdict",
+  "from": "physical/data/results/correlation_vs_usability.json",
+  "see": "IV.7"
+ },
+ {
+  "id": "R4.1",
+  "section": 4,
+  "text": "INSERT THE VERSIONS INSTALLED ON THE BENCH COMPUTER",
+  "plain": "Insert the versions installed on the bench computer",
+  "from": "bench logbook, sheet B (build record)",
+  "see": "III.3"
+ },
+ {
+  "id": "R4.2",
+  "section": 4,
+  "text": "COMPLETE THE THREE PINK COLUMNS FOR ALL FOURTEEN ITEMS, AND LIST ANY PART THAT DIFFERS FROM THE SPECIFICATION.",
+  "plain": "Complete the three pink columns for all fourteen items, and list any part that differs from the specification.",
+  "from": "bench logbook, sheet B (build record)",
+  "see": "III.3"
+ },
+ {
+  "id": "R4.3",
+  "section": 4,
+  "text": "INSERT THE PHOTOGRAPH FOR FIGURE 4 HERE. ALL FOURTEEN ITEMS LAID OUT ON A PLAIN SURFACE, EACH WITH A NUMBERED LABEL, A RULER IN THE FRAME FOR SCALE.",
+  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 4 HERE. All fourteen items laid out on a plain surface, each with a numbered label, a ruler in the frame for scale.",
+  "from": "photograph PH-1",
+  "see": "II.2"
+ },
+ {
+  "id": "R4.4",
+  "section": 4,
+  "text": "INSERT THE PHOTOGRAPH FOR FIGURE 5 HERE. SIX CLOSE PHOTOGRAPHS ARRANGED IN A GRID OF TWO ROWS AND THREE COLUMNS, EACH LETTERED (A) TO (F).",
+  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 5 HERE. Six close photographs arranged in a grid of two rows and three columns, each lettered (a) to (f).",
+  "from": "photograph set PH-2",
+  "see": "II.2"
+ },
+ {
+  "id": "R5.1",
+  "section": 5,
+  "text": "STATE THE SUPPLY AND GROUND PINS ACTUALLY USED FOR THE TEMPERATURE SENSOR.",
+  "plain": "State the supply and ground pins actually used for the temperature sensor.",
+  "from": "bench logbook, sheet B (build record)",
+  "see": "III.3"
+ },
+ {
+  "id": "R5.2",
+  "section": 5,
+  "text": "INSERT THE FINAL MODULATION DEPTH, THE CAMERA EXPOSURE AND GAIN, THE SCREEN BRIGHTNESS SETTING, AND THE MEASURED DISTANCE FROM CAMERA TO DISPLAY.",
+  "plain": "Insert the final modulation depth, the camera exposure and gain, the screen brightness setting, and the measured distance from camera to display.",
+  "from": "bench logbook, sheet B (build record); physical/data/raw/SESSION_LOG.csv",
+  "see": "III.3"
+ },
+ {
+  "id": "R5.3",
+  "section": 5,
+  "text": "INSERT THE PHOTOGRAPH FOR FIGURE 15 HERE. THE WHOLE BENCH FROM THE FRONT AND SLIGHTLY ABOVE, LID OPEN, EVERY LABELLED PART VISIBLE, A RULER OR TAPE MEASURE IN THE FRAME.",
+  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 15 HERE. The whole bench from the front and slightly above, lid open, every labelled part visible, a ruler or tape measure in the frame.",
+  "from": "photograph PH-3",
+  "see": "II.2"
+ },
+ {
+  "id": "R5.4",
+  "section": 5,
+  "text": "INSERT THE PHOTOGRAPH FOR FIGURE 16 HERE. THE SAME VIEWPOINT AS THE FIGURE BEFORE IT, LID CLOSED AND TAPED, CABLES LEAVING THROUGH THE SEALED SLOT.",
+  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 16 HERE. The same viewpoint as the figure before it, lid closed and taped, cables leaving through the sealed slot.",
+  "from": "photograph PH-4",
+  "see": "II.2"
+ },
+ {
+  "id": "R5.5",
+  "section": 5,
+  "text": "INSERT THE PHOTOGRAPH FOR FIGURE 17 HERE. TAKEN FROM DIRECTLY ABOVE, IN FOCUS, WITH PIN 1 OF THE HEADER IDENTIFIABLE AND EVERY WIRE TRACEABLE FROM END TO END.",
+  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 17 HERE. Taken from directly above, in focus, with pin 1 of the header identifiable and every wire traceable from end to end.",
+  "from": "photograph PH-5",
+  "see": "II.2"
+ },
+ {
+  "id": "R5.6",
+  "section": 5,
+  "text": "INSERT THE PHOTOGRAPH FOR FIGURE 18 HERE. A COPY OF THE PREVIOUS PHOTOGRAPH WITH A TEXT LABEL ON EACH WIRE (SIGNAL NAME, GPIO NUMBER, PHYSICAL PIN), PLACED NEXT TO THE WIRING DRAWING.",
+  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 18 HERE. A copy of the previous photograph with a text label on each wire (signal name, GPIO number, physical pin), placed next to the wiring drawing.",
+  "from": "photograph PH-6, made from PH-5",
+  "see": "II.4"
+ },
+ {
+  "id": "R5.7",
+  "section": 5,
+  "text": "INSERT THE PHOTOGRAPH FOR FIGURE 19 HERE. THE SENSOR BREAKOUT WITH ITS THREE WIRES TRACEABLE TO THE HEADER, AND THE POWER SUPPLY CONNECTION.",
+  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 19 HERE. The sensor breakout with its three wires traceable to the header, and the power supply connection.",
+  "from": "photograph PH-7",
+  "see": "II.2"
+ },
+ {
+  "id": "R5.8",
+  "section": 5,
+  "text": "INSERT THE PHOTOGRAPH FOR FIGURE 20 HERE. THE INTERIOR BEFORE SEALING: LINING, DISPLAY, CAMERA AIMED AT THE DISPLAY, THE MEASURED CAMERA-TO-DISPLAY DISTANCE SHOWN BY A TAPE MEASURE.",
+  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 20 HERE. The interior before sealing: lining, display, camera aimed at the display, the measured camera-to-display distance shown by a tape measure.",
+  "from": "photograph PH-8",
+  "see": "II.2"
+ },
+ {
+  "id": "R5.9",
+  "section": 5,
+  "text": "INSERT THE SCREENSHOT FOR FIGURE 21 HERE. THE TERMINAL WITH THE SESSION AND BLOCK NUMBER, THE SEALED PLAN IT LOADED AND THE START TIME, WITH THE STIMULUS DISPLAY VISIBLE OR INSET.",
+  "plain": "INSERT THE SCREENSHOT FOR FIGURE 21 HERE. The terminal with the session and block number, the sealed plan it loaded and the start time, with the stimulus display visible or inset.",
+  "from": "screenshot SS-1",
+  "see": "II.3"
+ },
+ {
+  "id": "R5.10",
+  "section": 5,
+  "text": "INSERT THE SCREENSHOT FOR FIGURE 22 HERE. THE FULL OUTPUT LISTING GATES G-A TO G-E WITH THE MEASURED VALUE AND THE WORD PASS FOR EACH, WITH THE DATE VISIBLE.",
+  "plain": "INSERT THE SCREENSHOT FOR FIGURE 22 HERE. The full output listing gates G-a to G-e with the measured value and the word PASS for each, with the date visible.",
+  "from": "screenshot SS-2",
+  "see": "II.3"
+ },
+ {
+  "id": "R5.11",
+  "section": 5,
+  "text": "INSERT THE DATES ON WHICH EACH EXPERIMENT WAS RECORDED, THE ROOM, THE RANGE OF TEMPERATURE LOGGED, AND WHO WAS PRESENT FOR THE ATTENDED SESSIONS.",
+  "plain": "Insert the dates on which each experiment was recorded, the room, the range of temperature logged, and who was present for the attended sessions.",
+  "from": "bench logbook, sheets C and D; physical/data/raw/SESSION_LOG.csv",
+  "see": "III.4"
+ },
+ {
+  "id": "R6.1",
+  "section": 6,
+  "text": "FILL THE PINK CELLS FROM THE OUTPUT OF THE BENCH CHECK, AND STATE IN ONE SENTENCE WHETHER ALL FIVE GATES PASSED BEFORE ANY EXPERIMENTAL SESSION WAS RECORDED.",
+  "plain": "Fill the pink cells from the output of the bench check, and state in one sentence whether all five gates passed before any experimental session was recorded.",
+  "from": "output of physical/code/bench.py check; physical/data/lag.json; bench logbook, sheet B",
+  "see": "III.3"
+ },
+ {
+  "id": "R6.2",
+  "section": 6,
+  "text": "FILL THE PINK CELLS, AND GIVE THE REASON FOR EVERY EXCLUDED SESSION.",
+  "plain": "Fill the pink cells, and give the reason for every excluded session.",
+  "from": "physical/data/sessions.csv; physical/data/EXCLUSIONS.csv; physical/data/processed/table_meta.json",
+  "see": "IV.2"
+ },
+ {
+  "id": "R6.3",
+  "section": 6,
+  "text": "INSERT THE GRAPH FOR FIGURE 31 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE. STATE IN THE CAPTION WHICH SESSION IT IS AND THE RULE BY WHICH IT WAS CHOSEN.",
+  "plain": "INSERT THE GRAPH FOR FIGURE 31 HERE. Use the figure written by the analysis software. State in the caption which session it is and the rule by which it was chosen.",
+  "from": "physical/data/figures/session_detail.png",
+  "see": "V.2"
+ },
+ {
+  "id": "R6.4",
+  "section": 6,
+  "text": "FILL THE PINK CELLS FOR BOTH DECODERS.",
+  "plain": "Fill the pink cells for both decoders.",
+  "from": "physical/data/results/false_alarm.json (frozen) and the same file from the run tagged _persession",
+  "see": "IV.3"
+ },
+ {
+  "id": "R6.5",
+  "section": 6,
+  "text": "DESCRIBE THE FALSE-ALARM RESULT IN WORDS. REPORT THE UPPER END OF THE INTERVAL, NOT ONLY THE RATE. IF THERE WERE NO FALSE ALARMS, REPORT THE UPPER BOUND AND STATE THAT THE CAMPAIGN CANNOT DISTINGUISH A QUIET MONITOR FROM A NOISY ONE. THEN STATE WHETHER THE SILENCE GATE PASSED, RAW AND DETRENDED.",
+  "plain": "Describe the false-alarm result in words. Report the upper end of the interval, not only the rate. If there were no false alarms, report the upper bound and state that the campaign cannot distinguish a quiet monitor from a noisy one. Then state whether the silence gate passed, raw and detrended.",
+  "from": "Table 15 of this paper; physical/data/results/P2_FALSE_ALARM_RATE.md",
+  "see": "VI.7"
+ },
+ {
+  "id": "R6.6",
+  "section": 6,
+  "text": "INSERT THE GRAPH FOR FIGURE 32 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
+  "plain": "INSERT THE GRAPH FOR FIGURE 32 HERE. Use the figure written by the analysis software.",
+  "from": "physical/data/figures/false_alarm_evidence.png",
+  "see": "V.2"
+ },
+ {
+  "id": "R6.7",
+  "section": 6,
+  "text": "FILL THE PINK CELLS. REPORT THE FALSE-ALARM RATE FROM TABLE 15 IN THE SAME SENTENCE AS ANY LEAD TIME.",
+  "plain": "Fill the pink cells. Report the false-alarm rate from Table 15 in the same sentence as any lead time.",
+  "from": "physical/data/results/lead_time.json, blocks overall and by_fault_type",
+  "see": "IV.5"
+ },
+ {
+  "id": "R6.8",
+  "section": 6,
+  "text": "FILL THE PINK CELLS.",
+  "plain": "Fill the pink cells.",
+  "from": "physical/data/results/lead_time.json, block by_severity",
+  "see": "IV.5"
+ },
+ {
+  "id": "R6.9",
+  "section": 6,
+  "text": "DESCRIBE THE LEAD-TIME RESULT IN WORDS: THE DETECTION RATE, THE MEDIAN LEAD TIME AND ITS INTERVAL, THE MEDIAN DETECTION DELAY, HOW MANY SESSIONS WARNED BEFORE THE ONSET (THESE ARE FALSE ALARMS), HOW MANY FAULTS NEVER CAUSED A FAILURE, AND WHICH FAULT TYPES DIFFERED.",
+  "plain": "Describe the lead-time result in words: the detection rate, the median lead time and its interval, the median detection delay, how many sessions warned before the onset (these are false alarms), how many faults never caused a failure, and which fault types differed.",
+  "from": "Tables 16 and 17 of this paper; physical/data/results/P3_LEAD_TIME.md",
+  "see": "VI.7"
+ },
+ {
+  "id": "R6.10",
+  "section": 6,
+  "text": "INSERT THE GRAPH FOR FIGURE 33 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
+  "plain": "INSERT THE GRAPH FOR FIGURE 33 HERE. Use the figure written by the analysis software.",
+  "from": "physical/data/figures/lead_time.png",
+  "see": "V.2"
+ },
+ {
+  "id": "R6.11",
+  "section": 6,
+  "text": "INSERT THE GRAPH FOR FIGURE 34 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
+  "plain": "INSERT THE GRAPH FOR FIGURE 34 HERE. Use the figure written by the analysis software.",
+  "from": "physical/data/figures/severity_response.png",
+  "see": "V.2"
+ },
+ {
+  "id": "R6.12",
+  "section": 6,
+  "text": "FILL THE PINK CELLS. DO NOT POOL THESE SESSIONS WITH P-3. WITH TEN SESSIONS, DESCRIBE A SMALL DIFFERENCE AS NOT MEASURED, NOT AS NO DIFFERENCE.",
+  "plain": "Fill the pink cells. Do not pool these sessions with P-3. With ten sessions, describe a small difference as not measured, not as no difference.",
+  "from": "physical/data/results/undesigned_faults.json",
+  "see": "IV.6"
+ },
+ {
+  "id": "R6.13",
+  "section": 6,
+  "text": "FILL THE PINK CELLS. COPY THE VERDICT FROM THE REPORT; DO NOT DERIVE A DIFFERENT ONE.",
+  "plain": "Fill the pink cells. Copy the verdict from the report; do not derive a different one.",
+  "from": "physical/data/results/correlation_vs_usability.json",
+  "see": "IV.7"
+ },
+ {
+  "id": "R6.14",
+  "section": 6,
+  "text": "INSERT THE GRAPH FOR FIGURE 35 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
+  "plain": "INSERT THE GRAPH FOR FIGURE 35 HERE. Use the figure written by the analysis software.",
+  "from": "physical/data/figures/correlation_vs_usability.png",
+  "see": "V.2"
+ },
+ {
+  "id": "R6.15",
+  "section": 6,
+  "text": "ENTER ONE ROW FOR EACH DECISION RATE IN THE REPORT, ADD ROWS IF NEEDED, AND STATE THE CHANGE FROM THE FASTEST TO THE SLOWEST RATE AND WHETHER THE INTERVALS ARE SEPARATED.",
+  "plain": "Enter one row for each decision rate in the report, add rows if needed, and state the change from the fastest to the slowest rate and whether the intervals are separated.",
+  "from": "physical/data/results/decision_rate.json, blocks curve, change_slowest_minus_fastest and intervals_separated",
+  "see": "IV.8"
+ },
+ {
+  "id": "R6.16",
+  "section": 6,
+  "text": "INSERT THE GRAPH FOR FIGURE 36 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
+  "plain": "INSERT THE GRAPH FOR FIGURE 36 HERE. Use the figure written by the analysis software.",
+  "from": "physical/data/figures/decision_rate.png",
+  "see": "V.2"
+ },
+ {
+  "id": "R6.17",
+  "section": 6,
+  "text": "FILL THE PINK CELLS. REPORT THE SPREAD ACROSS THE FOUR CONFIGURATIONS. DO NOT AVERAGE THEM.",
+  "plain": "Fill the pink cells. Report the spread across the four configurations. Do not average them.",
+  "from": "physical/data/results/apparatus_variation.json",
+  "see": "IV.9"
+ },
+ {
+  "id": "R6.18",
+  "section": 6,
+  "text": "INSERT THE GRAPH FOR FIGURE 37 HERE. MAKE THIS GRAPH IN A SPREADSHEET FROM TABLE 21, FOLLOWING THE TEMPLATE IN THE MANUAL.",
+  "plain": "INSERT THE GRAPH FOR FIGURE 37 HERE. Make this graph in a spreadsheet from Table 21, following the template in the manual.",
+  "from": "Table 21 of this paper; physical/data/results/apparatus_variation.json",
+  "see": "V.3"
+ },
+ {
+  "id": "R7.1",
+  "section": 7,
+  "text": "FOR EACH PREDICTION ENTER ONE OF: HELD, FALSIFIED, UNTESTED. USE THE FALSIFYING CONDITION IN THE THIRD COLUMN AND THE TABLE NAMED IN THE FIFTH.",
+  "plain": "For each prediction enter one of: held, falsified, untested. Use the falsifying condition in the third column and the table named in the fifth.",
+  "from": "Tables 15 to 21 of this paper",
+  "see": "IV.10"
+ },
+ {
+  "id": "R7.2",
+  "section": 7,
+  "text": "FILL THE BENCH COLUMN FROM TABLES 15, 16, 20 AND 21, AND MARK FOR EACH ROW WHETHER THE BENCH RESULT HAS THE SAME DIRECTION AS THE ARCHIVED RESULT.",
+  "plain": "Fill the bench column from Tables 15, 16, 20 and 21, and mark for each row whether the bench result has the same direction as the archived result.",
+  "from": "Tables 15, 16, 20 and 21 of this paper",
+  "see": "IV.11"
+ },
+ {
+  "id": "R7.3",
+  "section": 7,
+  "text": "INSERT THE GRAPH FOR FIGURE 38 HERE. MAKE THIS GRAPH IN A SPREADSHEET FROM TABLE 23, FOLLOWING THE TEMPLATE IN THE MANUAL.",
+  "plain": "INSERT THE GRAPH FOR FIGURE 38 HERE. Make this graph in a spreadsheet from Table 23, following the template in the manual.",
+  "from": "Table 23 of this paper",
+  "see": "V.3"
+ },
+ {
+  "id": "R7.4",
+  "section": 7,
+  "text": "STATE THE VERDICT GIVEN BY THE JUDGING RULE OF SECTION 3.3 IN ONE PARAGRAPH: WHETHER THE CORRELATION WAS STRONG AND BY WHICH OF THE THREE MEASURES, WHETHER THE MONITOR WAS UNUSABLE AND ON WHICH COUNT, AND THE RESULTING VERDICT (SUPPORTED, FALSIFIED OR INCONCLUSIVE). THEN STATE WHICH OF THE TEN PREDICTIONS HELD.",
+  "plain": "State the verdict given by the judging rule of Section 3.3 in one paragraph: whether the correlation was strong and by which of the three measures, whether the monitor was unusable and on which count, and the resulting verdict (supported, falsified or inconclusive). Then state which of the ten predictions held.",
+  "from": "Tables 19 and 22 of this paper; physical/data/results/P4_CORRELATION_VS_USABILITY.md",
+  "see": "VI.8"
+ },
+ {
+  "id": "R8.1",
+  "section": 8,
+  "text": "INTERPRET THE FALSE-ALARM AND SILENCE-GATE RESULTS. IF THE SILENCE GATE FAILED ON AN APPARATUS WITH NO BIOLOGY IN IT, DISCUSS WHAT THAT IMPLIES ABOUT THE MONITORING APPROACH. IF IT PASSED, DISCUSS WHAT THAT IMPLIES ABOUT THE ARCHIVED RECORDINGS. KEEP THE MEASURED VALUES IN SECTION 6 AND THE MEANING HERE.",
+  "plain": "Interpret the false-alarm and silence-gate results. If the silence gate failed on an apparatus with no biology in it, discuss what that implies about the monitoring approach. If it passed, discuss what that implies about the archived recordings. Keep the measured values in Section 6 and the meaning here.",
+  "from": "Table 15 and Section 6.2.3 of this paper",
+  "see": "VI.9"
+ },
+ {
+  "id": "R8.2",
+  "section": 8,
+  "text": "INTERPRET THE LEAD-TIME RESULT AND THE DIFFERENCES BETWEEN FAULT TYPES AND BETWEEN SEALED AND UNDESIGNED FAULTS. STATE WHAT A DESIGNER OF A MONITOR COULD TAKE FROM THE DIFFERENCES.",
+  "plain": "Interpret the lead-time result and the differences between fault types and between sealed and undesigned faults. State what a designer of a monitor could take from the differences.",
+  "from": "Tables 16, 17 and 18 of this paper",
+  "see": "VI.9"
+ },
+ {
+  "id": "R8.3",
+  "section": 8,
+  "text": "INTERPRET THE VERDICT ON HYPOTHESIS B. EXPLAIN WHAT IT MEANS FOR VALIDATING A MONITOR BY CORRELATION ALONE, AND STATE PLAINLY WHAT THE BENCH CANNOT SHOW ABOUT IMPLANTED ARRAYS.",
+  "plain": "Interpret the verdict on hypothesis B. Explain what it means for validating a monitor by correlation alone, and state plainly what the bench cannot show about implanted arrays.",
+  "from": "Section 7.4 of this paper",
+  "see": "VI.9"
+ },
+ {
+  "id": "R8.4",
+  "section": 8,
+  "text": "COMPARE THE BENCH WITH THE ARCHIVED RECORDINGS, ROW BY ROW OF TABLE 23. WHERE THEY AGREE, SAY WHAT THE AGREEMENT SUPPORTS. WHERE THEY DIFFER, GIVE THE POSSIBLE REASONS WITHOUT CHOOSING ONE THAT THE DATA DO NOT SUPPORT.",
+  "plain": "Compare the bench with the archived recordings, row by row of Table 23. Where they agree, say what the agreement supports. Where they differ, give the possible reasons without choosing one that the data do not support.",
+  "from": "Table 23 of this paper",
+  "see": "VI.9"
+ },
+ {
+  "id": "R8.5",
+  "section": 8,
+  "text": "ADD ONE OR TWO SENTENCES RELATING THE BENCH RESULTS TO THESE STUDIES.",
+  "plain": "Add one or two sentences relating the bench results to these studies.",
+  "from": "Sections 6.2 and 7.4 of this paper",
+  "see": "VI.9"
+ },
+ {
+  "id": "R9.1",
+  "section": 9,
+  "text": "ADD THE QUESTIONS THAT THE BENCH RESULTS RAISED AND THAT THE PRESENT DESIGN CANNOT ANSWER, EACH WITH THE MEASUREMENT THAT WOULD ANSWER IT.",
+  "plain": "Add the questions that the bench results raised and that the present design cannot answer, each with the measurement that would answer it.",
+  "from": "Sections 7 and 8 of this paper; bench logbook",
+  "see": "VI.10"
+ },
+ {
+  "id": "R10.1",
+  "section": 10,
+  "text": "FILL EACH PINK CELL WITH THE OBSERVED SIZE OF THE ERROR ON THE BENCH (FOR EXAMPLE THE MEASURED DARK LEVEL, THE SHARE OF LATE FRAMES, THE TEMPERATURE RANGE, THE NUMBER OF LATE HAND-APPLIED FAULTS), OR WRITE \"NOT OBSERVED\".",
+  "plain": "Fill each pink cell with the observed size of the error on the bench (for example the measured dark level, the share of late frames, the temperature range, the number of late hand-applied faults), or write \"not observed\".",
+  "from": "Table 13 of this paper; physical/data/raw/SESSION_LOG.csv; bench logbook, sheets C to E",
+  "see": "VI.11"
+ },
+ {
+  "id": "R10.2",
+  "section": 10,
+  "text": "ENTER EVERY DEPARTURE FROM THE PLAN, ONE PER ROW, OR WRITE \"NONE\" IN THE FIRST ROW IF THERE WERE NONE. ADD ROWS IF NEEDED.",
+  "plain": "Enter every departure from the plan, one per row, or write \"none\" in the first row if there were none. Add rows if needed.",
+  "from": "bench logbook, sheet E (deviations); physical/data/EXCLUSIONS.csv",
+  "see": "III.6"
+ },
+ {
+  "id": "R10.3",
+  "section": 10,
+  "text": "IN ONE PARAGRAPH, STATE WHICH SOURCES OF ERROR COULD CHANGE A CONCLUSION OF THIS PAPER AND WHICH COULD NOT, GIVING THE REASON FOR EACH.",
+  "plain": "In one paragraph, state which sources of error could change a conclusion of this paper and which could not, giving the reason for each.",
+  "from": "Tables 24 and 25 of this paper",
+  "see": "VI.11"
+ },
+ {
+  "id": "R11.1",
+  "section": 11,
+  "text": "STATE THE CONCLUSION OF THE PHYSICAL VALIDATION IN ONE PARAGRAPH: THE FALSE-ALARM RATE AND ITS BOUND, THE MEDIAN LEAD TIME, AND THE VERDICT ON HYPOTHESIS B BY THE PREREGISTERED RULE. STATE ONLY WHAT SECTIONS 6 AND 7 SUPPORT.",
+  "plain": "State the conclusion of the physical validation in one paragraph: the false-alarm rate and its bound, the median lead time, and the verdict on hypothesis B by the preregistered rule. State only what Sections 6 and 7 support.",
+  "from": "Sections 6.2 and 7.4 of this paper",
+  "see": "VI.12"
+ },
+ {
+  "id": "R11.2",
+  "section": 11,
+  "text": "STATE IN TWO OR THREE SENTENCES WHAT THE TWO VALIDATIONS TOGETHER SHOW ABOUT VALIDATING A DECODER-HEALTH MONITOR BY CORRELATION, AND THE MAIN LIMIT ON THAT STATEMENT.",
+  "plain": "State in two or three sentences what the two validations together show about validating a decoder-health monitor by correlation, and the main limit on that statement.",
+  "from": "Sections 7.3 and 8.3 of this paper",
+  "see": "VI.12"
+ },
+ {
+  "id": "R12.1",
+  "section": 12,
+  "text": "COMPLETE THE AUTHOR LIST, TITLE AND PAGE NUMBERS OF EVERY ENTRY MARKED WITH A DAGGER BY OPENING THE PUBLISHER'S PAGE FOR ITS DOI, AND PUT EVERY ENTRY IN ONE CITATION STYLE.",
+  "plain": "Complete the author list, title and page numbers of every entry marked with a dagger by opening the publisher's page for its doi, and put every entry in one citation style.",
+  "from": "research/RESEARCH_PLAN_2026-09-15.md, bibliography; the publisher's page for each doi",
+  "see": "VI.13"
+ },
+ {
+  "id": "R12.2",
+  "section": 12,
+  "text": "OPEN THE ARTICLE BY SENDELBACH AND FUNK AND CONFIRM THE FIGURE, OR CITE THE REPORT IN WHICH IT WAS FOUND.",
+  "plain": "Open the article by Sendelbach and Funk and confirm the figure, or cite the report in which it was found.",
+  "from": "poster/README.md, references table",
+  "see": "VI.13"
+ },
+ {
+  "id": "R12.3",
+  "section": 12,
+  "text": "REPLACE THE COMMIT WITH THE COMMIT OF THE FINAL VERSION, AND ADD THE DATE OF ACCESS.",
+  "plain": "Replace the commit with the commit of the final version, and add the date of access.",
+  "from": "git log on the final branch",
+  "see": "VI.13"
+ },
+ {
+  "id": "R13.1",
+  "section": 13,
+  "text": "WRITE THE ACKNOWLEDGMENTS IN YOUR OWN WORDS: THE ADULT SPONSOR AND WHAT THEY DID, ANYONE WHO SUPPLIED EQUIPMENT, SPACE OR ADVICE, AND ANYONE WHO WAS PRESENT FOR THE ATTENDED SESSIONS.",
+  "plain": "Write the acknowledgments in your own words: the adult sponsor and what they did, anyone who supplied equipment, space or advice, and anyone who was present for the attended sessions.",
+  "from": "your own record; bench logbook",
+  "see": "VI.14"
+ },
+ {
+  "id": "R13.2",
+  "section": 13,
+  "text": "WRITE THE DISCLOSURE OF HOW AI TOOLS WERE USED IN THIS PROJECT: WHICH TOOLS, FOR WHICH TASKS (CODE, ANALYSIS, DOCUMENTS, FIGURES, THIS PAPER), WHAT YOU CHECKED YOURSELF AND HOW, AND WHICH DECISIONS WERE YOURS ALONE.",
+  "plain": "Write the disclosure of how AI tools were used in this project: which tools, for which tasks (code, analysis, documents, figures, this paper), what you checked yourself and how, and which decisions were yours alone.",
+  "from": "research/AI_INVOLVEMENT_RECORD.md; research/research_log.md",
+  "see": "VI.14"
+ }
+]

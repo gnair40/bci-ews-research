@@ -35,6 +35,7 @@ const state = {
   redCount: {},
   section: 0,          // current section of the paper
   figUsed: [],
+  figTitles: {},       // key -> title of each figure of the paper
   tabUsed: [],
   anchors: new Set(),  // section numbers that exist in the manual
   mFig: 0,
@@ -51,7 +52,7 @@ function red(text, from, see) {
   const s = state.section;
   state.redCount[s] = (state.redCount[s] || 0) + 1;
   const id = `R${s}.${state.redCount[s]}`;
-  state.reds[id] = { id, section: s, text: text.toUpperCase(), from, see };
+  state.reds[id] = { id, section: s, text: text.toUpperCase(), plain: text, from, see };
   return `⟦${id}⟧`;
 }
 
@@ -187,11 +188,11 @@ function cell(content, width, o = {}) {
     shading: (empty || o.head || o.fill)
       ? { type: D.ShadingType.CLEAR, color: 'auto', fill: empty ? PINK : (o.fill || HEAD_FILL) }
       : undefined,
-    margins: { top: 50, bottom: 50, left: 90, right: 90 },
+    margins: { top: 50, bottom: 50, left: 70, right: 70 },
     verticalAlign: D.VerticalAlign.CENTER,
     columnSpan: o.span,
     children: parts.map((t) => new D.Paragraph({ children: rich(String(t), run),
-      spacing: { after: 0, line: 250 } })),
+      spacing: { after: 0, line: 250 }, keepNext: o.keep })),
   });
 }
 
@@ -200,16 +201,19 @@ function cell(content, width, o = {}) {
 function grid(widths, head, rows, o = {}) {
   const sum = widths.reduce((a, b) => a + b, 0);
   if (sum !== W) throw new Error(`table widths sum to ${sum}, not ${W}: ${head.join(' | ')}`);
-  const mk = (cells, isHead) => new D.TableRow({
+  // a short table is kept on one page: every row but the last is tied to the next
+  const short = rows.length <= 9;
+  const mk = (cells, isHead, isLast) => new D.TableRow({
     tableHeader: isHead, cantSplit: true,
-    children: cells.map((c, i) => cell(c, widths[i], { head: isHead, size: o.size })),
+    children: cells.map((c, i) => cell(c, widths[i],
+      { head: isHead, size: o.size, keep: short && !isLast })),
   });
   for (const r of rows) {
     if (r.length !== widths.length) throw new Error(`row length ${r.length} in table ${head[0]}`);
   }
   return new D.Table({
     width: { size: W, type: D.WidthType.DXA }, columnWidths: widths,
-    rows: [mk(head, true), ...rows.map((r) => mk(r, false))],
+    rows: [mk(head, true, false), ...rows.map((r, i) => mk(r, false, i === rows.length - 1))],
   });
 }
 const caption = (label, title, rest = '', o = {}) => new D.Paragraph({
@@ -265,6 +269,7 @@ const bench = (name) => path.join(REPO, 'physical', 'figures', `${name}.png`);
 /** A numbered figure of the paper that already exists. */
 function figure(key, file, title, text, o = {}) {
   state.figUsed.push(key);
+  state.figTitles[key] = title;
   return [picture(file, o.width || 600, title), caption(F(key), title, text)];
 }
 /** A numbered figure of the manual (Figure M1, M2, ...). */
@@ -296,6 +301,7 @@ function box(heightIn, paragraphs) {
  *  from / see: where it comes from and where the manual explains it. */
 function figureSpace(key, kind, title, text, need, from, see, o = {}) {
   state.figUsed.push(key);
+  state.figTitles[key] = title;
   const token = red(`INSERT THE ${kind} FOR FIGURE ${figNo(key)} HERE. ${need}`, from, see);
   const r = state.reds[token.slice(1, -1)];
   const inner = [
