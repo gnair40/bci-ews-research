@@ -25,7 +25,7 @@ function build(meta) {
     tp('Data Analysis Manual', 44, { bold: true, color: '12324F', after: 200 }),
     tp('How to finish the physical validation, analyse its data, and complete the paper',
       24, { color: '12324F', after: 500 }),
-    tp('Project: Seeing Failure Before It Shows', 22, { after: 60 }),
+    tp('Project: a decoder-health monitor for neural interfaces', 22, { after: 60 }),
     tp('Gayathri Nair, Central Bucks High School South', 22, { after: 400 }),
     tp(`Version of ${meta.date}`, 22, { bold: true, after: 400 }),
   );
@@ -48,7 +48,7 @@ function build(meta) {
   require('./doc2b')(t, meta);
 
   // literal codes written in the manual's text must still name the right items
-  const want = { 'R1.1': 'BENCH RESULTS', 'R1.2': 'VERDICT', 'R4.1': 'VERSIONS',
+  const want = { 'R0.1': 'WORKING TITLE', 'R1.1': 'BENCH RESULTS', 'R1.2': 'VERDICT', 'R4.1': 'VERSIONS',
     'R4.2': 'PINK COLUMNS', 'R5.1': 'TEMPERATURE SENSOR', 'R5.2': 'MODULATION DEPTH',
     'R5.11': 'DATES', 'R7.1': 'PREDICTION', 'R7.2': 'BENCH COLUMN', 'R7.4': 'VERDICT',
     'R9.1': 'QUESTIONS', 'R10.1': 'OBSERVED SIZE', 'R10.2': 'DEPARTURE',

@@ -532,7 +532,8 @@ module.exports = function partsFourToSeven(t, meta) {
   sec('VI.2', 'Section 1, Abstract');
   how([
     ['Already there', 'Background, purpose, the computational method and its results.'],
-    ['Still needed', 'R1.1: the bench results. R1.2: the closing sentence with the verdict.'],
+    ['Still needed', 'R1.1: the bench results. R1.2: the closing sentence with the verdict. '
+      + 'R0.1: the final title (below).'],
     ['Evidence to use', 'Tables 14, 15, 16 and 19 and Section 11 of the paper.'],
     ['How to write it', 'Last of all. Order: purpose, procedure, data, conclusion. Give '
       + 'numbers with units. Then cut the whole abstract to the limit of the fair (often 250 '
@@ -540,6 +541,13 @@ module.exports = function partsFourToSeven(t, meta) {
     ['Errors to avoid', 'New information that is not in the paper; citations; a conclusion '
       + 'stronger than Section 11.'],
   ]);
+  add(P('**The title.** The title page of the paper carries a working title, written for the '
+    + 'draft, and item R0.1. The title of the research plan submitted on 15 September 2026 is '
+    + 'not used. The final title is the researcher\'s. A title for a paper of this kind '
+    + 'usually names what was measured, on what, and by what method, and promises nothing the '
+    + 'paper does not show. It is settled with the abstract, because both must describe the '
+    + 'paper as it finally stands, and the same title then goes on the abstract, the forms and '
+    + 'the poster.'));
   sec('VI.3', 'Section 2, Introduction');
   how([
     ['Already there', 'Background, the problem, the gap, the approach.'],
@@ -784,7 +792,7 @@ module.exports = function partsFourToSeven(t, meta) {
     + 'program that writes the paper, so the two cannot disagree. For each item it gives the '
     + 'instruction as printed, where the missing content comes from, and the section of this '
     + 'manual that explains how to produce it.'));
-  const secName = { 1: 'Abstract', 3: 'Hypothesis', 4: 'Materials', 5: 'Methods', 6: 'Results',
+  const secName = { 0: 'Title page', 1: 'Abstract', 3: 'Hypothesis', 4: 'Materials', 5: 'Methods', 6: 'Results',
     7: 'Analysis', 8: 'Discussion', 9: 'Future Work', 10: 'Sources of Error', 11: 'Conclusion',
     12: 'References', 13: 'Acknowledgments' };
   add(grid([700, 1150, 3300, 3210, 1000],

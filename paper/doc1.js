@@ -60,9 +60,15 @@ function build(meta) {
       italics: o.italics })] });
   add(
     tp('WORKING RESEARCH PAPER', 20, { before: 900, bold: true, color: L.GREY, after: 300 }),
-    tp('Seeing Failure Before It Shows', 44, { bold: true, color: '12324F', after: 80 }),
-    tp('Building and Validating a Decoder-Health Monitor for Neural Interfaces', 28,
-      { bold: true, color: '12324F', after: 500 }),
+    tp('Lead Time and False-Alarm Rate of a Decoder-Health Monitor for Neural Interfaces', 38,
+      { bold: true, color: '12324F', after: 100 }),
+    tp('A test against fault onsets fixed in advance, on archived recordings and on a '
+      + 'physical bench', 25, { bold: true, color: '12324F', after: 160 }),
+    P(red('This is a working title written for the draft. Replace it with your final title, '
+      + 'and use the same title on the abstract, the forms and the poster.',
+    'your own decision; the title of the research plan submitted on 15 September 2026 is '
+      + 'not used', 'VI.2'), { align: D.AlignmentType.CENTER, after: 420,
+      run: { font: L.SANS, size: 18 } }),
     tp('Gayathri Nair', 26, { after: 60 }),
     tp('Central Bucks High School South', 22, { after: 60 }),
     tp('Adult Sponsor: Michelle Rhodes', 22, { after: 500 }),

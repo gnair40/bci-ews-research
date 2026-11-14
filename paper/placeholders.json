@@ -1,5 +1,13 @@
 [
  {
+  "id": "R0.1",
+  "section": 0,
+  "text": "THIS IS A WORKING TITLE WRITTEN FOR THE DRAFT. REPLACE IT WITH YOUR FINAL TITLE, AND USE THE SAME TITLE ON THE ABSTRACT, THE FORMS AND THE POSTER.",
+  "plain": "This is a working title written for the draft. Replace it with your final title, and use the same title on the abstract, the forms and the poster.",
+  "from": "your own decision; the title of the research plan submitted on 15 September 2026 is not used",
+  "see": "VI.2"
+ },
+ {
   "id": "R1.1",
   "section": 1,
   "text": "INSERT THE BENCH RESULTS IN TWO OR THREE SENTENCES: THE NUMBER OF SESSIONS RECORDED AND ANALYSED, THE FALSE-ALARM RATE WITH ITS 95% UPPER BOUND, THE MEDIAN LEAD TIME WITH ITS 95% INTERVAL, AND THE LARGEST OF THE THREE CORRELATIONS.",

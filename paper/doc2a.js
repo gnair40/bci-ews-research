@@ -88,6 +88,8 @@ module.exports = function partsOneToThree(t, meta) {
     [2300, 1700, 1000, 2860, 1500],
     ['Section of the paper', 'Status today', 'Red items', 'What it still depends on',
       'Completed at stage'], [
+      ['Title page', 'Working title only', String(redIn(0)), 'The researcher\'s final title',
+        '13'],
       ['1 Abstract', 'Partially written', String(redIn(1)), 'Bench results and the verdict',
         '12'],
       ['2 Introduction', 'Substantially written', String(redIn(2)), 'Nothing from the bench',

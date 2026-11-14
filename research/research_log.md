@@ -8122,3 +8122,45 @@ Whether the title of the September plan remains the title. Whether to keep
 the interval column on the detection rates. The citation style. Whether the
 three stale lines in the bench document should be corrected. Whether the two
 online pages should be deleted.
+
+---
+
+## 14 November 2026 (title) — the September title removed from the draft paper
+
+### What the researcher decided
+
+After seeing the summary of the two documents she answered three of the open
+questions. The draft wording is mine and she will write the final paper
+herself, using the draft to see how technical points can be worded. The title
+of the September research plan is not to be used. She will write the AI
+statement.
+
+### What changed
+
+- **The title page of the paper** no longer carries "Seeing Failure Before It
+  Shows". It carries a working title, "Lead Time and False-Alarm Rate of a
+  Decoder-Health Monitor for Neural Interfaces", with the subtitle "A test
+  against fault onsets fixed in advance, on archived recordings and on a
+  physical bench". Directly under it is a new red item, R0.1, saying that the
+  working title is to be replaced by her own.
+- **The page headers and the manual's title page** now name the project by a
+  plain description instead of the old title.
+- **The manual** gained a paragraph on the title in Section VI.2 and a row for
+  the title page in its status table.
+- The paper now has **59** red items, not 58. The earlier entry of today says
+  58, which was correct when it was written.
+
+### Why a working title and not an empty line
+
+She asked to see my wording. A title is one of the things she may want to see
+worded, so the draft has one. It is marked in red so that it cannot be
+mistaken for a decision.
+
+### What was not changed
+
+**The five poster drafts and their PowerPoint exports still carry the
+September title.** She spoke about the paper. Whether the poster title
+changes too is hers to say.
+
+The submitted research plan keeps its title. It is a record of what was
+submitted and is never rewritten.

@@ -58,8 +58,8 @@ const write = async (name, title, running, children) => {
 };
 (async () => {
   await write('Working_Research_Paper.docx',
-    'Seeing Failure Before It Shows: working research paper',
-    `Seeing Failure Before It Shows  |  working research paper  |  draft of ${meta.date}`,
+    'Working research paper: a decoder-health monitor for neural interfaces',
+    `Decoder-health monitor for neural interfaces  |  working research paper  |  draft of ${meta.date}`,
     paper);
   await write('Completion_Manual.docx',
     'Research Completion and Data Analysis Manual',

@@ -4,7 +4,7 @@ Two Word documents, built together by one program on 14 November 2026.
 
 | File | What it is |
 |---|---|
-| `Working_Research_Paper.docx` | **Document 1.** The research paper in 13 sections. Everything the finished computational work establishes is written out in black. Everything that waits for the physical test bench is a numbered placeholder in bold red capitals inside square brackets, a pink table cell, or a dashed box reserved for a photograph or graph. |
+| `Working_Research_Paper.docx` | **Document 1.** The research paper in 13 sections. Everything the finished computational work establishes is written out in black. Everything that waits for the physical test bench, and the final title, is one of 59 numbered placeholders in bold red capitals inside square brackets, a pink table cell, or a dashed box reserved for a photograph or graph. |
 | `Completion_Manual.docx` | **Document 2.** How to finish: the roadmap, every photograph to take, the record sheets to keep, every calculation with its formula, every graph, how to write each remaining section, and the final checks. Its last section lists every red placeholder of the paper with the file it comes from. |
 | `logbook/` | Five empty CSV files, one per sheet of the bench logbook described in Part III of the manual. They open in Excel or Google Sheets. |
 | `placeholders.json` | The same list of red placeholders, as data. |
