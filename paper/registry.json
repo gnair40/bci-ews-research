@@ -1,0 +1,13 @@
+{
+ "_comment": "The order of the figures and tables of the working research paper. Position in the list is the number. Read by make_figures.py (labels inside drawings) and by build.js (which fails if the paper uses them in a different order).",
+ "figures": ["overview", "drift", "repo", "ph_parts", "ph_components", "comp", "monitor", "episode",
+             "chain", "benchflow", "wiring_stepper", "wiring_dht22", "onset", "calib",
+             "ph_open", "ph_sealed", "ph_header", "ph_annotated", "ph_sensor", "ph_inside",
+             "ss_session", "ss_check", "dataflow", "stats",
+             "lead", "fa", "modes", "dfa", "gap", "decision",
+             "g_session", "g_fa", "g_lead", "g_sev", "g_corr", "g_rate", "g_app", "g_cmp"],
+ "tables": ["questions", "dataset", "software", "bom", "variables", "faults", "gates_comp",
+            "gates_bench", "experiments", "r_headline", "r_gates", "r_modes",
+            "b_gates", "b_sessions", "b_fa", "b_lead_type", "b_lead_sev", "b_undesigned",
+            "b_corr", "b_rate", "b_app", "predictions", "compare", "errors", "deviations"]
+}
