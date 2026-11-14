@@ -8258,3 +8258,10 @@ choices.
 All nine in `physical/recovery/03_PREREGISTRATION_DRAFT.md`, section 5. The
 one with a deadline is whether to append the amendment before the bench
 records anything.
+
+**Correction to the entry above, added the same day.** Under "Mistakes" I wrote
+that my first answer to her question named the wrong thing. On rereading that
+answer, it did not: it said both that the monitor had not produced a usable
+failure point and that the project knows each onset because it planted it. The
+second item under "Mistakes" should therefore not be counted as one. The entry
+is left as written, because this log is not edited after the fact.
