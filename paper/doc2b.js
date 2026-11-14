@@ -97,7 +97,8 @@ module.exports = function partsFourToSeven(t, meta) {
     + 'in false alarms per hour'));
   add(P('A count of rare events follows a Poisson distribution, and the program reports the '
     + 'exact 95% interval for the rate:'));
-  add(formula('lower = χ²(0.025; 2k) / (2H)        upper = χ²(0.975; 2k + 2) / (2H)',
+  add(formula('lower = χ²(0.025; 2k) / (2H)'));
+  add(formula('upper = χ²(0.975; 2k + 2) / (2H)',
     'χ²(p; d) is the value below which a chi-squared variable with d degrees of '
     + 'freedom falls with probability p'));
   add(P('If k is zero there is no rate to report, only an upper bound, by the rule of three:'));
@@ -156,7 +157,8 @@ module.exports = function partsFourToSeven(t, meta) {
     + 'often a fault is caught at all. **Inputs.** For each degraded test session: the sealed '
     + 'onset, the time decoding failed, and the time of the first warning. All times are '
     + 'taken at the end of the window concerned. **Calculations.**'));
-  add(formula('lead time = t(failure) − t(warning)        detection delay = t(warning) − t(onset)',
+  add(formula('lead time = t(failure) − t(warning)'));
+  add(formula('detection delay = t(warning) − t(onset)',
     'both in seconds; a positive lead time means the warning came first'));
   add(formula('detection rate = sessions with a valid warning / degraded sessions'));
   add(P('Two categories are not detections and are counted separately. A warning whose window '
@@ -249,7 +251,8 @@ module.exports = function partsFourToSeven(t, meta) {
     + 'the same false-alarm cost. **Inputs.** The same sessions, re-scored with the windows '
     + 'pooled in groups of m. **Calculations.** With a new window every 5 seconds there are '
     + '720 windows an hour.'));
-  add(formula('decisions per hour = 720 / m        allowed false-positive rate per decision = budget / decisions per hour',
+  add(formula('decisions per hour = 720 / m'));
+  add(formula('allowed false-positive rate per decision = budget / decisions per hour',
     'm = windows per decision; budget = 0.1 false alarms per hour'));
   add(P('These two lines are arithmetic and can be checked now: at m = 1 the allowed rate is '
     + '0.1 / 720 = 0.000139, and at one decision per five-minute session (12 an hour) it is '
@@ -784,7 +787,7 @@ module.exports = function partsFourToSeven(t, meta) {
   const secName = { 1: 'Abstract', 3: 'Hypothesis', 4: 'Materials', 5: 'Methods', 6: 'Results',
     7: 'Analysis', 8: 'Discussion', 9: 'Future Work', 10: 'Sources of Error', 11: 'Conclusion',
     12: 'References', 13: 'Acknowledgments' };
-  add(grid([760, 1300, 3500, 2700, 1100],
+  add(grid([700, 1150, 3300, 3210, 1000],
     ['Code', 'Section', 'What goes there', 'Comes from', 'Explained in'],
     reds.map((r) => [r.id, `${r.section} ${secName[r.section]}`, r.plain, r.from, r.see]),
     { size: 17 }));

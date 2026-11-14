@@ -91,6 +91,7 @@ works — and the reason is now measured rather than guessed.**
 | [`research/ORIGINAL_DATA_COLLECTION_DESIGN.md`](research/ORIGINAL_DATA_COLLECTION_DESIGN.md) | Why archived data cannot close certain gaps, and the options rejected. **Its recommendation is superseded** by the physical phase, which asks a different question |
 | [`physical/README.md`](physical/README.md) | **The physical-validation phase** — an apparatus whose failures are scheduled in advance, so lead time and false-alarm rate have a fixed value for the first time |
 | [`poster/README.md`](poster/README.md) | **The trifold poster** — three drafts kept side by side; in the current one the data and its analysis hold the centre, every measured number is drawn from stored results by script, nothing is smaller than 24 pt, and the bench results are blank until they exist |
+| [`paper/README.md`](paper/README.md) | **The working research paper and its completion manual** — two Word documents built together. The paper states the finished computational work in black and marks everything that waits for the bench as a numbered red placeholder; the manual explains how to produce every one of them. |
 
 ## Checking the work
 

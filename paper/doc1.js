@@ -149,7 +149,8 @@ function build(meta) {
     + `decoder kept unchanged for ${span} days on array T11. Median cursor error stays between `
     + `${n(Math.min(...early.map((p) => p.e)), 1)}\u00B0 and `
     + `${n(Math.max(...early.map((p) => p.e)), 1)}\u00B0 through day `
-    + `${early[early.length - 1].d}, first exceeds the failure level of ${n(FAIL, 1)}\u00B0 on `
+    + `${early[early.length - 1].d}, first exceeds ${n(FAIL, 1)}° (twice the error of the `
+    + `first session, the failure level used in that analysis) on `
     + `day ${SER[firstBad].d}, and lies between ${n(Math.min(...late.map((p) => p.e)), 1)}\u00B0 `
     + `and ${n(Math.max(...late.map((p) => p.e)), 1)}\u00B0 in every session from day `
     + `${late[0].d} onward. Nothing in the system tells the user that this is happening.`));
@@ -721,8 +722,8 @@ function build(meta) {
     + 'drift and rotation), where mean activity is at or below chance. It is worse on plain '
     + 'signal loss, which mean activity detects directly.'));
   add(figure('modes', drawn('c_modes'), 'Detection by fault type.',
-    'AUC at the level of single windows, decoder-guard against a detector that uses mean '
-    + 'activity alone.'));
+    'AUC at the level of single windows. Filled circles ("monitor") are decoder-guard; open '
+    + 'squares ("count") are a detector that uses mean activity alone.'));
   const names = { RATE_LOSS: 'Signal loss', CHANNEL_DROPOUT: 'Channel dropout',
     GAIN_DRIFT: 'Gain drift', GEOMETRY_ROTATION: 'Rotation' };
   add(table('r_modes', 'Window-level AUC by fault type.', [2760, 1650, 1650, 1650, 1650],
@@ -744,18 +745,19 @@ function build(meta) {
     + `${S.funnel.met_budget} met the false-alarm budget, ${S.funnel.silence} passed the `
     + `silence gate, and ${S.funnel.all_gates} passed all five gates.`));
   add(figure('dfa', drawn('c_dfa'), 'Detection against false-alarm rate as the threshold varies.',
-    'Each curve is one array. The vertical line is the budget of 0.1 false alarms per hour.'));
+    'Each curve is one array. The vertical line is the budget of 0.1 false alarms per hour. '
+    + 'The 80% level is the detection level used in `reports/OPERATING_POINT_BOUND.md`.'));
   add(P('**Why the budget is hard to meet.** A monitor that decides every 5 seconds makes 720 '
     + `decisions an hour. A budget of ${S.budget_per_hour} false alarms per hour then allows a `
     + `false-positive rate of ${S.fpr_per_decision_720.toFixed(6)} per decision. Pooling the `
     + `windows of an episode into one decision (${n(S.windows_per_session.T11)} windows on T11, `
-    + `${n(S.windows_per_session.T5)} on T5) loosens this, but the AUC then needed is still `
+    + `${n(S.windows_per_session.T5)} on T5) loosens this, but the AUC needed to detect 80% of faults within the budget is still `
     + `${n(S.auc_needed_at_budget.T11, 3)} and ${n(S.auc_needed_at_budget.T5, 3)}, against `
     + `${n(S.auc_session.T11, 3)} and ${n(S.auc_session.T5, 3)} achieved (${F('gap')}). `
     + `${F('decision')} shows detection measured directly at each decision rate.`));
   add(figure('gap', drawn('c_gap'), 'Achieved and required discrimination at one decision per episode.',
-    'Episode-level AUC achieved by the monitor, and the AUC that the false-alarm budget '
-    + 'requires. Source: `reports/OPERATING_POINT_BOUND.md`.'));
+    'Episode-level AUC achieved by the monitor, and the AUC needed to detect 80% of faults '
+    + 'within the false-alarm budget. Source: `reports/OPERATING_POINT_BOUND.md`.'));
   add(figure('decision', drawn('c_decision'), 'Detection against decision rate.',
     'The same recordings re-scored from one decision per window to one per episode, with the '
     + 'threshold chosen afresh at each rate. Source: `reports/DECISION_RATE_CURVE.md`.'));
@@ -777,7 +779,8 @@ function build(meta) {
     + 'lower in sessions where the frozen decoder was already less accurate (Spearman \u03C1 = '
     + `${n(SC.spearman_rho, 3)}, p = ${SC.p.toFixed(4)}; a `
     + 'preregistered test). On the real, unaltered series of '
-    + `${SL.n_sessions} sessions in ${F('drift')}, the session-level monitor score and decoder `
+    + `${SL.n_sessions} sessions in ${F('drift')}, a session-level measure of signal change (the `
+    + 'similarity of each session\'s activity pattern to that of the first session) and decoder '
     + `error were correlated with magnitude ${n(Math.abs(SL.raw), 2)} raw, `
     + `${n(Math.abs(SL.partial), 2)} with the time trend removed and `
     + `${n(Math.abs(SL.diff), 2)} on session-to-session changes. This last analysis was `
@@ -959,8 +962,8 @@ function build(meta) {
   add(P('**The decision rate sets a requirement the detector does not reach.** At 720 decisions '
     + `per hour the budget allows a false-positive rate of about `
     + `${(S.fpr_per_decision_720 * 100).toFixed(3)}% per decision. Deciding once per episode `
-    + `relaxes this, yet the discrimination then required (AUC about `
-    + `${n(S.auc_needed_at_budget.T11, 2)}) remains far above what was achieved `
+    + `relaxes this, yet the discrimination required to detect 80% of faults within the `
+    + `budget (AUC about ${n(S.auc_needed_at_budget.T11, 2)}) remains far above what was achieved `
     + `(${n(S.auc_session.T11, 2)} and ${n(S.auc_session.T5, 2)}). Measured directly, deciding `
     + 'less often did not reliably help: the change was not established on T11 and was a '
     + 'decrease on T5. Whether deciding less often helps a monitor of this kind is therefore '

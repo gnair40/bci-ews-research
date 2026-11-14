@@ -8005,3 +8005,120 @@ computer that opens them, or the text will shift.
 Whether one slide per board is the form she wants, or one slide per panel.
 Whether the smaller serif headings are acceptable, or she would rather have
 the canvas sizes and fix overlaps by hand.
+
+---
+
+## 14 November 2026 — a working research paper, and a manual for finishing it
+
+### What was asked
+
+Two documents. The first is the research paper itself, written out as far as
+the evidence goes, with everything that depends on the unbuilt bench marked
+in red. The second is a manual that explains how to produce every missing
+piece: the photographs, the data, the calculations, the graphs, and the
+remaining text.
+
+### What was made
+
+Both are Word files in `paper/`, written by one program (`paper/build.js`).
+
+- **`Working_Research_Paper.docx`**: 13 sections, 38 figures, 25 tables and
+  58 numbered red placeholders. 20 of the figures exist now (real charts of
+  the computational results, the repository's own wiring and workflow
+  drawings, and new diagrams of the workflow, the repository, the data flow
+  and the statistical analysis). The other 18 are reserved spaces: 8
+  photographs, 2 screenshots and 8 graphs of bench results.
+- **`Completion_Manual.docx`**: seven parts. Its last section lists all 58
+  placeholders with the file each will come from.
+- **`paper/logbook/`**: five empty spreadsheet sheets for the bench logbook.
+
+### How the two are kept honest
+
+- **No number is typed into the paper.** The builder reads every reported
+  value from `poster/poster_data.json` and the harness summaries, which the
+  repository's checks recompute.
+- **The build fails** if a placeholder points to a section of the manual that
+  does not exist, or if the manual names a placeholder code that no longer
+  belongs to the item it describes.
+- **Nothing from the bench is shown**, because nothing exists. The graph
+  layouts in the manual are stamped "TEMPLATE: layout only, no data" and hold
+  no values. No rehearsal output from `dryrun.py` was used. I ran the
+  rehearsal once earlier in this work to see which files and fields the
+  analysis programs write, then removed its output with
+  `dryrun.py --cleanup`.
+
+### Mistakes and false starts
+
+- **I began in the wrong tool.** I first created the two documents as online
+  pages. I then tested whether that tool could colour text red. It could not:
+  the colour was silently dropped. Red placeholders were a stated requirement,
+  so I changed to Word files. The two online pages still exist and hold only a
+  note saying where the documents are.
+- **I wrote the rejection conditions of the September hypothesis from memory,
+  and got them wrong.** My first draft said the hypothesis would be rejected
+  if the gates failed. The submitted plan says something different: rejected
+  "if the warning usually arrives at or after the performance drop, or if the
+  false alarm requirement cannot be met at any operating point." I reread the
+  plan and replaced my wording with the plan's. The second condition needed
+  care: the budget can be met, but only at thresholds where the monitor
+  detects 0.0% of faults on T11 and 0.8% on T5. The paper now says exactly
+  that.
+- **I called the wrong thing a monitor score.** The 142-day series compares
+  decoder error with the similarity of each session's activity to the first
+  session's. That is a measure of signal change, not the score of
+  decoder-guard. Corrected before the files were committed.
+- **I gave a required AUC without its condition.** 0.990 is the AUC needed to
+  detect 80% of faults within the budget, not the AUC needed in general. The
+  80% is now stated wherever the number appears.
+- **I wrote that the two published correlations were "in two participants"**
+  without having confirmed which value belongs to which. Removed.
+- **The first diagrams had text running out of their boxes**, and several
+  table headings broke in the middle of a word. Both were found by rendering
+  the pages and looking at them, and fixed.
+- **The session's worker restarted twice.** After the first time I committed
+  and pushed the builder as a checkpoint before continuing, so nothing was
+  lost the second time.
+
+### Found in the repository while writing, and not fixed
+
+Three lines of `physical/docs/06_DATA_COLLECTION.md` disagree with the frozen
+plan: the cost table gives 5.2 GB and 18 hours for the whole 337-session plan
+(those are the figures for 217 sessions; the whole plan is about 8 GB and 28
+hours); one heading calls experiment P-2 "four nights" above text that
+correctly says one night; and the closing section gives the order of cuts as
+P-5, P-6, P-3, where `02_EXPERIMENTS.md` fixes P-5, P-7, then the middle
+severity of P-3. The manual follows the frozen plan and says so in a box. I
+did not edit the bench document, because it was not what was asked.
+
+### Two places where the request and the design differ
+
+- **The request asks for a breadboard photograph. The design has no
+  breadboard.** The parts list wires the motor driver and the sensor to the
+  header with jumper wires. The paper therefore reserves a photograph of "the
+  wiring at the header and driver board", and the manual says that adding a
+  breadboard would be a departure to record.
+- **The paper's tables ask for an interval on each detection rate; the
+  analysis program reports only the count and the proportion.** I added the
+  Wilson formula to the manual, the same one the decision-rate program
+  already uses. That is an addition to the reporting, and whether to keep it
+  is not mine to decide.
+
+### What was not done
+
+- **The files were not opened in Microsoft Word.** They pass a format
+  validator and every page was rendered in LibreOffice and looked at.
+- **Nine of ten references still carry first authors only**, as in the
+  submitted plan. I did not complete them from memory, because a reference
+  recalled is a reference that may be wrong. Each has a red instruction.
+- **Swanson (2026) is not cited**, because it could not be confirmed on 12
+  and 13 November.
+- **No statement on the use of AI was drafted.** By the decision of
+  8 September it is written by the researcher. The paper reserves the space.
+
+### Decisions that are the researcher's
+
+The wording of every passage, since this is her paper and my draft of it.
+Whether the title of the September plan remains the title. Whether to keep
+the interval column on the detection rates. The citation style. Whether the
+three stale lines in the bench document should be corrected. Whether the two
+online pages should be deleted.

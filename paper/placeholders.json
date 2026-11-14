@@ -59,7 +59,7 @@
   "id": "R4.3",
   "section": 4,
   "text": "INSERT THE PHOTOGRAPH FOR FIGURE 4 HERE. ALL FOURTEEN ITEMS LAID OUT ON A PLAIN SURFACE, EACH WITH A NUMBERED LABEL, A RULER IN THE FRAME FOR SCALE.",
-  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 4 HERE. All fourteen items laid out on a plain surface, each with a numbered label, a ruler in the frame for scale.",
+  "plain": "Insert the photograph for Figure 4 here. All fourteen items laid out on a plain surface, each with a numbered label, a ruler in the frame for scale.",
   "from": "photograph PH-1",
   "see": "II.2"
  },
@@ -67,7 +67,7 @@
   "id": "R4.4",
   "section": 4,
   "text": "INSERT THE PHOTOGRAPH FOR FIGURE 5 HERE. SIX CLOSE PHOTOGRAPHS ARRANGED IN A GRID OF TWO ROWS AND THREE COLUMNS, EACH LETTERED (A) TO (F).",
-  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 5 HERE. Six close photographs arranged in a grid of two rows and three columns, each lettered (a) to (f).",
+  "plain": "Insert the photograph for Figure 5 here. Six close photographs arranged in a grid of two rows and three columns, each lettered (a) to (f).",
   "from": "photograph set PH-2",
   "see": "II.2"
  },
@@ -91,7 +91,7 @@
   "id": "R5.3",
   "section": 5,
   "text": "INSERT THE PHOTOGRAPH FOR FIGURE 15 HERE. THE WHOLE BENCH FROM THE FRONT AND SLIGHTLY ABOVE, LID OPEN, EVERY LABELLED PART VISIBLE, A RULER OR TAPE MEASURE IN THE FRAME.",
-  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 15 HERE. The whole bench from the front and slightly above, lid open, every labelled part visible, a ruler or tape measure in the frame.",
+  "plain": "Insert the photograph for Figure 15 here. The whole bench from the front and slightly above, lid open, every labelled part visible, a ruler or tape measure in the frame.",
   "from": "photograph PH-3",
   "see": "II.2"
  },
@@ -99,7 +99,7 @@
   "id": "R5.4",
   "section": 5,
   "text": "INSERT THE PHOTOGRAPH FOR FIGURE 16 HERE. THE SAME VIEWPOINT AS THE FIGURE BEFORE IT, LID CLOSED AND TAPED, CABLES LEAVING THROUGH THE SEALED SLOT.",
-  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 16 HERE. The same viewpoint as the figure before it, lid closed and taped, cables leaving through the sealed slot.",
+  "plain": "Insert the photograph for Figure 16 here. The same viewpoint as the figure before it, lid closed and taped, cables leaving through the sealed slot.",
   "from": "photograph PH-4",
   "see": "II.2"
  },
@@ -107,7 +107,7 @@
   "id": "R5.5",
   "section": 5,
   "text": "INSERT THE PHOTOGRAPH FOR FIGURE 17 HERE. TAKEN FROM DIRECTLY ABOVE, IN FOCUS, WITH PIN 1 OF THE HEADER IDENTIFIABLE AND EVERY WIRE TRACEABLE FROM END TO END.",
-  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 17 HERE. Taken from directly above, in focus, with pin 1 of the header identifiable and every wire traceable from end to end.",
+  "plain": "Insert the photograph for Figure 17 here. Taken from directly above, in focus, with pin 1 of the header identifiable and every wire traceable from end to end.",
   "from": "photograph PH-5",
   "see": "II.2"
  },
@@ -115,7 +115,7 @@
   "id": "R5.6",
   "section": 5,
   "text": "INSERT THE PHOTOGRAPH FOR FIGURE 18 HERE. A COPY OF THE PREVIOUS PHOTOGRAPH WITH A TEXT LABEL ON EACH WIRE (SIGNAL NAME, GPIO NUMBER, PHYSICAL PIN), PLACED NEXT TO THE WIRING DRAWING.",
-  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 18 HERE. A copy of the previous photograph with a text label on each wire (signal name, GPIO number, physical pin), placed next to the wiring drawing.",
+  "plain": "Insert the photograph for Figure 18 here. A copy of the previous photograph with a text label on each wire (signal name, GPIO number, physical pin), placed next to the wiring drawing.",
   "from": "photograph PH-6, made from PH-5",
   "see": "II.4"
  },
@@ -123,7 +123,7 @@
   "id": "R5.7",
   "section": 5,
   "text": "INSERT THE PHOTOGRAPH FOR FIGURE 19 HERE. THE SENSOR BREAKOUT WITH ITS THREE WIRES TRACEABLE TO THE HEADER, AND THE POWER SUPPLY CONNECTION.",
-  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 19 HERE. The sensor breakout with its three wires traceable to the header, and the power supply connection.",
+  "plain": "Insert the photograph for Figure 19 here. The sensor breakout with its three wires traceable to the header, and the power supply connection.",
   "from": "photograph PH-7",
   "see": "II.2"
  },
@@ -131,7 +131,7 @@
   "id": "R5.8",
   "section": 5,
   "text": "INSERT THE PHOTOGRAPH FOR FIGURE 20 HERE. THE INTERIOR BEFORE SEALING: LINING, DISPLAY, CAMERA AIMED AT THE DISPLAY, THE MEASURED CAMERA-TO-DISPLAY DISTANCE SHOWN BY A TAPE MEASURE.",
-  "plain": "INSERT THE PHOTOGRAPH FOR FIGURE 20 HERE. The interior before sealing: lining, display, camera aimed at the display, the measured camera-to-display distance shown by a tape measure.",
+  "plain": "Insert the photograph for Figure 20 here. The interior before sealing: lining, display, camera aimed at the display, the measured camera-to-display distance shown by a tape measure.",
   "from": "photograph PH-8",
   "see": "II.2"
  },
@@ -139,7 +139,7 @@
   "id": "R5.9",
   "section": 5,
   "text": "INSERT THE SCREENSHOT FOR FIGURE 21 HERE. THE TERMINAL WITH THE SESSION AND BLOCK NUMBER, THE SEALED PLAN IT LOADED AND THE START TIME, WITH THE STIMULUS DISPLAY VISIBLE OR INSET.",
-  "plain": "INSERT THE SCREENSHOT FOR FIGURE 21 HERE. The terminal with the session and block number, the sealed plan it loaded and the start time, with the stimulus display visible or inset.",
+  "plain": "Insert the screenshot for Figure 21 here. The terminal with the session and block number, the sealed plan it loaded and the start time, with the stimulus display visible or inset.",
   "from": "screenshot SS-1",
   "see": "II.3"
  },
@@ -147,7 +147,7 @@
   "id": "R5.10",
   "section": 5,
   "text": "INSERT THE SCREENSHOT FOR FIGURE 22 HERE. THE FULL OUTPUT LISTING GATES G-A TO G-E WITH THE MEASURED VALUE AND THE WORD PASS FOR EACH, WITH THE DATE VISIBLE.",
-  "plain": "INSERT THE SCREENSHOT FOR FIGURE 22 HERE. The full output listing gates G-a to G-e with the measured value and the word PASS for each, with the date visible.",
+  "plain": "Insert the screenshot for Figure 22 here. The full output listing gates G-a to G-e with the measured value and the word PASS for each, with the date visible.",
   "from": "screenshot SS-2",
   "see": "II.3"
  },
@@ -179,7 +179,7 @@
   "id": "R6.3",
   "section": 6,
   "text": "INSERT THE GRAPH FOR FIGURE 31 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE. STATE IN THE CAPTION WHICH SESSION IT IS AND THE RULE BY WHICH IT WAS CHOSEN.",
-  "plain": "INSERT THE GRAPH FOR FIGURE 31 HERE. Use the figure written by the analysis software. State in the caption which session it is and the rule by which it was chosen.",
+  "plain": "Insert the graph for Figure 31 here. Use the figure written by the analysis software. State in the caption which session it is and the rule by which it was chosen.",
   "from": "physical/data/figures/session_detail.png",
   "see": "V.2"
  },
@@ -203,7 +203,7 @@
   "id": "R6.6",
   "section": 6,
   "text": "INSERT THE GRAPH FOR FIGURE 32 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
-  "plain": "INSERT THE GRAPH FOR FIGURE 32 HERE. Use the figure written by the analysis software.",
+  "plain": "Insert the graph for Figure 32 here. Use the figure written by the analysis software.",
   "from": "physical/data/figures/false_alarm_evidence.png",
   "see": "V.2"
  },
@@ -235,7 +235,7 @@
   "id": "R6.10",
   "section": 6,
   "text": "INSERT THE GRAPH FOR FIGURE 33 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
-  "plain": "INSERT THE GRAPH FOR FIGURE 33 HERE. Use the figure written by the analysis software.",
+  "plain": "Insert the graph for Figure 33 here. Use the figure written by the analysis software.",
   "from": "physical/data/figures/lead_time.png",
   "see": "V.2"
  },
@@ -243,7 +243,7 @@
   "id": "R6.11",
   "section": 6,
   "text": "INSERT THE GRAPH FOR FIGURE 34 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
-  "plain": "INSERT THE GRAPH FOR FIGURE 34 HERE. Use the figure written by the analysis software.",
+  "plain": "Insert the graph for Figure 34 here. Use the figure written by the analysis software.",
   "from": "physical/data/figures/severity_response.png",
   "see": "V.2"
  },
@@ -267,7 +267,7 @@
   "id": "R6.14",
   "section": 6,
   "text": "INSERT THE GRAPH FOR FIGURE 35 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
-  "plain": "INSERT THE GRAPH FOR FIGURE 35 HERE. Use the figure written by the analysis software.",
+  "plain": "Insert the graph for Figure 35 here. Use the figure written by the analysis software.",
   "from": "physical/data/figures/correlation_vs_usability.png",
   "see": "V.2"
  },
@@ -283,7 +283,7 @@
   "id": "R6.16",
   "section": 6,
   "text": "INSERT THE GRAPH FOR FIGURE 36 HERE. USE THE FIGURE WRITTEN BY THE ANALYSIS SOFTWARE.",
-  "plain": "INSERT THE GRAPH FOR FIGURE 36 HERE. Use the figure written by the analysis software.",
+  "plain": "Insert the graph for Figure 36 here. Use the figure written by the analysis software.",
   "from": "physical/data/figures/decision_rate.png",
   "see": "V.2"
  },
@@ -299,7 +299,7 @@
   "id": "R6.18",
   "section": 6,
   "text": "INSERT THE GRAPH FOR FIGURE 37 HERE. MAKE THIS GRAPH IN A SPREADSHEET FROM TABLE 21, FOLLOWING THE TEMPLATE IN THE MANUAL.",
-  "plain": "INSERT THE GRAPH FOR FIGURE 37 HERE. Make this graph in a spreadsheet from Table 21, following the template in the manual.",
+  "plain": "Insert the graph for Figure 37 here. Make this graph in a spreadsheet from Table 21, following the template in the manual.",
   "from": "Table 21 of this paper; physical/data/results/apparatus_variation.json",
   "see": "V.3"
  },
@@ -323,7 +323,7 @@
   "id": "R7.3",
   "section": 7,
   "text": "INSERT THE GRAPH FOR FIGURE 38 HERE. MAKE THIS GRAPH IN A SPREADSHEET FROM TABLE 23, FOLLOWING THE TEMPLATE IN THE MANUAL.",
-  "plain": "INSERT THE GRAPH FOR FIGURE 38 HERE. Make this graph in a spreadsheet from Table 23, following the template in the manual.",
+  "plain": "Insert the graph for Figure 38 here. Make this graph in a spreadsheet from Table 23, following the template in the manual.",
   "from": "Table 23 of this paper",
   "see": "V.3"
  },

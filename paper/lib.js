@@ -202,7 +202,7 @@ function grid(widths, head, rows, o = {}) {
   const sum = widths.reduce((a, b) => a + b, 0);
   if (sum !== W) throw new Error(`table widths sum to ${sum}, not ${W}: ${head.join(' | ')}`);
   // a short table is kept on one page: every row but the last is tied to the next
-  const short = rows.length <= 9;
+  const short = rows.length <= 12;
   const mk = (cells, isHead, isLast) => new D.TableRow({
     tableHeader: isHead, cantSplit: true,
     children: cells.map((c, i) => cell(c, widths[i],
@@ -302,7 +302,8 @@ function box(heightIn, paragraphs) {
 function figureSpace(key, kind, title, text, need, from, see, o = {}) {
   state.figUsed.push(key);
   state.figTitles[key] = title;
-  const token = red(`INSERT THE ${kind} FOR FIGURE ${figNo(key)} HERE. ${need}`, from, see);
+  const token = red(`Insert the ${kind.toLowerCase()} for Figure ${figNo(key)} here. ${need}`,
+    from, see);
   const r = state.reds[token.slice(1, -1)];
   const inner = [
     new D.Paragraph({ children: [new D.TextRun({ text: `SPACE RESERVED FOR A ${kind}`,
