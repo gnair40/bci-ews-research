@@ -25,6 +25,17 @@ runbook is still the thing to work from at the bench.
 
 ---
 
+## A proposed addition, not yet part of the plan
+
+**[`recovery/`](recovery/)** holds a draft subphase, experiment P-8, written
+on 14 November 2026: once a failure point is known, how much decoding does a
+repair that starts there recover. It re-analyses the sessions this phase
+already records and adds none. **It is not preregistered.** The frozen
+preregistration does not mention it, and the researcher has not yet approved
+its design.
+
+---
+
 ## If you just want to know what to do next
 
 **[`docs/13_SCHEDULE.md`](docs/13_SCHEDULE.md)** is the plan: week by week

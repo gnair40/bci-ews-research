@@ -8164,3 +8164,97 @@ changes too is hers to say.
 
 The submitted research plan keeps its title. It is a record of what was
 submitted and is never rewritten.
+
+---
+
+## 14 November 2026 (recovery) — a draft subphase on what a failure point is for
+
+### The idea, and whose it is
+
+The researcher asked what would follow if the failure point, once found,
+could be used to make the interface perform better than before. She then
+asked for a subphase of the physical validation to account for it, in a new
+folder under `physical/`, with research done first on the acceptable ways to
+improve performance from the failure point and on how to test and build them.
+She added that even a small improvement counts.
+
+The idea is hers. The design below is a draft of mine, written at her request,
+and she has not approved it.
+
+### What was researched first
+
+The published ways a decoder is repaired after a failure, in
+`physical/recovery/01_RESEARCH.md`. Six were found: tracking each channel's
+statistics, dropping failed channels and refitting, recalibrating with a set
+task, recalibrating from inferred intentions, aligning new activity to old,
+and training a decoder in advance to tolerate change. Five sources were looked
+up today. For each, the bibliographic record and the abstract were confirmed.
+**No full text was read**, and the note says so and lists what was not
+confirmed about each.
+
+Two findings shaped the design. First, the two published cases in which a
+repaired decoder ended up better than the one it replaced did not get the gain
+from the fault. They got it from a better estimate of what the user intended.
+Second, no source was found that measures recovery as a function of when the
+repair starts, against an onset fixed in advance.
+
+### What was made
+
+A folder, `physical/recovery/`, holding a proposed experiment P-8:
+
+- **It adds no recording.** It re-analyses the sessions of P-2, P-3 and P-5.
+- **Four repairs**, all always reported: renormalise; mask dark channels and
+  refit; both; recalibrate with the true direction.
+- **Five failure points**: the sealed onset, the moment decoding failed, the
+  moment the monitor warned, and on fault-free sessions a matched moment and
+  any real false alarm.
+- **A draft amendment** with seven predictions and a judging rule. It predicts
+  recovery for three fault types, none for rotation, and no enhancement beyond
+  the level before the fault.
+- **Working code** with a built-in check, which passes.
+
+### What was deliberately not done
+
+- **The frozen preregistration was not edited.** Its section 9 allows an
+  appended, dated amendment. The text is drafted and waits for her instruction.
+- **Nothing was frozen.** Every threshold in the draft is a proposal, and the
+  draft lists nine choices that are hers, the first being whether to add the
+  experiment at all.
+- **The self-test was not added to `tools/check_all.py`.** The paper and other
+  documents cite 13 gates, and a draft should not change them.
+- **The paper and its manual were not changed.** They do not mention P-8.
+- **No live, self-repairing version of the bench was designed.** The design
+  document says what that would need and why P-8 should come first.
+
+### Mistakes
+
+- **The first version of the analysis left a rehearsal file behind.** It wrote
+  a per-session table as a CSV. I rehearsed the analysis on the fake recordings
+  that `dryrun.py` makes, ran `dryrun.py --cleanup`, and found the CSV still
+  there, because the clean-up removes only files that say inside themselves
+  that they are synthetic. This is the same failure the repository recorded on
+  24 September for a different report. I deleted the file, changed the program
+  to write that table as JSON carrying a `synthetic` field, rehearsed again,
+  and confirmed that the clean-up now leaves nothing.
+- **I named the wrong thing in my first answer to her question.** Before this
+  work I had told her the project "has not yet found a usable failure point".
+  That is true of the monitor's warning. It is not true of the onset, which the
+  project knows exactly because it plants it. The design separates the two, as
+  different failure points, for that reason.
+
+### Where the request and the draft differ
+
+She spoke of enhancing performance. The folder is called `recovery`, and the
+draft predicts against enhancement. I have told her why: three outcomes are
+possible (better than no repair, back to the previous level, better than the
+previous level), the experiment measures which occurs, and the second
+published finding above makes the third unlikely to come from the fault
+itself. A partial recovery is still an improvement, which is what she said
+would count. Whether the prediction should run the other way is on her list of
+choices.
+
+### Decisions that are the researcher's
+
+All nine in `physical/recovery/03_PREREGISTRATION_DRAFT.md`, section 5. The
+one with a deadline is whether to append the amendment before the bench
+records anything.
